@@ -1,0 +1,242 @@
+-- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Calendar;
+with Ada.Containers.Vectors;
+with Ada.Finalization;
+with Ada.Strings.Unbounded;
+with Ada.Unchecked_Deallocation;
+with Ase.Containers.Generic_Arrays;
+with Tabula.Calendar;
+package Tabula.Villages is
+	
+	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
+	type Servant_Knowing_Mode is (None, Vampire_K, Vampires);
+	type Monster_Side is (Fixed, Shuffling, Gremlin);
+	type Daytime_Preview_Mode is (None, Role_Only, Message_Only, Role_And_Message);
+	type Doctor_Infected_Mode is (Cure, Find_Infection);
+	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
+	type Unfortunate_Mode is (None, Appear, Infected_Only);
+	
+	subtype Hidings is Teaming range Hiding .. Hiding_Gremlin;
+	
+	-- オプションルール初期値
+	Initial_Victim_Existing      : constant Boolean                   := False;
+	Initial_Teaming              : constant Teaming                   := Shuffling;
+	Initial_Monster_Side         : constant Monster_Side              := Fixed;
+	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
+	Initial_Servant_Knowing      : constant Servant_Knowing_Mode      := Vampire_K;
+	Initial_Daytime_Preview      : constant Daytime_Preview_Mode      := Message_Only;
+	Initial_Doctor_Infected      : constant Doctor_Infected_Mode      := Find_Infection;
+	Initial_Hunter_Silver_Bullet : constant Hunter_Silver_Bullet_Mode := Target_And_Self;
+	Initial_Unfortunate          : constant Unfortunate_Mode          := Infected_Only;
+
+	type Requested_Role is (Random, Rest, 
+		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
+		Village_Side, Vampire_Side, Gremlin);
+	subtype Requested_Role_No_Random is Requested_Role range Inhabitant .. Vampire;
+	
+	type Person_Role is (Inhabitant, Gremlin,
+		Vampire_K, Vampire_Q, Vampire_J, Servant, 
+		Werewolf, Possessed,
+		Detective, Doctor, Astronomer, Hunter, 
+		Unfortunate_Inhabitant,
+		Lover, Loved_Inhabitant, Sweetheart_M, Sweetheart_F);
+	subtype Matrix_Role is Person_Role range Detective .. Hunter;
+	subtype Night_Role is Person_Role range Astronomer .. Hunter;
+	subtype Daytime_Role is Person_Role range Detective .. Doctor;
+	subtype Vampire_Role is Person_Role range Vampire_K .. Vampire_J;
+	
+	type Role_Appearance is (None, Random, Force);
+	type Role_Appearances is array(Detective .. Lover) of Role_Appearance;
+	
+	type Sex_Kind is (Neutral, Male, Female);
+	
+	subtype Person_Sex is Sex_Kind range Male .. Female;
+	
+	type Person_State is (Normal, Infected, Died);
+	
+	type Person_Record is record
+		State : Person_State;
+		Vote : Integer;
+		Target : Integer;
+		Special : Boolean;
+		Note : Ada.Strings.Unbounded.Unbounded_String;
+	end record;
+	
+	Default_Person_Record : constant Person_Record := (
+		State => Normal,
+		Vote => -1,
+		Target => -1,
+		Special => False,
+		Note => Ada.Strings.Unbounded.Null_Unbounded_String);
+	
+	type Person_Record_Array is array(Natural range <>) of Person_Record;
+	type Person_Record_Array_Access is access Person_Record_Array;
+	procedure Free is new Ada.Unchecked_Deallocation(Person_Record_Array, Person_Record_Array_Access);
+	
+	type Person_Type is new Ada.Finalization.Controlled with record
+		Id : Ada.Strings.Unbounded.Unbounded_String;
+		Name : Ada.Strings.Unbounded.Unbounded_String;
+		Work : Ada.Strings.Unbounded.Unbounded_String;
+		Image : Ada.Strings.Unbounded.Unbounded_String;
+		Sex : Person_Sex;
+		Group : Integer;
+		Request : Requested_Role;
+		Ignore_Request : Boolean;
+		Role : Person_Role;
+		Records : Person_Record_Array_Access;
+		Commited : Boolean;
+	end record;
+	overriding procedure Adjust(Object : in out Person_Type);
+	overriding procedure Finalize(Object : in out Person_Type);
+	
+	Default_Person : constant Person_Type := (Ada.Finalization.Controlled with 
+		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
+		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Work => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Image => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Sex => Male,
+		Group => 0,
+		Request => Random,
+		Ignore_Request => False,
+		Role => Inhabitant,
+		Records => null,
+		Commited => False);
+	
+	type Person_Array is array(Natural range <>) of Person_Type;
+	type Person_Array_Access is access Person_Array;
+	procedure Free is new Ada.Unchecked_Deallocation(Person_Array, Person_Array_Access);
+	package Person_Arrays is new Ase.Containers.Generic_Arrays(Natural, Person_Type, Person_Array, Person_Array_Access);
+	
+	type Message_Kind is (
+		Narration,                        -- ト書き
+		Escape,                           -- 村を出る
+		Join,                             -- 参加
+		Escaped_Join,                     -- 村を出た者の参加
+		Speech,                           -- 通常会話
+		Escaped_Speech,                   -- 村を出た者の会話
+		Monologue,                        -- 独り言
+		Ghost,                            -- 墓場
+		Howling,                          -- 遠吠えまたは夜間の会話
+		Howling_Blocked,                  -- 遠吠えまたは夜間の会話が妨害された
+		Action_Wake,                      -- 起こす
+		Action_Encourage,                 -- 促し
+		Action_Vampire_Gaze,              -- 視線
+		Action_Vampire_Gaze_Blocked,      -- 視線が妨害された
+		Doctor_Cure,                      -- 治療
+		Doctor_Cure_Preview,              -- 治療
+		Doctor_Found_Infection,           -- 感染を発見しただけ
+		Doctor_Found_Infection_Preview,   -- 感染を発見しただけ
+		Doctor_Failed,                    -- 診察はしたが感染させられた患者では無かった
+		Doctor_Failed_Preview,            -- 診察はしたが感染させられた患者では無かった
+		Doctor_Found_Gremlin,             -- 妖魔を見つけた
+		Doctor_Found_Gremlin_Preview,     -- 妖魔を見つけた
+		Detective_Survey,                 -- 調査
+		Detective_Survey_Preview,         -- 調査
+		Detective_Survey_Victim,          -- 初日犠牲者の調査
+		Execution,                        -- 処刑
+		Awareness,                        -- 自覚
+		Astronomer_Observation,           -- 観測
+		Meeting,                          -- 吸血鬼の会話
+		Vampire_Murder,                   -- 襲撃
+		Vampire_Murder_And_Killed,        -- 襲撃に成功し相打ちで銀の弾丸を撃ちこまれた
+		Vampire_Infection,                -- 感染
+		Vampire_Infection_And_Killed,     -- 感染に成功し相打ちで銀の弾丸を撃ちこまれた
+		Vampire_Failed,                   -- 襲撃に失敗
+		Vampire_Failed_And_Killed,        -- 襲撃に失敗し銀の弾丸を撃ちこまれた
+		Hunter_Guard,                     -- 護衛に成功した
+		Hunter_Guard_With_Silver,         -- 護衛に成功し銀の弾丸を撃ちこんだ
+		Hunter_Nothing_With_Silver,       -- 銀の弾丸を込めていたが何も無かった
+		Hunter_Infected_With_Silver,      -- 誰かを護衛していたわけではないが自分が襲われたので銀の弾丸で反撃した
+		Hunter_Killed_With_Silver,        -- 銀の弾丸で相打ち
+		Hunter_Failed,                    -- ガードしたが吸血鬼は来なかった
+		Hunter_Failed_With_Silver,        -- ガードしたが吸血鬼は来ず銀の弾丸を無駄遣いした
+		Gremlin_Sense,                    -- 妖魔が吸血鬼の残数を知る
+		Gremlin_Killed,                   -- 妖魔が死んだ
+		Sweetheart_Incongruity,           -- 違和感
+		Sweetheart_Suicide,               -- 後追い
+		Servant_Knew_Vampire_K,           -- Kを知る
+		Servant_Knew_Vampires,            -- 吸血鬼全員を知る
+		List,                             -- 一覧
+		Introduction,                     -- 序文
+		Breakdown);                       -- 開始
+	
+	subtype Action_Message_Kind is Message_Kind range Action_Wake .. Action_Vampire_Gaze_Blocked;
+	subtype Doctor_Message_Kind is Message_Kind range Doctor_Cure .. Doctor_Found_Gremlin_Preview;
+	subtype Detective_Message_Kind is Message_Kind range Detective_Survey .. Detective_Survey_Victim;
+	subtype Hunter_Message_Kind is Message_Kind range Hunter_Guard .. Hunter_Failed_With_Silver;
+	subtype Vampire_Message_Kind is Message_Kind range Vampire_Murder .. Vampire_Failed_And_Killed;
+	subtype Servant_Message_Kind is Message_Kind range Servant_Knew_Vampire_K .. Servant_Knew_Vampires;
+	
+	type Message is record
+		Day : Integer;
+		Time : Ada.Calendar.Time;
+		Kind : Message_Kind;
+		Subject : Integer;
+		Target : Integer;
+		Text : Ada.Strings.Unbounded.Unbounded_String;
+	end record;
+	
+	Default_Message : constant Message := (
+		Day => -1,
+		Time => Calendar.Null_Time,
+		Kind => Narration,
+		Subject => -1,
+		Target => -1,
+		Text => Ada.Strings.Unbounded.Null_Unbounded_String);
+	
+	package Messages is new Ada.Containers.Vectors(Natural, Message);
+	
+	type Village_State is (Prologue, Opened, Epilogue, Closed);
+	type Village_Time is (Daytime, Vote, Night);
+	
+	type Village_Type is limited new Ada.Finalization.Limited_Controlled with record
+		Name : Ada.Strings.Unbounded.Unbounded_String;
+		By : Ada.Strings.Unbounded.Unbounded_String;
+		State : Village_State;
+		Today : Integer;
+		Time : Village_Time := Daytime;
+		Dawn : Ada.Calendar.Time;
+		Day_Duration : Duration := Default_Long_Day_Duration;
+		Night_Duration : Duration := Default_Night_Duration;
+		Victim_Existing : Boolean := False;
+		Victim_Role : aliased Person_Role := Inhabitant;
+		Teaming : Villages.Teaming := Shuffling_Headless;
+		Monster_Side : Villages.Monster_Side := Fixed;
+		Attack : Attack_Mode := Two;
+		Servant_Knowing : Servant_Knowing_Mode := None;
+		Daytime_Preview : Daytime_Preview_Mode := Role_And_Message;
+		Doctor_Infected : Doctor_Infected_Mode := Cure;
+		Hunter_Silver_Bullet : Hunter_Silver_Bullet_Mode := Target_And_Self;
+		Unfortunate : Unfortunate_Mode := None;
+		Appearance : Role_Appearances := (others => Random);
+		People : Person_Array_Access;
+		Escaped_People : Person_Array_Access;
+		Messages : Villages.Messages.Vector;
+	end record;
+	overriding procedure Finalize(Object : in out Village_Type);
+	
+	type Message_Count is record
+		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
+		Last_Action_Time : Ada.Calendar.Time ;
+	end record;
+	type Message_Counts is array(Natural range <>) of Message_Count;
+	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts;
+	function Count_Speech(Village : Village_Type; Day : Natural) return Natural;
+	function Last_Joined_Time(Village : Village_Type) return Ada.Calendar.Time;
+	
+	function Joined(Village : Village_Type; User_Id : String) return Integer;
+	function Rejoined(Village : Village_Type; Escaped_Subject : Natural) return Integer;
+	
+	function Vote_Finished(Village : Village_Type) return Boolean;
+	function Commit_Finished(Village : Village_Type) return Boolean;
+	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer;
+	function Unfortunate(Village : Village_Type) return Boolean;
+	
+	procedure Escape(Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
+
+	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Sex_Kind) return Boolean;
+	
+	function Escape_Duration(Village : Village_Type) return Duration;
+	
+end Tabula.Villages;

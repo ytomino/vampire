@@ -1,0 +1,9 @@
+--- !vampire-user
+
+password: 'd41d8cd98f00b204e9800998ecf8427e'
+remote-addr: '127.0.0.1'
+remote-host: ''
+creation-time: '2005-05-23 22:17:30'
+last-remote-addr: '127.0.0.1'
+last-remote-host: '127.0.0.1'
+last-time: '2007-01-08 13:45:50'

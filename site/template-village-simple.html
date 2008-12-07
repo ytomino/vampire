@@ -1,0 +1,119 @@
+<html>
+<head>
+<meta http-equiv="CONTENT-TYPE" content="text/html; charset=SJIS">
+<meta name="robots" content="noindex,nofollow">
+<title><?title></?title>The Village of Vampire</title>
+</head>
+<body>
+<h1><?title>村名</?title></h1>
+<hr><div><?userpanel>
+<?logoff>ログオンしていません。<br></?logoff>
+<?logon>【<?id>ID</?id>】<br></?logon>
+</?userpanel>
+<?back>戻る</?back></div>
+<hr><div><?days><?day>今日はなんの日</?day><br></?days></div>
+<?message>
+	<?narration><hr><div><?text>本文</?text></div></?narration>
+	<?narrationi><hr><div><font color="purple"><?text>本文</?text></font></div></?narrationi>
+	<?narrationg><hr><div><font color="blue"><?text>本文</?text></font></div></?narrationg>
+	<?narratione><hr><div><font color="silver"><?text>本文</?text></font></div></?narratione>
+	<?speech><hr><div><u><?name>名前</?name></u> <font color="gray"><?time>時間</?time></font><br><?text>発言</?text></div></?speech>
+	<?escaped><hr><div><font color="silver"><u><?name>名前</?name></u> <font color="gray"><?time>時間</?time></font><br><?text>発言</?text></font></div></?escaped>
+	<?ghost><hr><div><font color="blue"><u><?name>名前</?name></u> <font color="gray"><?time>時間</?time></font><br><?text>発言</?text></font></div></?ghost>
+	<?monologue><hr><div><font color="gray"><u><?name>名前</?name></u> <?time>時間</?time><br><?text>発言</?text></font></div></?monologue>
+	<?vampire><hr><div><font color="red"><u><?name>名前</?name></u><br><?text>発言</?text></font></div></?vampire>
+	<?dying><hr><div><font color="green"><u><?name>名前</?name></u><br><?text>発言</?text></font></div></?dying>
+</?message>
+<?villagepanel>
+<?entry>
+	<hr><form action=?uri method="POST">
+	<?works><select></select></?works><br>
+	<?names><select></select></?names><br>
+	希望…<?request><select></select></?request><br>
+	<input type="submit" value="この村に登場">
+	<input type="hidden" name="cmd" value="join">
+	</form>
+</?entry>
+<?player>
+	<hr><div><u><?name>-_-</?name></u></div>
+	<?speech><form action=?uri method="POST">
+	<textarea name="text" rows=3></textarea><br>
+	<input type="submit" value="発言"><?rest> (発言は残り<?count>20</?count>)</?rest>
+	<input type="hidden" name="cmd" value="speech">
+	</form></?speech>
+	<?ghost><form action=?uri method="POST">
+	<textarea name="text" rows=3></textarea><br>
+	<input type="submit" value="呻く"><?rest> (呻きは残り<?count>10</?count>)</?rest>
+	<input type="hidden" name="cmd" value="ghost">
+	</form></?ghost>
+	<?monologue><form action=?uri method="POST">
+	<textarea name="text" rows=3></textarea><br>
+	<input type="submit" value="独白"><?rest> (独白は残り<?count>10</?count>)</?rest>
+	<input type="hidden" name="cmd" value="monologue">
+	</form></?monologue>
+	<?vote><div>処刑</div></?vote>
+	<?role><div><?roletext>あなたはたこ焼き名人です。</?roletext></div></?role>
+	<?zero><div>まずは発言してください。</div></?zero>
+	<?vampire><form action=?uri method="POST">
+	<textarea name="text" rows=3><?note></?note></textarea><br>
+	<input type="submit" value="記す">
+	<input type="hidden" name="cmd" value="note">
+	</form></?vampire>
+	<?dying><form action=?uri method="POST">
+	<textarea name="text" rows=3><?note></?note></textarea><br>
+	<input type="submit" value="記す">
+	<input type="hidden" name="cmd" value="note">
+	</form></?dying>
+	<?ability><div>能力</div></?ability>
+	<?active>
+	<form action=?uri method="POST">
+	<input type="submit" value="行動を終える">
+	<input type="hidden" name="cmd" value="commit">
+	</form>
+	<?escape><form action=?uri method="POST">
+		<input type="submit" value="旅に出る" >
+		<?x>x</?x> + <?y>y</?y> = 
+		<input type="text" name="z" value="" >
+		<input value=?qx type="hidden" name="x" >
+		<input value=?qy type="hidden" name="y" >
+		<input type="hidden" name="cmd" value="escape" >
+	</form></?escape>
+	<?action><div>アクション</div></?action>
+	</?active>
+	<?commited>
+	<form action=?uri method="POST">
+	<input type="submit" id="bottom" value="行動を再開する">
+	<input type="hidden" name="cmd" value="rollback">
+	</form>
+	</?commited>
+</?player>
+<?administrator>
+	<hr><form action=?uri method="POST">
+	<textarea name="text"></textarea><br>
+	<input type="submit" value="発言">
+	<input type="hidden" name="cmd" value="narration">
+	</form>
+</?administrator>
+<?closed>
+	<hr><div>この村は終了しました。</div>
+</?closed>
+<?opened>
+	<hr><div>この村は進行中です。</div>
+</?opened>
+<?over>
+	<hr><div>これ以上は参加できません。</div>
+</?over>
+</?villagepanel>
+<?rule>
+<?changable>
+<hr><form action=?uri method="POST">
+<?items><br></?items>
+<input type="submit" value="変更">
+<input name="cmd" type="hidden" value="rule">
+</form>
+</?changable>
+<?static><hr><div><?items></?items></div></?static>
+</?rule>
+<?next><hr><div><a href=?uri>こうして、その日は暮れてゆきました…。</a></div></?next>
+</body>
+</html>

@@ -1,0 +1,717 @@
+﻿--- !vampire-cast
+people:
+	-
+		name: アンブローズ
+		work: 騎士
+		image: ambroise.png
+		sex: male
+		group: 0
+	-
+		name: ベアトリス
+		work: 歌姫
+		image: beatrice.png
+		sex: female
+		group: 0
+	-
+		name: クローヴィス
+		work: 絵描き
+		image: clovis.png
+		sex: male
+		group: 0
+	-
+		name: ダーラム
+		work: 大工
+		image: durham.png
+		sex: male
+		group: 0
+	-
+		name: エル
+		work: 奇術師
+		image: ellery.png
+		sex: male
+		group: 0
+	-
+		name: フラリス
+		work: 水車小屋の番人
+		image: flarice.png
+		sex: female
+		group: 0
+	-
+		name: グレーテル
+		work: 花売り
+		image: gretel.png
+		sex: female
+		group: 0
+	-
+		name: ヒルダ
+		work: 世話焼き
+		image: hilda.png
+		sex: female
+		group: 0
+	-
+		name: イザベル
+		work: 織り子
+		image: isabel.png
+		sex: female
+		group: 0
+	-
+		name: ジョー
+		work: 旅人
+		image: joe.png
+		sex: male
+		group: 0
+	-
+		name: ケイン
+		work: 書生
+		image: kane.png
+		sex: male
+		group: 0
+	-
+		name: リーンハルト
+		work: 逃亡者
+		image: lienhard.png
+		sex: male
+		group: 0
+	-
+		name: メラ
+		work: 小作人
+		image: mela.png
+		sex: female
+		group: 0
+	-
+		name: ナターシャ
+		work: 酒場の主
+		image: natascha.png
+		sex: female
+		group: 0
+	-
+		name: オルウェン
+		work: 占い師
+		image: olwen.png
+		sex: female
+		group: 0
+	-
+		name: ポール
+		work: 青年
+		image: paul.png
+		sex: male
+		group: 0
+	-
+		name: カンティン
+		work: 時計屋
+		image: quentin.png
+		sex: male
+		group: 0
+	-
+		name: ロゼッタ
+		work: 旧家の末裔
+		image: rosette.png
+		sex: female
+		group: 0
+	-
+		name: ソフィー
+		work: 侍祭
+		image: sophie.png
+		sex: female
+		group: 0
+	-
+		name: タナー
+		work: 召し使い
+		image: tanner.png
+		sex: male
+		group: 0
+	-
+		name: ユリアン
+		work: 軟派
+		image: urien.png
+		sex: male
+		group: 0
+	-
+		name: ヴァレスカ
+		work: 聞屋
+		image: valeska.png
+		sex: female
+		group: 0
+	-
+		name: ヴィルト
+		work: 衛視
+		image: wirth.png
+		sex: male
+		group: 0
+	-
+		name: クセニア
+		work: 仕立て屋
+		image: xenia.png
+		sex: female
+		group: 0
+	-
+		name: ヨアンナ
+		work: 羊飼い
+		image: yoanna.png
+		sex: female
+		group: 0
+	-
+		name: ジグムント
+		work: 鍛冶屋
+		image: zygmunt.png
+		sex: male
+		group: 0
+	-
+		name: アンナ
+		work: パン屋
+		image: auther-baker.png
+		sex: female
+		group: 1
+	-
+		name: ブレーズ
+		work: ちんぴら
+		image: auther-bodgy.png
+		sex: male
+		group: 1
+	-
+		name: ステア
+		work: 万引き小僧
+		image: auther-creep.png
+		sex: male
+		group: 1
+	-
+		name: エディサ
+		work: 貴婦人
+		image: auther-dame.png
+		sex: female
+		group: 1
+	-
+		name: ジョセフ
+		work: 守人
+		image: auther-farmer.png
+		sex: male
+		group: 1
+	-
+		name: ロナルド
+		work: ごくつぶし
+		image: auther-goodfornothing.png
+		sex: male
+		group: 1
+	-
+		name: タラミス
+		work: 下宿の大家
+		image: auther-landlady.png
+		sex: female
+		group: 1
+	-
+		name: クララ
+		work: 少女
+		image: auther-littlegirl.png
+		sex: female
+		group: 1
+	-
+		name: フィリップ
+		work: 金貸し
+		image: auther-merchant.png
+		sex: male
+		group: 1
+	-
+		name: オリサト
+		work: 霊媒師
+		image: auther-necromancer.png
+		sex: male
+		group: 1
+	-
+		name: カリサ
+		work: 老人
+		image: auther-oldwoman.png
+		sex: female
+		group: 1
+	-
+		name: ニッキー
+		work: 看板娘
+		image: auther-postergirl.png
+		sex: female
+		group: 1
+	-
+		name: レストレード
+		work: 執事
+		image: auther-steward.png
+		sex: male
+		group: 1
+	-
+		name: マリア
+		work: 家庭教師
+		image: auther-teacher.png
+		sex: female
+		group: 1
+	-
+		name: デートレフ
+		work: 自警団長
+		image: auther-vigilante.png
+		sex: male
+		group: 1
+	-
+		name: ヘルミネ
+		work: 村娘
+		image: auther-villagegirl.png
+		sex: female
+		group: 1
+	-
+		name: ウィニフレッド
+		work: 経営者
+		image: auther-sisterboy.png
+		sex: male
+		group: 1
+	-
+		name: ヤクリーヌ
+		work: 俳優
+		image: auther-brothergirl.png
+		sex: female
+		group: 1
+	-
+		name: ウォーレス
+		work: 長老
+		image: char01.png
+		sex: male
+		group: 2
+	-
+		name: ヘクター
+		work: 宿の主人
+		image: char02.png
+		sex: male
+		group: 2
+	-
+		name: ロブ
+		work: 農夫
+		image: char03.png
+		sex: male
+		group: 2
+	-
+		name: オーウェン
+		work: 職人
+		image: char04.png
+		sex: male
+		group: 2
+	-
+		name: イアン
+		work: 料理人
+		image: char05.png
+		sex: male
+		group: 2
+	-
+		name: ラルフ
+		work: 肉屋
+		image: char06.png
+		sex: male
+		group: 2
+	-
+		name: オズワルド
+		work: 医師
+		image: char07.png
+		sex: male
+		group: 2
+	-
+		name: ルーク
+		work: こそ泥
+		image: char08.png
+		sex: male
+		group: 2
+	-
+		name: サイモン
+		work: 神父
+		image: char09.png
+		sex: male
+		group: 2
+	-
+		name: チェスター
+		work: 道化
+		image: char10.png
+		sex: male
+		group: 2
+	-
+		name: クラーク
+		work: 流れ者
+		image: char11.png
+		sex: male
+		group: 2
+	-
+		name: オリバー
+		work: 実業家
+		image: char12.png
+		sex: male
+		group: 2
+	-
+		name: マーティン
+		work: 行商人
+		image: char13.png
+		sex: male
+		group: 2
+	-
+		name: スコット
+		work: 道楽者
+		image: char14.png
+		sex: male
+		group: 2
+	-
+		name: ジョナサン
+		work: 職人の弟子
+		image: char15.png
+		sex: male
+		group: 2
+	-
+		name: テッド
+		work: 実業家の子
+		image: char16.png
+		sex: male
+		group: 2
+	-
+		name: ヘレン
+		work: 修道女
+		image: char17.png
+		sex: female
+		group: 2
+	-
+		name: ドーラ
+		work: 老婆
+		image: char18.png
+		sex: female
+		group: 2
+	-
+		name: ルイーズ
+		work: 医師の妻
+		image: char19.png
+		sex: female
+		group: 2
+	-
+		name: テレサ
+		work: 医師の娘
+		image: char20.png
+		sex: female
+		group: 2
+	-
+		name: マーガレット
+		work: 長老の孫
+		image: char21.png
+		sex: female
+		group: 2
+	-
+		name: メアリー
+		work: 教師
+		image: char22.png
+		sex: female
+		group: 2
+	-
+		name: アイリーン
+		work: 新聞記者
+		image: char23.png
+		sex: female
+		group: 2
+	-
+		name: アニタ
+		work: 孤児
+		image: char24.png
+		sex: female
+		group: 2
+	-
+		name: リサ
+		work: 教師の妹
+		image: char25.png
+		sex: female
+		group: 2
+works:
+	-
+		name: 騎士
+		sex: neutral
+	-
+		name: 歌姫
+		sex: female
+	-
+		name: 絵描き
+		sex: neutral
+	-
+		name: 大工
+		sex: neutral
+	-
+		name: 奇術師
+		sex: neutral
+	-
+		name: 水車小屋の番人
+		sex: neutral
+	-
+		name: 花売り
+		sex: neutral
+	-
+		name: 世話焼き
+		sex: neutral
+	-
+		name: 織り子
+		sex: female
+	-
+		name: 旅人
+		sex: neutral
+	-
+		name: 書生
+		sex: neutral
+	-
+		name: 逃亡者
+		sex: neutral
+	-
+		name: 小作人
+		sex: neutral
+	-
+		name: 酒場の主
+		sex: neutral
+	-
+		name: 占い師
+		sex: neutral
+	-
+		name: 青年
+		sex: male
+	-
+		name: 時計屋
+		sex: neutral
+	-
+		name: 旧家の末裔
+		sex: neutral
+	-
+		name: 侍祭
+		sex: neutral
+	-
+		name: 召し使い
+		sex: neutral
+	-
+		name: 軟派
+		sex: male
+	-
+		name: 聞屋
+		sex: neutral
+	-
+		name: 衛視
+		sex: neutral
+	-
+		name: 仕立て屋
+		sex: neutral
+	-
+		name: 羊飼い
+		sex: neutral
+	-
+		name: 鍛冶屋
+		sex: neutral
+	-
+		name: パン屋
+		sex: neutral
+	-
+		name:ちんぴら
+		sex:neutral
+	-
+		name: 万引き小僧
+		sex: male
+	-
+		name: 貴婦人
+		sex: female
+	-
+		name: 守人
+		sex: neutral
+	-
+		name: ごくつぶし
+		sex: neutral
+	-
+		name: 下宿の大家
+		sex: neutral
+	-
+		name: 少女
+		sex: female
+	-
+		name: 金貸し
+		sex: neutral
+	-
+		name: 霊媒師
+		sex: neutral
+	-
+		name: 老人
+		sex: neutral
+	-
+		name: 看板娘
+		sex: female
+	-
+		name: 執事
+		sex: neutral
+	-
+		name: 家庭教師
+		sex: neutral
+	-
+		name: 自警団長
+		sex: neutral
+	-
+		name: 村娘
+		sex: female
+	-
+		name: 経営者
+		sex: neutral
+	-
+		name: 俳優
+		sex: neutral
+	-
+		name: 長老
+		sex: neutral
+	-
+		name: 宿の主人
+		sex: neutral
+	-
+		name: 農夫
+		sex: male
+	-
+		name: 職人
+		sex: neutral
+	-
+		name: 料理人
+		sex: neutral
+	-
+		name: 肉屋
+		sex: neutral
+	-
+		name: 医師
+		nominated: true
+	-
+		name: こそ泥
+		sex: neutral
+	-
+		name: 神父
+		sex: male
+	-
+		name: 道化
+		sex: neutral
+	-
+		name: 流れ者
+		sex: neutral
+	-
+		name: 実業家
+		sex: neutral
+	-
+		name: 行商人
+		sex: neutral
+	-
+		name: 道楽者
+		sex: neutral
+	-
+		name: 職人の弟子
+		sex: neutral
+	-
+		name: 実業家の子
+		sex: male
+	-
+		name: 修道女
+		sex: female
+	-
+		name: 老婆
+		sex: female
+	-
+		name: 医師の妻
+		sex: female
+	-
+		name: 医師の娘
+		sex: female
+	-
+		name: 長老の孫
+		sex: neutral
+	-
+		name: 教師
+		sex: neutral
+	-
+		name: 新聞記者
+		sex: neutral
+	-
+		name: 孤児
+		sex: neutral
+	-
+		name: 教師の妹
+		sex: female
+	-
+		name: 金貸しの若旦那
+		sex: male
+	-
+		name: 糸紡ぎ
+		sex: neutral
+	-
+		name: 床屋
+		sex: neutral
+	-
+		name: 船守
+		sex: neutral
+	-
+		name: 坑夫
+		sex: male
+	-
+		name: さすらいの賭博師
+		sex: neutral
+	-
+		name: ぬすっと
+		sex: neutral
+	-
+		name: 釣り馬鹿
+		sex: neutral
+	-
+		name: 漁夫
+		sex: male
+	-
+		name: 養蚕家
+		sex: neutral
+	-
+		name: 大農園主
+		sex: neutral
+	-
+		name: 奴隷監督
+		sex: neutral
+	-
+		name: 奴隷
+		sex: neutral
+	-
+		name: 異郷の人
+		sex: neutral
+	-
+		name: 舞台作家
+		sex: neutral
+	-
+		name: 郵便屋
+		sex: neutral
+	-
+		name: 執政官
+		sex: neutral
+	-
+		name: 記憶を失った男
+		sex: male
+	-
+		name: 箱入り娘
+		sex: female
+	-
+		name: のんだくれ
+		sex: neutral
+	-
+		name: 婿養子
+		sex: male
+	-
+		name: 少年
+		sex: male
+	- 
+		name: 木こり
+		sex: neutral
+	-
+		name: 村長
+		sex: neutral
+	-
+		name: ならず者
+		sex: neutral
+	-
+		name: 楽天家
+		sex: neutral
+	-
+		name: 守護者
+		sex: neutral
+	-
+		name: 双子の片割れ
+		sex: neutral
+	-
+		name: 双子の片割れ
+		sex: neutral
+	-
+		name: 結社員
+		sex: neutral
+	-
+		name: 結社員
+		sex: neutral

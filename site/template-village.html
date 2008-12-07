@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
+	<head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+		<?stylesheet><link rel="stylesheet" type="text/css" href="style.css" /></?stylesheet>
+		<title><?title></?title>The Village of Vampire</title>
+		<?styles/>
+		<script type="text/javascript">
+			function sync(n){
+				var checkbox = document.getElementById('c' + n);
+				document.getElementById('s' + n).disabled = !checkbox.checked;
+			}
+			function checkall(f){
+				for(var n = 0; n < 16; ++n){
+					var checkbox = document.getElementById('c' + n);
+					if(checkbox != null){
+						checkbox.checked = f;
+						sync(n);
+					}
+				}
+			}
+		</script>
+	</head>
+	<body background=?background>
+		<h1>The Village of Vampire</h1>
+		<div class="bar">
+			<table>
+				<?userpanel>
+					<?logoff>
+						<tr><td>
+							<div class="userpanel">
+								<form method="post" class="inner">
+									<table>
+										<tr><td>ID</td><td><input name="id" type="text" /></td></tr>
+										<tr><td>PASSWORD</td><td><input name="password" type="password" /></td></tr>
+									</table>
+									<div class="right"><input class="button" type="submit" value="参加" /></div>
+									<input name="cmd" type="hidden" value="logon" />
+								</form>
+							</div>
+						</td></tr>
+					</?logoff>
+					<?logon>
+						<tr><td>
+							<div class="userpanel">
+								<form method="post" class="inner">
+									<table>
+										<tr><td>【<?id>ID</?id>】</td></tr>
+									</table>
+									<div class="right"><input class="button" type="submit" value="退出" /></div>
+									<input name="cmd" type="hidden" value="logoff" />
+								</form>
+							</div>
+						</td></tr>
+					</?logon>
+				</?userpanel>
+				<tr><td>
+					<table class="daylist" cellspacing="0">
+						<?days><tr><td><?day>今日はなんの日</?day></td></tr></?days>
+					</table>
+				</td></tr>
+				<tr><td>
+					<table class="summary" cellspacing="0" >
+						<?person>
+							<tr>
+								<td class="name"><?name>名前</?name></td>
+								<td class="count"><?speech>発言数</?speech></td>
+								<?administrator>
+									<td class="control">
+										<?id>ID</?id>
+										<?remove>
+											<form class="button" method="POST" >
+												<input type="submit" value="除名" />
+												<input type="hidden" name="cmd" value="remove" />
+												<?htarget/>
+											</form>
+										</?remove>
+									</td>
+								</?administrator>
+							</tr>
+						</?person>
+						<tr><td colspan="2" class="checkall"><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
+					</table>
+				</td></tr>
+				<tr><td>
+					<?back>戻る</?back>
+				</td></tr>
+			</table>
+		</div>
+		<div class="messages">
+			<h2 class="villagetitle"><?title>村名</?title></h2>
+			<?message>
+				<?narration>
+					<p class="narration"><?text>本文</?text></p>
+				</?narration>
+				<?narrationi>
+					<p class="narrationi"><?text>本文</?text></p>
+				</?narrationi>
+				<?narrationg>
+					<p class="narrationg"><?text>本文</?text></p>
+				</?narrationg>
+				<?narratione>
+					<p class="narratione"><?text>本文</?text></p>
+				</?narratione>
+				<?speech>
+					<div class="speech">
+						<table cellspacing="0">
+							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+							<tr><td class="text"><?text>発言</?text></td></tr>
+						</table>
+					</div>
+				</?speech>
+				<?escaped>
+					<p class="escaped"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
+				</?escaped>
+				<?ghost>
+					<p class="ghost"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
+				</?ghost>
+				<?monologue>
+					<p class="monologue"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
+				</?monologue>
+				<?vampire>
+					<p class="vampire"><span class="name"><?name>名前</?name></span><br/><?text>発言</?text></p>
+				</?vampire>
+				<?dying>
+					<p class="dying"><span class="name"><?name>名前</?name></span><br/><?text>発言</?text></p>
+				</?dying>
+			</?message>
+			<?villagepanel>
+				<?entry>
+					<div class="box"><div class="villagepanel">
+						<form method="POST" class="inner">
+							<table>
+								<tr><td><?works><select></select></?works></td><td><?names><select></select></?names></td></tr>
+								<tr><td colspan="2">希望…<?request><select></select></?request></td></tr>
+							</table>
+							<div class="right"><input class="button" type="submit" value="この村に登場" /></div>
+							<input type="hidden" name="cmd" value="join" />
+						</form>
+					</div></div>
+				</?entry>
+				<?player>
+					<div class="box"><div class="villagepanel">
+						<div class="name"><?name>-_-</?name></div>
+						<?speech>
+							<form method="POST" class="inner">
+								<table><tr>
+									<td class="input"><textarea id=?bottom name="text" class="speech" rows="3"></textarea></td>
+									<td class="button"><?rest><div class="center"><?count>20</?count></div></?rest><input type="submit" value="発言" class="say" /></td>
+								</tr></table>
+								<input type="hidden" name="cmd" value="speech" />
+							</form>
+						</?speech>
+						<?ghost>
+							<form method="POST" class="inner">
+								<table><tr>
+									<td class="input"><textarea id=?bottom name="text" class="ghost" rows="3"></textarea></td>
+									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="呻く" class="say" /></td>
+								</tr></table>
+								<input type="hidden" name="cmd" value="ghost" />
+							</form>
+						</?ghost>
+						<?monologue>
+							<form method="POST" class="inner">
+								<table><tr>
+									<td class="input"><textarea id=?bottom name="text" class="monologue" rows="3"></textarea></td>
+									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="独白" class="say" /></td>
+								</tr></table>
+								<input type="hidden" name="cmd" value="monologue" />
+							</form>
+						</?monologue>
+						<?vote>処刑を選ばねばなりません…</?vote>
+						<?role><div><img src=?roleimg/><?roletext>あなたはたこ焼き名人です。</?roletext></div></?role>
+						<?zero><div>まずは発言してください。</div></?zero>
+						<?vampire>
+							<form method="POST" class="inner">
+								<table><tr>
+									<td class="input"><textarea id=?bottom name="text" class="note" rows="3"><?note></?note></textarea></td>
+									<td class="button"><input type="submit" value="記す" class="say" /></td>
+								</tr></table>
+								<input type="hidden" name="cmd" value="note" />
+							</form>
+						</?vampire>
+						<?dying>
+							<form method="POST" class="inner">
+								<table><tr>
+									<td class="input"><textarea id=?bottom name="text" class="dying" rows="3"><?note></?note></textarea></td>
+									<td class="button"><input type="submit" value="記す" class="say" /></td>
+								</tr></table>
+								<input type="hidden" name="cmd" value="note" />
+							</form>
+						</?dying>
+						<?ability><div>能力</div></?ability>
+						<?active>
+							<hr/><form method="POST" class="inner">
+								<input class="button" type="submit" value="行動を終える" />
+								<input type="hidden" name="cmd" value="commit" />
+							</form>
+							<?escape><form method="POST" class="inner">
+								<input class="button" type="submit" value="旅に出る" />
+								<?x>x</?x> + <?y>y</?y> = 
+								<input class="answer" type="text" name="z" value="" />
+								<input value=?qx type="hidden" name="x" />
+								<input value=?qy type="hidden" name="y" />
+								<input type="hidden" name="cmd" value="escape" />
+							</form></?escape>
+							<?action><div>アクション</div></?action>
+						</?active>
+						<?commited>
+							<hr/><form method="POST" class="inner">
+								<input class="button" type="submit" id="bottom" value="行動を再開する" />
+								<input type="hidden" name="cmd" value="rollback" />
+							</form>
+						</?commited>
+					</div></div>
+				</?player>
+				<?administrator>
+					<div class="box"><div class="villagepanel">
+						<form method="POST" class="inner">
+							<table><tr>
+								<td class="input"><textarea id="bottom" name="text" class="speech" rows="3"></textarea></td>
+								<td class="button"><input type="submit" value="発言" /></td>
+							</tr></table>
+							<input type="hidden" name="cmd" value="narration" />
+						</form>
+					</div></div>
+				</?administrator>
+				<?closed>
+					<div class="box"><div class="villagepanel" id="bottom">この村は終了しました。</div></div>
+				</?closed>
+				<?opened>
+					<div class="box"><div class="villagepanel" id="bottom">この村は進行中です。</div></div>
+				</?opened>
+				<?over>
+					<div class="box"><div class="villagepanel" id="bottom">これ以上は参加できません。</div></div>
+				</?over>
+			</?villagepanel>
+			<?rule>
+				<?changable>
+					<form method="post" class="narration">
+						<?items> </?items>
+						<input type="submit" value="変更" />
+						<input name="cmd" type="hidden" value="rule" />
+					</form>
+				</?changable>
+				<?static><p class="narration"><?items/></p></?static>
+			</?rule>
+			<?next><p class="narration"><a href=?uri>こうして、その日は暮れてゆきました…。</a></p></?next>
+			<?scroll><script type="text/javascript">window.scroll(0, 999999); document.getElementById('bottom').focus();</script></?scroll>
+		</div>
+	</body>
+</html>

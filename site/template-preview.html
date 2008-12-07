@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
+	<head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<title><?title></?title>The Village of Vampire</title>
+	</head>
+	<body background="./image/background.png">
+		<h1>The Village of Vampire</h1>
+		<div class="center"><h2 class="villagetitle"><?title>村名</?title></h2></div>
+		<div class="center">
+			<?longer><p>長すぎます。</p></?longer>
+			<div class="s0">
+				<div class="speech">
+					<table cellspacing="0">
+						<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span></td></tr>
+						<tr><td class="text"><?text>発言</?text></td></tr>
+					</table>
+				</div>
+			</div>
+			<?ok>
+				<form class="button" method="POST">
+					<input type="submit" value="発言" />
+					<input type="hidden" name="cmd" value="speech2" />
+					<input value=?value type="hidden" name="text" />
+				</form>
+			</?ok>
+			<form class="button" method="GET">
+				<input type="submit" value="戻る" />
+				<input value=?villageid type="hidden" name="village" />
+			</form>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
+	<head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<title>The Village of Vampire</title>
+	</head>
+	<body background="./image/background.png">
+		<h1>The Village of Vampire</h1>
+		<div class="bar">
+			<table>
+				<?userpanel>
+					<?logon>
+						<tr><td>
+							<div class="userpanel">
+								<form method="post" class="inner">
+									<table>
+										<tr><td>【<?id>ID</?id>】</td></tr>
+									</table>
+									<div class="right"><input class="button" type="submit" value="退出" /></div>
+									<input name="cmd" type="hidden" value="logoff" />
+								</form>
+							</div>
+						</td></tr>
+					</?logon>
+				</?userpanel>
+				<tr><td><?back>戻る</?back></td></tr>
+			</table>
+		</div>
+		<div class="messages">
+			<h2><?id>ID</?id></h2>
+			<?joined>
+				<p>
+					あなたは現在<?activevillage>村</?activevillage>に参加しています。
+				</p>
+			</?joined>
+			<?nojoined>
+				<p>
+					あなたは現在村に参加していません。
+				</p>
+			</?nojoined>
+			<?created>
+				<p>
+					あなたは現在<?createdvillage>村</?createdvillage>を作成しています。
+				</p>
+			</?created>
+			<?creatable>
+				<p>
+					短期村を作成できます。
+					村を作ると他の村には参加できなくなりますので注意ください。
+				</p>
+				<form method="post">
+					村の名前
+					<input name="name" type="text" />
+					<input class="button" type="submit" value="作成" />
+					<input name="cmd" type="hidden" value="news" />
+				</form>
+			</?creatable>
+		</div>
+	</body>
+</html>

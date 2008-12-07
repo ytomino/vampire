@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
+	<head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<title>The Village of Vampire</title>
+	</head>
+	<body background="./image/background.png">
+		<h1>The Village of Vampire</h1>
+		<div class="center">
+			<p>
+				<?id>(-_-)</?id>は使われていないIDです。 登録しますか？<br />
+				登録にはパスワードを再入力してください。
+			</p>
+			<form class="button" method="POST">
+				<input name="password2" type="password" value="" />
+				<input type="submit" value="登録" />
+				<input type="hidden" name="cmd" value="register" />
+				<input value=?newid name="id" type="hidden" />
+				<input value=?newpassword name="password" type="hidden" />
+			</form>
+			<form class="button" method="GET">
+				<input type="submit" value="戻る" />
+				<?invillage><input value=?villageid type="hidden" name="village" /></?invillage>
+			</form>
+		</div>
+	</body>
+</html>

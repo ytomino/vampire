@@ -1,0 +1,8 @@
+-- The Village of Vampire by YT, このソースコードはNYSLです
+with DYAYaml;
+package Tabula.Calendar.Time_IO is
+
+	procedure IO(Serializer: in out DYAYaml.Serializer; Name : in String; Value: in out Ada.Calendar.Time);
+	procedure IO(Serializer: in out DYAYaml.Serializer; Name : in String; Value: in out Duration);
+
+end Tabula.Calendar.Time_IO;

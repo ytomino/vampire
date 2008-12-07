@@ -1,0 +1,22 @@
+<html>
+<head>
+<meta http-equiv="CONTENT-TYPE" content="text/html; charset=SJIS">
+<title><?title></?title>The Village of Vampire</title>
+</head>
+<body>
+<h1><?title>村名</?title></h1><hr>
+<?message>能力使っちゃいますか？</?message><hr>
+<form action=?uri class="button" method="POST">
+<input value=?button type="submit">
+<input value=?target type="hidden" name="target">
+<input value="target2" type="hidden" name="cmd">
+</form>
+<form action=?uri method="GET">
+<input name="b" type="hidden" value="k">
+<input value=?id name="i" type="hidden">
+<input value=?password name="p" type="hidden">
+<?invillage><input value=?villageid name="v" type="hidden"></?invillage>
+<input type="submit" value="戻る">
+</form>
+</body>
+</html>

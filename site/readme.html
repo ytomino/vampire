@@ -1,0 +1,1093 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
+	<head>
+		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="./style.css" />
+		<title>説明 - The Village of Vampire</title>
+		<style id="option-styles" type="text/css">
+			.option {display:none}
+			.Victim_Existing_all {display:inline}
+			.Victim_Existing_true {display:block}
+			.Victim_Existing_false {display:block}
+			.Teaming_all {display:inline}
+			.Teaming_Low_Density {display:block}
+			.Teaming_Shuffling_Headless {display:block}
+			.Teaming_Shuffling_Euro {display:block}
+			.Teaming_Shuffling {display:block}
+			.Teaming_Shuffling_Gremlin {display:block}
+			.Teaming_Hiding {display:block}
+			.Teaming_Hiding_Gremlin {display:block}
+			.Monster_Side_all {display:inline}
+			.Monster_Side_Fixed {display:block}
+			.Monster_Side_Shuffling {display:block}
+			.Monster_Side_Gremlin {display:block}
+			.Attack_Mode_all {display:inline}
+			.Attack_Mode_Two {display:block}
+			.Attack_Mode_Mocturnal_Infecting {display:block}
+			.Attack_Mode_Unanimity {display:block}
+			.Servant_Knowing_Mode_all {display:inline}
+			.Servant_Knowing_Mode_None {display:block}
+			.Servant_Knowing_Mode_Vampire_K {display:block}
+			.Servant_Knowing_Mode_Vampires {display:block}
+			.Daytime_Preview_Mode_all {display:inline}
+			.Daytime_Preview_Mode_None {display:block}
+			.Daytime_Preview_Mode_Role_Only {display:block}
+			.Daytime_Preview_Mode_Message_Only {display:block}
+			.Daytime_Preview_Mode_Role_And_Message {display:block}
+			.Doctor_Infected_Mode_all {display:inline}
+			.Doctor_Infected_Mode_Cure {display:block}
+			.Doctor_Infected_Mode_Find_Infection {display:block}
+			.Hunter_Silver_Bullet_Mode_all {display:inline}
+			.Hunter_Silver_Bullet_Mode_Target {display:block}
+			.Hunter_Silver_Bullet_Mode_Target_And_Self {display:block}
+			.Unfortunate_Mode_all {display:inline}
+			.Unfortunate_Mode_None {display:block}
+			.Unfortunate_Mode_Appear {display:block}
+			.Unfortunate_Mode_Infected_Only {display:block}
+		</style>
+		<script type="text/javascript">
+			function sync(name){
+				var style_element = document.getElementById("option-styles");
+				var sheet = style_element.sheet || style_element.styleSheet;
+				var rules = sheet.cssRules || sheet.rules;
+				var select = document.getElementById(name);
+				for(var i = 0; i < select.options.length; ++i){
+					var option = select.options[i];
+					var style = (option.value == "") ? "." + name + "_all" : "." + name + "_" + option.value;
+					for(var j = 0; j < rules.length; ++j){
+						var r = rules[j];
+						if(r.selectorText == style){
+							r.style.cssText = (select.value != "" && select.value != option.value) ? "" :
+								(option.value == "") ? "display:inline" : "display:block";
+							break;
+						}
+					}
+				}
+			}
+		</script>
+	</head>
+	<body background="./image/background.png">
+		<h1>The Village of Vampire</h1>
+		<div class="bar">
+			<table>
+				<tr><td><a href="./">戻る</a></td></tr>
+			</table>
+		</div>
+		<div class="messages">
+			<ul class="readme">
+				<li>
+					ゲーム開始までの流れ
+					<ul>
+						<li><a href="#register">登録</a></li>
+						<li><a href="#join">村への参加</a></li>
+						<li><a href="#prologue">プロローグ</a></li>
+						<li><a href="#escape">華やいだ都会へ</a></li>
+						<li><a href="#short">短期村の作成</a></li>
+					</ul>
+				</li>
+				<li>
+					ゲームの進め方
+					<ul>
+						<li><a href="#start">ゲーム開始</a></li>
+						<li><a href="#speech">発言</a></li>
+						<li><a href="#vote">投票</a></li>
+						<li><a href="#action">アクション</a></li>
+						<li><a href="#commit">行動を終える</a></li>
+						<li><a href="#morning">翌朝、遺体が見つかりました</a></li>
+						<li><a href="#dead">死んだら</a></li>
+						<li><a href="#epilogue">エピローグ</a></li>
+						<li><a href="#win">勝利条件</a></li>
+					</ul>
+				</li>
+				<li>
+					ゲーム上の役
+					<ul>
+						<li><a href="#role">役の内訳</a></li>
+						<li><a href="#inhabitant">村人</a></li>
+						<li><a href="#detective">探偵</a></li>
+						<li><a href="#astronomer">天文家</a></li>
+						<li><a href="#doctor">医者</a></li>
+						<li><a href="#hunter">猟師</a></li>
+						<li><a href="#sweetheart">恋人</a></li>
+						<li><a href="#unfortunate-inhabitant">数奇な運命の村人</a></li>
+						<li><a href="#servant">使徒</a></li>
+						<li><a href="#vampire">吸血鬼</a></li>
+						<li><a href="#gremlin">妖魔</a></li>
+					</ul>
+				</li>
+				<li>
+					オプションルール
+					<ul>
+						<li><a href="#victim-existing">初日犠牲者</a></li>
+						<li><a href="#village-teaming">編成</a></li>
+						<li><a href="#monster-side">吸血鬼側の編成</a></li>
+						<li><a href="#attack">襲撃</a></li>
+						<li><a href="#servant-knowing">使徒が知っている吸血鬼</a></li>
+						<li><a href="#daytime-preview">日中の能力使用</a></li>
+						<li><a href="#doctor-infected">感染した医者</a></li>
+						<li><a href="#hunter-silver-bullet">銀の弾丸</a></li>
+						<li><a href="#unfortunate">数奇な運命の村人の出現</a></li>
+					</ul>
+				</li>
+				<li>
+					村の掟について
+					<ul>
+						<li><a href="#open">鍵村は存在しません</a></li>
+						<li><a href="#style">勝利を目指す姿勢</a></li>
+						<li><a href="#output">CGIの出力をコピーして発言してはいけない理由</a></li>
+						<li><a href="#exploit">裏技っぽい技</a></li>
+						<li><a href="#annoyance">他の人狼系サイトに迷惑をかける行為は絶対厳禁です</a></li>
+					</ul>
+				</li>
+				<li>
+					基本戦術など
+					<ul>
+						<li><a href="#novice">初心者吸血鬼に向けて</a></li>
+					</ul>
+				</li>
+			</ul>
+			<hr class="speech" />
+			<h2 id="register">登録</h2>
+			<p>
+				まず、トップページ右側の入力欄に、任意のIDとパスワードを入力して登録してください。
+				未使用のIDであれば新しく作るか問い合わせてきます。
+				既にIDが存在する場合はパスワードが一致していればログオンできます。<br/>
+				このIDとパスワードはThe Village of Vampireの全ての村で共通して使用します。
+			</p>
+			<h2 id="join">村への参加</h2>
+			<p>
+				続いて、参加可能な村を探します。
+				トップページ右側の、村のリストの、上側が進行中の村です。
+				まだ「プロローグ」の村があれば、そこへ参加することができます。
+				ひとつの村には16人まで参加できます。
+				トップページの村のリストの下側は既に終了した村の記録です。
+				ざっと流し読むことをお薦めします。<br/>
+				この村、と決めましたら、肩書きと名前、希望する役を選び、村に参加してください。<br/>
+				肩書きや名前に性能差はありませんが、ここでの選択により、与える印象は当然変わってきますので、お好みで。
+				性別縛りのある肩書きもあります。
+				「既定」を選ぶと名前から肩書きが選ばれます。
+				ちなみに顔絵は名前ごとに固定されています。
+				セットは複数ありますが、ふたりめ以降は最初の人と同じセットからしか選べません。<br/>
+				ゲーム中の配役を希望できます。
+				「ランダム」は全ての役を、「希望無し」は他の人が希望していない役を、それぞれ希望する、という意味です。
+				「村側」「吸血鬼側」は、陣営のみの希望です。
+				どの道、希望は通らないものと思っておいてください……。<br/>
+				長期の村には同時にひとつしかエントリーできません。
+				短期の村には参加制限はありません。
+				長期と短期に同時にエントリーすることは可能です。
+				もっとも……人狼は、ネット廃人でも同時に3つが限界とまで言われる時間と神経を消耗するゲームです。
+			</p>
+			<h2 id="prologue">プロローグ</h2>
+			<p>
+				人数が揃うまでの待ち時間です。
+				挨拶や、参加できる時間帯の表明などをしておけばいいでしょう。<br/>
+				7人以上が集まり、全員が行動終了すればゲーム開始です。<br/>
+				甲が来ないからといって、乙や丙が、行動を終了しないまま待っていると、入れ違いになっていつまでも始まらないといったことも起こり得ます。
+				意図的に～人揃うまで待つ、というのでなければ、ブラウザを閉じる際には常に行動終了にしておけばよいでしょう。
+				逆に、短期の場合は、自分がいないと意味がありませんので、PCの前でスタンバイできているときだけ行動終了し、離れる時は行動を再開しておくべきです。
+				行動の再開はいつでも可能です。<br/>
+				人数が揃うまで日数が空いた場合、忘れてしまっている人がいるのではといった余計な不安を払拭するため、数日に一度は何か書くようにした方がいいかもしれません。<br/>
+				プロローグには発言数の制限はありません。<br/>
+				なおこの間、全員が行動中であれば、オプションルールを変更できます。
+				オプションルールはプロローグの一番下に表示されます。
+			</p>
+			<h2 id="escape">華やいだ都会へ</h2>
+			<p>
+				プロローグでは一定期間発言を行わないと、自動的に、都会へと旅立ってしまいますので注意してください。
+				長期では一週間、短期では12時間です。
+			</p>
+			<h2 id="short">短期村の作成</h2>
+			<p>
+				現在どの村にも参加していない人は、1日が15～30分の短期村を作成できます。<br/>
+				村を作成したら、その村以外には入れなくなります。
+				村は消費されないかぎり自動では消えませんので、あてもなく短期村を作成すると、ブラックホールとなり永遠に参加が閉ざされる可能性もあります、と脅しておきます。
+			</p>
+			<hr class="speech" />
+			<h2 id="start">ゲーム開始</h2>
+			<p>
+				プロローグで7人以上が揃い、集った全員が行動を終了すれば、ゲーム開始です。<br/>
+				<em>最後に行動終了する人は、開始時刻が更新時刻となりますので、注意してください！</em>
+				誰も居ない朝方などに開始しますと酷いことになるかもです。<br/>
+				全員に役が決定されます。
+				役ごとの説明は後述します。<br/>
+				進行中は、特定の人にしか読めないメッセージがあります。
+				そういったメッセージは、斜体で表示されていたり、色が変わったりしていますので、注意してください。
+			</p>
+			<h2 id="speech">発言</h2>
+			<p>
+				ゲームは主に各人の発言からなる会話のみを頼りに進められます。
+				他人の能力の結果なども、発言を通してしか知る事はできませんので、自分自身の能力と矛盾していない限り、確実に嘘を見分けることはできません。
+				状況と勘と運で、嘘つきを探しましょう。
+				吸血鬼の側であれば、村人達を騙し切りましょう。<br/>
+				なおゲーム中は、発言数に上限が設けられ、通常の発言のほかに、独白という黒い入力欄が使えるようになります。
+				今は知られたくないが、残しておきたいことを、こっそり書くことができます。
+				終了時には公開されますので一応言葉づかいには気をつけてください。<br/>
+				発言数の上限は、促されない限り、通常発言20、独白10、幽霊10です。<br/>
+				発言時刻は秒単位で記録されてはいますが、<em>誰かの発言から30秒以内に別の人が発言したら、時刻を偽って表示します</em>ので、人狼でたまに使われる、各種の発表を同時刻に行わせることで狂人の連携を断つ技はあまり意味がありません。
+				ここでは使徒のみならず、吸血鬼同士も裏での会話ができないため、効果的と思われるかもしれませんが、そういうことをして勝つデザインにはなっていませんのでよろしくお願いします。
+			</p>
+			<h2 id="vote">投票</h2>
+			<p>
+				毎日、誰を処刑するか、投票があります。
+				こいつが吸血鬼ではないか、という者に対して投票を行ってください。<br/>
+				投票結果は公開されますが、誰が誰に入れたのかはゲーム終了までわかりません。
+				なお同数はランダムになります。<br/>
+				棄権することもでき、全員が棄権すれば処刑は行われませんが、誰かがこっそり一票でも入れたらそれが有効になりますので、あまり賢い選択ではありません。
+				そして、無記名投票のため、誰がその裏切り者なのかすらわからないのです。
+			</p>
+			<h2 id="action">アクション</h2>
+			<p>
+				ネット越しのゲームであるため、すれ違いからの不都合はあり、それを少しでも埋めるためのアクションが用意されています。<br/>
+				「起こす」は、行動を終えた相手を、外から行動を再開させます。<br/>
+				「話の続きを促す」は、発言数が残り少なくなった相手を2回多く喋ることができるようにします。
+				自分の発言数は減りません。<br/>
+				吸血鬼専用の「こっそり見つめる」は、誰が誰を見つめたのか他の吸血鬼にしかわかりません。<br/>
+				アクションは種類ごとに一日一度使用できます。<br/>
+				全員共通のアクション以外にも、能力者や吸血鬼は対象を選択する欄があります。
+			</p>
+			<h2 id="commit">行動を終える</h2>
+			<p>
+				投票先や他の行動を決めてしまったときは積極的に行動終了しましょう。
+				誰が行動を続けているかも表示されますので、意思表示にもなります。<br/>
+				また、特定の誰かに投票したいが、相手が既に行動を終えており、自分が行動を終えてしまえば反論が期待できないまま日が進んでしまう場合、相手を起こし自分は行動終了しておけば、次に相手がそれを見たら、反論があれば粘ってくれるでしょうし、処刑を受け入れたなら黙って行動を終了して日を進めてくれるでしょう。<br/>
+				なお前日発言が無かった者は、<em>その日の勝利条件の計算から外され</em>、その翌日は行動終了状態から始まります。
+				一般に「突然死」とよばれる強制排除はありません。<br/>
+				なお、日付が変わってから最初にひとこと発言するまでは、投票もアクションも能力の使用も行えませんし、行動を終えることもできません。<br/>
+				行動を終えなくても、強制更新時間(通常は<em>48時間</em>、短期では設定によります)が経過すれば日は進みます。
+				強制更新時間を経過しても、短期では、投票のための待ちが最大で5分間入ります。
+				また短期では、オプションによって夜と呼ばれる吸血鬼同士が会話するための時間が取られます。
+			</p>
+			<h2 id="morning">翌朝、遺体が見つかりました</h2>
+			<p>
+				強制更新時間が経過するか、全員が行動を終える事で日が進みます。
+				処刑が行われる裏で、役ごとの能力が働きます。<br/>
+				処刑とは別に遺体が見つかる日もあります。
+				吸血鬼に襲われたのか、逆に猟師が吸血鬼を撃ち殺したのか、恋人の後を追った者がいるのか……それはわかりません。<br/>
+				逆に遺体があがらない日は、誰かが感染させられている可能性が濃厚ということです。
+				ただの村人には、感染を自覚する術はありません。
+				感染させられても勝利条件は変化しませんので、天文家に吸血鬼と呼ばれても、村人は村人側として行動を続けてください。
+				もちろん使徒は感染の有無に関らず吸血鬼側です。<br/>
+				日付が変わる際の処理においては、(医者と探偵)→処刑→自覚→天文家→吸血鬼と猟師→妖魔→恋人の順となります。
+			</p>
+			<h2 id="dead">死んだら</h2>
+			<p>
+				このゲームでは死ぬことが即敗北ではなく、仲間陣営が勝利すれば、死者も勝者となります。
+				むしろ、勝利を近づけるための捨て石として身を投げ打った方がよいケースすら希にあります。
+				ともかく、死んだら、以降、仲間陣営の勝利を祈りながら、ゲーム終了まで経過を眺めることになります。表での発言ができなくなる代わりに、青い入力欄で呻きを残すことができます。
+				幽霊同士話もできますので、のんびり観戦していればよいでしょう。<br/>
+				ただし……探偵と呼ばれる役職が生き残っている希望があるなら、あなたにはまだやることがあります。
+				緑の入力欄にて、遺言すなわちダイイングメッセージを残せば、探偵がそれを読みとってくれるかも知れません。
+				知っている情報、言い忘れた事、気がついた事など、とにかく詰め込みましょう。
+				なお、緑の入力欄は、ボタンを押してもすぐには書き込まれず、その場では内部的に記録されるのみです。
+				他の入力欄と動作が違いますので注意ください。
+				<em>吸血鬼は、まだ探偵が生き残っているとき、うっかり仲間の名前を呻いてしまわないように注意ください。</em>
+			</p>
+			<h2 id="epilogue">エピローグ</h2>
+			<p>
+				どちらかが勝利すると、各人にしか見えなかった情報や独り言が明かされ、エピローグとなります。
+				エピローグでは、強制更新時間が来るまで、全員が雑談を続けることができます。<br/>
+				エピローグには発言数の制限はありません。
+			</p>
+			<h2 id="win">勝利条件</h2>
+			<p>
+				村人は、吸血鬼を全滅させれば勝利です。
+				また、この村で被害者として生まれた吸血鬼はまだ理性を持っています。
+				感染吸血鬼は、どちらにも数えません。
+				従って倒さないといけないのは「オリジナル」のみです。
+				逆に「オリジナル」を倒せないと村は破滅の道へ、ということになります。
+				なお使徒は、数勘定の上では村人側となりますので、処刑する必要はありません。<br/>
+				“まだ”人間である連中を、「オリジナル」の人数以下にすれば吸血鬼及び使徒の勝利です。<br/>
+				村または吸血鬼が勝利条件を満たした時に、妖魔が生き延びていれば村人及び吸血鬼を差し置いて妖魔の勝利です。
+			</p>
+			<hr class="speech" />
+			<h2 id="role">役の内訳</h2>
+			<p>
+				ゲーム開始時に配役が決定され、プレイヤーは村側と吸血鬼側にわかれることになります。
+				吸血鬼側には、吸血鬼と、使徒がいます。
+				村側には、ただの善良な村人の他、吸血鬼に対抗する手段を持った能力者がいます。<br/>
+				内訳はランダムですが、参加人数によって、村人が何人、能力者が何人、吸血鬼側が何人いるかは、固定されています。
+				また、人数次第で、第3勢力の妖魔が登場します。<br/>
+				内訳は、編成オプションによって大きく変わりますので、そちらも参照ください。
+			</p>
+			<p class="Teaming_Low_Density option">
+				<span class="Teaming_all option">オプション「能力者の密度を線形にします。」選択時の、</span>参加人数と内訳の関係です。
+			</p>
+			<table class="Teaming_Low_Density readmepersons option">
+				<thead>
+					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
+				</thead>
+				<tbody>
+					<tr><td> 7</td><td>4</td><td>1</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 9</td><td>5</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td>10</td><td>5</td><td>3</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>12</td><td>5</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>13</td><td>6</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>14</td><td>6</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>15</td><td>6</td><td>5</td><td>1</td><td>3</td><td>0</td></tr>
+					<tr><td>16</td><td>5</td><td>6</td><td>1</td><td>3</td><td>1</td></tr>
+				</tbody>
+			</table>
+			<p class="Teaming_Shuffling_Headless option">
+				<span class="Teaming_all option">オプション「村側能力者を増やします(首無し騎士に似せます)。」選択時の、</span>参加人数と内訳の関係です。
+			</p>
+			<table class="Teaming_Shuffling_Headless readmepersons option">
+				<thead>
+					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
+				</thead>
+				<tbody>
+					<tr><td> 7</td><td>3</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 8</td><td>3</td><td>3</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 9</td><td>3</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>10</td><td>3</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>11</td><td>4</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>12</td><td>4</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>13</td><td>5</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>14</td><td>5</td><td>5</td><td>1</td><td>3</td><td>0</td></tr>
+					<tr><td>15</td><td>5</td><td>6</td><td>1</td><td>3</td><td>0</td></tr>
+					<tr><td>16</td><td>5</td><td>6</td><td>1</td><td>3</td><td>1</td></tr>
+				</tbody>
+			</table>
+			<p class="Teaming_Shuffling_Euro option">
+				<span class="Teaming_all option">オプション「妖魔が早く出ます(欧州に似せます)。」選択時の、</span>参加人数と内訳の関係です。<br/>
+				<small><sup>*</sup>4人目能力者は本来欧州ではキューピット。</small>
+			</p>
+			<table class="Teaming_Shuffling_Euro readmepersons option">
+				<thead>
+					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
+				</thead>
+				<tbody>
+					<tr><td> 7</td><td>4</td><td>1</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
+					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
+					<tr><td>11</td><td>4</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
+					<tr><td>12</td><td>5</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
+					<tr><td>13</td><td>6</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
+					<tr><td>14</td><td>7</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
+					<tr><td>15</td><td>7</td><td>3</td><td>1</td><td>3</td><td>1</td></tr>
+					<tr><td>16</td><td>7</td><td>4<sup>*</sup></td><td>1</td><td>3</td><td>1</td></tr>
+				</tbody>
+			</table>
+			<p class="Teaming_Shuffling Teaming_Hiding option">
+				<span class="Teaming_all option">オプション「基本的な編成です。」「村側能力者の構成はわかりません。」選択時の、</span>参加人数と内訳の関係です。<br/>
+				<span class="Teaming_Hiding option">「村側能力者の構成はわかりません。」時は、表から更に、村人がひとり能力者になります。</span>
+			</p>
+			<table class="Teaming_Shuffling Teaming_Hiding readmepersons option">
+				<thead>
+					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
+					<td class="desc">(編成隠し時)</td></tr>
+				</thead>
+				<tbody>
+					<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
+					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>12</td><td>6</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>13</td><td>6</td><td>4</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>14</td><td>6</td><td>4</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>15</td><td>6</td><td>5</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>16</td><td>6</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+				</tbody>
+			</table>
+			<p class="Teaming_Shuffling_Gremlin Teaming_Hiding_Gremlin option">
+				<span class="Teaming_all option">オプション「基本的な編成に加え、妖魔が早く出ます。」「村側能力者の構成はわからず、妖魔が早く出ます。」選択時の、</span>参加人数と内訳の関係です。<br/>
+				<span class="Teaming_Hiding_Gremlin option">「村側能力者の構成はわからず、妖魔が早く出ます。」時は、表から更に、村人がひとり能力者になります。</span>
+			</p>
+			<table class="Teaming_Shuffling_Gremlin Teaming_Hiding_Gremlin readmepersons option">
+				<thead>
+					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
+					<td class="desc">(編成隠し時)</td></tr>
+				</thead>
+				<tbody>
+					<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
+					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>11</td><td>4</td><td>3</td><td>1</td><td>2</td><td>1</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>12</td><td>5</td><td>3</td><td>1</td><td>2</td><td>1</td><td class="desc">天医探猟想運</td></tr>
+					<tr><td>13</td><td>5</td><td>4</td><td>0</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>14</td><td>5</td><td>4</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>15</td><td>5</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+					<tr><td>16</td><td>6</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+				</tbody>
+			</table>
+			<p>
+				7～8人の時に天文家と猟師が同時に出ることはありません。
+			</p>
+			<p class="Victim_Existing_true option">
+				初日犠牲者を導入していると、天文家は必ず出現します。
+				ただし初日犠牲者が天文家になることも有り得ます。
+			</p>
+			<p class="Teaming_Hiding Teaming_Hiding_Gremlin option">
+				村側の編成を隠していると、天文家は必ず出現します。
+				また、標準編成と比較して、ただの村人がひとり減って、村側の能力者がひとり増えます。
+			</p>
+			<p class="Monster_Side_Gremlin option">
+				使徒と妖魔の登場順を入れ替えていると、妖魔が現れた場合は猟師も必ず出現します。
+				日数が少ない時は、日延べが起きないと処刑を1回間違えただけで村の勝利が無くなる可能性があるためです。
+				欧州編成または標準編成の妖魔入りで妖魔が現れた場合は、猟師は必ず出現するわけではありません。
+			</p>
+			<p>
+				恋人は、片想いは8人から、ペアは13人以降に登場します。
+			</p>
+			<p class="Unfortunate_Mode_Appear Unfortunate_Mode_Infected_Only option">
+				数奇な運命の村人は、<span class="Unfortunate_Mode_all option">オプションで出現するようにしていれば、</span>8人から登場します。
+			</p>
+			<h2 id="inhabitant">村人</h2>
+			<p>
+				善良な村人です。
+			</p>
+			<h2 id="detective">探偵</h2>
+			<p>
+				過去を見通す者。
+				探偵が動くのは事件が起きた後。
+				一日にひとり、死者を調査でき、正体と、ダイイングメッセージを調べることができます。
+				ダイイングメッセージは死んだ人が墓場で設定したものです。<br/>
+				<span class="Daytime_Preview_Mode_None option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵と医者は翌日まで結果がわかりません。」選択時、</span>探偵は、天文家や猟師と同様に、日付が変わるタイミングで、選択した調査対象の正体と遺言を知ることができます。
+				</span>
+				<span class="Daytime_Preview_Mode_Role_Only option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵は日中に正体を調べ翌日までに遺言を調べます。」選択時、</span>探偵は、日中、対象を選択したその場で、死者の正体を知ることができます。
+					日付が変わるタイミングで、再度死者の正体が表示され、今度は遺言も知ることができます。
+				</span>
+				<span class="Daytime_Preview_Mode_Message_Only option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵は日中に遺言を調べ翌日までに正体を調べます。」選択時、</span>探偵は、日中、対象を選択したその場で、死者の遺言を知ることができます。
+					日付が変わるタイミングで、再度死者の遺言が表示され、今度は正体も知ることができます。
+					日中の調査時から、遺言が書き換えられていた場合は、日付が変わるタイミングの再調査に反映されます。
+				</span>
+				<span class="Daytime_Preview_Mode_Role_And_Message option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵は日中に正体と遺言を調べます。」選択時、</span>探偵は、日中、対象を選択したその場で、死者の正体と遺言を知ることができます。
+					日付が変わるタイミングでも、同様の情報が再度表示されます。
+					日中の調査時から、遺言が書き換えられていた場合は、日付が変わるタイミングの再調査に反映されます。
+				</span>
+			</p>
+			<p>
+				感染させられても能力は失いません。
+			</p>
+			<p>
+				妖魔を調べると、人外であることまではわかります。
+				吸血鬼も人外ですので、両者の区別は、人間の探偵にはつきません。
+				なお探偵が関るのは妖魔が滅びた後ですので、死ぬことはありません。
+			</p>
+			<p>
+				霊能者や霊媒師と呼ばれる存在に相当します。<br/>
+				人狼かどうかだけでなく、具体的な正体までわかること、ダイイングメッセージまで読めることが強化点、一日に複数の死者が出ても、ひとりずつしか調べられないことが弱化点です。
+				正体がわかることで、真偽判別や、パターン分け、無発言者が真能力者という可能性の確認などに、絶大な威力を発揮するでしょう。
+				同じ死者を複数回調査する事もでき、ダイイングメッセージが変更されていればそれを知る事ができますが、多くの場合はそれよりも日々新しく処刑されてゆく者を調べた方が有意義です。
+			</p>
+			<h2 id="astronomer">天文家</h2>
+			<p>
+				未来を見通す者。
+				天文家は毎夜の天体観測を日課としていますが、そのついでに特定の家の上空を見張ることができます。
+				吸血鬼は夜空の散歩を習性としていますので、それを見つけることができます。
+				ただし、見張った相手が飛び立ったとしても、感染吸血鬼の可能性があります。
+			</p>
+			<p>
+				夜に活動するため、自らが感染させられていた場合は、仕事をこなせません。
+				その代わりに、自らが感染させられたことを自覚できます。
+				天文家自身が襲われた当日は、見張った相手については覚えていますが、自分が襲われたことは覚えていません。
+				翌日、いつものように天体観測をしようとして、ようやく自らの異変に気付きます。<br/>
+				<span class="Attack_Mode_Mocturnal_Infecting option">
+					<span class="Attack_Mode_all option">オプション「天文家と猟師は感染したら襲撃を行います。」選択時、</span>天文家が感染させられていた場合は更に、自身が吸血鬼として村人を襲ってしまいます。
+					見張っていた相手を優先的に襲います。
+					誰を襲ってしまったかも、覚えています。
+				</span>
+			</p>
+			<p>
+				妖魔を見張ると、飛び立つ妖魔を目撃してしまい、その事実を抱えたまま死亡します。
+				吸血鬼との区別はつきません。
+			</p>
+			<p>
+				占い師と呼ばれる存在に相当します。<br/>
+				人狼では占い師の存在が絶対でしたが、天文家は、後半になるにつれ、その結果は曖昧なものとなっていきます。
+				人狼では、人狼側が占い師を騙らないとほぼ詰みますが、二日目以降の観測では、感染させられた、と言い張る逃げ道がある以上、必ずしも天文家を騙る必要は無いかもしれません。
+				私見になりますが、占いが唯一無二の狼を追い詰める手段である人狼では占い師は村の管理下に置かれる道具となる傾向もやむを得ないと思います。
+				占い師自身の行動を促すというよりむしろ許される方向にするためには、占いの価値を落とすのは必然と考えます。
+			</p>
+			<h2 id="doctor">医者</h2>
+			<p>
+				過去を救う者。
+				毎日、誰かを、本人に気付かれないように診察、投薬します。
+				首筋に牙の跡を見つけたら、それは感染させられた吸血鬼の証。
+				医者は感染の情報を手に入れ、また相手を村人に戻すことができます。
+				ただし未感染の村人と、「オリジナル」吸血鬼の区別はつきません。<br/>
+				<span class="Daytime_Preview_Mode_None option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵と医者は翌日まで結果がわかりません。」選択時、</span>医者は、天文家や猟師と同様に、日付が変わるタイミングで、選択した診察対象の感染状態を知ることができます。
+				</span>
+				<span class="Daytime_Preview_Mode_Role_Only Daytime_Preview_Mode_Message_Only Daytime_Preview_Mode_Role_And_Message option">
+					<span class="Daytime_Preview_Mode_all option">オプション「探偵と医者は翌日まで結果がわかりません。」以外を選択時、</span>医者は、日中、対象を選択したその場で、診察対象の感染状態を知ることができます。
+				</span>
+			</p>
+			<p>
+				感染させられても診察は行えます。<br/>
+				<span class="Doctor_Infected_Mode_Cure option">
+					<span class="Doctor_Infected_Mode_all option">オプション「医者自身の感染は治療に影響しません。」選択時、</span>治療の効果も自身の感染に影響されません。
+				</span>
+				<span class="Doctor_Infected_Mode_Find_Infection option">
+					<span class="Doctor_Infected_Mode_all option">オプション「医者自身が感染していると治療の効果はありません。」選択時、</span>感染させられていた場合は、診察相手の感染の情報を手に入れるのみで、治療の効果は無くなります。
+					治療が効果があったかどうかは、医者本人にはわかりません。
+				</span>
+			</p>
+			<p>
+				妖魔を診察すると、妖魔であることを知ってしまい、翌日死亡します。
+			</p>
+			<p>
+				後半あてにならなくなっていく天文家に代わり、医者が活躍します。
+				村人判定と日延べを同時に行えますので、強力な存在です。
+			</p>
+			<h2 id="hunter">猟師</h2>
+			<p>
+				未来を救う者。
+				毎晩特定の相手を護衛することができます。
+				襲撃を防げた場合は猟師にはそのことがわかります。
+				それはすなわち守った相手が吸血鬼では無いことも意味します。
+				夜ですので襲ってきたのが誰かまではわかりません。<br/>
+				また、猟師は一発限りの銀の弾丸を持っています。
+				銀の弾丸を用意した晩に、狙いどおり吸血鬼が来たら、返り討ちにすることができます。
+				複数の吸血鬼が襲ってきた場合は、ランクの高い吸血鬼だけを仕留めることになります。
+				でてきた死体が吸血鬼のものなのか襲われた村人のものなのかは猟師以外にはわかりません。
+				成否に関らず銀の弾丸は一度のみです。<br/>
+				<span class="Hunter_Silver_Bullet_Mode_Target option">
+					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
+					猟師自身が襲われた場合には無力ですので、猟師は吸血鬼に目をつけられないよう隠れている必要があります。
+				</span>
+				<span class="Hunter_Silver_Bullet_Mode_Target_And_Self option">
+					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象か猟師本人が襲われた場合、襲った吸血鬼を仕留められます。
+					護衛対象と猟師本人のどちらが襲われたのかは区別できません。
+					猟師本人が襲われた場合は護衛は失敗し吸血鬼の襲撃が通りますが、銀の弾丸は有効です。
+					その場合、吸血鬼の襲撃が感染になる条件では、吸血鬼が死亡し、猟師は感染させられます。
+					吸血鬼の襲撃が殺害になる条件では、死体がふたつ発見されることとなります。
+				</span>
+			</p>
+			<p>
+				夜に活動するため、自らが感染させられていた場合は、仕事をこなせません。
+				その代わりに、自らが感染させられたことを自覚できます。
+				ただし猟師自身が感染させられた当日は、天文家同様、襲われた記憶を失っています。
+				翌晩、護衛を務めようとして、ようやく自らの異変に気付くことができます。<br/>
+				<span class="Attack_Mode_Mocturnal_Infecting option">
+					<span class="Attack_Mode_all option">オプション「天文家と猟師は感染したら襲撃を行います。」選択時、</span>猟師が感染させられていた場合は更に、自身が吸血鬼として村人を襲ってしまいます。
+					護衛対象を優先的に襲います。
+					誰を襲ってしまったかも、覚えています。
+				</span>
+			</p>
+			<p>
+				護衛相手が妖魔であっても通常通り護ることになります。
+				何も異変はありません。
+			</p>
+			<p>
+				狩人、守護者と呼ばれる存在に相当します。
+				銀の弾丸を持つため、徹底潜伏といった狩人のセオリーとは異なる動きが出来ます。
+				堂々と名乗りを上げて吸血鬼を威嚇できますし、例えば天文家を騙り真天文家を銀の弾丸で護衛する、なども充分有りです。
+			</p>
+			<h2 id="sweetheart">恋人</h2>
+			<p>
+				男と女の組で、お互いの存在を証明できます。
+				死因に関らず、ひとりが死ぬともうひとりも後を追い自ら命を絶ちます。
+				またお互いのことを本人以上に気にかけているため、相手が吸血鬼にされてしまった場合、気付くことができます。天文家や猟師と異なり、恋人が相手の異変に気付くタイミングにはタイムラグがありません。<br/>
+				人数が少ない場合は、片想いという形で出現する場合もあります。
+				その場合は、片想いの側は相手が吸血鬼にされたら気付けますが、相手からは気付いてもらえませんし、想われている人が死ぬと片想いの側も後を追い死にますが、片想いの側が死んでも想われている人はただの村人ですので後追いはしません。
+			</p>
+			<p>
+				共有者、結社員と呼ばれる存在に相当します。
+				人狼ではひとりが名乗り、ひとりが潜伏し偽占い師への牽制を行う作戦が主流ですが、後追いを行いますので、ひとり名乗りは却って危険です。
+				猟師の護衛が期待できなければ、さっさとふたり出てしまったほうが良いと思われます。
+				またふたりとも潜伏し、あえて感染した相方を観測させれば、偽天文家が白判定を出しても罠になります。
+				恋人の生存は、それまでに処刑以外の遺体が見つかっていなければ、確かなものです。
+				片想いは、基本的には恋人同様に行動でき罠も張れますが、ひとりですので、偽者が騙るのはそれなりに楽でしょう。
+			</p>
+			<h2 id="unfortunate-inhabitant">数奇な運命の村人</h2>
+			<p>
+				自分ではただの村人と思っていますが、その悪運で、知らず知らず吸血鬼の意思疎通を妨害してしまいます。
+				吸血鬼のアクション「こっそり見つめる」を遮断します。
+				夜がある場合でも、自由には話せなくなり、夜が無い場合同様の、夜が明ける際の1発言分しか吸血鬼同士の連絡が取れなくなります。
+				吸血鬼には誰が妨害をしたのかがわかります。
+				「こっそり見つめる」が使われると、妨害されたこと、及び誰が妨害したかは、吸血鬼全員に伝わります。
+				また探偵にもその人が数奇な運命を辿った人物であることがわかります。
+			</p>
+			<p>
+				一度でも感染すると能力を失います。
+				ただの村人同様、自覚はしませんし、オプションによらず襲撃にも参加しません。
+				また無発言の翌日も、能力は発揮されません。<br/>
+				<span class="Unfortunate_Mode_Infected_Only option">
+					<span class="Unfortunate_Mode_all option">オプション「数奇な運命の村人は襲撃では殺されません。」選択時、</span>吸血鬼の襲撃では死亡しません。
+					襲われた場合は、必ず感染になります。
+				</span>
+			</p>
+			<p>
+				出現してもあまりありがたみの無い雑魚能力者ですが、吸血鬼にとってもそれなりに迷惑のはずです。
+				また、内訳不明のオプションルールを採っている場合、数奇な運命の村人の存在がわからないため、能力者の総数を判断材料にできなくなります。
+			</p>
+			<h2 id="servant">使徒</h2>
+			<p>
+				吸血鬼の王を目撃し魅了された、吸血鬼側の村人です。<br/>
+				<span class="Servant_Knowing_Mode_Vampire_K option">
+					<span class="Servant_Knowing_Mode_all option">オプション「使徒は吸血鬼の王を知っています。」選択時、</span>使徒は吸血鬼Kの正体を知っています。
+				</span>
+				<span class="Servant_Knowing_Mode_Vampires option">
+					<span class="Servant_Knowing_Mode_all option">オプション「使徒は吸血鬼を知っています。」選択時、</span>使徒は吸血鬼の全員を知っています。
+				</span>
+			</p>
+			<p>
+				狂人と呼ばれる存在に相当します。
+				特殊能力は何もなく、数勘定の上では完全に村人であり、何もせずに周囲に従うだけでいますと、本当にただの村人として村側に協力してしまうことになります。
+				吸血鬼が動きやすいように議論を誘導したり、能力者を騙ったり、吸血鬼の身代わりとして処刑されたりして、吸血鬼を勝たせましょう。<br/>
+				考えがない限りは、天文家または医者を騙り、露骨にばれてもよいので処刑を1回消費、できれば本物を道連れに、がベストと思われます。
+				潜伏して庇われても、吸血鬼にとっては村人の思いこみと区別がつかないため、あまり嬉しくありません。<br/>
+				人狼では占い師または霊能者騙りがセオリーですが、天文家は、白判定でも恋人のトラップにかかる可能性があり、自分ではわからない自らの感染状況まで騙る必要があり、それが間違っていれば医者に即座にばれる等、騙るのが難しくなっています。
+				探偵を騙る場合はダイイングメッセージまで考える必要がありますが、処刑されたり襲われたりした者が実は天文家だった、などと言ってみるのも面白そうです。
+				幅広い動きが取れる反面、探偵騙りは非常に難しいことを心得てください。
+				医者は、放っておけば後半になるほど日延べ成功率が上がる厄介な能力者である一方で、自らの感染状況は気にしなくてよく、診察先も勝手に決めてよい場合が多い等、騙るのはずっと楽です。<br/>
+				片想い騙り、猟師騙りなども、ケースバイケースで有効でしょう。
+				能力者の内訳を隠していた場合は片想いを騙って恋人ふたりにひとりで対抗することもできます。
+				感染吸血鬼が村側として票を行使しますので、潜伏していても残り三人で村人ひとりに対し狂人と人狼の投票勝ちなどといったケースはまず起こりません。
+				決着がつく前に行動を起こす必要があります。
+			</p>
+			<h2 id="vampire">吸血鬼</h2>
+			<p>
+				毎夜夜空を散歩し村人の血を吸う吸血鬼です。<br/>
+				<span class="Attack_Mode_Two Attack_Mode_Mocturnal_Infecting option">
+					<span class="Attack_Mode_all option">オプション「吸血鬼ふたり以上に襲われると死亡します。」「天文家と猟師は感染したら襲撃を行います。」選択時、</span>ふたり以上が同じ相手を襲ったら、犠牲者の血は吸いつくされ、死亡します。
+					ひとりだけが襲ったら、相手もまた吸血鬼となります。
+				</span>
+				<span class="Attack_Mode_Unanimity option">
+					<span class="Attack_Mode_all option">オプション「すべての吸血鬼に襲われると死亡します。」選択時、</span>生存している吸血鬼全員が、同じ相手を襲ったら、犠牲者の血は吸いつくされ、死亡します。
+					全員の襲撃が揃わなかった場合、相手もまた吸血鬼となります。
+				</span>
+				一晩に襲える相手は吸血鬼全体でひとりだけです。
+				吸血鬼にはそれぞれK,Q,Jと格付けがなされており、ばらばらの相手を襲った場合、どの吸血鬼が優先されるかは、この格付けによります。
+				銀の弾丸の対象も同様です。<br/>
+				なお夜空の散歩は習性ですので襲撃を棄権しても天文家の監視は逃れられません。<br/>
+				吸血鬼には赤い入力欄も存在します。
+				吸血鬼は人狼のようには囁けず、仲間同士の会話は夜空の散歩中のみ行える……つまり、日が変わる際、ここで書いた文章が仲間の吸血鬼に伝わる、というわけです。
+				何度でも修正できますので、作戦を練っておきましょう。
+				やりとりを繰り返すことができませんので、そこは知恵のしぼりどころです。
+				なお短期では、夜の時間を取っている場合のみ、夜の間は吸血鬼同士で自由に会話できます。<br/>
+				日中は、アクション「こっそり見つめる」でのみ、やりとりを行えます。
+				また、格付けは関係なく吸血鬼の誰かが最後に見つめた対象は、翌日の襲撃先選択欄のデフォルトとして選ばれます。
+				これを利用すれば、吸血鬼の仲間が無発言でも、初日を除き殺しは可能です。
+			</p>
+<!--
+			<h2 id="werewolf">狂人</h2>
+			<p>
+				人狼側の村人です。
+			</p>
+			<h2 id="werewolf">人狼</h2>
+			<p>
+				人狼です。<br/>
+				単体でも人間を殺せます。
+				格付けは無く、選択が食い違った場合の襲撃先はランダムです。
+				銀の弾丸の対象も、選択が採用された中からランダムです。<br/>
+				人間の可聴域を超える遠吠えで、日中でも会話が出来ます。
+				ただし、表での発言数を超えて喋ることはできません。
+			</p>
+-->
+			<h2 id="gremlin">妖魔</h2>
+			<p>
+				村に忍び寄る妖魔です。
+				吸血鬼とは敵対関係にあります。<br/>
+				吸血鬼に襲われても、死亡も感染もしませんし、吸血鬼の側からは、猟師の護衛と区別が付きません。
+				妖魔も自分が襲われようとした事実は直接にはわかりません。<br/>
+				処刑されると滅びます。<br/>
+				最後まで生き残れば勝利です。<br/>
+				妖魔もまた翼を持ち、天文家には飛んでいると判断されます。
+				また、医者には直接的に妖魔であることを見破られてしまいます。
+				ただし、天文家も医者も、妖魔を見てしまった者は、翌日死んでしまいます。
+				なお妖魔自身には自分の正体に触れた者を殺したという自覚はありません。<br/>
+				また、妖魔には残り吸血鬼の人数がわかります。
+				ただし感染とオリジナル吸血鬼の区別がつかないため、両方の人数の合計がわかります。
+			</p>
+			<hr class="speech" />
+			<h2 id="victim-existing">初日犠牲者</h2>
+			<form class="narration"><div>
+				<select id="Victim_Existing" onchange="sync('Victim_Existing')">
+					<option value="" selected="selected">≪初日犠牲者≫</option>
+					<option value="false">能力者が揃った状態で開始します。*</option>
+					<option value="true">能力者が死亡済みの可能性があります。</option>
+				</select>
+			</div></form>
+			<p class="Victim_Existing_false option">
+				<b>能力者が揃った状態で開始します。</b><br/>
+				全ての能力者はプレイヤーに割り振られ、1日目開始状態で編成通りの能力者が揃っています。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Victim_Existing_true option">
+				<b>能力者が死亡済みの可能性があります。</b><br/>
+				「地主さん」が能力者の可能性もあるオプションです。
+				主に1ゲーム数時間未満の短期人狼村で採用されているルールで、ひとりしか名乗りを上げていない能力者だからといって即座に本物であると言えなくなります。
+				初日犠牲者が占い師(天文家)も有り得ますので、バランスが安定せず、時間を費やしてプレイされる長期村では好まれない傾向にあるようです。
+				なお初日犠牲者が使徒の可能性はあります。
+				初日犠牲者が吸血鬼または妖魔の可能性はありません。
+				また探偵は、初日犠牲者の役を知ることができます。
+			</p>
+			<h2 id="village-teaming">編成</h2>
+			<form class="narration"><div>
+				<select id="Teaming" onchange="sync('Teaming')">
+					<option value="" selected="selected">≪編成≫</option>
+					<option value="Low_Density">能力者の密度を線形にします。</option>
+					<option value="Shuffling_Headless">村側能力者を増やします(首無し騎士に似せます)。</option>
+					<option value="Shuffling_Euro">妖魔が早く出ます(欧州に似せます)。</option>
+					<option value="Shuffling">基本的な編成です。*</option>
+					<option value="Shuffling_Gremlin">基本的な編成に加え、妖魔が早く出ます。</option>
+					<option value="Hiding">村側能力者の構成はわかりません。</option>
+					<option value="Hiding_Gremlin">村側能力者の構成はわからず、妖魔が早く出ます。</option>
+				</select>
+			</div></form>
+			<p class="Teaming_Low_Density option">
+				<b>能力者の密度を線形にします。</b><br/>
+				出現する能力者の数を、村側、吸血鬼側ともに減らすことができます。
+				村側の能力者は7人時は天文家のみ、8人中2人、10人中3人～と、参加者2人ごと、吸血鬼側は7人中2人、11人中3人、15人中4人と、参加者4人ごとの規則的な増加となります。
+				妖魔は16人で出現します。
+			</p>
+			<p class="Teaming_Shuffling_Headless option">
+				<b>村側能力者を増やします(首無し騎士に似せます)。</b><br/>
+				能力者の割合をThe Village of Headless Knightという人狼クローンに似せます。
+				正確に同じというわけではありません。
+				村側の能力者は7人中2人、8人中3人、10人中4人、12人中5人、15人中6人～と、吸血鬼側は7人中2人、9人中3人、14人中4人となります。
+				妖魔は16人で出現します。
+				村側がとても有利であるため、推奨しません。
+			</p>
+			<p class="Teaming_Shuffling_Euro option">
+				<b>妖魔が早く出ます(欧州に似せます)。</b><br/>
+				能力者の割合をおとぎの国の人狼という人狼クローンに似せます。
+				正確に同じというわけではありません。
+				村側の能力者が少ないのと、妖魔が比較的早くから出現します。
+				村側の能力者は、7人中1人、8人中2人、10人中3人、16人中4人～と、吸血鬼側は7人中2人、9人中3人、15人中4人となります。
+				妖魔は11人で出現します。
+				キューピット陣営は未実装のため、村側能力者として数えています。
+				The Village of Vampireの妖魔は占いで死なないため、妖魔がかなり有利になります。
+			</p>
+			<p class="Teaming_Shuffling option">
+				<b>基本的な編成です。</b><br/>
+				そこそこバランスが良いと思われる編成です。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Teaming_Shuffling_Gremlin option">
+				<b>基本的な編成に加え、妖魔が早く出ます。</b><br/>
+				「基本的な編成です。」を元に、11人以上で妖魔が出現します。
+			</p>
+			<p class="Teaming_Hiding option">
+				<b>村側能力者の構成はわかりません。</b><br/>
+				村側にどの能力者がいるかを最初に表示しません。
+				人数だけは表示されます。
+				どの能力者が出現したかがわからず、村は混乱の渦に巻き込まれるでしょう。
+				「基本的な編成です。」を元に、ただの村人がひとり減って、村側の能力者がひとり増えます。
+			</p>
+			<p class="Teaming_Hiding_Gremlin option">
+				<b>村側能力者の構成はわからず、妖魔が早く出ます。</b><br/>
+				村側にどの能力者がいるかを最初に表示しません。
+				人数だけは表示されます。
+				どの能力者が出現したかがわからず、村は混乱の渦に巻き込まれるでしょう。
+				「基本的な編成に加え、妖魔が早く出ます。」を元に、ただの村人がひとり減って、村側の能力者がひとり増えます。
+			</p>
+			<h2 id="monster-side">吸血鬼側の編成</h2>
+			<form class="narration"><div>
+				<select id="Monster_Side" onchange="sync('Monster_Side')">
+					<option value="" selected="selected">≪吸血鬼側の編成≫</option>
+					<option value="Fixed">吸血鬼が襲ってきます。*</option>
+					<option value="Shuffling">吸血鬼の全貌はわかりません。</option>
+					<option value="Gremlin">使徒よりも妖魔が先に現れます。</option>
+				</select>
+			</div></form>
+			<p class="Monster_Side_Fixed option">
+				<b>吸血鬼が襲ってきます。</b><br/>
+				吸血鬼側の登場順は編成の表の通りに固定され、妖魔が一番最後です。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Monster_Side_Shuffling option">
+				<b>吸血鬼の全貌はわかりません。</b><br/>
+				吸血鬼側が2人出現する人数では、KとQ、または、Kと使徒が出現します。
+				吸血鬼側が3人出現する人数では、KとQとJ、または、KとQと使徒が出現します。
+				内訳は伏せられます。
+				KとQの組と、Kと使徒の組の戦力差は明らかなため、残念な結果になることが多いです。
+				初期の頃の仕様です。
+				<em>推奨しません。</em>
+			</p>
+			<p class="Monster_Side_Gremlin option">
+				<b>使徒よりも妖魔が先に現れます。</b><br/>
+				編成の表から、使徒と妖魔の登場順を入れ替えます。
+			</p>
+			<h2 id="attack">襲撃</h2>
+			<form class="narration"><div>
+				<select id="Attack_Mode" onchange="sync('Attack_Mode')">
+					<option value="" selected="selected">≪襲撃≫</option>
+					<option value="Two">吸血鬼ふたり以上に襲われると死亡します。</option>
+					<option value="Mocturnal_Infecting">天文家と猟師は感染したら襲撃を行います。*</option>
+					<option value="Unanimity">すべての吸血鬼に襲われると死亡します。</option>
+				</select>
+			</div></form>
+			<p class="Attack_Mode_Two option">
+				<b>吸血鬼ふたり以上に襲われると死亡します。</b><br/>
+				2人以上の吸血鬼が同じ相手を襲った場合、対象が死亡します。
+				1人だけですと、対象を感染させます。
+				吸血鬼が残り1人ですと、どうやっても襲撃では死者を出すことができなくなるため、早期に医者を襲撃または投票で処刑させることが、吸血鬼勝利の鍵となります。
+			</p>
+			<p class="Attack_Mode_Mocturnal_Infecting option">
+				<b>天文家と猟師は感染したら襲撃を行います。</b><br/>
+				吸血鬼の襲撃は、吸血鬼ふたり以上に襲われると死亡し、1人だけですと感染となります。
+				加えて、感染した天文家と猟師が、能力が封じられ自覚を行うだけではなく、襲撃も行うようになります。
+				感染させられても口封じにはならない弱い吸血鬼と、各種人狼クローン中(たぶん)最強の戦闘力を持つであろう猟師の存在と、能力そのものよりもロジックで詰めた方が遥かに有効である事実と、なんだかんだで、初日フルオープンに対する吸血鬼の対抗策が無いのが実際です。
+				ですので、なかば無理やり能力者を潜伏させるためのオプションルールです。
+				天文家と猟師の襲撃は、別個の襲撃です。
+				従って、死人は出ません。
+				それぞれ、自身が能力を使おうと注目していた先を襲ってしまいます。
+				能力を棄権していた場合や、処刑先を選んでいた場合はランダムで襲撃します。
+				感染者や吸血鬼を選んでいた場合は、区別が付かないまま相手を再度感染させる事になります。
+				吸血鬼の襲撃に参加するわけではないので、吸血鬼にも感染能力者の襲撃先はわかりません。
+				感染した能力者の襲撃が猟師や妖魔に防がれることや、感染した天文家が感染していない猟師に銀の弾丸で撃ち殺されることも有り得ます。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Attack_Mode_Unanimity option">
+				<b>すべての吸血鬼に襲われると死亡します。</b><br/>
+				吸血鬼が2人であれば2人が、吸血鬼が3人であれば3人全員が、同一の対象に目をつけた場合だけ、対象が死亡します。
+				それ以外は感染となります。
+				3人の時に殺すのが難しくなる一方、最後に残った1人の吸血鬼は、確実に自分の選んだ相手を殺せます。
+				少年漫画風逆境理論的モードといいますか。
+			</p>
+			<h2 id="servant-knowing">使徒が知っている吸血鬼</h2>
+			<form class="narration"><div>
+				<select id="Servant_Knowing_Mode" onchange="sync('Servant_Knowing_Mode')">
+					<option value="" selected="selected">≪使徒が知っている吸血鬼≫</option>
+					<option value="None">使徒は吸血鬼の正体を知りません。</option>
+					<option value="Vampire_K">使徒は吸血鬼の王を知っています。*</option>
+					<option value="Vampires">使徒は吸血鬼を知っています。</option>
+				</select>
+			</div></form>
+			<p class="Servant_Knowing_Mode_None option">
+				<b>使徒は吸血鬼の正体を知りません。</b><br/>
+				人狼では、仲間の人狼すら知らずに動く狂人(使徒)が不確定要素となり、村人、人狼の双方をかき回します。
+				以前は使徒も狂人同様、何も能力を持たない、ただの吸血鬼側の村人としていたのですが、ルールが複雑なためか、途方に暮れて何もしない使徒が大勢いたため、吸血鬼を知っていることにしました。
+				そのため初期値は使徒が吸血鬼Kを知っている状態ですが、おすすめはこちらです。
+				慣れてくれば、使徒が吸血鬼を知らず状況を読んで騙らないといけないこの選択肢もよいのではないでようか。
+			</p>
+			<p class="Servant_Knowing_Mode_Vampire_K option">
+				<b>使徒は吸血鬼の王を知っています。</b><br/>
+				使徒は吸血鬼Kのみを知っています。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Servant_Knowing_Mode_Vampires option">
+				<b>使徒は吸血鬼を知っています。</b><br/>
+				使徒は吸血鬼の全員を知っています。
+			</p>
+			<h2 id="daytime-preview">日中の能力使用</h2>
+			<form class="narration"><div>
+				<select id="Daytime_Preview_Mode" onchange="sync('Daytime_Preview_Mode')">
+					<option value="" selected="selected">≪日中の能力使用≫</option>
+					<option value="None">探偵と医者は翌日まで結果がわかりません。</option>
+					<option value="Role_Only">探偵は日中に正体を調べ翌日までに遺言を調べます。</option>
+					<option value="Message_Only">探偵は日中に遺言を調べ翌日までに正体を調べます。*</option>
+					<option value="Role_And_Message">探偵は日中に正体と遺言を調べます。</option>
+				</select>
+			</div></form>
+			<p class="Daytime_Preview_Mode_None option">
+				<b>探偵と医者は翌日まで結果がわかりません。</b><br/>
+				探偵と医者も、天文家や猟師と同様に、日付が変わるタイミングで能力の結果を知ることができます。
+				処刑や最初の襲撃が起こった後にならないと、探偵と医者は能力を使用できないため、最初に情報を手に入れることができるのは、3日目になります。
+				初期の頃の仕様です。
+				<em>推奨しません。</em>
+			</p>
+			<p class="Daytime_Preview_Mode_Role_Only option">
+				<b>探偵は日中に正体を調べ翌日までに遺言を調べます。</b><br/>
+				探偵は、日中、能力を使用したその場で、死者の正体を知ることができます。
+				ただし遺言は、日付が変わるまで知ることができません。
+			</p>
+			<p class="Daytime_Preview_Mode_Message_Only option">
+				<b>探偵は日中に遺言を調べ翌日までに正体を調べます。</b><br/>
+				探偵は、日中、能力を使用したその場で、死者の遺言を知ることができます。
+				ただし正体は、日付が変わるまで知ることができません。
+				吸血鬼側が、遺言に嘘を書くことに意味があるのは、このオプションの場合のみです。
+				<em>現在の初期値です。</em>
+			</p>
+			<p class="Daytime_Preview_Mode_Role_And_Message option">
+				<b>探偵は日中に正体と遺言を調べます。</b><br/>
+				探偵は、日中、能力を使用したその場で、死者の正体と遺言を知ることができます。
+				強力です。
+				天文家が殺されても、結果を当日に知ることができるため、探偵と天文家のどちらが殺されても構わない状況なども発生します。
+			</p>
+			<h2 id="doctor-infected">感染した医者</h2>
+			<form class="narration"><div>
+				<select id="Doctor_Infected_Mode" onchange="sync('Doctor_Infected_Mode')">
+					<option value="" selected="selected">≪感染した医者≫</option>
+					<option value="Cure">医者自身の感染は治療に影響しません。</option>
+					<option value="Find_Infection">医者自身が感染していると治療の効果はありません。*</option>
+				</select>
+			</div></form>
+			<p class="Doctor_Infected_Mode_Cure option">
+				<b>医者自身の感染は治療に影響しません。</b><br/>
+				感染者を診察した場合、常に治療に成功します。
+				このオプションを選択する場合は、恋人と医者が生き残っている状態で、吸血鬼が残りひとりになりますと、吸血鬼は感染しかできない場合、どうしようもなくなりますので、襲撃オプションを「すべての吸血鬼に襲われると死亡します。」にすることをお薦めします。
+			</p>
+			<p class="Doctor_Infected_Mode_Find_Infection option">
+				<b>感染した医者による治療は、効果を発揮しなくなります。</b><br/>
+				医者が感染した場合は、治療の効果が無くなります。
+				医者自身にはわかりませんし、診察先が感染しているかどうかを知ることはできます。
+				<em>現在の初期値です。</em>
+			</p>
+			<h2 id="hunter-silver-bullet">銀の弾丸</h2>
+			<form class="narration"><div>
+				<select id="Hunter_Silver_Bullet_Mode" onchange="sync('Hunter_Silver_Bullet_Mode')">
+					<option value="" selected="selected">≪銀の弾丸≫</option>
+					<option value="Target">護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</option>
+					<option value="Target_And_Self">護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。*</option>
+				</select>
+			</div></form>
+			<p class="Hunter_Silver_Bullet_Mode_Target option">
+				<b>護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</b><br/>
+				銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
+				複数の吸血鬼が襲ってきた場合は、ランクの高い吸血鬼だけを仕留めることになります。
+				猟師自身が襲われた場合には無力ですので、猟師は吸血鬼に目をつけられないよう隠れている必要があります。
+			</p>
+			<p class="Hunter_Silver_Bullet_Mode_Target_And_Self option">
+				<b>護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。</b><br/>
+				銀の弾丸を用意した晩に、護衛対象か猟師本人が襲われた場合、襲った吸血鬼を仕留められます。
+				複数の吸血鬼が襲ってきた場合は、ランクの高い吸血鬼だけを仕留めることになります。
+				護衛対象と猟師本人のどちらが襲われたのかは区別できません。
+				猟師本人が襲われた場合は護衛は失敗し吸血鬼の襲撃が通りますが、銀の弾丸は有効です。
+				その場合、吸血鬼の襲撃が感染になる条件では、吸血鬼が死亡し、猟師は感染させられます。
+				吸血鬼の襲撃が殺害になる条件では、死体がふたつ発見されることとなります。
+				<em>現在の初期値です。</em>
+			</p>
+			<h2 id="unfortunate">数奇な運命の村人の出現</h2>
+			<form class="narration"><div>
+				<select id="Unfortunate_Mode" onchange="sync('Unfortunate_Mode')">
+					<option value="" selected="selected">≪数奇な運命の村人の出現≫</option>
+					<option value="None">数奇な運命の村人はいません。</option>
+					<option value="Appear">数奇な運命の村人がいるかもしれません。</option>
+					<option value="Infected_Only">数奇な運命の村人は襲撃では殺されません。*</option>
+				</select>
+			</div></form>
+			<p class="Unfortunate_Mode_None option">
+				<b>数奇な運命の村人はいません。</b><br/>
+				数奇な運命の村人はかなり後に実装した能力者のため、初期の村には登場しません。
+				このオプションを選択することで、数奇な運命の村人を出現しないようにできます。
+			</p>
+			<p class="Unfortunate_Mode_Appear option">
+				<b>数奇な運命の村人がいるかもしれません。</b><br/>
+				数奇な運命の村人が登場する可能性があります。
+				襲撃で殺されることもあります。
+				正直言って他にめぼしい襲撃先が無い限りは2日目に殺されるだけです。
+				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。
+			</p>
+			<p class="Unfortunate_Mode_Infected_Only option">
+				<b>数奇な運命の村人は襲撃では殺されません。</b><br/>
+				数奇な運命の村人が登場する可能性があります。
+				襲撃では殺されず、感染止まりになります。
+				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。
+				<em>現在の初期値です。</em>
+			</p>
+			<hr class="speech" />
+			<h2 id="open">鍵村は存在しません</h2>
+			<p>
+				所謂鍵村は存在しません。<br/>
+				身内で示し合わせ参加を予定される場合であっても、突然通りすがった人が飛び入りされるかもしれません。
+				それを禁止する方法はありません。
+				<em>参加者は、村名に身内と付けられていようが何だろうが、どの村に躍り込んでもOKです。</em><br/>
+				見知らぬ人がきてもいいように、例えば人狼審問で行われていたような、ひとりが全ての狼を担当する村や、勝利度外視村、特殊ルールを外部で相談済みの上で参加者はURLの先をご覧ください、などの、ゲームの前提をくつがえす企画村は、行わないでください。<br/>
+				どうしても完全身内村や企画村を行いたい場合は、CGIのソースを公開していますので、どうぞ自身で設置された上で行っていただけたらと思います。
+			</p>
+			<p>
+				……でも私(管理者)も時々デバッグ村やったりしますけど、それはええと、管理サイドの特権ということで見逃してくださいお願いします。
+			</p>
+			<h2 id="style">勝利を目指す姿勢</h2>
+			<p>
+				実生活のため寡黙や無発言になるのは全く構いません。
+				忙しくてあまり発言できないのがわかっていても、参加したいという意思さえあれば大歓迎です。<br/>
+				ただし、最初から勝利を目指す気が無いのだけは勘弁。<br/>
+				また、このゲームは複雑なルールに翻弄されることを醍醐味のひとつとしています。
+				把握しきれなかったり、勘違いをするのもゲームのうちであり、その過程もまた楽しんでいただけたら幸いなのですが、勝利を目指すゲームである以上、そもそも理解を試みることを放棄するのも勘弁してください。
+			</p>
+			<p>
+				わざと発言数を抑える作戦や、初心者の振りをして油断を誘う作戦は完全にOKです。<br/>
+				しかし、勝利や理解努力を放棄している振りをして油断を誘う作戦は、本当にそうであることと区別が付かないため、NGとさせてください。
+			</p>
+			<h2 id="output">CGIの出力をコピーして発言してはいけない理由</h2>
+			<p>
+				The Village of Vampireはマイナーであり、プレイされた回数が少なく、全てのメッセージが過去ログとして誰でも読める形になってはいません。
+				しかもルールが安定していないため、メッセージが変わる可能性も充分にあります。<br/>
+				本物の能力者にCGIの出力したメッセージをコピーして発言されると、騙りが対抗することは不可能になってしまいます。<br/>
+				仮に全てのメッセージが公開されていたとしても、捏造の段階でミスが入る可能性は常につきまとうため、人狼クローンでは一般的にCGIの出力をコピーすることは禁止されています。<br/>
+				その上にThe Village of Vampireでは上記理由が加わるため、特に気をつけていただけたら嬉しいです。<br/>
+				なお、ソフトウェアによるコピー機能と、同じ文面を手でタイピングすることは、他の人には区別がつきませんので、コピー機能を使わなければいいという話ではありません。
+				必ず、自分の言葉で言い換えてください。
+			</p>
+			<h2 id="exploit">裏技っぽい技</h2>
+			<p>
+				例えば、探偵に、だれそれを調べて遺言を公表せよ、1分以内に、などと要請するとか。<br/>
+				果たしてゲームやりたいのか未熟なルールと脆弱なCGIの穴を付きたいのか問いただしたくなるようなのは遠慮していただけたら嬉しいです。
+				穴については掲示板ででも設置側を苛めてやってください。
+			</p>
+			<h2 id="annoyance">他の人狼系サイトに迷惑をかける行為は絶対厳禁です</h2>
+			<p>
+				例えば、待ち合わせのためや幽霊の状態で、近況報告のつもりで「今は～に参加中」と発言するだけでも、もし相手側サイトに参加中(The Village of Vampireでは進行中に限定していますがサイトによってはプロローグも禁止に含むところがあります)の村の情報のやりとりを禁止する規約があれば、それに抵触してしまうかもしれません。<br/>
+				それに限らず、何が迷惑かなんて相手次第のところもあり、後付け可能であまりにもテキトーかつ法定主義に反した掟であることは実に申し訳ありません……と前置きした上で。<br/>
+				設置者は面倒くさがりの小心者ですので、うるさいことを言う気もおどすつもりも全くないのですが、万が一、こんな末端過疎のクローンモドキなんてそもそも相手どころか認識すらされてないと思いますけど、本当に万が一、クレームが来たら、かばったりせずにあっさり売り渡す可能性大です。<br/>
+				……と思っておいてください。
+			</p>
+			<hr class="speech" />
+			<h2 id="novice">初心者吸血鬼に向けて</h2>
+			<p>
+				このゲームでは戦術を考えるのも醍醐味のひとつであるため、何をすればいいかは各自考えてください、としたいのですが、村側は人数が多い分ひとりやふたりまずい行動をとってもどうにかなるのに比べ、吸血鬼側は人数が少ないだけに致命的で、結果としてわりあい吸血鬼側の自滅が多いこともあり、簡単な指針みたいなものを書いておきます。
+				以下の記述は、参考にしていただければ幸い程度の内容であり、強制ではありません。
+			</p>
+			<p>
+				まず、襲撃をセットする。<br/>
+				吸血鬼の襲撃忘れによる敗北は、全体を興醒めさせます。
+				特に襲撃先が浮かんでいない時でも、とりあえず誰かにはセットしておきましょう。
+				後から何度でも変更できます。
+				他の吸血鬼が好きな襲撃先を選べるように、気を遣って棄権にする例もありましたが、それでは襲撃による感染と襲撃による死亡の使い分けもできなくなるため、仲間からすると完全に余計なお世話です。
+				襲撃を棄権して意味があるケースもあることはありますが、しかしそれはかなり限定されます。
+				明確な意図が無い限り襲撃はセットしましょう。
+			</p>
+			<p>
+				天文家を確定させない。<br/>
+				人狼での占い師確定もそうですが、天文家をいちいち確定させていると、すぐ詰みます。
+				確実に本物とわかっている能力者が提供する確実な情報は、瞬く間に吸血鬼を追い詰めます。
+				偽天文家を出すのでも死者に押し付けるのでも方法は何でも構いませんが、とにかく天文家の確定は避けましょう。
+				特にあなたが吸血鬼でしかも参加時間が限られているならば、とりあえず天文家を騙っておくべきです。
+				あなたが使徒であっても、吸血鬼が天文家を騙る気配が無ければ、天文家として出るべきです。
+			</p>
+			<p>
+				偽能力者同士が被らないようにする。<br/>
+				前項とも関係しますが、能力者は確定させずに済むなら越したことはありません。
+				そのため吸血鬼や使途が偽者の能力者を演じるわけですが、一種類の能力者に複数人の偽者が出てしまいますと、それだけ他の能力者を確定させてしまいます。
+				特に探偵で偽者同士が衝突しますと、内訳を自ら言わねばなりませんので、わりあい簡単に矛盾が出てしまいます。
+				できる限りばらけましょう。
+				医者と探偵を騙る際には、まず1発言しないと、役ごとの特殊な行動が取れないという点に注意ください。
+				医者と探偵はその場で結果を知ることができますが、この前提がありますので、日が変わって真っ先に結果発表を行うことはできません。
+			</p>
+			<p>
+				吸血鬼側が全員何かを騙っても構わない。<br/>
+				まず……一日に勝利条件から除かれる人数は、基本的に、処刑でひとりと、感染または死亡の何れでもひとりで、ふたりです。
+				総人数からふたりずつ引いていけば決着までにかかる日数と、処刑の回数が推定できます。
+				その上で、うまくばらけられることが前提ですが、使徒を含めた吸血鬼側の人数とそれぞれが騙った本物の能力者の合計が、処刑の回数を上回っているのならば、候補全員を処刑することはできません。
+				最後にひとりでも吸血鬼が残れば勝利です。
+				このゲームではただの村人の人数が少ないため、逆にこのような手もあります。
+			</p>
+			<p>
+				吸血鬼を探す。<br/>
+				村人は、吸血鬼を探しています。
+				恐らく、様々な質問が投げかけられることでしょう。
+				それにひとつひとつ真偽交えて回答していくことも勿論大事ですが、それ以上に、村人と思われたいのであれば、架空の吸血鬼を探しましょう。
+				不審な動きをしている人がいれば、その相手が他の村人から見て吸血鬼の可能性がある限り、相手が本当に吸血鬼なのか実際には村人なのかに関わらず、村人であれば当然の行動として、注目し、必要に応じて質問を投げかけるべきです。
+				実際には、吸血鬼は正解を知ってしまっていますが、それを悟られないように、村人に紛れるのです。
+				村人として的確に吸血鬼を探していると認められれば、自然と処刑から遠ざかることができます。
+			</p>
+			<p>
+				初心者で良い。<br/>
+				不用意にシステム回りの発言をしてしまうと、嘘が見抜かれたりします。
+				適当にぼかして、意図的に言い換えているように誤認させ、場合によっては勘違いで笑って済ませてしまいましょう。
+				初心者と明言すること及び慣れた人が初心者を騙ることともにOKです。
+				自分を初心者と言ってしまうことを禁止するのは、初参加者が村人以外の希望を出せない人狼BBSのルールです。
+				ゲームとしては初心者騙りも含めてありのほうが、参加障壁が無くて良いと考えます。
+				騙りもありなのは、村側が問題なく発言できる内容は全て、吸血鬼側が問題なく嘘をつけるという前提を置かないとゲームが成立しないためです。
+				ですから参加できる時間帯などで嘘をつくのも、意味はともかくとしてありです。
+				逆に、やる気の無い姿勢、ゲームの前提を覆す行為など、本当であれば問題となるものは、嘘であっても同様に問題です。
+			</p>
+		</div>
+		<p class="auther">
+			The Village of Vampire by YT
+		</p>
+	</body>
+</html>
