@@ -40,4 +40,3 @@ YAMLはhttp://yaml.org/を参照してくださいと言いたいのですがdya
 http://www.kmonos.net/nysl/
 
 絵は…再配布禁止で。
-
