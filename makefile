@@ -4,7 +4,7 @@ else
 CGISUFFIX=.cgi
 endif
 
-ifneq ($(wildcard lib),)
+ifneq ($(wildcard lib/*.gpr),)
 export ADA_PROJECT_PATH=lib
 else
 endif
@@ -12,7 +12,7 @@ endif
 BUILDTYPE=debug
 BUILDDIR=build
 
-.PHONY: all get-lib get-ase get-interfaces get-iconv get-dyayaml
+.PHONY: all
 
 all: site/vampire$(CGISUFFIX)
 
