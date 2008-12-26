@@ -1,10 +1,15 @@
+empty :=
+space :=$(empty) $(empty)
+
 ifneq ($(ComSpec),)
 export CGISUFFIX=.exe
 HOST=i686-pc-mingw32
+DIRSEP=\$(empty)
 PATHLISTSEP=;
 else
 export CGISUFFIX=.cgi
 HOST=i686-pc-freebsd6
+DIRSEP=/
 PATHLISTSEP=:
 endif
 
@@ -16,52 +21,41 @@ else
 GNATMAKE=gnatmake
 endif
 
+export BUILDTYPE=debug
+
+export BUILDDIR:=build
+override BUILDDIR:=$(abspath $(BUILDDIR))
+
 LIB_PROJECTS=$(wildcard lib/*/*.gpr)
 ifneq ($(LIB_PROJECTS),)
-empty :=
-space :=$(empty) $(empty)
 export ADA_PROJECT_PATH=$(subst $(space),$(PATHLISTSEP),$(dir $(LIB_PROJECTS)))
 else
 endif
 
-export BUILDTYPE=debug
-BUILDDIR=build
-ABS_BUILDDIR=$(abspath $(BUILDDIR))
+LIB_MAKEFILES=$(wildcard lib/*/makefile)
+LIB_MAKE=$(addsuffix .mk,$(LIB_MAKEFILES))
 
-REPOSITORY=https://panathenaia.googlecode.com/svn
-
-.PHONY: all clean get-lib get-ase get-interfaces get-iconv get-dyayaml
+.PHONY: all clean
 
 all: site/vampire$(CGISUFFIX)
 
 clean:
-	gnatclean -P source/vampire.gpr -XBUILDDIR=$(ABS_BUILDDIR)
+	gnatclean -P source/vampire.gpr
 
-site/vampire$(CGISUFFIX): $(BUILDDIR)
-	$(GNATMAKE) -P source/vampire.gpr -XBUILDDIR=$(ABS_BUILDDIR)
+site/vampire$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
+	$(GNATMAKE) -P source/vampire.gpr
 
-site/unlock$(CGISUFFIX): $(BUILDDIR)
-	$(GNATMAKE) -P source/unlock.gpr -XBUILDDIR=$(ABS_BUILDDIR)
+site/unlock$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
+	$(GNATMAKE) -P source/unlock.gpr
 
-site/users$(CGISUFFIX): $(BUILDDIR)
-	$(GNATMAKE) -P source/users.gpr -XBUILDDIR=$(ABS_BUILDDIR)
+site/users$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
+	$(GNATMAKE) -P source/users.gpr
 
-site/shuffle$(CGISUFFIX): $(BUILDDIR)
-	$(GNATMAKE) -P source/shuffle.gpr -XBUILDDIR=$(ABS_BUILDDIR)
-
-get-lib: get-ase get-interfaces get-iconv get-dyayaml
-
-get-ase:
-	svn checkout $(REPOSITORY)/trunk/ase/source lib/ase
-
-get-interfaces:
-	svn checkout $(REPOSITORY)/trunk/yt-gnat/interfaces lib/interfaces
-
-get-iconv:
-	svn checkout $(REPOSITORY)/trunk/iconv-gnat/source lib/iconv
-
-get-dyayaml:
-	svn checkout $(REPOSITORY)/trunk/dyayaml/gnat lib/dyayaml
+site/shuffle$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
+	$(GNATMAKE) -P source/shuffle.gpr
 
 $(BUILDDIR):
-	mkdir $(BUILDDIR)
+	mkdir $(subst /,$(DIRSEP),$(BUILDDIR))
+
+%.mk : %
+	make -C $(dir $@) BUILDDIR=$(BUILDDIR)
