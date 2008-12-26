@@ -1,25 +1,18 @@
-with "Ase";
+with "ase";
 with "dyayaml";
 project shuffle is
 
-	type Target_Type is ("i686-pc-mingw32", "i686-pc-freebsd6");
-	Target : Target_Type := External ("TARGET", "i686-pc-mingw32");
-	
 	type Build_Type is ("release", "debug");
-	Build : Build_Type := External ("BUILD", "debug");
-
+	Build : Build_Type := External ("BUILDTYPE", "debug");
+	
 	for Source_Dirs use (".");
-	for Exec_Dir use "site";
-	for Object_Dir use "./" & Target;
 	for Main use ("shuffle.adb");
 	
+	for Object_Dir use External ("BUILDDIR", "../build");
+	for Exec_Dir use "../site";
+	
 	package Builder is
-		case Target is
-			when "i686-pc-mingw32" =>
-				null;
-			when "i686-pc-freebsd6" =>
-				for Executable_Suffix use ".cgi";
-		end case;
+		for Executable_Suffix use External ("CGISUFFIX", ".cgi");
 	end Builder;
 	
 	package Compiler is
@@ -31,7 +24,7 @@ project shuffle is
 				for Default_Switches ("Ada") use ("-gnat05", "-Os", "-g", "-gnata", "-gnatwbcIjpruF");
 		end case;
 	end Compiler;
-
+	
 	package Binder is
 		case Build is
 			when "release" =>
@@ -40,7 +33,7 @@ project shuffle is
 				for Default_Switches ("Ada") use ("-E");
 		end case;
 	end Binder;
-
+	
 	package Linker is
 		case Build is
 			when "release" =>
@@ -49,5 +42,5 @@ project shuffle is
 				null;
 		end case;
 	end Linker;
-
+	
 end shuffle;
