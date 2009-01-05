@@ -9,7 +9,11 @@
 		<script type="text/javascript">
 			function sync(n){
 				var checkbox = document.getElementById('c' + n);
-				document.getElementById('s' + n).disabled = !checkbox.checked;
+				var style = document.getElementById('s' + n);
+				var sheet = style.sheet || style.styleSheet;
+				var rules = sheet.cssRules || sheet.rules;
+				var style = rules[0].style;
+				style.cssText = checkbox.checked ? "display:block" : "display:none";
 			}
 			function checkall(f){
 				for(var n = 0; n < 16; ++n){
