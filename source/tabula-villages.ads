@@ -58,6 +58,9 @@ package Tabula.Villages is
 	type Person_Record is record
 		State : Person_State;
 		Vote : Integer;
+		Provisional_Vote : Integer; -- 仮投票
+		Applied : Boolean; -- 開票申請
+		Candidate : Boolean; -- 投票の候補
 		Target : Integer;
 		Special : Boolean;
 		Note : Ada.Strings.Unbounded.Unbounded_String;
@@ -66,6 +69,9 @@ package Tabula.Villages is
 	Default_Person_Record : constant Person_Record := (
 		State => Normal,
 		Vote => -1,
+		Provisional_Vote => -1,
+		Applied => False,
+		Candidate => True,
 		Target => -1,
 		Special => False,
 		Note => Ada.Strings.Unbounded.Null_Unbounded_String);
@@ -134,6 +140,7 @@ package Tabula.Villages is
 		Detective_Survey,                 -- 調査
 		Detective_Survey_Preview,         -- 調査
 		Detective_Survey_Victim,          -- 初日犠牲者の調査
+		Provisional_Vote,                 -- 仮投票
 		Execution,                        -- 処刑
 		Awareness,                        -- 自覚
 		Astronomer_Observation,           -- 観測
@@ -228,12 +235,14 @@ package Tabula.Villages is
 	function Joined(Village : Village_Type; User_Id : String) return Integer;
 	function Rejoined(Village : Village_Type; Escaped_Subject : Natural) return Integer;
 	
+	function Provisional_Voted(Village : Village_Type) return Boolean;
 	function Vote_Finished(Village : Village_Type) return Boolean;
 	function Commit_Finished(Village : Village_Type) return Boolean;
 	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer;
 	function Unfortunate(Village : Village_Type) return Boolean;
 	
 	procedure Escape(Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
+	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
 
 	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Sex_Kind) return Boolean;
 	

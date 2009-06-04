@@ -29,6 +29,9 @@ is
 				New_Record : Person_Record := P.Records(P.Records'Last);
 			begin
 				New_Record.Vote := -1;
+				New_Record.Provisional_Vote := -1;
+				New_Record.Applied := False;
+				New_Record.Candidate := True;
 				New_Record.Target := -1;
 				New_Record.Special := False;
 				if New_Record.State /= Died then

@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers.Generic_Array_Sort;
 package body Tabula.Villages is
 	
 	overriding procedure Adjust(Object : in out Person_Type) is
@@ -156,6 +157,20 @@ package body Tabula.Villages is
 			and then Commited_Count = Count;
 	end Commit_Finished;
 	
+	function Provisional_Voted(Village : Village_Type) return Boolean is
+	begin
+		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				It : Message renames Village.Messages.Element(I);
+			begin
+				if It.Day = Village.Today and then It.Kind = Provisional_Vote then
+					return True;
+				end if;
+			end;
+		end loop;
+		return False;
+	end Provisional_Voted;
+	
 	function Vote_Finished(Village : Village_Type) return Boolean is
 	begin
 		for I in Village.People'Range loop
@@ -265,6 +280,99 @@ package body Tabula.Villages is
 			Target => -1,
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Escape;
+	
+	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time) is
+		Rec : Person_Record renames Village.People(Player).Records(Village.Today);
+	begin
+		pragma Assert(Target < 0 or else Village.People(Target).Records(Village.Today).Candidate);
+		Rec.Vote := Target;
+		if not Provisional_Voted(Village)
+			and then Village.Time = Daytime -- 短期の投票延長期間は仮投票は発生させない
+		then
+			Rec.Provisional_Vote := Target;
+			Rec.Applied := Apply;
+			if Apply then
+				-- 開示申請の集計
+				declare
+					use Messages;
+					type Voted_Array is array (Natural range <>) of Natural;
+					procedure Sort is new Ada.Containers.Generic_Array_Sort(Natural, Natural, Voted_Array);
+					Lives : array (Village.People'Range) of Boolean := (others => False);
+					Valid_Votes : Natural := 0;
+					Ayes : Natural := 0;
+					Voted, Sort_Voted : Voted_Array(Village.People'Range) := (others => 0);
+					Candidates : Natural := 0;
+					Max : Natural := 0;
+					Limit : Natural := 0;
+				begin
+					-- 前日からずっと無発言の人は集計から除く
+					for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+						declare
+							It : Message renames Village.Messages.Element(I);
+						begin
+							if It.Day in Village.Today - 1 .. Village.Today and then It.Kind = Speech then
+								Lives(It.Subject) := True;
+							end if;
+						end;
+					end loop;
+					for I in Village.People'Range loop
+						if not Village.People(I).Commited then
+							Lives(I) := True;
+						end if;
+					end loop;
+					-- 集計
+					for I in Village.People'Range loop
+						if Lives(I) then
+							Valid_Votes := Valid_Votes + 1;
+							if Village.People(I).Records(Village.Today).Applied then
+								Ayes := Ayes + 1;
+							end if;
+							declare
+								Target : Integer := Village.People(I).Records(Village.Today).Provisional_Vote;
+							begin
+								if Target in Village.People'Range then
+									if Voted(Target) = 0 then
+										Candidates := Candidates + 1;
+									end if;
+									Voted(Target) := Voted(Target) + 1;
+									if Voted(Target) > Max then
+										Max := Voted(Target);
+									end if;
+								end if;
+							end;
+						end if;
+					end loop;
+					-- 過半数が開票に賛成して、候補が2名以上いる場合に適用
+					if Ayes * 2 > Valid_Votes and then Candidates >= 2 then
+						-- 同率2位までを候補とする
+						Sort_Voted := Voted;
+						Sort(Sort_Voted);
+						Limit := Sort_Voted(Sort_Voted'Last - 1);
+						for I in Village.People'Range loop
+							Village.People(I).Records(Village.Today).Candidate := Voted(I) >= Limit;
+						end loop;
+						-- 選ばれた候補以外に投票していた人は棄権に戻す
+						for I in Village.People'Range loop
+							declare
+								V : Integer renames Village.People(I).Records(Village.Today).Vote;
+							begin
+								if V >= 0 and then not Village.People(V).Records(Village.Today).Candidate then
+									V := -1;
+								end if;
+							end;
+						end loop;
+						Append(Village.Messages, Message'(
+							Kind => Provisional_Vote,
+							Day => Village.Today,
+							Time => Time,
+							Subject => -1,
+							Target => -1,
+							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+					end if;
+				end;
+			end if;
+		end if;
+	end Vote;
 	
 	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Sex_Kind) return Boolean is
 		use type Ada.Strings.Unbounded.Unbounded_String;

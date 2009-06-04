@@ -30,7 +30,7 @@ package body Tabula.Renderers is
 	Stages : constant array(Stage_Kind) of Stage_Type := (
 		A_Village => (
 			Introduction => new String'(
-				"いつものように、血塗られた伝説が残る村を照らすお日さまが傾きかけました。 " & 
+				"いつものように、血塗られた伝説が残る村を照らすお日さまが傾きかけました。 " &
 				"慌ただしい人も暇な人も、子供もお年寄りも、一日の仕事を終えて、村人たちが酒場に集まる時間です。" & Line_Break &
 				"今夜は地主さんもやって来ますので、出迎えの準備もしなければなりません……。 "),
 			Breakdown => new String'(
@@ -130,7 +130,7 @@ package body Tabula.Renderers is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
 		Template : in Ase.Web.Producers.Template;
-		Object : in Renderer; 
+		Object : in Renderer;
 		Village_List : in Villages.Lists.Village_Lists.Vector;
 		Log_Limits : in Natural;
 		User_Id, User_Password : in String)
@@ -139,7 +139,7 @@ package body Tabula.Renderers is
 		use type Villages.Village_State;
 		Log : Boolean;
 		procedure Handle_Villages(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String; Template : in Ase.Web.Producers.Template) 
+			Tag : in String; Template : in Ase.Web.Producers.Template)
 		is
 			First : Natural := Village_List.First_Index;
 		begin
@@ -168,7 +168,7 @@ package body Tabula.Renderers is
 							Write(Output, Item.Id);
 						elsif Tag = "name" then
 							Write(Output, "<a href=");
-							Link(Renderer'Class(Object), Output, Item.Id, Log => Log, 
+							Link(Renderer'Class(Object), Output, Item.Id, Log => Log,
 								User_Id => User_Id, User_Password => User_Password);
 							Write(Output, ">");
 							if Item.Day_Duration < 24 * 60 * 60.0 then
@@ -299,7 +299,7 @@ package body Tabula.Renderers is
 				Write(Output, " - ");
 			end if;
 		else
-			Handle_Users(Output, Tag, Template, Object, 
+			Handle_Users(Output, Tag, Template, Object,
 				Village_Id => Village_Id, User_Id => User_Id, User_Password => User_Password);
 		end if;
 	end Handle_Villages;
@@ -349,7 +349,7 @@ package body Tabula.Renderers is
 						declare
 							I : Natural := Max_Length_Of_Message;
 						begin
-							while Character'Pos(S(I)) >= 16#c0# 
+							while Character'Pos(S(I)) >= 16#c0#
 								or else Character'Pos(S(I - 1)) >= 16#e0#
 							loop
 								I := I - 1;
@@ -420,6 +420,92 @@ package body Tabula.Renderers is
 		return +Result;
 	end Survivors_List;
 	
+	function Vote_Report(Village : Villages.Village_Type; Day : Natural; Provisional : Boolean; Player_Index : Integer) return String is
+		use Ada.Strings.Unbounded;
+		use type Villages.Village_State;
+		Result : Ada.Strings.Unbounded.Unbounded_String;
+	begin
+		for I in Village.People'Range loop
+			declare
+				P : Villages.Person_Type renames Village.People(I);
+				V : Integer;
+			begin
+				if Provisional then
+					V := P.Records(Day).Provisional_Vote;
+				else
+					V := P.Records(Day).Vote;
+				end if;
+				if V in Village.People'Range then
+					if Village.State >= Villages.Epilogue or Player_Index = I then
+						declare
+							T : Villages.Person_Type renames Village.People(V);
+						begin
+							Append(Result, Name(P) & "は" & Name(T) & "に投票しました。" & Line_Break);
+						end;
+					end if;
+				end if;
+			end;
+		end loop;
+		return +Result;
+	end Vote_Report;
+	
+	function Vote_Count(Village : Villages.Village_Type; Day : Natural; Provisional : Boolean; Executed: Integer) return String is
+		use Ada.Strings.Unbounded;
+		Result : Ada.Strings.Unbounded.Unbounded_String;
+		Voted : array(Village.People'Range) of Natural := (others => 0);
+		Max_Voted : Natural := 0;
+	begin
+		for I in Voted'Range loop
+			declare
+				P : Villages.Person_Type renames Village.People(I);
+				V : Integer;
+			begin
+				if Provisional then
+					V := P.Records(Day).Provisional_Vote;
+				else
+					V := P.Records(Day).Vote;
+				end if;
+				if V in Village.People'Range then
+					Voted(V) := Voted(V) + 1;
+					if Voted(V) > Max_Voted then
+						Max_Voted := Voted(V);
+					end if;
+				end if;
+			end;
+		end loop;
+		for Count in reverse 1 .. Max_Voted loop
+			for I in Voted'Range loop
+				if Voted(I) = Count then
+					declare
+						P : Villages.Person_Type renames Village.People(I);
+					begin
+						Append(Result, To_String(Voted(I)) & "票が" & Name(P) & "に集まりました。" & Line_Break);
+					end;
+				end if;
+			end loop;
+		end loop;
+		if Provisional then
+			declare
+				First : Boolean := True;
+			begin
+				Append(Result, Line_Break & "仮投票の結果、");
+				for I in Village.People'Range loop
+					if Village.People(I).Records(Day).Candidate then
+						if not First then
+							Append(Result, "、");
+						end if;
+						Append(Result, Name(Village.People(I)));
+						First := False;
+					end if;
+				end loop;
+				Append(Result, "が本投票の候補になります。");
+			end;
+		else
+			Append(Result, Name(Village.People(Executed)) & "は心臓に杭を打ち込まれました。");
+		end if;
+		return +Result;
+	end Vote_Count;
+	
 	function Vampires_List(Village : Villages.Village_Type) return String is
 		use Ada.Strings.Unbounded;
 		use type Villages.Person_Role;
@@ -455,7 +541,7 @@ package body Tabula.Renderers is
 		procedure Countup(Role : Villages.Person_Role) is
 		begin
 			case Role is
-				when Villages.Detective => 
+				when Villages.Detective =>
 					Detective := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
 				when Villages.Astronomer =>
@@ -600,9 +686,9 @@ package body Tabula.Renderers is
 		Target : Villages.Person_Type renames Village.People(Message.Target);
 		function Showing_Result return String is
 		begin
-			if Target.Role in Vampire_Role 
-				or else Target.Role = Gremlin 
-				or else Target.Records(Message.Day - 1).State = Infected 
+			if Target.Role in Vampire_Role
+				or else Target.Role = Gremlin
+				or else Target.Records(Message.Day - 1).State = Infected
 			then
 				return "観測していて、人影が飛び立つのを目撃してしまいました。";
 			else
@@ -629,15 +715,15 @@ package body Tabula.Renderers is
 					Target : Villages.Person_Type renames Village.People(Message.Target);
 				begin
 					case Hunter_Message_Kind(Message.Kind) is
-						when Hunter_Guard => 
+						when Hunter_Guard =>
 							return Name(Subject) & "は" & Name(Target) & "を吸血鬼から守り抜きました。";
-						when Hunter_Guard_With_Silver => 
+						when Hunter_Guard_With_Silver =>
 							return Name(Subject) & "は" & Name(Target) & "を守り、銀の弾丸で吸血鬼を撃ち抜きました。";
-						when Hunter_Nothing_With_Silver | Hunter_Infected_With_Silver | Hunter_Killed_With_Silver => 
+						when Hunter_Nothing_With_Silver | Hunter_Infected_With_Silver | Hunter_Killed_With_Silver =>
 							raise Program_Error;
-						when Hunter_Failed => 
+						when Hunter_Failed =>
 							return Name(Subject) & "は" & Name(Target) & "を守っていました。";
-						when Hunter_Failed_With_Silver => 
+						when Hunter_Failed_With_Silver =>
 							return Name(Subject) & "は" & Name(Target) & "を銀の弾丸で守っていました。";
 					end case;
 				end;
@@ -682,7 +768,7 @@ package body Tabula.Renderers is
 	end Servant_Knew_Message;
 	
 	function Vampire_Murder_Message(Village : Villages.Village_Type; Message : Villages.Message;
-		Executed : Integer) return String 
+		Executed : Integer) return String
 	is
 		use Ada.Strings.Unbounded;
 		use type Villages.Person_Role;
@@ -736,7 +822,7 @@ package body Tabula.Renderers is
 	end Vampire_Murder_Message;
 	
 	function Get_Village_Id(
-		Object : Renderer; 
+		Object : Renderer;
 		Query_Strings : Ase.Web.Query_Strings) return Villages.Lists.Village_Id
 	is
 		S : String renames Ase.Web.Element(Query_Strings, "village");
@@ -749,9 +835,9 @@ package body Tabula.Renderers is
 	end Get_Village_Id;
 	
 	procedure Get_Day(
-		Object : in Renderer; 
-		Village : in Villages.Village_Type; 
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Object : in Renderer;
+		Village : in Villages.Village_Type;
+		Query_Strings : in Ase.Web.Query_Strings;
 		Day : out Natural)
 	is
 		use type Villages.Village_State;
@@ -759,7 +845,7 @@ package body Tabula.Renderers is
 	begin
 		Day := Natural'Value(S);
 	exception
-		when Constraint_Error => 
+		when Constraint_Error =>
 			if Village.State /= Villages.Closed then
 				Day := Village.Today;
 			else
@@ -768,10 +854,10 @@ package body Tabula.Renderers is
 	end Get_Day;
 	
 	procedure Get_Range(
-		Object : in Renderer; 
-		Village : in Villages.Village_Type; 
+		Object : in Renderer;
+		Village : in Villages.Village_Type;
 		Day : in Natural;
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Ase.Web.Query_Strings;
 		First, Last : out Integer) is
 	begin
 		First := -1;
@@ -779,7 +865,7 @@ package body Tabula.Renderers is
 	end Get_Range;
 	
 	function Get_User_Id(
-		Object : Renderer; 
+		Object : Renderer;
 		Query_Strings : Ase.Web.Query_Strings;
 		Cookie : Ase.Web.Cookie) return String is
 	begin
@@ -787,7 +873,7 @@ package body Tabula.Renderers is
 	end Get_User_Id;
 	
 	function Get_User_Password(
-		Object : Renderer; 
+		Object : Renderer;
 		Query_Strings : Ase.Web.Query_Strings;
 		Cookie : Ase.Web.Cookie) return String is
 	begin
@@ -795,7 +881,7 @@ package body Tabula.Renderers is
 	end Get_User_Password;
 	
 	procedure Set_User(
-		Object : in Renderer; 
+		Object : in Renderer;
 		Cookie : in out Ase.Web.Cookie;
 		New_User_Id: in String;
 		New_User_Password : in String) is
@@ -805,16 +891,16 @@ package body Tabula.Renderers is
 	end Set_User;
 	
 	function Get_Text(
-		Object : Renderer; 
+		Object : Renderer;
 		Inputs : Ase.Web.Query_Strings) return String is
 	begin
 		return Ase.Strings.Trim(Ase.Web.Element(Inputs, "text"), Ada.Strings.Both);
 	end Get_Text;
 	
 	function Is_User_Page(
-		Object : Renderer; 
+		Object : Renderer;
 		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return Boolean 
+		Cookie : Ase.Web.Cookie) return Boolean
 	is
 		User_Id : String renames Ase.Web.Element(Cookie, "id");
 	begin
@@ -828,19 +914,19 @@ package body Tabula.Renderers is
 	-- Page Generating
 	
 	procedure Refresh_Page(
-		Object : in Renderer; 
+		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		URI : in String) is
 	begin
-		Write(Output, 
+		Write(Output,
 			"<meta http-equiv=""REFRESH"" content=""0;URL=" & URI & """ />" &
 			"<style>body{background-color:black;}</style>");
 	end Refresh_Page;
 	
 	procedure Index_Page(
-		Object : in Renderer; 
+		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : in Villages.Lists.Village_Lists.Vector; 
+		Village_List : in Villages.Lists.Village_Lists.Vector;
 		Muramura : Natural;
 		User_Id: in String;
 		User_Password : in String)
@@ -863,11 +949,11 @@ package body Tabula.Renderers is
 		end Handle;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_Index_File_Name.all);
 		begin
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -878,7 +964,7 @@ package body Tabula.Renderers is
 	end Index_Page;
 	
 	procedure List_Page(
-		Object : in Renderer; 
+		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_List : in Villages.Lists.Village_Lists.Vector)
 	is
@@ -891,11 +977,11 @@ package body Tabula.Renderers is
 			Handle_List(Output, Tag, Template, Object, Village_List, 9999, "", "");
 		end Handle;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_List_File_Name.all);
 		begin
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -910,7 +996,7 @@ package body Tabula.Renderers is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
 		New_User_Id : String;
-		New_User_Password : String) 
+		New_User_Password : String)
 	is
 		procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String; Template : in Ase.Web.Producers.Template) is
@@ -926,17 +1012,17 @@ package body Tabula.Renderers is
 				Write(Output, Ase.Web.Markup_Entity(New_User_Password));
 				Write(Output, '"');
 			else
-				Handle_Users(Output, Tag, Template, Object, 
+				Handle_Users(Output, Tag, Template, Object,
 					Village_Id => Village_Id, User_Id => "", User_Password => "");
 			end if;
 		end Handle;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_Register_File_Name.all);
 		begin
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -952,7 +1038,7 @@ package body Tabula.Renderers is
 		Village_List : Villages.Lists.Village_Lists.Vector;
 		User_Id : in String;
 		User_Password : in String;
-		User_Info : in Users.User_Info) 
+		User_Info : in Users.User_Info)
 	is
 		Joined : Ada.Strings.Unbounded.Unbounded_String;
 		Created : Ada.Strings.Unbounded.Unbounded_String;
@@ -980,8 +1066,8 @@ package body Tabula.Renderers is
 					Ase.Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "creatable" then
-				if Joined = Ada.Strings.Unbounded.Null_Unbounded_String 
-					and then Created = Ada.Strings.Unbounded.Null_Unbounded_String 
+				if Joined = Ada.Strings.Unbounded.Null_Unbounded_String
+					and then Created = Ada.Strings.Unbounded.Null_Unbounded_String
 				then
 					Ase.Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
@@ -990,7 +1076,7 @@ package body Tabula.Renderers is
 			elsif Tag = "createdvillage" then
 				Write(Output, Ase.Web.Markup_HTML(+Created, Version => Ase.Web.XHTML));
 			else
-				Handle_Users(Output, Tag, Template, Object, 
+				Handle_Users(Output, Tag, Template, Object,
 					User_Id => User_Id, User_Password => User_Password);
 			end if;
 		end Handle;
@@ -1000,7 +1086,7 @@ package body Tabula.Renderers is
 		use type Villages.Village_State;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_User_File_Name.all);
 		begin
 			for I in Village_List.First_Index .. Village_List.Last_Index loop
@@ -1025,8 +1111,8 @@ package body Tabula.Renderers is
 					end if;
 				end;
 			end loop;
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -1039,12 +1125,12 @@ package body Tabula.Renderers is
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id; 
-		Village : Villages.Village_Type; 
+		Village_Id : Villages.Lists.Village_Id;
+		Village : Villages.Village_Type;
 		Day : Natural;
 		First, Last : Integer := -1;
 		User_Id : String;
-		User_Password : String) 
+		User_Password : String)
 	is
 		use Villages.Messages;
 		use type Villages.Person_Array_Access;
@@ -1060,8 +1146,8 @@ package body Tabula.Renderers is
 		
 		Target_Day : Natural;
 		
-		procedure Vote_Form(Name : String; Kind : Villages.Person_Role; Player : Integer;
-			Current : Integer; Current_Special : Boolean; 
+		procedure Vote_Form(Player : Integer; Kind : Villages.Person_Role; Special: Boolean;
+			Current : Integer; Current_Special : Boolean;
 			Message : String; Button : String)
 		is
 			Including : Boolean;
@@ -1078,8 +1164,11 @@ package body Tabula.Renderers is
 			Write(Output, Message);
 			Write(Output, " <select name=""target"">" & Line_Break);
 			for Position in Village.People'Range loop
-				if Position /= Player then 
+				if Position /= Player then
 					case Kind is
+						when Villages.Inhabitant =>
+							Including := Village.People(Position).Records(Target_Day).State /= Villages.Died
+								and then Village.People(Position).Records(Target_Day).Candidate;
 						when Villages.Detective =>
 							Including := Village.People(Position).Records(Target_Day).State = Villages.Died;
 						when Villages.Vampire_Role =>
@@ -1111,13 +1200,28 @@ package body Tabula.Renderers is
 				Write(Output, " *");
 			end if;
 			Write(Output, "</option>" & Line_Break & "</select>" & Line_Break);
-			if Kind = Villages.Hunter then
-				Write(Output, " <input name=""special"" type=""checkbox"" ");
-				if Current_Special then
-					Write(Output, "checked=""checked"" ");
-				end if;
-				Write(Output, "/>銀の弾丸");
-			end if;
+			case Kind is
+				when Villages.Inhabitant =>
+					if Special then
+						Write(Output, " <input name=""apply"" type=""checkbox"" ");
+						if Current_Special then
+							Write(Output, "checked=""checked"" ");
+						end if;
+						Write(Output, "/>開示申請");
+					elsif Current_Special then
+						Write(Output, " <input name=""apply"" type=""hidden"" value=""on"" />");
+					end if;
+				when Villages.Hunter =>
+					if Special then
+						Write(Output, " <input name=""special"" type=""checkbox"" ");
+						if Current_Special then
+							Write(Output, "checked=""checked"" ");
+						end if;
+						Write(Output, "/>銀の弾丸");
+					end if;
+				when others =>
+					null;
+			end case;
 			if HTML_Version(Renderer'Class(Object)) = Ase.Web.XHTML then
 				Write(Output, "</td>" & Line_Break & "<td class=""button"">");
 			end if;
@@ -1125,9 +1229,14 @@ package body Tabula.Renderers is
 			if HTML_Version(Renderer'Class(Object)) = Ase.Web.XHTML then
 				Write(Output, "</td>" & Line_Break & "</tr></table>" & Line_Break);
 			end if;
-			Write(Output,
-				"<input type=""hidden"" name=""cmd"" value=""" & Name & """ />" & Line_Break &
-				"</form>" & Line_Break);
+			Write(Output, "<input type=""hidden"" name=""cmd"" value=""");
+			case Kind is
+				when Villages.Inhabitant =>
+					Write(Output, "vote");
+				when others =>
+					Write(Output, "target");
+			end case;
+			Write(Output, """ />" & Line_Break & "</form>" & Line_Break);
 		end Vote_Form;
 		function Role_Text(Person : Villages.Person_Type) return String is
 			Setting : Villages.Person_Record renames Person.Records(Village.Today);
@@ -1136,27 +1245,27 @@ package body Tabula.Renderers is
 				return "あなたは幽霊です。";
 			else
 				case Person.Role is
-					when Villages.Inhabitant | Villages.Loved_Inhabitant | Villages.Unfortunate_Inhabitant => 
+					when Villages.Inhabitant | Villages.Loved_Inhabitant | Villages.Unfortunate_Inhabitant =>
 						return "あなたは村人です。";
-					when Villages.Doctor => 
+					when Villages.Doctor =>
 						if Setting.Target >= 0 then
 							return "あなたは医者、" & Name(Village.People(Setting.Target)) & "を診察しました。";
 						else
 							return "あなたは医者です。";
 						end if;
-					when Villages.Detective => 
+					when Villages.Detective =>
 						if Setting.Target >= 0 then
 							return "あなたは探偵、" & Name(Village.People(Setting.Target)) & "を調査中です。";
 						else
 							return "あなたは探偵です。";
 						end if;
-					when Villages.Astronomer => 
+					when Villages.Astronomer =>
 						if Person.Commited and Setting.Target >= 0 then
 							return "あなたは天文家、" & Name(Village.People(Setting.Target)) & "の家の空を観測します。";
 						else
 							return "あなたは天文家です。";
 						end if;
-					when Villages.Hunter => 
+					when Villages.Hunter =>
 						if Person.Commited and Setting.Target >= 0 and Setting.Special then
 							return "あなたは猟師、" & Name(Village.People(Setting.Target)) & "を銀の弾丸で守ります。";
 						elsif Person.Commited and Setting.Target >= 0 then
@@ -1176,8 +1285,8 @@ package body Tabula.Renderers is
 						return "";
 					when Villages.Sweetheart_M | Villages.Sweetheart_F =>
 						for Position in Village.People'Range loop
-							if Village.People(Position).Role /= Person.Role 
-								and then Village.People(Position).Role in Villages.Sweetheart_M .. Villages.Sweetheart_F 
+							if Village.People(Position).Role /= Person.Role
+								and then Village.People(Position).Role in Villages.Sweetheart_M .. Villages.Sweetheart_F
 							then
 								return "あなたは" & Name(Village.People(Position)) & "の恋人です。";
 							end if;
@@ -1226,7 +1335,7 @@ package body Tabula.Renderers is
 					Write(Output, "<hr><div>全");
 				else
 					Write(Output, "<hr><div><a href=");
-					Link(Renderer'Class(Object), Output, Village_Id, Day, First => 0, Last => Speech_Count, 
+					Link(Renderer'Class(Object), Output, Village_Id, Day, First => 0, Last => Speech_Count,
 						User_Id => User_Id, User_Password => User_Password);
 					Write(Output, ">全</a>");
 				end if;
@@ -1245,7 +1354,7 @@ package body Tabula.Renderers is
 							Write(Output, "|" & I_S);
 						else
 							Write(Output, "|<a href=");
-							Link(Renderer'Class(Object), Output, Village_Id, Day, First => I_F, Last => I_L, 
+							Link(Renderer'Class(Object), Output, Village_Id, Day, First => I_F, Last => I_L,
 								User_Id => User_Id, User_Password => User_Password);
 							Write(Output, '>');
 							Write(Output, I_S);
@@ -1301,7 +1410,7 @@ package body Tabula.Renderers is
 				end if;
 				-- ここでやるべきでもないがついでに
 				if Village.State = Villages.Opened
-					and then Village.Day_Duration < 24 * 60 * 60.0 
+					and then Village.Day_Duration < 24 * 60 * 60.0
 					and then HTML_Version(Renderer'Class(Object)) = Ase.Web.XHTML
 				then
 					Next_Dawn : declare
@@ -1340,7 +1449,7 @@ package body Tabula.Renderers is
 								"var s = document.getElementById('sec');" &
 								"if(s) s.firstChild.nodeValue = Math.floor(t % 60);" &
 								"timer = setTimeout('on_time()', 500);" &
-								"}" & 
+								"}" &
 								"</script>");
 						end;
 					end Next_Dawn;
@@ -1354,7 +1463,7 @@ package body Tabula.Renderers is
 							if Tag = "day" then
 								if I /= Day then
 									Write(Output, "<a href=");
-									Link(Renderer'Class(Object), Output, Village_Id, I, 
+									Link(Renderer'Class(Object), Output, Village_Id, I,
 										User_Id => User_Id, User_Password => User_Password);
 									Write(Output, '>');
 								end if;
@@ -1380,8 +1489,8 @@ package body Tabula.Renderers is
 								Tag : in String; Template : in Ase.Web.Producers.Template) is
 							begin
 								if Tag = "name" then
-									Write(Output, 
-										"<label for=""c" & To_String(I) & """>" & 
+									Write(Output,
+										"<label for=""c" & To_String(I) & """>" &
 										"<input id=""c" & To_String(I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & To_String(I) & ")"" />" &
 										Ase.Web.Markup_Entity(Name(Person)) &
 										"</label>");
@@ -1412,7 +1521,7 @@ package body Tabula.Renderers is
 								end if;
 							end Handle_Summary;
 						begin
-							if (Village.State >= Villages.Epilogue and then Village.Today = Day) 
+							if (Village.State >= Villages.Epilogue and then Village.Today = Day)
 								or else Person.Records(Day).State /= Villages.Died
 							then
 								Ase.Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
@@ -1466,7 +1575,7 @@ package body Tabula.Renderers is
 									end if;
 								end;
 							else
-								Handle_Villages(Output, Tag, Template, Object, 
+								Handle_Villages(Output, Tag, Template, Object,
 									Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
 							end if;
 						end Handle_Note;
@@ -1519,7 +1628,7 @@ package body Tabula.Renderers is
 												Narration(Name(Subject) & "が現れました。", Class => "narratione");
 											end;
 										when Villages.Speech | Villages.Escaped_Speech =>
-											if Message.Kind = Villages.Speech 
+											if Message.Kind = Villages.Speech
 												or else Villages.Rejoined(Village, Message.Subject) >= 0
 											then
 												declare
@@ -1570,25 +1679,25 @@ package body Tabula.Renderers is
 												Speech(Message, "escaped", Message.Time);
 											end if;
 										when Villages.Monologue =>
-											if Village.State >= Villages.Epilogue 
+											if Village.State >= Villages.Epilogue
 												or else Message.Subject = Player_Index
 											then
 												Speech(Message, "monologue", Message.Time);
 											end if;
 										when Villages.Ghost =>
-											if Village.State >= Villages.Epilogue 
+											if Village.State >= Villages.Epilogue
 												or else (Player_Index >= 0 and then Village.People(Player_Index).Records(Village.Today).State = Villages.Died)
 											then
 												Speech(Message, "ghost", Message.Time);
 											end if;
 										when Villages.Howling =>
-											if Village.State >= Villages.Epilogue 
+											if Village.State >= Villages.Epilogue
 												or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 											then
 												Speech(Message, "vampire", Message.Time);
 											end if;
 										when Villages.Howling_Blocked =>
-											if Village.State >= Villages.Epilogue 
+											if Village.State >= Villages.Epilogue
 												or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 											then
 												declare
@@ -1608,13 +1717,13 @@ package body Tabula.Renderers is
 													when Villages.Action_Encourage =>
 														Narration(Name(Subject) & "は" & Name(Target) & "に話の続きを促した。");
 													when Villages.Action_Vampire_Gaze =>
-														if Village.State >= Villages.Epilogue 
+														if Village.State >= Villages.Epilogue
 															or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 														then
 															Narration(Name(Subject) & "は" & Name(Target) & "をこっそりと見つめた。", "narrationi");
 														end if;
 													when Villages.Action_Vampire_Gaze_Blocked =>
-														if Village.State >= Villages.Epilogue 
+														if Village.State >= Villages.Epilogue
 															or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 														then
 															declare
@@ -1636,66 +1745,21 @@ package body Tabula.Renderers is
 										when Villages.Detective_Message_Kind =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												Narration(Detective_Survey_Message(Village, Message), "narrationi");
-												if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String 
+												if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String
 													and then (
-														Village.Daytime_Preview = Villages.Role_And_Message 
+														Village.Daytime_Preview = Villages.Role_And_Message
 														or else Village.Daytime_Preview = Villages.Message_Only
 														or else Message.Kind /= Villages.Detective_Survey_Preview)
 												then
 													Speech(Message, "dying", Message.Time);
 												end if;
 											end if;
+										when Villages.Provisional_Vote =>
+											Narration(Vote_Report(Village, Day => Message.Day, Provisional => True, Player_Index => Player_Index), "narrationi");
+											Narration(Vote_Count(Village, Day => Message.Day, Provisional => True, Executed => -1));
 										when Villages.Execution =>
-											declare
-												use Ada.Strings.Unbounded;
-												Text : Ada.Strings.Unbounded.Unbounded_String;
-												Voted : array(Village.People'Range) of Natural := (others => 0);
-												Max_Voted : Natural := 0;
-												Execution_Day : constant Natural := Message.Day - 1;
-											begin
-												for I in Voted'Range loop
-													declare
-														P : Villages.Person_Type renames Village.People(I);
-														V : constant Integer := P.Records(Execution_Day).Vote;
-													begin
-														if V >= 0 then
-															Voted(V) := Voted(V) + 1;
-															if Voted(V) > Max_Voted then
-																Max_Voted := Voted(V);
-															end if;
-															if Village.State >= Villages.Epilogue or Player_Index = I then
-																declare
-																	T : Villages.Person_Type renames Village.People(V);
-																begin
-																	Append(Text, Name(P) & "は" & Name(T) & "に投票しました。" & Line_Break);
-																end;
-															end if;
-														end if;
-													end;
-												end loop;
-												if Text /= Ada.Strings.Unbounded.Null_Unbounded_String then
-													Narration(+Text, "narrationi");
-												end if;
-												Text := Ada.Strings.Unbounded.Null_Unbounded_String;
-												for Count in reverse 1 .. Max_Voted loop
-													for I in Voted'Range loop
-														if Voted(I) = Count then
-															declare
-																P : Villages.Person_Type renames Village.People(I);
-															begin
-																Append(Text, To_String(Voted(I)) & "票が" & 
-																	Name(P) & "に集まりました。" & Line_Break);
-															end;
-														end if;
-													end loop;
-												end loop;
-												declare
-													E : Villages.Person_Type renames Village.People(Message.Target);
-												begin
-													Append(Text, Name(E) & "は心臓に杭を打ち込まれました。");
-												end;
-												Narration(+Text);
-											end;
+											Narration(Vote_Report(Village, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
+											Narration(Vote_Count(Village, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
 											Executed := Message.Target;
 										when Villages.Awareness =>
 											if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
@@ -1714,7 +1778,7 @@ package body Tabula.Renderers is
 												Narration(Hunter_Guard_Message(Village, Message), "narrationi");
 											end if;
 										when Villages.Meeting => null;
-											if Village.State >= Villages.Epilogue 
+											if Village.State >= Villages.Epilogue
 												or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 											then
 												for Role in Villages.Vampire_Role loop
@@ -1752,7 +1816,7 @@ package body Tabula.Renderers is
 															P : Villages.Person_Type renames Village.People(I);
 															R : Villages.Person_Record renames P.Records(Message.Day);
 														begin
-															if (R.State = Villages.Normal and then P.Role in Villages.Vampire_Role) 
+															if (R.State = Villages.Normal and then P.Role in Villages.Vampire_Role)
 																or else R.State = Villages.Infected
 															then
 																Vampire_Count := Vampire_Count + 1;
@@ -1866,8 +1930,8 @@ package body Tabula.Renderers is
 										when Villages.Introduction =>
 											Narration(Stages(Stage(Village)).Introduction.all);
 										when Villages.Breakdown => null;
-											if Village.State >= Villages.Epilogue 
-												or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role) 
+											if Village.State >= Villages.Epilogue
+												or else (Player_Index >= 0 and then Village.People(Player_Index).Role in Villages.Vampire_Role)
 											then
 												Narration(Vampires_List(Village), "narrationi");
 											end if;
@@ -1935,7 +1999,7 @@ package body Tabula.Renderers is
 											end if;
 										when Villages.Opened =>
 											case Village.Time is
-												when Villages.Daytime => 
+												when Villages.Daytime =>
 													Write(Output, Ada.Calendar.Formatting.Image(Village.Dawn + Village.Day_Duration, Time_Zone => Calendar.Time_Offset));
 													Write(Output, "までに行動を終えてください。");
 												when Villages.Vote =>
@@ -1943,7 +2007,7 @@ package body Tabula.Renderers is
 												when Villages.Night =>
 													Write(Output, "夜です。");
 											end case;
-											if Village.Day_Duration < 24 * 60 * 60.0 
+											if Village.Day_Duration < 24 * 60 * 60.0
 												and then HTML_Version(Renderer'Class(Object)) = Ase.Web.XHTML
 											then
 												Write(Output, "あと<span id=""min"">?</span>分<span id=""sec"">?</span>秒です。");
@@ -1973,8 +2037,8 @@ package body Tabula.Renderers is
 					end if;
 				end;
 			elsif Tag = "villagepanel" then
-				if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and Village.Today = Day) 
-					or else (User_Id /= "" and Village.State = Villages.Prologue) 
+				if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and Village.Today = Day)
+					or else (User_Id /= "" and Village.State = Villages.Prologue)
 				then
 					if Village.State = Villages.Closed then
 						Ase.Web.Producers.Produce(Output, Template, "closed");
@@ -1997,7 +2061,7 @@ package body Tabula.Renderers is
 								elsif Tag = "speech" then
 									if Village.State = Villages.Epilogue or else (
 										(Village.State = Villages.Opened or else Village.State = Villages.Prologue)
-										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died 
+										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died
 										and then not Person.Commited)
 									then
 										if Village.State = Villages.Opened then
@@ -2025,8 +2089,8 @@ package body Tabula.Renderers is
 									end if;
 								elsif Tag = "monologue" then
 									if Village.State = Villages.Opened
-										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died 
-										and then not Person.Commited 
+										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died
+										and then not Person.Commited
 									then
 										declare
 											Rest : constant Integer := Monologue_Limit - Message_Counts(Player_Index).Monologue;
@@ -2048,7 +2112,7 @@ package body Tabula.Renderers is
 										end;
 									end if;
 								elsif Tag ="ghost" then
-									if Village.State = Villages.Opened 
+									if Village.State = Villages.Opened
 										and then Village.People(Player_Index).Records(Village.Today).State = Villages.Died
 									then
 										declare
@@ -2071,16 +2135,16 @@ package body Tabula.Renderers is
 										end;
 									end if;
 								elsif Tag ="vampire" then
-									if Village.State = Villages.Opened 
-										and then not Person.Commited 
+									if Village.State = Villages.Opened
+										and then not Person.Commited
 										and then Person.Role in Villages.Vampire_Role
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
 									then
 										Ase.Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 									end if;
 								elsif Tag ="dying" then
-									if Village.State = Villages.Opened 
-										and then not Person.Commited 
+									if Village.State = Villages.Opened
+										and then not Person.Commited
 										and then Village.People(Player_Index).Records(Village.Today).State = Villages.Died
 									then
 										Ase.Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
@@ -2093,8 +2157,8 @@ package body Tabula.Renderers is
 									if Village.State = Villages.Opened
 										and then Village.Time /= Villages.Night
 										and then not Village.People(Player_Index).Commited
-										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died 
-										and then Message_Counts(Player_Index).Speech = 0 
+										and then Village.People(Player_Index).Records(Village.Today).State /= Villages.Died
+										and then Message_Counts(Player_Index).Speech = 0
 									then
 										Ase.Web.Producers.Produce(Output, Template);
 									end if;
@@ -2113,7 +2177,7 @@ package body Tabula.Renderers is
 										Link_Image(Renderer'Class(Object), Output, Role_Image_File_Name(Person.Role).all);
 									end if;
 								elsif Tag = "vote" then
-									if Village.State = Villages.Opened 
+									if Village.State = Villages.Opened
 										and then Message_Counts(Player_Index).Speech > 0
 									then
 										if Person.Commited then
@@ -2133,27 +2197,26 @@ package body Tabula.Renderers is
 												end if;
 											end;
 										else
-											Vote_Form("vote", Villages.Inhabitant, 
-												Player => Player_Index, 
-												Current => Person.Records(Village.Today).Vote, 
-												Current_Special => False, 
-												Message => "処刑を選ばねばなりません……", 
+											Vote_Form(Player_Index, Villages.Inhabitant, Village.Time /= Villages.Vote and then not Villages.Provisional_Voted(Village),
+												Current => Person.Records(Village.Today).Vote,
+												Current_Special => Person.Records(Village.Today).Applied,
+												Message => "誰を処刑に……",
 												Button => "投票");
 										end if;
 									end if;
 								elsif Tag = "ability" then
-									if Village.State = Villages.Opened 
+									if Village.State = Villages.Opened
 										and then not Person.Commited
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
 									then
 										case Person.Role is
-											when Villages.Inhabitant | Villages.Loved_Inhabitant | Villages.Unfortunate_Inhabitant 
-												| Villages.Lover | Villages.Sweetheart_M | Villages.Sweetheart_F 
+											when Villages.Inhabitant | Villages.Loved_Inhabitant | Villages.Unfortunate_Inhabitant
+												| Villages.Lover | Villages.Sweetheart_M | Villages.Sweetheart_F
 												| Villages.Servant | Villages.Gremlin => null;
 											when Villages.Doctor =>
 												if Village.People(Player_Index).Records(Village.Today).Target < 0 then
 													if Village.Today >= 2 then
-														Vote_Form("target", Villages.Doctor, Player_Index, 
+														Vote_Form(Player_Index, Villages.Doctor, False,
 															Person.Records(Village.Today).Target, False, "貴重な薬を誰に……", "診察");
 													else
 														Write(Output, "<div>今は他に犠牲者がいないと信じましょう。</div>");
@@ -2163,7 +2226,7 @@ package body Tabula.Renderers is
 												if Village.People(Player_Index).Records(Village.Today).Target < 0 then
 													for I in Village.People'Range loop
 														if Village.People(I).Records(Village.Today).State = Villages.Died then
-															Vote_Form("target", Villages.Detective, Player_Index, 
+															Vote_Form(Player_Index, Villages.Detective, False,
 																Person.Records(Village.Today).Target, False, "どの被害者を調べますか……", "調査");
 															goto Exit_Detective_Target;
 														end if;
@@ -2176,22 +2239,22 @@ package body Tabula.Renderers is
 													<<Exit_Detective_Target>> null;
 												end if;
 											when Villages.Astronomer =>
-												Vote_Form("target", Villages.Astronomer, Player_Index, 
+												Vote_Form(Player_Index, Villages.Astronomer, False,
 													Person.Records(Target_Day).Target, False, "どの家の上空の星が奇麗……", "観測");
 											when Villages.Hunter =>
-												for I in 0 .. Target_Day - 1 loop
-													if Person.Records(I).Special then
-														Vote_Form("target", Villages.Inhabitant, Player_Index, 
-															Person.Records(Target_Day).Target, False, "誰を守りますか……", "護衛");
-														goto Exit_Hunter_Target;
-													end if;
-												end loop;
-												Vote_Form("target", Villages.Hunter, Player_Index, 
-													Person.Records(Target_Day).Target, Person.Records(Target_Day).Special, "誰を守りますか……", "護衛");
-												<<Exit_Hunter_Target>> 
-												null;
+												declare
+													Has_Silver_Bullet : Boolean := True;
+												begin
+													for I in 0 .. Target_Day - 1 loop
+														if Person.Records(I).Special then
+															Has_Silver_Bullet := False;
+														end if;
+													end loop;
+													Vote_Form(Player_Index, Villages.Hunter, Has_Silver_Bullet,
+														Person.Records(Target_Day).Target, Person.Records(Target_Day).Special, "誰を守りますか……", "護衛");
+												end;
 											when Villages.Vampire_Role =>
-												Vote_Form("target", Villages.Vampire_K, Player_Index, 
+												Vote_Form(Player_Index, Villages.Vampire_K, False,
 													Person.Records(Target_Day).Target, False, "誰の血が旨そうでしょうか……", "襲撃");
 											when Villages.Werewolf | Villages.Possessed =>
 												raise Program_Error;
@@ -2199,9 +2262,9 @@ package body Tabula.Renderers is
 									end if;
 								elsif Tag = "action" then
 									if Village.State = Villages.Opened and then (
-										Message_Counts(Player_Index).Wake = 0 
-										or else Message_Counts(Player_Index).Encourage = 0 
-										or else ((Village.People(Player_Index).Role in Villages.Vampire_Role) 
+										Message_Counts(Player_Index).Wake = 0
+										or else Message_Counts(Player_Index).Encourage = 0
+										or else ((Village.People(Player_Index).Role in Villages.Vampire_Role)
 											and then Message_Counts(Player_Index).Vampire_Gaze = 0))
 									then
 										if HTML_Version(Renderer'Class(Object)) = Ase.Web.XHTML then
@@ -2215,8 +2278,8 @@ package body Tabula.Renderers is
 										Write(Output, "<select name=""target"">" & Line_Break);
 										Write(Output, "<option value=""-1"" selected=""selected""></option>" & Line_Break);
 										for I in Village.People'Range loop
-											if I /= Player_Index 
-												and then Village.People(I).Records(Village.Today).State /= Villages.Died 
+											if I /= Player_Index
+												and then Village.People(I).Records(Village.Today).State /= Villages.Died
 											then
 												declare
 													Person : Villages.Person_Type renames Village.People(I);
@@ -2237,7 +2300,7 @@ package body Tabula.Renderers is
 											Write(Output, "<option value=""encourage"">に話の続きを促す</option>" & Line_Break);
 										end if;
 										if Village.People(Player_Index).Role in Villages.Vampire_Role
-											and then Message_Counts(Player_Index).Vampire_Gaze = 0 
+											and then Message_Counts(Player_Index).Vampire_Gaze = 0
 										then
 											Write(Output, "<option value=""vampire_gaze"">をこっそり見つめる。</option>" & Line_Break);
 										end if;
@@ -2247,8 +2310,8 @@ package body Tabula.Renderers is
 											"</form>" & Line_Break);
 									end if;
 								elsif Tag = "active" then
-									if not Person.Commited 
-										and then Village.State /= Villages.Epilogue 
+									if not Person.Commited
+										and then Village.State /= Villages.Epilogue
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.State = Villages.Prologue)
 									then
 										declare
@@ -2407,8 +2470,8 @@ package body Tabula.Renderers is
 					end;
 				end if;
 			elsif Tag = "scroll" then
-				if Village.State /= Villages.Closed 
-					and then Day = Village.Today 
+				if Village.State /= Villages.Closed
+					and then Day = Village.Today
 					and then Player_Index >= 0
 				then
 					Ase.Web.Producers.Produce(Output, Template);
@@ -2420,15 +2483,15 @@ package body Tabula.Renderers is
 		end Handle;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_Village_File_Name.all);
 		begin
 			Target_Day := Village.Today;
 			if Village.Time = Villages.Night then
 				Target_Day := Target_Day - 1;
 			end if;
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -2442,7 +2505,7 @@ package body Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Message : Villages.Message;
 		User_Id : String;
 		User_Password : String)
@@ -2465,17 +2528,17 @@ package body Tabula.Renderers is
 					Ase.Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
 			else
-				Handle_Messages(Output, Tag, Template, Object, 
+				Handle_Messages(Output, Tag, Template, Object,
 					Village_Id, Village, Village.Today, Message, Message.Time, User_Id => User_Id, User_Password => User_Password);
 			end if;
 		end Handle;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_Preview_File_Name.all);
 		begin
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -2493,7 +2556,7 @@ package body Tabula.Renderers is
 		Player : Natural;
 		Target : Natural;
 		User_Id : String;
-		User_Password : String) 
+		User_Password : String)
 	is
 		Person : Villages.Person_Type renames Village.People(Player);
 		Target_Person : Villages.Person_Type renames Village.People(Target);
@@ -2529,11 +2592,11 @@ package body Tabula.Renderers is
 		end Handle;
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, 
+		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
 			Object.Configuration.Template_Target_File_Name.all);
 		begin
-			Ase.Web.Producers.Produce(Output, 
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+			Ase.Web.Producers.Produce(Output,
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handle'Access);
 		exception
 			when others =>
@@ -2547,14 +2610,14 @@ package body Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		File_Name : in String;
-		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Ase.Web.Producers.Template)) 
+		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Ase.Web.Producers.Template))
 	is
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
 		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, File_Name);
 		begin
 			Ase.Web.Producers.Produce(Output,
-				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))), 
+				Ase.Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
 				Handler => Handler);
 		exception
 			when others =>
@@ -2589,7 +2652,7 @@ package body Tabula.Renderers is
 					Write(Output, User_Id);
 				else
 					Write(Output, "<a href=");
-					Link(Renderer'Class(Object), Output, 
+					Link(Renderer'Class(Object), Output,
 						User_Id => User_Id, User_Password => User_Password, User_Page => True);
 					Write(Output, '>');
 					Write(Output, User_Id);
