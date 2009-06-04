@@ -18,10 +18,10 @@ project shuffle is
 	package Compiler is
 		case Build is
 			when "release" =>
-				for Default_Switches ("Ada") use ("-gnat05", "-O2", "-gnata", "-gnatwI",
-					"-ffunction-sections", "-fdata-sections", "-fomit-frame-pointer");
+				for Default_Switches ("Ada") use ("-O2", "-momit-leaf-frame-pointer", "-finline-functions",
+					"-ffunction-sections", "-fdata-sections", "-gnata");
 			when "debug" =>
-				for Default_Switches ("Ada") use ("-gnat05", "-Os", "-g", "-gnata", "-gnatwbcIjpruF");
+				for Default_Switches ("Ada") use ("-g", "-gnata", "-gnatwaFK.R");
 		end case;
 	end Compiler;
 	
@@ -37,9 +37,9 @@ project shuffle is
 	package Linker is
 		case Build is
 			when "release" =>
-				for Default_Switches ("Ada") use ("-s", "--gc-sections");
+				for Default_Switches ("Ada") use ("-s", "-Xlinker", "--gc-sections");
 			when "debug" =>
-				null;
+				for Default_Switches ("Ada") use ("-g");
 		end case;
 	end Linker;
 	

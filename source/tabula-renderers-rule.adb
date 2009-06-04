@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Unchecked_Conversion;
 package body Tabula.Renderers.Rule is
 	
 	type String_Access is not null access constant String;
@@ -213,13 +214,16 @@ package body Tabula.Renderers.Rule is
 	procedure Rule_Panel(
 		Object : in Renderer'Class;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in Ase.Web.Producers.Template;
+		Template : in System.Address; -- Ase.Web.Producers.Template;
 		Village_Id : in Villages.Lists.Village_Id;
 		Village : in Villages.Village_Type; 
 		Player : in Boolean;
 		User_Id : in String;
 		User_Password : in String)
 	is
+		type Template_Access is access constant Ase.Web.Producers.Template;
+		function "+" is new Ada.Unchecked_Conversion(System.Address, Template_Access);
+		Template_Body : Template_Access := + Template;
 		use Ase.Web;
 		use type Villages.Servant_Knowing_Mode;
 		use type Villages.Monster_Side;
@@ -387,7 +391,7 @@ package body Tabula.Renderers.Rule is
 			or else Village.Hunter_Silver_Bullet /= Villages.Initial_Hunter_Silver_Bullet
 			or else Village.Unfortunate          /= Villages.Initial_Unfortunate
 		then
-			Ase.Web.Producers.Produce(Output, Template, Extract(Changable).all, Handler => Handle'Access);
+			Ase.Web.Producers.Produce(Output, Template_Body.all, Extract(Changable).all, Handler => Handle'Access);
 		end if;
 	end Rule_Panel;
 	

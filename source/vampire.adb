@@ -1,6 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
-with Ada.Environment_Variables;
 with Ada.Exceptions;
 with Ada.Finalization;
 with Ada.IO_Exceptions;
@@ -91,8 +90,8 @@ begin
 	MT19937.Reset(Generator);
 	declare
 		-- HTTP Info
-		Remote_Addr : String renames Ada.Environment_Variables.Value(Ase.Web.Remote_Addr_Variable);
-		Remote_Host : String renames Ada.Environment_Variables.Value(Ase.Web.Remote_Host_Variable);
+		Remote_Addr : String renames Ase.Web.Remote_Addr;
+		Remote_Host : String renames Ase.Web.Remote_Host;
 		Inputs : Ase.Web.Query_Strings renames Ase.Web.Get(Input);
 		Query_Strings : Ase.Web.Query_Strings renames Ase.Web.Get_Query_Strings;
 		Cookie : Ase.Web.Cookie := Ase.Web.Get_Cookie; -- variable

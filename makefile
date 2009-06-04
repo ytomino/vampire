@@ -2,12 +2,10 @@ empty :=
 space :=$(empty) $(empty)
 
 ifneq ($(ComSpec),)
-export CGISUFFIX=.exe
 HOST=i686-pc-mingw32
 DIRSEP=\$(empty)
 PATHLISTSEP=;
 else
-export CGISUFFIX=.cgi
 HOST=i686-pc-freebsd6
 DIRSEP=/
 PATHLISTSEP=:
@@ -15,27 +13,36 @@ endif
 
 export TARGET=$(HOST)
 
-ifneq ($(TARGET),$(HOST))
-GNATMAKE=$(TARGET)-gnatmake
+ifeq ($(TARGET),i686-pc-mingw32)
+export CGISUFFIX=.exe
 else
-GNATMAKE=gnatmake
+export CGISUFFIX=.cgi
 endif
 
+ifneq ($(TARGET),$(HOST))
+GNATMAKE=$(TARGET)-gnatmake
+export BUILDTYPE=release
+export BUILDDIR:=build-$(TARGET)
+else
+GNATMAKE=gnatmake
 export BUILDTYPE=debug
-
 export BUILDDIR:=build
+endif
+
 override BUILDDIR:=$(abspath $(BUILDDIR))
 
 LIB_PROJECTS=$(wildcard lib/*/*.gpr)
 ifneq ($(LIB_PROJECTS),)
 export ADA_PROJECT_PATH=$(subst $(space),$(PATHLISTSEP),$(dir $(LIB_PROJECTS)))
+export ADA_INCLUDE_PATH=
+export ADA_OBJECTS_PATH=
 else
 endif
 
 LIB_MAKEFILES=$(wildcard lib/*/makefile)
 LIB_MAKE=$(addsuffix .mk,$(LIB_MAKEFILES))
 
-.PHONY: all clean
+.PHONY: all clean test-vampire test-users archive
 
 all: site/vampire$(CGISUFFIX)
 
@@ -59,3 +66,20 @@ $(BUILDDIR):
 
 %.mk : %
 	make -C $(dir $@) BUILDDIR=$(BUILDDIR)
+
+test-vampire:
+	cd site && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
+
+test-users:
+	cd site && .$(DIRSEP)users$(CGISUFFIX)
+
+archive:
+	-rm site/vampire.7z
+	mkdir archive
+	svn export lib archive/lib
+	svn export site archive/site
+	svn export source archive/source
+	svn export makefile archive/makefile
+	svn export readme.txt archive/readme.txt
+	cd archive && 7za a -t7z ../site/vampire.7z *
+	rm -rf archive

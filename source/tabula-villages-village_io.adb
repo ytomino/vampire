@@ -12,7 +12,7 @@ package body Tabula.Villages.Village_IO is
 		use Person_Role_IO;
 		use Person_State_IO;
 		use Requested_Role_IO;
-		use Sex_Kind_IO;
+		use Person_Sex_IO;
 		use People_IO;
 		use Tabula.Calendar.Time_IO;
 		procedure People_Callback(Item : in out Person_Type) is

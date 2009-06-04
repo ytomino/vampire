@@ -2384,7 +2384,9 @@ package body Tabula.Renderers is
 				end if;
 			elsif Tag = "rule" then
 				if Day = 0 and then Tip_Showed then
-					Rule.Rule_Panel(Object, Output, Template, Village_Id, Village, Player_Index >= 0,
+					Rule.Rule_Panel(Object, Output,
+						Template => Template'Address, -- avoiding compiler's bug of gcc 4.4.0
+						Village_Id => Village_Id, Village => Village, Player => Player_Index >= 0,
 						User_Id => User_Id, User_Password => User_Password);
 				end if;
 			elsif Tag = "next" then

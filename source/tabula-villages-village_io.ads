@@ -8,6 +8,7 @@ package Tabula.Villages.Village_IO is
 	procedure IO(Serializer: in out DYAYaml.Serializer; Village: in out Village_Type; Info_Only : Boolean := False);
 	
 	package Sex_Kind_IO is new DYAYaml.IO_Enumeration(Sex_Kind);
+	package Person_Sex_IO is new DYAYaml.IO_Enumeration(Person_Sex);
 	package Requested_Role_IO is new DYAYaml.IO_Enumeration(Requested_Role);
 	package Person_Role_IO is new DYAYaml.IO_Enumeration(Person_Role);
 	package Person_State_IO is new DYAYaml.IO_Enumeration(Person_State);
