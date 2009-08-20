@@ -6,9 +6,15 @@ HOST=i686-pc-mingw32
 DIRSEP=\$(empty)
 PATHLISTSEP=;
 else
+ifneq ($(Apple_PubSub_Socket_Render),)
+HOST=i686-apple-darwin9
+DIRSEP=/
+PATHLISTSEP=:
+else
 HOST=i686-pc-freebsd6
 DIRSEP=/
 PATHLISTSEP=:
+endif
 endif
 
 export TARGET=$(HOST)
@@ -47,10 +53,10 @@ LIB_MAKE=$(addsuffix .mk,$(LIB_MAKEFILES))
 all: site/vampire$(CGISUFFIX)
 
 clean:
-	gnatclean -P source/vampire.gpr
+	-rm -rf build
 
 site/vampire$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/vampire.gpr
+	$(GNATMAKE) -P source/vampire.gpr -Lbuild
 
 site/unlock$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
 	$(GNATMAKE) -P source/unlock.gpr
