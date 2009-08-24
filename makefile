@@ -27,11 +27,11 @@ endif
 
 ifneq ($(TARGET),$(HOST))
 GNATMAKE=$(TARGET)-gnatmake
-export BUILDTYPE=release
+export BUILD=release
 export BUILDDIR:=build-$(TARGET)
 else
 GNATMAKE=gnatmake
-export BUILDTYPE=debug
+export BUILD=debug
 export BUILDDIR:=build
 endif
 
