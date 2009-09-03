@@ -4,8 +4,7 @@ with "dyayaml";
 with "iconv";
 project vampire is
 	
-	type Build_Type is ("release", "debug");
-	Build : Build_Type := External ("BUILD", "debug");
+	Build : Template.Build_Type := Template.Build;
 	
 	for Source_Dirs use (".");
 	for Main use ("vampire.adb");

@@ -2,9 +2,8 @@ with "template";
 with "ase";
 with "dyayaml";
 project shuffle is
-
-	type Build_Type is ("release", "debug");
-	Build : Build_Type := External ("BUILDTYPE", "debug");
+	
+	Build : Template.Build_Type := Template.Build;
 	
 	for Source_Dirs use (".");
 	for Main use ("shuffle.adb");

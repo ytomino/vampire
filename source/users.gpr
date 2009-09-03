@@ -4,8 +4,7 @@ with "ase";
 with "dyayaml";
 project users is
 	
-	type Build_Type is ("release", "debug");
-	Build : Build_Type := External ("BUILDTYPE", "debug");
+	Build : Template.Build_Type := Template.Build;
 	
 	for Source_Dirs use (".");
 	for Main use ("users.adb");

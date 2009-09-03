@@ -11,7 +11,7 @@ HOST=i686-apple-darwin9
 DIRSEP=/
 PATHLISTSEP=:
 else
-HOST=i686-pc-freebsd6
+HOST=i686-pc-freebsd7
 DIRSEP=/
 PATHLISTSEP=:
 endif
@@ -54,9 +54,10 @@ all: site/vampire$(CGISUFFIX)
 
 clean:
 	-rm -rf build
+	-rm -rf build-i686-pc-freebsd7
 
 site/vampire$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/vampire.gpr -Lbuild
+	$(GNATMAKE) -P source/vampire.gpr
 
 site/unlock$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
 	$(GNATMAKE) -P source/unlock.gpr
@@ -71,7 +72,7 @@ $(BUILDDIR):
 	mkdir $(subst /,$(DIRSEP),$(BUILDDIR))
 
 %.mk : %
-	make -C $(dir $@) BUILDDIR=$(BUILDDIR)
+	make -C $(dir $@) BUILDDIR=$(BUILDDIR) BUILD=$(BUILD)
 
 test-vampire:
 	cd site && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)

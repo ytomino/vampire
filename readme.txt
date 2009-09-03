@@ -25,7 +25,7 @@ root/
 
 *ビルドに必要なもの
 
-gcc 4.4.0を使わせていただいています。
+gcc 4.4.1を使わせていただいています。
 http://gcc.gnu.org/
 
 乱数アルゴリズムにMT19937を使わせていただいています。
@@ -34,7 +34,8 @@ BSDLです。ライセンス文書はase-numerics-mt19937.adsの先頭にコメ�
 
 dyayamlを使っています。
 http://panathenaia.halfmoon.jp/alang/dyayaml.html
-YAMLはhttp://yaml.org/を参照してくださいと言いたいのですがdyayamlはサブセット＆幾つか独自仕様があります。まあ適当に。
+YAMLはhttp://yaml.org/を参照してくださいと言いたいのですがdyayamlはサブセットかつ幾つか独自仕様があります。まあ適当に。
+(いずれlibyamlに移行したい)
 
 それ以外で私が書いたコードはNYSL(煮るなり焼くなり好きにしろライセンス)ということにしてください。
 http://www.kmonos.net/nysl/
