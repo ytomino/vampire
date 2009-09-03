@@ -1,3 +1,4 @@
+with "template";
 with "ase";
 with "dyayaml";
 project shuffle is
@@ -16,13 +17,9 @@ project shuffle is
 	end Builder;
 	
 	package Compiler is
-		case Build is
-			when "release" =>
-				for Default_Switches ("Ada") use ("-O2", "-momit-leaf-frame-pointer", "-finline-functions",
-					"-ffunction-sections", "-fdata-sections", "-gnata");
-			when "debug" =>
-				for Default_Switches ("Ada") use ("-g", "-gnata", "-gnatwaFK.R");
-		end case;
+		for Default_Switches ("Ada") use
+			Template.Compiler'Default_Switches ("Ada") &
+			("-gnatwFK.R");
 	end Compiler;
 	
 	package Binder is
