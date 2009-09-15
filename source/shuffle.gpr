@@ -1,6 +1,5 @@
 with "template";
 with "ase";
-with "dyayaml";
 project shuffle is
 	
 	Build : Template.Build_Type := Template.Build;

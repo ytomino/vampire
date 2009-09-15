@@ -17,11 +17,13 @@ package body Tabula.Users is
 		return True;
 	end Valid_Id_String;
 	
-	function Digest(Password : String) return Ase.MD5.Message_Digest is
-		MD5 : Ase.MD5.Context;
+	function Digest(Password : String) return Crypto.MD5.Message_Digest is
+		MD5 : Crypto.MD5.Context := Crypto.MD5.Initial;
+		Digest : Crypto.MD5.Fingerprint;
 	begin
-		Ase.MD5.Update(MD5, Password);
-		return Ase.MD5.Image(Ase.MD5.Digest(MD5));
+		Crypto.MD5.Update(MD5, Password);
+		Crypto.MD5.Final(MD5, Digest);
+		return Crypto.MD5.Image(Digest);
 	end Digest;
 	
 end Tabula.Users;

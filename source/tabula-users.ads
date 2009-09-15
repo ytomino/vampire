@@ -1,14 +1,14 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
-with Ase.MD5;
+with Crypto.MD5;
 with Tabula.Calendar;
 package Tabula.Users is
 	
 	Administrator : constant String := "administrator";
 	
 	function Valid_Id_String(Id : String) return Boolean;
-	function Digest(Password : String) return Ase.MD5.Message_Digest;
+	function Digest(Password : String) return Crypto.MD5.Message_Digest;
 	
 	type User_Info is record
 		-- MD5ハッシュ済みパスワード

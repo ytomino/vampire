@@ -1,7 +1,7 @@
 with "template";
-with "template";
 with "ase";
 with "dyayaml";
+with "openssl";
 project users is
 	
 	Build : Template.Build_Type := Template.Build;
@@ -36,11 +36,13 @@ project users is
 			when "release" =>
 				for Default_Switches ("Ada") use
 					("-s", "-Xlinker", "--gc-sections") &
-					dyayaml.Linker'Default_Switches ("Ada");
+					dyayaml.Linker'Default_Switches ("Ada") &
+					openssl.Linker'Default_Switches ("Ada");
 			when "debug" =>
 				for Default_Switches ("Ada") use
 					("-g") &
-					dyayaml.Linker'Default_Switches ("Ada");
+					dyayaml.Linker'Default_Switches ("Ada") &
+					openssl.Linker'Default_Switches ("Ada");
 		end case;
 	end Linker;
 	
