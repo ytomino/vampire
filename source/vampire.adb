@@ -7,7 +7,6 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO.Text_Streams;
 with Ase.Directories.Lock_Files;
 with Ase.Numerics.MT19937;
-with Ase.Streams.Standard_Types;
 with Ase.Web;
 with Tabula.Calendar;
 with Tabula.Configurations.Templates;
@@ -24,7 +23,6 @@ with Tabula.Villages.Save;
 procedure Vampire is
 	
 	package MT19937 renames Ase.Numerics.MT19937;
-	use Ase.Streams.Standard_Types;
 	use Tabula;
 	use Villages.Messages;
 	use Villages.Person_Arrays;
@@ -1053,10 +1051,10 @@ exception
 	when Ase.Directories.Lock_Files.Lock_Error =>
 		Ase.Web.Header(Output, Ase.Web.Text);
 		Ase.Web.Header_Break(Output);
-		Write(Output, "White fog. Wait 1 minute!" & Ase.Web.Line_Break);
+		String'Write(Output, "White fog. Wait 1 minute!" & Ase.Web.Line_Break);
 	when E : others =>
 		Ase.Web.Header(Output, Ase.Web.Text);
 		Ase.Web.Header_Break(Output);
-		Write(Output, Ada.Exceptions.Exception_Information(E));
-		Write(Output, Ase.Web.Line_Break);
+		String'Write(Output, Ada.Exceptions.Exception_Information(E));
+		String'Write(Output, Ase.Web.Line_Break);
 end Vampire;

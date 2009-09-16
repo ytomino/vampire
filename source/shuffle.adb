@@ -4,7 +4,6 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Text_IO.Text_Streams;
 with Ase.Numerics.MT19937;
-with Ase.Streams.Standard_Types; use Ase.Streams.Standard_Types;
 with Ase.Web;
 with Tabula; use Tabula;
 with Tabula.Calendar;
@@ -43,7 +42,7 @@ begin
 	Ase.Numerics.MT19937.Reset(Seed);
 	Village.Teaming := Random_Teaming.Random(Seed);
 	Ase.Web.Header(Output, Ase.Web.Text);
-	Write(Output, Ase.Web.Line_Break);
+	String'Write(Output, Ase.Web.Line_Break);
 	for I in 1 .. Random_People_Count.Random(Seed) loop
 		Append(Village.People, Villages.Person_Type'(Ada.Finalization.Controlled with
 			Name => Ada.Strings.Unbounded.To_Unbounded_String("" & Character'Val(Character'Pos(Character'Pred('A')) + I)),
@@ -59,11 +58,11 @@ begin
 			Records => null));
 	end loop;
 	Tabula.Villages.Shuffle(Village.People.all, null, Village.Teaming, Village.Monster_Side, Village.Appearance, Seed);
-	Write(Output, Villages.Teaming'Image(Village.Teaming));
-	Write(Output, Ase.Web.Line_Break);
-	Write(Output, Ase.Web.Line_Break);
+	String'Write(Output, Villages.Teaming'Image(Village.Teaming));
+	String'Write(Output, Ase.Web.Line_Break);
+	String'Write(Output, Ase.Web.Line_Break);
 	for I in Village.People'Range loop
-		Write(Output, Villages.Person_Role'Image(Village.People(I).Role));
-		Write(Output, Ase.Web.Line_Break);
+		String'Write(Output, Villages.Person_Role'Image(Village.People(I).Role));
+		String'Write(Output, Ase.Web.Line_Break);
 	end loop;
 end Shuffle;

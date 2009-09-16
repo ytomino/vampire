@@ -1,6 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams;
-with Ase.Streams.Standard_Types;
 with Ase.Web;
 with Tabula.Villages;
 with Tabula.Villages.Lists;
@@ -192,8 +191,8 @@ private
 	Line_Break : String renames Ase.Web.Line_Break;
 	
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in Character)
-		renames Ase.Streams.Standard_Types.Write;
+		renames Character'Write;
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in String)
-		renames Ase.Streams.Standard_Types.Write;
+		renames String'Write;
 	
 end Tabula.Renderers;
