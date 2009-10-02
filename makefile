@@ -1,49 +1,47 @@
 empty :=
 space :=$(empty) $(empty)
 
-ifneq ($(ComSpec),)
-HOST=i686-pc-mingw32
-DIRSEP=\$(empty)
-PATHLISTSEP=;
-else
-ifneq ($(Apple_PubSub_Socket_Render),)
-HOST=i686-apple-darwin9
-DIRSEP=/
-PATHLISTSEP=:
-else
-HOST=i686-pc-freebsd7
-DIRSEP=/
-PATHLISTSEP=:
-endif
-endif
-
+HOST=$(shell gcc -dumpmachine)
 export TARGET=$(HOST)
 
 ifeq ($(TARGET),i686-pc-mingw32)
-export CGISUFFIX=.exe
+DIRSEP=\$(empty)
+PATHLISTSEP=;
+CGISUFFIX=.exe
 else
-export CGISUFFIX=.cgi
+DIRSEP=/
+PATHLISTSEP=:
+CGISUFFIX=.cgi
 endif
 
 ifneq ($(TARGET),$(HOST))
 GNATMAKE=$(TARGET)-gnatmake
-export BUILD=release
-export BUILDDIR:=build-$(TARGET)
+BUILD=release
+BUILDDIR:=$(abspath build-$(TARGET))
 else
 GNATMAKE=gnatmake
-export BUILD=debug
-export BUILDDIR:=build
+BUILD=debug
+BUILDDIR:=$(abspath build)
 endif
 
-override BUILDDIR:=$(abspath $(BUILDDIR))
-
-LIB_PROJECTS=$(wildcard lib/*/*.gpr)
-ifneq ($(LIB_PROJECTS),)
-export ADA_PROJECT_PATH=$(subst $(space),$(PATHLISTSEP),$(dir $(LIB_PROJECTS)))
-export ADA_INCLUDE_PATH=
-export ADA_OBJECTS_PATH=
+ifeq ($(BUILD),release)
+CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaI
+BARGS=
+LARGS=-s -Xlinker --gc-sections
 else
+CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaI
+BARGS=-E
+LARGS=-g
 endif
+
+MARGS=-a -cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
+
+export ADA_PROJECT_PATH=
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
+export ADA_OBJECTS_PATH=
+
+CARGS:=$(CARGS) -gnatwFK.R
+LARGS:=$(LARGS) -lcrypto -liconv -ldyayaml
 
 .PHONY: all clean test-vampire test-shuffle test-users archive \
 	site/vampire$(CGISUFFIX) \
@@ -56,17 +54,17 @@ all: site/vampire$(CGISUFFIX)
 clean:
 	-rm -rf build*
 
-site/vampire$(CGISUFFIX):
-	$(GNATMAKE) -a -p -P source/vampire.gpr
+site/vampire$(CGISUFFIX): source/vampire.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/unlock$(CGISUFFIX):
-	$(GNATMAKE) -a -p -P source/unlock.gpr
+site/unlock$(CGISUFFIX): source/unlock.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/users$(CGISUFFIX):
-	$(GNATMAKE) -a -p -P source/users.gpr
+site/users$(CGISUFFIX): source/users.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/shuffle$(CGISUFFIX):
-	$(GNATMAKE) -a -p -P source/shuffle.gpr
+site/shuffle$(CGISUFFIX): source/shuffle.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 test-vampire:
 	cd site && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
@@ -76,6 +74,9 @@ test-users:
 
 test-shuffle:
 	cd site && .$(DIRSEP)shuffle$(CGISUFFIX)
+
+$(BUILDDIR):
+	mkdir $@
 
 archive:
 	-rm site/vampire.7z
