@@ -1,9 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings;
-with Ase.Editing;
-with Ase.Strings;
+with Ada.Strings.Fixed;
 with iconv.Streams;
 package body Tabula.Renderers.Simple is
+	use type Villages.Village_State;
 	
 	-- function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -24,9 +23,9 @@ package body Tabula.Renderers.Simple is
 	
 	overriding function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings) return Villages.Lists.Village_Id
+		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id
 	is
-		S : String renames Ase.Web.Element(Query_Strings, "v");
+		S : String renames Web.Element(Query_Strings, "v");
 	begin
 		if S'Length = Villages.Lists.Village_Id'Length then
 			return S;
@@ -38,11 +37,10 @@ package body Tabula.Renderers.Simple is
 	overriding procedure Get_Day(
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural)
 	is
-		use type Villages.Village_State;
-		S : String renames Ase.Web.Element(Query_Strings, "d");
+		S : String renames Web.Element(Query_Strings, "d");
 	begin
 		Day := Natural'Value(S);
 	exception
@@ -58,12 +56,11 @@ package body Tabula.Renderers.Simple is
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
 		Day : in Natural;
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer)
 	is
-		use type Villages.Village_State;
-		Range_Arg : String renames Ase.Web.Element(Query_Strings, "r");
-		P : constant Natural := Ase.Strings.Index(Range_Arg, "-");
+		Range_Arg : String renames Web.Element(Query_Strings, "r");
+		P : constant Natural := Ada.Strings.Fixed.Index(Range_Arg, "-");
 	begin
 		if P < Range_Arg'First then
 			Last := Villages.Count_Speech(Village, Day);
@@ -85,23 +82,23 @@ package body Tabula.Renderers.Simple is
 	
 	overriding function Get_User_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String is
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String is
 	begin
-		return Ase.Web.Element(Query_Strings, "i");
+		return Web.Element(Query_Strings, "i");
 	end Get_User_Id;
 	
 	overriding function Get_User_Password(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String is
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String is
 	begin
-		return Ase.Web.Element(Query_Strings, "p");
+		return Web.Element(Query_Strings, "p");
 	end Get_User_Password;
 
 	overriding procedure Set_User(
 		Object : in Renderer; 
-		Cookie : in out Ase.Web.Cookie;
+		Cookie : in out Web.Cookie;
 		User_Id: in String;
 		User_Password : in String) is
 	begin
@@ -110,22 +107,22 @@ package body Tabula.Renderers.Simple is
 	
 	overriding function Get_Text(
 		Object : Renderer; 
-		Inputs : Ase.Web.Query_Strings) return String is
+		Inputs : Web.Query_Strings) return String is
 	begin
-		return Ase.Strings.Trim(iconv.Decode(Ready_Encoding.all, Ase.Web.Element(Inputs, "text")), Ada.Strings.Both);
+		return Ada.Strings.Fixed.Trim(iconv.Decode(Ready_Encoding.all, Web.Element(Inputs, "text")), Ada.Strings.Both);
 	end Get_Text;
 	
 	function Is_User_Page(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return Boolean 
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return Boolean 
 	is
-		User_Id : String renames Ase.Web.Element(Query_Strings, "i");
+		User_Id : String renames Web.Element(Query_Strings, "i");
 	begin
 		if User_Id = "" then
 			return False;
 		else
-			return Ase.Web.Element(Query_Strings, "u") = User_Id;
+			return Web.Element(Query_Strings, "u") = User_Id;
 		end if;
 	end Is_User_Page;
 	
@@ -250,7 +247,7 @@ package body Tabula.Renderers.Simple is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		File_Name : in String;
-		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Ase.Web.Producers.Template)) 
+		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Web.Producers.Template)) 
 	is
 		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
 		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
@@ -272,10 +269,10 @@ package body Tabula.Renderers.Simple is
 		User_Page : Boolean := False)
 	is
 		function Self_URI return String is
-			URI : String renames Ase.Web.Request_URI;
+			URI : String renames Web.Request_URI;
 			First, Last : Natural;
 		begin
-		 	Last := Ase.Strings.Index(URI, "?") - 1;
+		 	Last := Ada.Strings.Fixed.Index(URI, "?") - 1;
 			if Last < URI'First then
 				Last := URI'Last;
 			end if;
@@ -299,7 +296,7 @@ package body Tabula.Renderers.Simple is
 			Write(Output, "&i=");
 			Write(Output, User_Id);
 			Write(Output, "&p=");
-			Write(Output, Ase.Web.Encode_URI(User_Password));
+			Write(Output, Web.Encode_URI(User_Password));
 		end if;
 		if User_Page then
 			Write(Output, "&u=");
@@ -309,24 +306,24 @@ package body Tabula.Renderers.Simple is
 			Write(Output, Village_Id);
 			if Day >= 0 then
 				Write(Output, "&d=");
-				Write(Output, Ase.Editing.Image(Item => Day));
+				Write(Output, To_String(Day));
 			end if;
 			if First >= 0 and then Last >= 0 then
 				Write(Output, "&r=");
-				Write(Output, Ase.Editing.Image(Item => First));
+				Write(Output, To_String(First));
 				Write(Output, '-');
-				Write(Output, Ase.Editing.Image(Item => Last));
+				Write(Output, To_String(Last));
 			elsif Latest >= 0 then
 				Write(Output, "&r=");
-				Write(Output, Ase.Editing.Image(Item => Latest));
+				Write(Output, To_String(Latest));
 			end if;
 		end if;
 		Write(Output, '"');
 	end Link;
 	
-	overriding function HTML_Version(Object : in Renderer) return Ase.Web.HTML_Version is
+	overriding function HTML_Version(Object : in Renderer) return Web.HTML_Version is
 	begin
-		return Ase.Web.HTML;
+		return Web.HTML;
 	end HTML_Version;
 
 end Tabula.Renderers.Simple;

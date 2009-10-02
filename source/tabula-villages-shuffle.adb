@@ -1,20 +1,20 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers;
+use type Ada.Containers.Count_Type;
 procedure Tabula.Villages.Shuffle(
-	People : in out Villages.Person_Array;
+	People : in out Villages.People.Vector;
 	Victim : access Villages.Person_Role;
 	Teaming : Villages.Teaming;
 	Monster_Side : Villages.Monster_Side;
 	Appearance : Villages.Role_Appearances;
-	Generator : in out Ase.Numerics.MT19937.Generator)
+	Generator : not null access Ada.Numerics.MT19937.Generator)
 is
-	package MT19937 renames Ase.Numerics.MT19937;
-	
 	subtype Village_Side_Count_Type is Natural range 1 .. 6;
 	subtype Vampire_Count_Type is Natural range 1 .. 3;
 	
-	People_Count : constant Integer := People'Length;
-	subtype People_Index is Integer range People'Range;
-	package People_Random is new MT19937.Discrete_Random(People_Index);
+	People_Count : constant Ada.Containers.Count_Type := People.Length;
+	subtype People_Index is Integer range People.First_Index .. People.Last_Index;
+	package People_Random is new Ada.Numerics.MT19937.Discrete_Random(People_Index);
 	
 	type Role_Set is array (Person_Role) of Boolean;
 	pragma Pack(Role_Set);
@@ -34,10 +34,10 @@ is
 		end Push;
 		
 		subtype I60 is Integer range 1 .. 60;
-		package R60 is new MT19937.Discrete_Random(I60);
+		package R60 is new Ada.Numerics.MT19937.Discrete_Random(I60);
 		
 		function Random_Matrix_Role return Matrix_Role is
-			package RR is new MT19937.Discrete_Random(Matrix_Role);
+			package RR is new Ada.Numerics.MT19937.Discrete_Random(Matrix_Role);
 		begin
 			loop 
 				declare
@@ -51,7 +51,7 @@ is
 		end Random_Matrix_Role;
 		
 		function Random_Night_Role return Night_Role is
-			package RR is new MT19937.Discrete_Random(Night_Role);
+			package RR is new Ada.Numerics.MT19937.Discrete_Random(Night_Role);
 			Role : Night_Role := RR.Random(Generator);
 		begin
 			pragma Assert(Result(Role) = 0); -- 先立って1回だけ呼ばれる
@@ -62,7 +62,7 @@ is
 		end Random_Night_Role;
 		
 		function Random_Daytime_Role return Daytime_Role is
-			package RR is new MT19937.Discrete_Random(Daytime_Role);
+			package RR is new Ada.Numerics.MT19937.Discrete_Random(Daytime_Role);
 		begin
 			loop
 				declare
@@ -78,8 +78,8 @@ is
 		function Male_And_Female return Boolean is
 			Male_Exists, Female_Exists : Boolean := False;
 		begin
-			for Position in People'Range loop
-				case People(Position).Sex is
+			for Position in People_Index loop
+				case People.Constant_Reference(Position).Element.Sex is
 					when Male => Male_Exists := True;
 					when Female => Female_Exists := True;
 				end case;
@@ -469,7 +469,7 @@ is
 		begin
 			for I in People_Index loop
 				declare
-					Person : Person_Type renames People(I);
+					Person : Person_Type renames People.Constant_Reference(I).Element.all;
 				begin
 					if not Person.Ignore_Request then
 						declare
@@ -489,7 +489,7 @@ is
 	begin
 		for I in People_Index loop
 			declare
-				Person : Person_Type renames People(I);
+				Person : Person_Type renames People.Constant_Reference(I).Element.all;
 			begin
 				if Person.Ignore_Request then
 					Result(I) := (Inhabitant => True, others => False); -- 強制村人
@@ -541,7 +541,7 @@ is
 	begin
 		for I in People_Index loop
 			declare
-				S : constant Person_Sex := People(I).Sex;
+				S : constant Person_Sex := People.Constant_Reference(I).Element.Sex;
 			begin
 				if (S = Male and Candidacy(I) = Sweetheart_F) or else
 					(S = Female and Candidacy(I) = Sweetheart_M)
@@ -555,7 +555,7 @@ is
 			end;
 			if Request(I)(Candidacy(I)) then
 				declare
-					Person : Person_Type renames People(I);
+					Person : Person_Type renames People.Constant_Reference(I).Element.all;
 				begin
 					if Person.Ignore_Request then
 						Result := Result + 20;
@@ -621,6 +621,6 @@ begin
 	end if;
 	-- 設定
 	for I in People_Index loop
-		People(I).Role := Current.Assignment(I);
+		People.Reference(I).Element.Role := Current.Assignment(I);
 	end loop;
 end Tabula.Villages.Shuffle;

@@ -1,10 +1,10 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams;
-with Ase.Web;
+with Web;
 with Tabula.Villages;
 with Tabula.Villages.Lists;
 with Tabula.Users;
-private with Ase.Web.Producers;
+private with Web.Producers;
 package Tabula.Renderers is
 	
 	type File_Name is not null access constant String;
@@ -36,45 +36,45 @@ package Tabula.Renderers is
 	
 	function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings) return Villages.Lists.Village_Id;
+		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id;
 	
 	procedure Get_Day(
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural);
 	
 	procedure Get_Range(
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
 		Day : in Natural;
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer);
 	
 	function Get_User_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String;
 	
 	function Get_User_Password(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String;
 	
 	procedure Set_User(
 		Object : in Renderer; 
-		Cookie : in out Ase.Web.Cookie;
+		Cookie : in out Web.Cookie;
 		New_User_Id: in String;
 		New_User_Password : in String);
 	
 	function Get_Text(
 		Object : Renderer; 
-		Inputs : Ase.Web.Query_Strings) return String;
+		Inputs : Web.Query_Strings) return String;
 	
 	function Is_User_Page(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return Boolean;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return Boolean;
 	
 	-- Page Generating
 	
@@ -147,7 +147,7 @@ private
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		File_Name : in String;
-		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Ase.Web.Producers.Template));
+		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Web.Producers.Template));
 	
 	procedure Link_Style_Sheet(
 		Object : in Renderer;
@@ -156,7 +156,7 @@ private
 	procedure User_Panel(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in Ase.Web.Producers.Template;
+		Template : in Web.Producers.Template;
 		User_Id : in String;
 		User_Password : in String;
 		Link_To_User_Page : Boolean);
@@ -186,13 +186,15 @@ private
 		Today : Natural;
 		State : Villages.Village_State);
 	
-	function HTML_Version(Object : in Renderer) return Ase.Web.HTML_Version;
+	function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 	
-	Line_Break : String renames Ase.Web.Line_Break;
+	Line_Break : String renames Web.Line_Break;
 	
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in Character)
 		renames Character'Write;
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in String)
 		renames String'Write;
+
+	function To_String(X : Integer) return String;
 	
 end Tabula.Renderers;

@@ -1,10 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Containers.Vectors;
-with Ada.Finalization;
 with Ada.Strings.Unbounded;
-with Ada.Unchecked_Deallocation;
-with Ase.Containers.Generic_Arrays;
 with Tabula.Calendar;
 package Tabula.Villages is
 	
@@ -76,11 +73,9 @@ package Tabula.Villages is
 		Special => False,
 		Note => Ada.Strings.Unbounded.Null_Unbounded_String);
 	
-	type Person_Record_Array is array(Natural range <>) of Person_Record;
-	type Person_Record_Array_Access is access Person_Record_Array;
-	procedure Free is new Ada.Unchecked_Deallocation(Person_Record_Array, Person_Record_Array_Access);
+	package Person_Records is new Ada.Containers.Vectors (Natural, Person_Record);
 	
-	type Person_Type is new Ada.Finalization.Controlled with record
+	type Person_Type is record
 		Id : Ada.Strings.Unbounded.Unbounded_String;
 		Name : Ada.Strings.Unbounded.Unbounded_String;
 		Work : Ada.Strings.Unbounded.Unbounded_String;
@@ -90,13 +85,11 @@ package Tabula.Villages is
 		Request : Requested_Role;
 		Ignore_Request : Boolean;
 		Role : Person_Role;
-		Records : Person_Record_Array_Access;
+		Records : aliased Person_Records.Vector;
 		Commited : Boolean;
 	end record;
-	overriding procedure Adjust(Object : in out Person_Type);
-	overriding procedure Finalize(Object : in out Person_Type);
 	
-	Default_Person : constant Person_Type := (Ada.Finalization.Controlled with 
+	Default_Person : constant Person_Type := (
 		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
 		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
 		Work => Ada.Strings.Unbounded.Null_Unbounded_String,
@@ -106,13 +99,10 @@ package Tabula.Villages is
 		Request => Random,
 		Ignore_Request => False,
 		Role => Inhabitant,
-		Records => null,
+		Records => Person_Records.Empty_Vector,
 		Commited => False);
-	
-	type Person_Array is array(Natural range <>) of Person_Type;
-	type Person_Array_Access is access Person_Array;
-	procedure Free is new Ada.Unchecked_Deallocation(Person_Array, Person_Array_Access);
-	package Person_Arrays is new Ase.Containers.Generic_Arrays(Natural, Person_Type, Person_Array, Person_Array_Access);
+
+	package People is new Ada.Containers.Vectors (Natural, Person_Type);
 	
 	type Message_Kind is (
 		Narration,                        -- ト書き
@@ -192,12 +182,12 @@ package Tabula.Villages is
 		Target => -1,
 		Text => Ada.Strings.Unbounded.Null_Unbounded_String);
 	
-	package Messages is new Ada.Containers.Vectors(Natural, Message);
+	package Messages is new Ada.Containers.Vectors (Natural, Message);
 	
 	type Village_State is (Prologue, Opened, Epilogue, Closed);
 	type Village_Time is (Daytime, Vote, Night);
 	
-	type Village_Type is limited new Ada.Finalization.Limited_Controlled with record
+	type Village_Type is limited record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
 		By : Ada.Strings.Unbounded.Unbounded_String;
 		State : Village_State;
@@ -217,11 +207,10 @@ package Tabula.Villages is
 		Hunter_Silver_Bullet : Hunter_Silver_Bullet_Mode := Target_And_Self;
 		Unfortunate : Unfortunate_Mode := None;
 		Appearance : Role_Appearances := (others => Random);
-		People : Person_Array_Access;
-		Escaped_People : Person_Array_Access;
-		Messages : Villages.Messages.Vector;
+		People : aliased Villages.People.Vector;
+		Escaped_People : aliased Villages.People.Vector;
+		Messages : aliased Villages.Messages.Vector;
 	end record;
-	overriding procedure Finalize(Object : in out Village_Type);
 	
 	type Message_Count is record
 		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;

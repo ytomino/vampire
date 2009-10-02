@@ -8,6 +8,8 @@ with Tabula.Configurations;
 with Tabula.Users.Load;
 with Tabula.Users.Save;
 package body Tabula.Users.Managing is
+	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Ada.Calendar.Time;
 	
 	-- function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -16,9 +18,7 @@ package body Tabula.Users.Managing is
 		Remote_Addr, Remote_Host : in String;
 		Now : in Ada.Calendar.Time;
 		Result : out Check_Result; 
-		User_Info : out Users.User_Info) 
-	is
-		use type Ada.Strings.Unbounded.Unbounded_String;
+		User_Info : out Users.User_Info) is
 	begin
 		if Id = "" then
 			Result := Log_Off;
@@ -101,7 +101,6 @@ package body Tabula.Users.Managing is
 	
 	function "<" (Left, Right : User_Log_Item) return Boolean;
 	function "<" (Left, Right : User_Log_Item) return Boolean is
-		use type Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		if Left.Id < Right.Id then
 			return True;
@@ -116,9 +115,7 @@ package body Tabula.Users.Managing is
 		end if;
 	end "<";
 	
-	use type Ada.Calendar.Time;
 	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps(User_Log_Item, Ada.Calendar.Time);
-
 	use Users_Log;
 	Log : Users_Log.Map;
 	Log_Loaded : Boolean := False;

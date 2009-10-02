@@ -1,8 +1,9 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Tabula.Villages.Village_IO;
 package body Tabula.Villages.Casts.Cast_IO is
-	
-	package Works_IO is new DYAYaml.IO_Array(Natural, Work, Work_Array, Work_Array_Access, Default_Work);
+	use Works;
+
+	package Works_IO is new DYAYaml.IO_List(Works.Vector, Works.Cursor, Work, Default_Work);
 	
 	procedure IO(Serializer: in out DYAYaml.Serializer; Cast: in out Cast_Type) is
 		use DYAYaml;

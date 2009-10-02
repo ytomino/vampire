@@ -1,8 +1,11 @@
 with "template";
-with "ase";
-with "dyayaml";
+with "containers";
+with "directories";
+with "numerics";
 with "iconv";
 with "openssl";
+with "web";
+with "dyayaml";
 project vampire is
 	
 	Build : Template.Build_Type := Template.Build;

@@ -1,6 +1,15 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Unchecked_Conversion;
 package body Tabula.Renderers.Rule is
+	use type Villages.Servant_Knowing_Mode;
+	use type Villages.Monster_Side;
+	use type Villages.Attack_Mode;
+	use type Villages.Teaming;
+	use type Villages.Hunter_Silver_Bullet_Mode;
+	use type Villages.Unfortunate_Mode;
+	use type Villages.Village_State;
+	use type Villages.Daytime_Preview_Mode;
+	use type Villages.Doctor_Infected_Mode;
 	
 	type String_Access is not null access constant String;
 	type Item is record
@@ -184,9 +193,7 @@ package body Tabula.Renderers.Rule is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Name : String;
 		Items : Item_Array;
-		Selected : Integer := -1)
-	is
-		use Ase.Web;
+		Selected : Integer := -1) is
 	begin
 		Write(Output, "<select name=""");
 		Write(Output, Name);
@@ -199,7 +206,7 @@ package body Tabula.Renderers.Rule is
 				Write(Output, " selected=""selected""");
 			end if;
 			Write(Output, '>');
-			Write(Output, Ase.Web.Markup_Entity(Items(I).Guide.all));
+			Write(Output, Web.Markup_Entity(Items(I).Guide.all));
 			if Items(I).Unrecommended then
 				Write(Output, " お薦めしません。");
 			end if;
@@ -214,29 +221,19 @@ package body Tabula.Renderers.Rule is
 	procedure Rule_Panel(
 		Object : in Renderer'Class;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in System.Address; -- Ase.Web.Producers.Template;
+		Template : in System.Address; -- Web.Producers.Template;
 		Village_Id : in Villages.Lists.Village_Id;
 		Village : in Villages.Village_Type; 
 		Player : in Boolean;
 		User_Id : in String;
 		User_Password : in String)
 	is
-		type Template_Access is access constant Ase.Web.Producers.Template;
+		type Template_Access is access constant Web.Producers.Template;
 		function "+" is new Ada.Unchecked_Conversion(System.Address, Template_Access);
 		Template_Body : Template_Access := + Template;
-		use Ase.Web;
-		use type Villages.Servant_Knowing_Mode;
-		use type Villages.Monster_Side;
-		use type Villages.Attack_Mode;
-		use type Villages.Teaming;
-		use type Villages.Hunter_Silver_Bullet_Mode;
-		use type Villages.Unfortunate_Mode;
-		use type Villages.Village_State;
-		use type Villages.Daytime_Preview_Mode;
-		use type Villages.Doctor_Infected_Mode;
 		Changable: Boolean;
 		procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String; Template : in Ase.Web.Producers.Template) is
+			Tag : in String; Template : in Web.Producers.Template) is
 		begin
 			if Tag = "items" then
 				if Changable then
@@ -247,7 +244,7 @@ package body Tabula.Renderers.Rule is
 									Name => "day-duration", 
 									Items => Day_Duration_Message,
 									Selected => I);
-								Ase.Web.Producers.Produce(Output, Template);
+								Web.Producers.Produce(Output, Template);
 								exit;
 							end if;
 						end loop;
@@ -257,7 +254,7 @@ package body Tabula.Renderers.Rule is
 									Name => "night-duration", 
 									Items => Night_Duration_Message,
 									Selected => I);
-								Ase.Web.Producers.Produce(Output, Template);
+								Web.Producers.Produce(Output, Template);
 								exit;
 							end if;
 						end loop;
@@ -266,42 +263,42 @@ package body Tabula.Renderers.Rule is
 						Name => "victim-existing", 
 						Items => Victim_Existing_Message,
 						Selected => Boolean'Pos(Village.Victim_Existing));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "teaming", 
 						Items => Teaming_Message,
 						Selected => Villages.Teaming'Pos(Village.Teaming));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "monster-side", 
 						Items => Monster_Side_Message,
 						Selected => Villages.Monster_Side'Pos(Village.Monster_Side));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "attack", 
 						Items => Attack_Message,
 						Selected => Villages.Attack_Mode'Pos(Village.Attack));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "servant-knowing", 
 						Items => Servant_Knowing_Message,
 						Selected => Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "daytime-preview", 
 						Items => Daytime_Preview_Message,
 						Selected => Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "doctor-infected", 
 						Items => Doctor_Infected_Message,
 						Selected => Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "hunter-silver-bullet", 
 						Items => Hunter_Silver_Bullet_Message,
 						Selected => Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
-					Ase.Web.Producers.Produce(Output, Template);
+					Web.Producers.Produce(Output, Template);
 					List(Output,
 						Name => "unfortunate", 
 						Items => Unfortunate_Message,
@@ -375,8 +372,8 @@ package body Tabula.Renderers.Rule is
 		Changable := False;
 		if Player and Village.Today = 0 then
 			Changable := True;
-			for I in Village.People'Range loop
-				if Village.People(I).Commited then
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				if Village.People.Constant_Reference(I).Element.Commited then
 					Changable := False;
 				end if;
 			end loop;
@@ -391,26 +388,26 @@ package body Tabula.Renderers.Rule is
 			or else Village.Hunter_Silver_Bullet /= Villages.Initial_Hunter_Silver_Bullet
 			or else Village.Unfortunate          /= Villages.Initial_Unfortunate
 		then
-			Ase.Web.Producers.Produce(Output, Template_Body.all, Extract(Changable).all, Handler => Handle'Access);
+			Web.Producers.Produce(Output, Template_Body.all, Extract(Changable).all, Handler => Handle'Access);
 		end if;
 	end Rule_Panel;
 	
-	procedure Change(Village : in out Villages.Village_Type; Inputs : in Ase.Web.Query_Strings) is
-		Day_D : String renames Ase.Web.Element(Inputs, "day-duration");
+	procedure Change(Village : in out Villages.Village_Type; Inputs : in Web.Query_Strings) is
+		Day_D : String renames Web.Element(Inputs, "day-duration");
 	begin
 		if Day_D /= "" and then Village.Day_Duration < 24 * 60 * 60.0 then
 			Village.Day_Duration := Duration'Value(Day_D);
-			Village.Night_Duration := Duration'Value(Ase.Web.Element(Inputs, "night-duration"));
+			Village.Night_Duration := Duration'Value(Web.Element(Inputs, "night-duration"));
 		end if;
-		Village.Victim_Existing := Boolean'Value(Ase.Web.Element(Inputs, "victim-existing"));
-		Village.Teaming := Villages.Teaming'Value(Ase.Web.Element(Inputs, "teaming"));
-		Village.Attack := Villages.Attack_Mode'Value(Ase.Web.Element(Inputs, "attack"));
-		Village.Monster_Side := Villages.Monster_Side'Value(Ase.Web.Element(Inputs, "monster-side"));
-		Village.Servant_Knowing := Villages.Servant_Knowing_Mode'Value(Ase.Web.Element(Inputs, "servant-knowing"));
-		Village.Daytime_Preview := Villages.Daytime_Preview_Mode'Value(Ase.Web.Element(Inputs, "daytime-preview"));
-		Village.Doctor_Infected := Villages.Doctor_Infected_Mode'Value(Ase.Web.Element(Inputs, "doctor-infected"));
-		Village.Hunter_Silver_Bullet := Villages.Hunter_Silver_Bullet_Mode'Value(Ase.Web.Element(Inputs, "hunter-silver-bullet"));
-		Village.Unfortunate := Villages.Unfortunate_Mode'Value(Ase.Web.Element(Inputs, "unfortunate"));
+		Village.Victim_Existing := Boolean'Value(Web.Element(Inputs, "victim-existing"));
+		Village.Teaming := Villages.Teaming'Value(Web.Element(Inputs, "teaming"));
+		Village.Attack := Villages.Attack_Mode'Value(Web.Element(Inputs, "attack"));
+		Village.Monster_Side := Villages.Monster_Side'Value(Web.Element(Inputs, "monster-side"));
+		Village.Servant_Knowing := Villages.Servant_Knowing_Mode'Value(Web.Element(Inputs, "servant-knowing"));
+		Village.Daytime_Preview := Villages.Daytime_Preview_Mode'Value(Web.Element(Inputs, "daytime-preview"));
+		Village.Doctor_Infected := Villages.Doctor_Infected_Mode'Value(Web.Element(Inputs, "doctor-infected"));
+		Village.Hunter_Silver_Bullet := Villages.Hunter_Silver_Bullet_Mode'Value(Web.Element(Inputs, "hunter-silver-bullet"));
+		Village.Unfortunate := Villages.Unfortunate_Mode'Value(Web.Element(Inputs, "unfortunate"));
 	end Change;
 	
 end Tabula.Renderers.Rule;

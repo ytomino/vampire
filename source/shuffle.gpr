@@ -1,5 +1,8 @@
 with "template";
-with "ase";
+with "containers";
+with "directories";
+with "numerics";
+with "web";
 project shuffle is
 	
 	Build : Template.Build_Type := Template.Build;

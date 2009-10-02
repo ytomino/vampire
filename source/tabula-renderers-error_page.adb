@@ -4,10 +4,10 @@ procedure Tabula.Renderers.Error_Page(
 	Message : in String) 
 is
 	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String; Template : in Ase.Web.Producers.Template) is
+		Tag : in String; Template : in Web.Producers.Template) is
 	begin
 		if Tag = "message" then
-			Write(Output, Ase.Web.Markup_Entity(Message));
+			Write(Output, Web.Markup_Entity(Message));
 		elsif Tag = "uri" then
 			Link(Object, Output, Village_Id => Villages.Lists.Invalid_Village_Id,
 				User_Id => "", User_Password => "");

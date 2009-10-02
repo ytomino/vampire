@@ -4,7 +4,7 @@ package Tabula.Villages.Village_IO is
 	
 	Yaml_Type : constant String := "vampire-village";
 	
-	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Person_Array_Access);
+	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Villages.People.Vector);
 	procedure IO(Serializer: in out DYAYaml.Serializer; Village: in out Village_Type; Info_Only : Boolean := False);
 	
 	package Sex_Kind_IO is new DYAYaml.IO_Enumeration(Sex_Kind);

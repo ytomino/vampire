@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers.Vectors;
 package Tabula.Villages.Casts is
 	
 	type Work is record
@@ -12,16 +13,12 @@ package Tabula.Villages.Casts is
 		Sex => Neutral,
 		Nominated => False);
 	
-	type Work_Array is array(Natural range <>) of Work;
-	type Work_Array_Access is access Work_Array;
-	procedure Free is new Ada.Unchecked_Deallocation(Work_Array, Work_Array_Access);
+	package Works is new Ada.Containers.Vectors (Natural, Work);
 	
-	type Cast_Type is new Ada.Finalization.Limited_Controlled with record
-		People : Person_Array_Access;
-		Works : Work_Array_Access;
+	type Cast_Type is limited record
+		People : aliased Villages.People.Vector;
+		Works : aliased Casts.Works.Vector;
 	end record;
-	overriding procedure Finalize(Object : in out Cast_Type);
-	pragma Finalize_Storage_Only(Cast_Type);
 	
 	procedure Exclude_Taken(Cast : in out Casts.Cast_Type; Village : Village_Type);
 	

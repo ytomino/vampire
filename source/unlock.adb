@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-pragma Ada_05;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Directories;
 with Ada.IO_Exceptions;

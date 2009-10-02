@@ -12,7 +12,7 @@ private
 	overriding procedure User_Panel(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in Ase.Web.Producers.Template;
+		Template : in Web.Producers.Template;
 		User_Id : in String;
 		User_Password : in String;
 		Link_To_User_Page : Boolean);

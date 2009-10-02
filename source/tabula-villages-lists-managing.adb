@@ -2,19 +2,31 @@
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
-with Ase.Editing;
-with Ase.Strings.Lists;
 with Tabula.Configurations;
 with Tabula.Configurations.Templates;
 with Tabula.Renderers.Log;
+with Tabula.String_Lists;
+with Tabula.Villages.Lists;
 with Tabula.Villages.Load;
+use type Ada.Streams.Stream_Element_Offset;
+use type Ada.Strings.Unbounded.Unbounded_String;
+use type Tabula.Villages.Lists.Village_List_Item;
+use Tabula.String_Lists;
+use Tabula.Villages.Lists.Village_Lists;
 package body Tabula.Villages.Lists.Managing is
-	
-	use type Ada.Streams.Stream_Element_Offset;
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
+
+	function To_String(X : Integer) return String is
+		Result : String := Integer'Image(X);
+	begin
+		if Result (Result'First) = ' ' then
+			return Result (Result'First + 1 .. Result'Last);
+		else
+			return Result;
+		end if;
+	end To_String;
 	
 	procedure Refresh_Village_List is
 	begin
@@ -64,14 +76,17 @@ package body Tabula.Villages.Lists.Managing is
 			end;
 		end loop;
 		Ada.Directories.End_Search(Search);
-		return Ase.Editing.Image(Format => "9999", Item => Result);
+		declare
+			Image : String := Integer'Image(Result);
+		begin
+			if Image (Image'First) = ' ' then
+				Image (Image'First) := '0';
+			end if;
+			return (1 .. 4 - Image'Length => '0') & Image;
+		end;
 	end New_Village_Id;
 
 	function Village_List return Villages.Lists.Village_Lists.Vector is
-		use Ase.Strings.Lists;
-		use Villages.Lists.Village_Lists;
-		use type Villages.Person_Array_Access;
-		use type Villages.Lists.Village_List_Item;
 		Cache_File : Ada.Streams.Stream_IO.File_Type;
 		package Sorting is new Villages.Lists.Village_Lists.Generic_Sorting;
 		Search : Ada.Directories.Search_Type;
@@ -102,14 +117,12 @@ package body Tabula.Villages.Lists.Managing is
 					declare
 						Village : Villages.Village_Type;
 						Village_Id : String renames Ada.Directories.Simple_Name(File);
-						Id_List : Ase.Strings.Lists.List;
+						Id_List : String_Lists.List;
 					begin
 						Villages.Load(Village_Id, Village, Info_Only => True);
-						if Village.People /= null then
-							for I in Village.People'Range loop
-								Append(Id_List, +Village.People(I).Id);
-							end loop;
-						end if;
+						for I in Village.People.First_Index .. Village.People.Last_Index loop
+							Append(Id_List, +Village.People.Constant_Reference(I).Element.Id);
+						end loop;
 						Append(Result, Villages.Lists.Village_List_Item'(
 							Id => Num, 
 							Name => Village.Name, 
@@ -130,7 +143,7 @@ package body Tabula.Villages.Lists.Managing is
 											declare
 												Renderer : Tabula.Renderers.Log.Renderer(Configurations.Templates.Configuration);
 												Log_File_Name : String renames Ada.Directories.Compose(Configurations.Villages_HTML_Directory,
-													Num & "-" & Ase.Editing.Image(Item => Day) & ".html");
+													Num & "-" & To_String(Day) & ".html");
 												Output : Ada.Streams.Stream_IO.File_Type;
 											begin
 												Ada.Streams.Stream_IO.Create(Output, Ada.Streams.Stream_IO.Out_File, Log_File_Name);

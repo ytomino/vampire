@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams;
-with Ase.Web;
+with Web;
 with System; -- with Ase.Web.Producers; avoiding compiler's bug of gcc 4.4.0
 with Tabula.Villages;
 with Tabula.Villages.Lists;
@@ -16,6 +16,6 @@ package Tabula.Renderers.Rule is
 		User_Id : in String;
 		User_Password : in String);
 	
-	procedure Change(Village : in out Villages.Village_Type; Inputs : in Ase.Web.Query_Strings);
+	procedure Change(Village : in out Villages.Village_Type; Inputs : in Web.Query_Strings);
 	
 end Tabula.Renderers.Rule;

@@ -9,10 +9,10 @@ procedure Tabula.Renderers.Message_Page(
 	User_Password : in String) 
 is
 	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String; Contents : in Ase.Web.Producers.Template) is
+		Tag : in String; Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "message" then
-			Write(Output, Ase.Web.Markup_Entity(Message));
+			Write(Output, Web.Markup_Entity(Message));
 		elsif Tag = "uri" then
 			Link(Object, Output, Village_Id => Village_Id,
 				User_Id => User_Id, User_Password => User_Password);
@@ -26,20 +26,20 @@ is
 			end if;
 		elsif Tag = "title" then
 			if Village /= null then
-				Write(Output, Ase.Web.Markup_Entity(Ada.Strings.Unbounded.To_String(Village.Name)));
+				Write(Output, Web.Markup_Entity(Ada.Strings.Unbounded.To_String(Village.Name)));
 				Write(Output, ' ');
 				Day_Name(Object, Output, Village.Today, Village.Today, Village.State);
 				Write(Output, " - ");
 			end if;
 		elsif Tag = "invillage" then
-			Ase.Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
+			Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
 		elsif Tag = "id" then
 			Write(Output, '"');
 			Write(Output, User_Id);
 			Write(Output, '"');
 		elsif Tag = "password" then
 			Write(Output, '"');
-			Write(Output, Ase.Web.Markup_Entity(User_Password));
+			Write(Output, Web.Markup_Entity(User_Password));
 			Write(Output, '"');
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";

@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ase.Strings.Lists;
+with Tabula.String_Lists;
 package Tabula.Villages.Lists is
 
 	subtype Village_Id is String(1..4);
@@ -12,7 +12,7 @@ package Tabula.Villages.Lists is
 		Day_Duration : Duration;
 		Today : Natural;
 		State : Villages.Village_State;
-		People : Ase.Strings.Lists.List;
+		People : String_Lists.List;
 	end record;
 	function "<" (L, R : Village_List_Item) return Boolean;
 	

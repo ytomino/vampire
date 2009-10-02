@@ -45,40 +45,37 @@ export ADA_OBJECTS_PATH=
 else
 endif
 
-LIB_MAKEFILES=$(wildcard lib/*/makefile)
-LIB_MAKE=$(addsuffix .mk,$(LIB_MAKEFILES))
-
-.PHONY: all clean test-vampire test-users archive
+.PHONY: all clean test-vampire test-shuffle test-users archive \
+	site/vampire$(CGISUFFIX) \
+	site/unlock$(CGISUFFIX) \
+	site/users$(CGISUFFIX) \
+	site/shuffle$(CGISUFFIX)
 
 all: site/vampire$(CGISUFFIX)
 
 clean:
-	-rm -rf build
-	-rm -rf build-i686-pc-freebsd7
+	-rm -rf build*
 
-site/vampire$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/vampire.gpr
+site/vampire$(CGISUFFIX):
+	$(GNATMAKE) -a -p -P source/vampire.gpr
 
-site/unlock$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/unlock.gpr
+site/unlock$(CGISUFFIX):
+	$(GNATMAKE) -a -p -P source/unlock.gpr
 
-site/users$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/users.gpr
+site/users$(CGISUFFIX):
+	$(GNATMAKE) -a -p -P source/users.gpr
 
-site/shuffle$(CGISUFFIX): $(BUILDDIR) $(LIB_MAKE)
-	$(GNATMAKE) -P source/shuffle.gpr
-
-$(BUILDDIR):
-	mkdir $(subst /,$(DIRSEP),$(BUILDDIR))
-
-%.mk : %
-	make -C $(dir $@) BUILDDIR=$(BUILDDIR) BUILD=$(BUILD)
+site/shuffle$(CGISUFFIX):
+	$(GNATMAKE) -a -p -P source/shuffle.gpr
 
 test-vampire:
 	cd site && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
 
 test-users:
 	cd site && .$(DIRSEP)users$(CGISUFFIX)
+
+test-shuffle:
+	cd site && .$(DIRSEP)shuffle$(CGISUFFIX)
 
 archive:
 	-rm site/vampire.7z

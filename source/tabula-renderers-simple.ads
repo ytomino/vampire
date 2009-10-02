@@ -7,45 +7,45 @@ package Tabula.Renderers.Simple is
 	
 	overriding function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings) return Villages.Lists.Village_Id;
+		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id;
 	
 	overriding procedure Get_Day(
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural);
 	
 	overriding procedure Get_Range(
 		Object : in Renderer; 
 		Village : in Villages.Village_Type; 
 		Day : in Natural;
-		Query_Strings : in Ase.Web.Query_Strings; 
+		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer);
 	
 	overriding function Get_User_Id(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String;
 	
 	overriding function Get_User_Password(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return String;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return String;
 	
 	overriding procedure Set_User(
 		Object : in Renderer; 
-		Cookie : in out Ase.Web.Cookie;
+		Cookie : in out Web.Cookie;
 		User_Id: in String;
 		User_Password : in String);
 	
 	overriding function Get_Text(
 		Object : Renderer; 
-		Inputs : Ase.Web.Query_Strings) return String;
+		Inputs : Web.Query_Strings) return String;
 	
 	overriding function Is_User_Page(
 		Object : Renderer; 
-		Query_Strings : Ase.Web.Query_Strings;
-		Cookie : Ase.Web.Cookie) return Boolean;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie) return Boolean;
 	
 	-- Page Generating
 	
@@ -112,7 +112,7 @@ private
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		File_Name : in String;
-		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Ase.Web.Producers.Template));
+		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Web.Producers.Template));
 	
 	overriding procedure Link(
 		Object : in Renderer;
@@ -127,6 +127,6 @@ private
 		User_Password : in String;
 		User_Page: Boolean := False);
 	
-	overriding function HTML_Version(Object : in Renderer) return Ase.Web.HTML_Version;
+	overriding function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 
 end Tabula.Renderers.Simple;

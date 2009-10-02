@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ase.Editing;
 package body Tabula.Renderers.Log is
 
 	overriding procedure Link_Style_Sheet(
@@ -14,7 +13,7 @@ package body Tabula.Renderers.Log is
 	overriding procedure User_Panel(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in Ase.Web.Producers.Template;
+		Template : in Web.Producers.Template;
 		User_Id : in String;
 		User_Password : in String;
 		Link_To_User_Page : Boolean) is
@@ -43,7 +42,7 @@ package body Tabula.Renderers.Log is
 			Write(Output, """./");
 			Write(Output, Village_Id);
 			Write(Output, "-");
-			Write(Output, Ase.Editing.Image(Item => Integer'Max(0, Day)));
+			Write(Output, To_String(Integer'Max(0, Day)));
 			Write(Output, ".html""");
 		end if;
 	end Link;

@@ -1,12 +1,23 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
+with Tabula.Villages;
+use type Ada.Strings.Unbounded.Unbounded_String;
+use Tabula.Villages.People;
+use Tabula.Villages.Person_Records;
 package body Tabula.Villages.Village_IO is
 	
-	use type Ada.Strings.Unbounded.Unbounded_String;
-	
-	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Person_Array_Access) is
-		package Person_Records_IO is new DYAYaml.IO_Array(Natural, Person_Record, Person_Record_Array, Person_Record_Array_Access, Default_Person_Record);
-		package People_IO is new DYAYaml.IO_Array(Natural, Person_Type, Person_Array, Person_Array_Access, Default_Person);
+	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Villages.People.Vector) is
+		package Person_Records_IO is new DYAYaml.IO_List (
+			Container_Type => Villages.Person_Records.Vector,
+			Cursor => Villages.Person_Records.Cursor,
+			Element_Type => Person_Record,
+			Default => Default_Person_Record);
+		package People_IO is new DYAYaml.IO_List (
+			Container_Type => Villages.People.Vector,
+			Cursor => Villages.People.Cursor,
+			Element_Type => Person_Type,
+			Default => Default_Person);
 		use DYAYaml;
 		use Person_Records_IO;
 		use Person_Role_IO;
@@ -56,22 +67,18 @@ package body Tabula.Villages.Village_IO is
 		use DYAYaml;
 		use Tabula.Calendar.Time_IO;
 		use Message_Kind_IO;
-		procedure Messages_Callback(Position : Villages.Messages.Cursor) is
-			procedure Process(Item : in out Message) is
-				procedure Message_Callback is
-				begin
-					IO(Serializer, "day", Item.Day);
-					IO(Serializer, "time", Item.Time);
-					IO(Serializer, "kind", Item.Kind);
-					IO(Serializer, "subject", Item.Subject, Default => Default_Message.Subject);
-					IO(Serializer, "target", Item.Target, Default => Default_Message.Target);
-					IO(Serializer, "text", Item.Text, Default => Default_Message.Text);
-				end Message_Callback;
+		procedure Messages_Callback(Item : in out Message) is
+			procedure Message_Callback is
 			begin
-				DYAYaml.IO(Serializer, Message_Callback'Access);
-			end Process;
+				IO(Serializer, "day", Item.Day);
+				IO(Serializer, "time", Item.Time);
+				IO(Serializer, "kind", Item.Kind);
+				IO(Serializer, "subject", Item.Subject, Default => Default_Message.Subject);
+				IO(Serializer, "target", Item.Target, Default => Default_Message.Target);
+				IO(Serializer, "text", Item.Text, Default => Default_Message.Text);
+			end Message_Callback;
 		begin
-			Villages.Messages.Update_Element(Messages, Position, Process'Access);
+			DYAYaml.IO(Serializer, Message_Callback'Access);
 		end Messages_Callback;
 		use Villages.Messages;
 		package Messages_IO is new DYAYaml.IO_List(Villages.Messages.Vector, Villages.Messages.Cursor, Message, Default_Message);
@@ -126,7 +133,7 @@ package body Tabula.Villages.Village_IO is
 				IO(Serializer, "appearance", Appearance_Callback'Access);
 			end if;
 			IO(Serializer, "people", Village.People);
-			if Serializer in DYAYaml.Reader or else Village.Escaped_People /= null then
+			if Serializer in DYAYaml.Reader or else not Village.Escaped_People.Is_Empty then
 				IO(Serializer, "escaped-people", Village.Escaped_People);
 			end if;
 			if not Info_Only then

@@ -1,20 +1,22 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Finalization;
+with Ada.Numerics.MT19937;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Ada.Text_IO.Text_Streams;
-with Ase.Numerics.MT19937;
-with Ase.Web;
-with Tabula; use Tabula;
+with Web;
+with Tabula;
 with Tabula.Calendar;
 with Tabula.Villages;
 with Tabula.Villages.Shuffle;
+use Tabula;
+use Tabula.Villages.People;
+use Tabula.Villages.Person_Records;
 procedure Shuffle is
-	Seed : Ase.Numerics.MT19937.Generator;
+	Seed : aliased Ada.Numerics.MT19937.Generator;
 	subtype People_Count is Integer range Minimum_Number_Of_Persons .. Maximum_Number_Of_Persons;
-	package Random_People_Count is new Ase.Numerics.MT19937.Discrete_Random(People_Count);
-	package Random_Teaming is new Ase.Numerics.MT19937.Discrete_Random(Villages.Teaming);
-	Village : Villages.Village_Type := (Ada.Finalization.Limited_Controlled with
+	package Random_People_Count is new Ada.Numerics.MT19937.Discrete_Random(People_Count);
+	package Random_Teaming is new Ada.Numerics.MT19937.Discrete_Random(Villages.Teaming);
+	Village : Villages.Village_Type := (
 		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
 		By => Ada.Strings.Unbounded.Null_Unbounded_String,
 		State => Villages.Prologue,
@@ -33,18 +35,17 @@ procedure Shuffle is
 		Hunter_Silver_Bullet => Villages.Initial_Hunter_Silver_Bullet,
 		Unfortunate          => Villages.Initial_Unfortunate,
 		Appearance => (others => Villages.Random),
-		People => null,
-		Escaped_People => null,
+		People => Empty_Vector,
+		Escaped_People => Empty_Vector,
 		Messages => Villages.Messages.Empty_Vector);
 	Output : Ada.Text_IO.Text_Streams.Stream_Access := Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Output);
-	use Tabula.Villages.Person_Arrays;
 begin
-	Ase.Numerics.MT19937.Reset(Seed);
-	Village.Teaming := Random_Teaming.Random(Seed);
-	Ase.Web.Header(Output, Ase.Web.Text);
-	String'Write(Output, Ase.Web.Line_Break);
-	for I in 1 .. Random_People_Count.Random(Seed) loop
-		Append(Village.People, Villages.Person_Type'(Ada.Finalization.Controlled with
+	Ada.Numerics.MT19937.Reset(Seed);
+	Village.Teaming := Random_Teaming.Random(Seed'Access);
+	Web.Header(Output, Web.Text);
+	String'Write(Output, Web.Line_Break);
+	for I in 1 .. Random_People_Count.Random(Seed'Access) loop
+		Append(Village.People, Villages.Person_Type'(
 			Name => Ada.Strings.Unbounded.To_Unbounded_String("" & Character'Val(Character'Pos(Character'Pred('A')) + I)),
 			Image => Ada.Strings.Unbounded.Null_Unbounded_String,
 			Sex => Villages.Sex_Kind'Val((I rem 2) * Villages.Sex_Kind'Pos(Villages.Male) + (1 - I rem 2) * Villages.Sex_Kind'Pos(Villages.Female)),
@@ -55,14 +56,14 @@ begin
 			Role => Villages.Inhabitant, 
 			Id => Ada.Strings.Unbounded.Null_Unbounded_String,
 			Commited => False,
-			Records => null));
+			Records => Empty_Vector));
 	end loop;
-	Tabula.Villages.Shuffle(Village.People.all, null, Village.Teaming, Village.Monster_Side, Village.Appearance, Seed);
+	Tabula.Villages.Shuffle(Village.People, null, Village.Teaming, Village.Monster_Side, Village.Appearance, Seed'Access);
 	String'Write(Output, Villages.Teaming'Image(Village.Teaming));
-	String'Write(Output, Ase.Web.Line_Break);
-	String'Write(Output, Ase.Web.Line_Break);
-	for I in Village.People'Range loop
-		String'Write(Output, Villages.Person_Role'Image(Village.People(I).Role));
-		String'Write(Output, Ase.Web.Line_Break);
+	String'Write(Output, Web.Line_Break);
+	String'Write(Output, Web.Line_Break);
+	for I in Village.People.First_Index .. Village.People.Last_Index loop
+		String'Write(Output, Villages.Person_Role'Image(Village.People.Constant_Reference(I).Element.Role));
+		String'Write(Output, Web.Line_Break);
 	end loop;
 end Shuffle;
