@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
+with Ada.Environment_Variables;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Numerics.MT19937;
@@ -18,25 +19,25 @@ with Tabula.Villages.Casts.Load;
 with Tabula.Villages.Lists.Managing;
 with Tabula.Villages.Load;
 with Tabula.Villages.Save;
-use type Ada.Calendar.Time;
-use type Ada.Strings.Unbounded.Unbounded_String;
-use type Tabula.Users.Managing.Check_Result;
-use type Tabula.Villages.Attack_Mode;
-use type Tabula.Villages.Doctor_Infected_Mode;
-use type Tabula.Villages.Daytime_Preview_Mode;
-use type Tabula.Villages.Village_State;
-use type Tabula.Villages.Village_Time;
-use type Tabula.Villages.Person_Role;
-use type Tabula.Villages.Person_Sex;
-use type Tabula.Villages.Person_State;
-use type Tabula.Villages.Message_Kind;
-use type Tabula.Villages.Message;
-use type Tabula.Villages.Casts.Work;
-use Tabula;
-use Tabula.Villages.Messages;
-use Tabula.Villages.Person_Records;
-use Tabula.Villages.People;
 procedure Vampire is
+	use type Ada.Calendar.Time;
+	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Tabula.Users.Managing.Check_Result;
+	use type Tabula.Villages.Attack_Mode;
+	use type Tabula.Villages.Doctor_Infected_Mode;
+	use type Tabula.Villages.Daytime_Preview_Mode;
+	use type Tabula.Villages.Village_State;
+	use type Tabula.Villages.Village_Time;
+	use type Tabula.Villages.Person_Role;
+	use type Tabula.Villages.Person_Sex;
+	use type Tabula.Villages.Person_State;
+	use type Tabula.Villages.Message_Kind;
+	use type Tabula.Villages.Message;
+	use type Tabula.Villages.Casts.Work;
+	use Tabula;
+	use Tabula.Villages.Messages;
+	use Tabula.Villages.Person_Records;
+	use Tabula.Villages.People;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -81,6 +82,7 @@ procedure Vampire is
 	
 	Lock : Web.Lock_Files.Lock_Type (Configurations.Lock_Name'Access);
 begin
+	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	Web.Lock_Files.Lock (Lock, Force => 60.0);
 	Ada.Numerics.MT19937.Reset(Generator);
 	declare

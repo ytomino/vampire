@@ -79,7 +79,7 @@ package body Tabula.Villages is
 	
 	function Joined(Village : Village_Type; User_Id : String) return Integer is
 	begin
-		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+		for Position in Village.People.First_Index .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference(Position).Element.Id = User_Id then
 				return Position;
 			end if;

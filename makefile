@@ -66,14 +66,11 @@ site/users$(CGISUFFIX): source/users.adb $(BUILDDIR)
 site/shuffle$(CGISUFFIX): source/shuffle.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
+export QUERY_STRING=
+
 test-vampire:
-	cd site && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
-
-test-users:
-	cd site && .$(DIRSEP)users$(CGISUFFIX)
-
-test-shuffle:
-	cd site && .$(DIRSEP)shuffle$(CGISUFFIX)
+	cp site/vampire$(CGISUFFIX) $(LOCAL_SITE)/vampire
+	cd $(LOCAL_SITE)/vampire && gdb .$(DIRSEP)vampire$(CGISUFFIX)
 
 $(BUILDDIR):
 	mkdir $@
