@@ -30,7 +30,11 @@ http://gcc.gnu.org/
 
 乱数アルゴリズムにMT19937を使わせていただいています。
 http://www.math.keio.ac.jp/matumoto/emt.html
-BSDLです。ライセンス文書はase-numerics-mt19937.adsの先頭にコメントで。
+BSDLです。ライセンス文書はada-numerics-mt19937.adsの先頭にコメントで。
+
+パスワードを保存するときのハッシュ関数にOpenSSLを使わせていただいています。
+http://www.openssl.org/
+BSDLです。
 
 dyayamlを使っています。
 http://panathenaia.halfmoon.jp/alang/dyayaml.html
