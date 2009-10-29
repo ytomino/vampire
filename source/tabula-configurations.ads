@@ -20,5 +20,6 @@ package Tabula.Configurations is
 	Background_Image_File_Name : aliased constant String := "background.png";
 	
 	List_HTML_File_Name : constant String := "villages/index.html";
+	List_RSS_File_Name : constant String := "villages/wanted.rdf";
 	
 end Tabula.Configurations;
