@@ -108,6 +108,7 @@ begin
 	begin
 		if Post and then (Remote_Host = "" or else Remote_Host = Remote_Addr)
 			and then Remote_Addr /= "127.0.0.1" -- localhost
+			and then Remote_Addr /= "::1" -- IPv6 localhost
 			and then Remote_Addr /= "202.95.187.49" -- CATV
 		then
 			Web.Header_503 (Output);
@@ -261,7 +262,9 @@ begin
 								Dawn => Now,
 								Day_Duration => Day_Duration,
 								Night_Duration => Default_Night_Duration,
-								Victim_Existing      => Villages.Initial_Victim_Existing, Victim_Role => Villages.Inhabitant,
+								Victim_Existing      => Villages.Initial_Victim_Existing,
+								Victim_Role          => Villages.Inhabitant,
+								First_Execution      => Villages.Initial_First_Execution,
 								Teaming              => Villages.Initial_Teaming,
 								Monster_Side         => Villages.Initial_Monster_Side,
 								Attack               => Villages.Initial_Attack,

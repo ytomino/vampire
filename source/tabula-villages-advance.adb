@@ -203,7 +203,10 @@ begin
 							or else Commit_Finished(Village)
 						then
 							Daytime_To_Vote := True;
-							if Village.Day_Duration >= 24 * 60 * 60.0 or else Vote_Finished(Village) then
+							if Village.Day_Duration >= 24 * 60 * 60.0
+								or else Vote_Finished (Village)
+								or else (not Village.First_Execution and then Village.Today = 1)
+							then
 								Vote_To_Night := True;
 								if Village.Night_Duration = 0.0 then
 									Night_To_Daytime := True;

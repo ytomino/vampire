@@ -378,5 +378,8 @@ table.villagelist td a, table.daylist td a, table.readmepersons td a {
 	text-decoration:none;
 }
 
-.say { width: 3.5em; }
+table.villagelist td.people, table.villagelist td.day {
+	white-space: nowrap;
+}
 
+.say { width: 3.5em; }

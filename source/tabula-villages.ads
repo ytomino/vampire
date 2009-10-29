@@ -18,6 +18,7 @@ package Tabula.Villages is
 	
 	-- オプションルール初期値
 	Initial_Victim_Existing      : constant Boolean                   := False;
+	Initial_First_Execution      : constant Boolean                   := True;
 	Initial_Teaming              : constant Teaming                   := Shuffling;
 	Initial_Monster_Side         : constant Monster_Side              := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
@@ -198,6 +199,7 @@ package Tabula.Villages is
 		Night_Duration : Duration := Default_Night_Duration;
 		Victim_Existing : Boolean := False;
 		Victim_Role : aliased Person_Role := Inhabitant;
+		First_Execution : Boolean := True;
 		Teaming : Villages.Teaming := Shuffling_Headless;
 		Monster_Side : Villages.Monster_Side := Fixed;
 		Attack : Attack_Mode := Two;

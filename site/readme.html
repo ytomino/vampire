@@ -9,6 +9,8 @@
 			.Victim_Existing_all {display:inline}
 			.Victim_Existing_true {display:block}
 			.Victim_Existing_false {display:block}
+			.First_Execution_true {display:block}
+			.First_Execution_false {display:block}
 			.Teaming_all {display:inline}
 			.Teaming_Low_Density {display:block}
 			.Teaming_Shuffling_Headless {display:block}
@@ -127,6 +129,7 @@
 					オプションルール
 					<ul>
 						<li><a href="#victim-existing">初日犠牲者</a></li>
+						<li><a href="#first-execution">初日の処刑</a></li>
 						<li><a href="#village-teaming">編成</a></li>
 						<li><a href="#monster-side">吸血鬼側の編成</a></li>
 						<li><a href="#attack">襲撃</a></li>
@@ -772,6 +775,24 @@
 				初日犠牲者が吸血鬼または妖魔の可能性はありません。
 				また探偵は、初日犠牲者の役を知ることができます。
 			</p>
+			<h2 id="first-execution">初日の処刑</h2>
+			<form class="narration"><div>
+				<select id="First_Execution" onchange="sync('First_Execution')">
+					<option value="" selected="selected">≪初日の処刑≫</option>
+					<option value="false">初日は処刑を行いません。*</option>
+					<option value="true">初日から処刑を行います。</option>
+				</select>
+			</div></form>
+			<p class="First_Execution_false option">
+				<b>初日は処刑を行いません。</b><br/>
+				1日目は、処刑投票を行いません。
+				吸血鬼の襲撃と、天文家、猟師の対象の設定は、通常どおりです。
+			</p>
+			<p class="First_Execution_true option">
+				<b>初日から処刑を行います。</b><br/>
+				1日目から、処刑投票を行います。
+				<em>現在の初期値です。</em>
+			</p>
 			<h2 id="village-teaming">編成</h2>
 			<form class="narration"><div>
 				<select id="Teaming" onchange="sync('Teaming')">
@@ -797,7 +818,7 @@
 				正確に同じというわけではありません。
 				村側の能力者は7人中2人、8人中3人、10人中4人、12人中5人、15人中6人～と、吸血鬼側は7人中2人、9人中3人、14人中4人となります。
 				妖魔は16人で出現します。
-				村側がとても有利であるため、推奨しません。
+				村側がとても有利であるため、<em>推奨しません。</em>
 			</p>
 			<p class="Teaming_Shuffling_Euro option">
 				<b>妖魔が早く出ます(欧州に似せます)。</b><br/>
@@ -1017,8 +1038,9 @@
 				<b>数奇な運命の村人がいるかもしれません。</b><br/>
 				数奇な運命の村人が登場する可能性があります。
 				襲撃で殺されることもあります。
-				正直言って他にめぼしい襲撃先が無い限りは2日目に殺されるだけです。
 				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。
+				正直言って他にめぼしい襲撃先が無い限りは2日目に殺されるだけです。
+				<em>推奨しません。</em>
 			</p>
 			<p class="Unfortunate_Mode_Infected_Only option">
 				<b>数奇な運命の村人は襲撃では殺されません。</b><br/>

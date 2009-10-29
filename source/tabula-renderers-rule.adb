@@ -29,6 +29,16 @@ package body Tabula.Renderers.Rule is
 			Guide => new String'("能力者が死亡済みの可能性があります。"),
 			others => <>));
 	
+	First_Execution_Message : constant Item_Array(Boolean'Pos(False) .. Boolean'Pos(True)) := (
+		Boolean'Pos(False) => (
+			Value => new String'(Boolean'Image(False)),
+			Guide => new String'("初日は処刑を行いません。"),
+			others => <>),
+		Boolean'Pos(True) => (
+			Value => new String'(Boolean'Image(True)),
+			Guide => new String'("初日から処刑を行います。"),
+			others => <>));
+	
 	subtype VT is Villages.Teaming;
 	Teaming_Message : constant Item_Array(VT'Pos(VT'First) .. VT'Pos(VT'Last)) := (
 		VT'Pos(Villages.Low_Density) => (
@@ -155,7 +165,7 @@ package body Tabula.Renderers.Rule is
 		UM'Pos(Villages.Appear) => (
 			Value => new String'(UM'Image(Villages.Appear)),
 			Guide => new String'("数奇な運命の村人がいるかもしれません。"),
-			others => <>),
+			Unrecommended => True),
 		UM'Pos(Villages.Infected_Only) => (
 			Value => new String'(UM'Image(Villages.Infected_Only)),
 			Guide => new String'("数奇な運命の村人は襲撃では殺されません。"),
@@ -265,6 +275,11 @@ package body Tabula.Renderers.Rule is
 						Selected => Boolean'Pos(Village.Victim_Existing));
 					Web.Producers.Produce(Output, Template);
 					List(Output,
+						Name => "first-execution", 
+						Items => First_Execution_Message,
+						Selected => Boolean'Pos(Village.First_Execution));
+					Web.Producers.Produce(Output, Template);
+					List(Output,
 						Name => "teaming", 
 						Items => Teaming_Message,
 						Selected => Villages.Teaming'Pos(Village.Teaming));
@@ -333,6 +348,9 @@ package body Tabula.Renderers.Rule is
 						if Player or else Village.Victim_Existing /= Villages.Initial_Victim_Existing then
 							Put(Victim_Existing_Message, Boolean'Pos(Village.Victim_Existing));
 						end if;
+						if Player or else Village.First_Execution /= Villages.Initial_First_Execution then
+							Put (First_Execution_Message, Boolean'Pos (Village.First_Execution));
+						end if;
 						if Player or else Village.Teaming /= Villages.Initial_Teaming then
 							Put(Teaming_Message, Villages.Teaming'Pos(Village.Teaming));
 						end if;
@@ -381,6 +399,7 @@ package body Tabula.Renderers.Rule is
 		if Player 
 			or else Village.Day_Duration < 24 * 60 * 60.0
 			or else Village.Victim_Existing      /= Villages.Initial_Victim_Existing
+			or else Village.First_Execution      /= Villages.Initial_First_Execution
 			or else Village.Teaming              /= Villages.Initial_Teaming
 			or else Village.Monster_Side         /= Villages.Initial_Monster_Side
 			or else Village.Attack               /= Villages.Initial_Attack
@@ -400,6 +419,7 @@ package body Tabula.Renderers.Rule is
 			Village.Night_Duration := Duration'Value(Web.Element(Inputs, "night-duration"));
 		end if;
 		Village.Victim_Existing := Boolean'Value(Web.Element(Inputs, "victim-existing"));
+		Village.First_Execution := Boolean'Value(Web.Element(Inputs, "first-execution"));
 		Village.Teaming := Villages.Teaming'Value(Web.Element(Inputs, "teaming"));
 		Village.Attack := Villages.Attack_Mode'Value(Web.Element(Inputs, "attack"));
 		Village.Monster_Side := Villages.Monster_Side'Value(Web.Element(Inputs, "monster-side"));

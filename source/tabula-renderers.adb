@@ -62,8 +62,7 @@ package body Tabula.Renderers is
 				"村人たちが不審がっていると、突如地主さんの死体が、赤い目を見開き牙を剥いて起き上がりました。 " &
 				"しかし山間から差し込む朝日を浴びてその身体は灰となり崩れ落ちてゆきます……。" & Line_Break &
 				"疑う余地はありません。 " &
-				"吸血鬼は実在し……この村に紛れているのです！" & Line_Break &
-				"誰かが古びた杭を持って来ました……これしかないのでしょうか……。 ")),
+				"吸血鬼は実在し……この村に紛れているのです！ ")),
 		A_Castle => (
 			Introduction => new String'(
 				"伝説が残る古城の前に、まばらな人々があつまってきました。 " &
@@ -81,6 +80,8 @@ package body Tabula.Renderers is
 				"そもそも誰があの高い天窓から出入りできたというのでしょう。 " & Line_Break &
 				"改めて城内を探索しますと、古の領主が残した拷問や処刑を行うための悪趣味な道具がごろごろしています。 " &
 				"こうして、古城での日々がはじまりました……。 ")));
+	
+	For_Execution_Message : constant String := "誰かが古びた杭を持って来ました……これしかないのでしょうか……。 ";
 	
 	function Stage(Village : in Villages.Village_Type) return Stage_Kind is
 		L : constant Natural := Ada.Strings.Unbounded.Length(Village.Name);
@@ -1885,6 +1886,9 @@ package body Tabula.Renderers is
 														end if;
 													end;
 												else
+													if not Village.First_Execution and then Message.Day = 2 then
+														Narration (For_Execution_Message);
+													end if;
 													declare
 														S : String renames Fatalities_List(Village, Message.Day, Executed);
 													begin
@@ -1899,13 +1903,17 @@ package body Tabula.Renderers is
 											end;
 										when Villages.Introduction =>
 											Narration(Stages(Stage(Village)).Introduction.all);
-										when Villages.Breakdown => null;
+										when Villages.Breakdown =>
 											if Village.State >= Villages.Epilogue
 												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Villages.Vampire_Role)
 											then
 												Narration(Vampires_List(Village), "narrationi");
 											end if;
-											Narration(Stages(Stage(Village)).Breakdown.all);
+											if not Village.First_Execution then
+												Narration(Stages(Stage(Village)).Breakdown.all);
+											else
+												Narration(Stages(Stage(Village)).Breakdown.all & Line_Break & For_Execution_Message);
+											end if;
 											Narration(Breakdown_List(Village));
 									end case;
 								end if;
@@ -2146,6 +2154,7 @@ package body Tabula.Renderers is
 								elsif Tag = "vote" then
 									if Village.State = Villages.Opened
 										and then Message_Counts(Player_Index).Speech > 0
+										and then (Village.First_Execution or else Village.Today /= 1)
 									then
 										if Person.Commited then
 											declare

@@ -121,6 +121,7 @@ package body Tabula.Villages.Village_IO is
 				IO(Serializer, "victim-existing", Village.Victim_Existing);
 				IO(Serializer, "victim-role", Village.Victim_Role);
 			end if;
+			IO (Serializer, "first-execution", Village.First_Execution, Default => True);
 			IO(Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
 			IO(Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
 			IO(Serializer, "attack", Village.Attack, Default => Two);
