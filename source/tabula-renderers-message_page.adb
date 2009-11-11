@@ -12,7 +12,7 @@ is
 		Tag : in String; Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "message" then
-			Write(Output, Web.Markup_Entity(Message));
+			Web.Write_In_HTML (Output, Object.HTML_Version, Message);
 		elsif Tag = "uri" then
 			Link(Object, Output, Village_Id => Village_Id,
 				User_Id => User_Id, User_Password => User_Password);
@@ -26,7 +26,7 @@ is
 			end if;
 		elsif Tag = "title" then
 			if Village /= null then
-				Write(Output, Web.Markup_Entity(Ada.Strings.Unbounded.To_String(Village.Name)));
+				Web.Write_In_HTML (Output, Object.HTML_Version, Ada.Strings.Unbounded.To_String(Village.Name));
 				Write(Output, ' ');
 				Day_Name(Object, Output, Village.Today, Village.Today, Village.State);
 				Write(Output, " - ");
@@ -35,11 +35,11 @@ is
 			Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
 		elsif Tag = "id" then
 			Write(Output, '"');
-			Write(Output, User_Id);
+			Web.Write_In_Attribute (Output, Object.HTML_Version, User_Id);
 			Write(Output, '"');
 		elsif Tag = "password" then
 			Write(Output, '"');
-			Write(Output, Web.Markup_Entity(User_Password));
+			Web.Write_In_Attribute (Output, Object.HTML_Version, User_Password);
 			Write(Output, '"');
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";

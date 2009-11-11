@@ -200,6 +200,7 @@ package body Tabula.Renderers.Rule is
 			others => <>));
 	
 	procedure List(
+		Object : in Renderer'Class;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Name : String;
 		Items : Item_Array;
@@ -216,7 +217,7 @@ package body Tabula.Renderers.Rule is
 				Write(Output, " selected=""selected""");
 			end if;
 			Write(Output, '>');
-			Write(Output, Web.Markup_Entity(Items(I).Guide.all));
+			Web.Write_In_HTML (Output, Object.HTML_Version, Items(I).Guide.all);
 			if Items(I).Unrecommended then
 				Write(Output, " お薦めしません。");
 			end if;
@@ -250,7 +251,7 @@ package body Tabula.Renderers.Rule is
 					if Village.Day_Duration < 24 * 60 * 60.0 then
 						for I in Day_Duration_Message'Range loop
 							if Duration'Value(Day_Duration_Message(I).Value.all) = Village.Day_Duration then
-								List(Output,
+								List(Object, Output,
 									Name => "day-duration", 
 									Items => Day_Duration_Message,
 									Selected => I);
@@ -260,7 +261,7 @@ package body Tabula.Renderers.Rule is
 						end loop;
 						for I in Night_Duration_Message'Range loop
 							if Duration'Value(Night_Duration_Message(I).Value.all) = Village.Night_Duration then
-								List(Output,
+								List(Object, Output,
 									Name => "night-duration", 
 									Items => Night_Duration_Message,
 									Selected => I);
@@ -269,52 +270,52 @@ package body Tabula.Renderers.Rule is
 							end if;
 						end loop;
 					end if;
-					List(Output,
+					List(Object, Output,
 						Name => "victim-existing", 
 						Items => Victim_Existing_Message,
 						Selected => Boolean'Pos(Village.Victim_Existing));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "first-execution", 
 						Items => First_Execution_Message,
 						Selected => Boolean'Pos(Village.First_Execution));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "teaming", 
 						Items => Teaming_Message,
 						Selected => Villages.Teaming'Pos(Village.Teaming));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "monster-side", 
 						Items => Monster_Side_Message,
 						Selected => Villages.Monster_Side'Pos(Village.Monster_Side));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "attack", 
 						Items => Attack_Message,
 						Selected => Villages.Attack_Mode'Pos(Village.Attack));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "servant-knowing", 
 						Items => Servant_Knowing_Message,
 						Selected => Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "daytime-preview", 
 						Items => Daytime_Preview_Message,
 						Selected => Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "doctor-infected", 
 						Items => Doctor_Infected_Message,
 						Selected => Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "hunter-silver-bullet", 
 						Items => Hunter_Silver_Bullet_Message,
 						Selected => Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
 					Web.Producers.Produce(Output, Template);
-					List(Output,
+					List(Object, Output,
 						Name => "unfortunate", 
 						Items => Unfortunate_Message,
 						Selected => Villages.Unfortunate_Mode'Pos(Village.Unfortunate));
@@ -323,14 +324,14 @@ package body Tabula.Renderers.Rule is
 						for I in Day_Duration_Message'Range loop
 							if Duration'Value(Day_Duration_Message(I).Value.all) = Village.Day_Duration then
 								Write(Output, Day_Duration_Message(I).Guide.all);
-								Write(Output, ' ' & Line_Break);
+								Write(Output, ' ' & Ascii.LF);
 								exit;
 							end if;
 						end loop;
 						for I in Night_Duration_Message'Range loop
 							if Duration'Value(Night_Duration_Message(I).Value.all) = Village.Night_Duration then
 								Write(Output, Night_Duration_Message(I).Guide.all);
-								Write(Output, ' ' & Line_Break);
+								Write(Output, ' ' & Ascii.LF);
 								exit;
 							end if;
 						end loop;
@@ -342,7 +343,7 @@ package body Tabula.Renderers.Rule is
 							if Village.State /= Villages.Closed and then Items(Index).Unrecommended then
 								Write(Output, " <em>お薦めしません。</em>");
 							end if;
-							Write(Output, ' ' & Line_Break);
+							Write(Output, ' ' & Ascii.LF);
 						end Put;
 					begin
 						if Player or else Village.Victim_Existing /= Villages.Initial_Victim_Existing then

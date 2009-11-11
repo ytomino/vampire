@@ -32,6 +32,8 @@ use Tabula.Villages.Lists.Village_Lists;
 use Tabula.Villages.Messages;
 package body Tabula.Renderers is
 	
+	Line_Break : constant Character := Ascii.LF;
+	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
@@ -194,7 +196,7 @@ package body Tabula.Renderers is
 							if Item.Day_Duration < 24 * 60 * 60.0 then
 								Write(Output, "短期 ");
 							end if;
-							Write(Output, Web.Markup_Entity(+Item.Name));
+							Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Item.Name);
 							Write(Output, "</a>");
 						elsif Tag = "people" then
 							Write(Output, To_String(Natural(Item.People.Length)) & "人");
@@ -268,7 +270,7 @@ package body Tabula.Renderers is
 			Write(Output, '"');
 		elsif Tag = "password" then
 			Write(Output, '"');
-			Write(Output, Web.Markup_Entity(User_Password));
+			Web.Write_In_Attribute (Output, Renderer'Class(Object).HTML_Version, User_Password);
 			Write(Output, '"');
 		elsif Tag = "uri" then
 			Link(Renderer'Class(Object), Output, Village_Id => Village_Id,
@@ -310,7 +312,7 @@ package body Tabula.Renderers is
 		User_Password : in String) is
 	begin
 		if Tag = "title" then
-			Write(Output, Web.Markup_Entity(+Village.Name));
+			Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Village.Name);
 			Write(Output, ' ');
 			Day_Name(Renderer'Class(Object), Output, Day, Village.Today, Village.State);
 			if Template.Is_Empty then
@@ -362,22 +364,20 @@ package body Tabula.Renderers is
 				declare
 					S : String renames Ada.Strings.Unbounded.To_String(Message.Text);
 				begin
-					if Ada.Strings.Unbounded.Length(Message.Text) > Max_Length_Of_Message then
+					if S'Length > Max_Length_Of_Message then
 						declare
 							I : Natural := Max_Length_Of_Message;
 						begin
-							while Character'Pos(S(I)) >= 16#c0#
-								or else Character'Pos(S(I - 1)) >= 16#e0#
-							loop
+							while Character'Pos (S (I + 1)) in 16#80# .. 16#bf# loop
 								I := I - 1;
 							end loop;
-							Write(Output, Web.Markup_HTML(S(1 .. I), HTML_Version(Renderer'Class(Object))));
+							Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, S(1 .. I));
 							Write(Output, "<b>");
-							Write(Output, Web.Markup_HTML(S(I + 1 .. S'Last), HTML_Version(Renderer'Class(Object))));
+							Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, S(I + 1 .. S'Last));
 							Write(Output, "</b>");
 						end;
 					else
-						Write(Output, Web.Markup_HTML(S, HTML_Version(Renderer'Class(Object))));
+						Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, S);
 					end if;
 				end;
 			else
@@ -1000,7 +1000,7 @@ package body Tabula.Renderers is
 				Write(Output, '"');
 			elsif Tag = "newpassword" then
 				Write(Output, '"');
-				Write(Output, Web.Markup_Entity(New_User_Password));
+				Web.Write_In_Attribute (Output, Renderer'Class(Object).HTML_Version, New_User_Password);
 				Write(Output, '"');
 			else
 				Handle_Users(Output, Tag, Template, Object,
@@ -1063,9 +1063,9 @@ package body Tabula.Renderers is
 					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "activevillage" then
-				Write(Output, Web.Markup_HTML(+Joined, Version => Web.XHTML));
+				Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Joined);
 			elsif Tag = "createdvillage" then
-				Write(Output, Web.Markup_HTML(+Created, Version => Web.XHTML));
+				Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Created);
 			else
 				Handle_Users(Output, Tag, Template, Object,
 					User_Id => User_Id, User_Password => User_Password);
@@ -1465,9 +1465,9 @@ package body Tabula.Renderers is
 							if Tag = "name" then
 								Write(Output,
 									"<label for=""c" & To_String(I) & """>" &
-									"<input id=""c" & To_String(I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & To_String(I) & ")"" />" &
-									Web.Markup_Entity(Name(Person)) &
-									"</label>");
+									"<input id=""c" & To_String(I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & To_String(I) & ")"" />");
+								Web.Write_In_HTML (Output, Renderer'Class (Object).HTML_Version, Name (Person));
+								Write (Output, "</label>");
 							elsif Tag = "speech" then
 								Write(Output, To_String(Message_Counts(I).Speech));
 								if Message_Counts(I).Encouraged > 0 then
@@ -1480,7 +1480,7 @@ package body Tabula.Renderers is
 									Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
 								end if;
 							elsif Tag = "id" then
-								Write(Output, Web.Markup_Entity(+Person.Id));
+								Web.Write_In_HTML (Output, Renderer'Class (Object).HTML_Version, +Person.Id);
 							elsif Tag = "remove" then
 								if Village.State = Villages.Prologue then
 									Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
@@ -1514,7 +1514,7 @@ package body Tabula.Renderers is
 						procedure Handle_Narration(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String; Template : in Web.Producers.Template) is
 						begin
-							Write(Output, Web.Markup_HTML(Message, HTML_Version(Renderer'Class(Object))));
+							Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, Message);
 						end Handle_Narration;
 					begin
 						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
@@ -1544,7 +1544,7 @@ package body Tabula.Renderers is
 									if S = "" then
 										Write(Output, "……。");
 									else
-										Write(Output, Web.Markup_HTML(S, HTML_Version(Object)));
+										Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, S);
 									end if;
 								end;
 							else
@@ -2491,8 +2491,7 @@ package body Tabula.Renderers is
 		begin
 			if Tag = "value" then
 				Write(Output, '"');
-				Write(Output, Web.Markup_Entity(+Message.Text,
-					Line_Break => HTML_Version(Renderer'Class(Object)) = Web.XHTML));
+				Web.Write_In_Attribute (Output, Renderer'Class(Object).HTML_Version, +Message.Text);
 				Write(Output, '"');
 			elsif Tag = "longer" then
 				if Ada.Strings.Unbounded.Length(Message.Text) > Max_Length_Of_Message then

@@ -57,13 +57,7 @@ clean:
 site/vampire$(CGISUFFIX): source/tabula-vampire-main.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/unlock$(CGISUFFIX): source/unlock.adb $(BUILDDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
-
-site/users$(CGISUFFIX): source/users.adb $(BUILDDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
-
-site/shuffle$(CGISUFFIX): source/shuffle.adb $(BUILDDIR)
+site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 export QUERY_STRING=
