@@ -19,7 +19,7 @@ with Tabula.Villages.Casts.Load;
 with Tabula.Villages.Lists.Managing;
 with Tabula.Villages.Load;
 with Tabula.Villages.Save;
-procedure Vampire is
+procedure Tabula.Vampire.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Tabula.Users.Managing.Check_Result;
@@ -34,7 +34,6 @@ procedure Vampire is
 	use type Tabula.Villages.Message_Kind;
 	use type Tabula.Villages.Message;
 	use type Tabula.Villages.Casts.Work;
-	use Tabula;
 	use Tabula.Villages.Messages;
 	use Tabula.Villages.Person_Records;
 	use Tabula.Villages.People;
@@ -1061,4 +1060,4 @@ exception
 		Web.Header_Break(Output);
 		String'Write(Output, Ada.Exceptions.Exception_Information(E));
 		String'Write(Output, Web.Line_Break);
-end Vampire;
+end Tabula.Vampire.Main;

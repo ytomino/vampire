@@ -1,8 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Time_Zones;
-with Ada.Unchecked_Conversion;
-use type Ada.Calendar.Time_Zones.Time_Offset;
+private with Ada.Unchecked_Conversion;
 package Tabula.Calendar is
+	use type Ada.Calendar.Time_Zones.Time_Offset;
 	
 	Null_Time : constant Ada.Calendar.Time;
 	
