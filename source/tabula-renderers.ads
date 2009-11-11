@@ -188,13 +188,11 @@ private
 	
 	function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 	
-	Line_Break : String renames Web.Line_Break;
-	
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in Character)
 		renames Character'Write;
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in String)
 		renames String'Write;
-
+	
 	function To_String(X : Integer) return String;
 	
 end Tabula.Renderers;
