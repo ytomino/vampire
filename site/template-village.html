@@ -127,7 +127,12 @@
 					</div>
 				</?ghost>
 				<?monologue>
-					<p class="monologue"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
+					<div class="monologue">
+						<table cellspacing="0">
+							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+							<tr><td class="text"><?text>発言</?text></td></tr>
+						</table>
+					</div>
 				</?monologue>
 				<?vampire>
 					<div class="vampire">

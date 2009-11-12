@@ -1,5 +1,4 @@
 ﻿
-
 body {
 	/* background-image: url(./image/background.png); */
 	background-color: black;
@@ -120,23 +119,6 @@ form.narration input {
 	margin-left:0.5em;
 }
 
-p.escaped {
-	margin-right:4%;
-	margin-bottom:1em;
-	padding-left:72px;
-	padding-right:2px;
-	color:silver;
-	font-size:smaller;
-}
-
-p.monologue {
-	margin-right:4%;
-	margin-bottom:1em;
-	padding-left:72px;
-	padding-right:2px;
-	color:#dddddd;
-}
-
 .narratione {
 	color:silver;
 	font-size: smaller;
@@ -146,8 +128,20 @@ p.monologue {
 	font-style:italic;
 }
 
+p.escaped {
+	margin-right:4%;
+	margin-bottom:1em;
+	padding-left:72px;
+	padding-right:2px;
+	color:silver;
+	font-size:smaller;
+}
+
 div.speech,
-div.ghost {
+div.ghost,
+div.vampire,
+div.dying,
+div.monologue {
 	margin-left: 0%;
 	margin-right: 4%;
 	margin-bottom: 1em;
@@ -158,7 +152,8 @@ div.ghost {
 
 div.ghost,
 div.vampire,
-div.dying {
+div.dying,
+div.monologue {
 	border:1px solid transparent;
 }
 
@@ -198,20 +193,32 @@ div.speech {
 .speech img,
 .ghost img,
 .vampire img,
-.dying img {
+.dying img,
+.monologue img {
 	vertical-align:text-bottom;
 }
 
 div.ghost img,
 div.dying img,
-div.vampire img {
+div.vampire img,
+div.monologue img {
 	filter: alpha(opacity=50);
 	-moz-opacity: 0.5;
 	opacity: 0.5;
 }
 
-td.name { height:1em; vertical-align:top; color:#000000; padding-left:4px; }
-td.text { vertical-align:top; color:#000000; padding-left:4px; }
+td.name {
+	height:1em;
+	vertical-align:top;
+	color:#000000;
+	padding-left:4px;
+}
+
+td.text {
+	vertical-align:top;
+	color:#000000;
+	padding-left:4px;
+}
 
 div.ghost td.name,
 div.ghost td.text,
@@ -227,6 +234,11 @@ div.dying td.text {
 div.vampire td.name,
 div.vampire td.text {
 	color:#ff8888;
+}
+
+div.monologue td.name,
+div.monologue td.text {
+	color:#dddddd;
 }
 
 div.name,
