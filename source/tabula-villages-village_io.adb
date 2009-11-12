@@ -1,11 +1,11 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
-with Tabula.Villages;
-use type Ada.Strings.Unbounded.Unbounded_String;
-use Tabula.Villages.People;
-use Tabula.Villages.Person_Records;
+with Tabula.Casts.Cast_IO;
 package body Tabula.Villages.Village_IO is
+	use Tabula.Villages.People;
+	use Tabula.Villages.Person_Records;
+	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Villages.People.Vector) is
 		package Person_Records_IO is new DYAYaml.IO_List (
@@ -23,7 +23,6 @@ package body Tabula.Villages.Village_IO is
 		use Person_Role_IO;
 		use Person_State_IO;
 		use Requested_Role_IO;
-		use Person_Sex_IO;
 		use People_IO;
 		use Tabula.Calendar.Time_IO;
 		procedure People_Callback(Item : in out Person_Type) is
@@ -45,11 +44,7 @@ package body Tabula.Villages.Village_IO is
 				end Person_Records_Callback;
 			begin
 				IO(Serializer, "id", Item.Id);
-				IO(Serializer, "name", Item.Name);
-				IO(Serializer, "work", Item.Work);
-				IO(Serializer, "image", Item.Image);
-				IO(Serializer, "sex", Item.Sex);
-				IO(Serializer, "group", Item.Group);
+				Casts.Cast_IO.IO (Serializer, Item);
 				IO(Serializer, "request", Item.Request);
 				IO(Serializer, "role", Item.Role);
 				IO(Serializer, "ignore-request", Item.Ignore_Request, Default => Default_Person.Ignore_Request);

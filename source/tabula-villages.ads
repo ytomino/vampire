@@ -3,6 +3,7 @@ with Ada.Calendar;
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
+with Tabula.Casts;
 package Tabula.Villages is
 	
 	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
@@ -47,10 +48,6 @@ package Tabula.Villages is
 	type Role_Appearance is (None, Random, Force);
 	type Role_Appearances is array(Detective .. Lover) of Role_Appearance;
 	
-	type Sex_Kind is (Neutral, Male, Female);
-	
-	subtype Person_Sex is Sex_Kind range Male .. Female;
-	
 	type Person_State is (Normal, Infected, Died);
 	
 	type Person_Record is record
@@ -76,13 +73,8 @@ package Tabula.Villages is
 	
 	package Person_Records is new Ada.Containers.Vectors (Natural, Person_Record);
 	
-	type Person_Type is record
+	type Person_Type is new Casts.Person with record
 		Id : Ada.Strings.Unbounded.Unbounded_String;
-		Name : Ada.Strings.Unbounded.Unbounded_String;
-		Work : Ada.Strings.Unbounded.Unbounded_String;
-		Image : Ada.Strings.Unbounded.Unbounded_String;
-		Sex : Person_Sex;
-		Group : Integer;
 		Request : Requested_Role;
 		Ignore_Request : Boolean;
 		Role : Person_Role;
@@ -91,12 +83,8 @@ package Tabula.Villages is
 	end record;
 	
 	Default_Person : constant Person_Type := (
+		Casts.Default_Person with
 		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
-		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Work => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Image => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Sex => Male,
-		Group => 0,
 		Request => Random,
 		Ignore_Request => False,
 		Role => Inhabitant,
@@ -235,8 +223,10 @@ package Tabula.Villages is
 	procedure Escape(Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
 	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
 
-	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Sex_Kind) return Boolean;
+	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean;
 	
 	function Escape_Duration(Village : Village_Type) return Duration;
+	
+	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
 end Tabula.Villages;

@@ -1,9 +1,13 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with DYAYaml;
-package Tabula.Villages.Casts.Cast_IO is
+package Tabula.Casts.Cast_IO is
 	
 	Yaml_Type : constant String := "vampire-cast";
 	
-	procedure IO(Serializer: in out DYAYaml.Serializer; Cast: in out Cast_Type);
+	package Sex_Kind_IO is new DYAYaml.IO_Enumeration(Sex_Kind);
+	package Person_Sex_IO is new DYAYaml.IO_Enumeration(Person_Sex);
 	
-end Tabula.Villages.Casts.Cast_IO;
+	procedure IO (Serializer : in out DYAYaml.Serializer; Item : in out Person'Class);
+	procedure IO (Serializer : in out DYAYaml.Serializer; Item : in out Cast_Collection);
+	
+end Tabula.Casts.Cast_IO;

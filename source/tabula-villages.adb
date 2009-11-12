@@ -1,11 +1,10 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
-with Ada.Strings.Unbounded;
-with Tabula.Villages;
-use type Ada.Strings.Unbounded.Unbounded_String;
-use Tabula.Villages.Messages;
-use Tabula.Villages.People;
 package body Tabula.Villages is
+	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Casts.Sex_Kind;
+	
+	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
@@ -190,12 +189,12 @@ package body Tabula.Villages is
 	procedure Escape(Village : in out Villages.Village_Type; Subject : Natural; Time : Ada.Calendar.Time) is
 		Escaped_Index : Natural;
 	begin
-		Append(Village.Escaped_People, Village.People.Constant_Reference(Subject).Element.all);
-		Delete(Village.People, Subject);
+		People.Append(Village.Escaped_People, Village.People.Constant_Reference(Subject).Element.all);
+		People.Delete(Village.People, Subject);
 		Escaped_Index := Village.Escaped_People.Last_Index;
 		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 			declare
-				Kind : Villages.Message_Kind renames Element(Village.Messages, I).Kind;
+				Kind : Villages.Message_Kind renames Village.Messages.Element (I).Kind;
 			begin
 				if Kind = Villages.Escaped_Join then
 					null;
@@ -203,7 +202,7 @@ package body Tabula.Villages is
 					null;
 				elsif Kind = Villages.Escape then
 					null;
-				elsif Kind = Villages.Speech and then Element(Village.Messages, I).Subject = Subject then
+				elsif Kind = Villages.Speech and then Village.Messages.Element (I).Subject = Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
@@ -211,9 +210,9 @@ package body Tabula.Villages is
 							Message.Kind := Villages.Escaped_Speech;
 						end Update;
 					begin
-						Update_Element(Village.Messages, I, Update'Access);
+						Messages.Update_Element(Village.Messages, I, Update'Access);
 					end;
-				elsif Kind = Villages.Join and then Element(Village.Messages, I).Subject = Subject then
+				elsif Kind = Villages.Join and then Village.Messages.Element (I).Subject = Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
@@ -221,21 +220,21 @@ package body Tabula.Villages is
 							Message.Kind := Villages.Escaped_Join;
 						end Update;
 					begin
-						Update_Element(Village.Messages, I, Update'Access);
+						Messages.Update_Element(Village.Messages, I, Update'Access);
 					end;
-				elsif Element(Village.Messages, I).Subject > Subject then
+				elsif Village.Messages.Element (I).Subject > Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
 							Message.Subject := Message.Subject - 1;
 						end Update;
 					begin
-						Update_Element(Village.Messages, I, Update'Access);
+						Messages.Update_Element(Village.Messages, I, Update'Access);
 					end;
 				end if;
 			end;
 		end loop;
-		Append(Village.Messages, Message'(
+		Messages.Append(Village.Messages, Message'(
 			Kind => Escape,
 			Day => Village.Today,
 			Time => Time,
@@ -323,7 +322,7 @@ package body Tabula.Villages is
 								end if;
 							end;
 						end loop;
-						Append(Village.Messages, Message'(
+						Messages.Append(Village.Messages, Message'(
 							Kind => Provisional_Vote,
 							Day => Village.Today,
 							Time => Time,
@@ -336,7 +335,7 @@ package body Tabula.Villages is
 		end if;
 	end Vote;
 	
-	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Sex_Kind) return Boolean is
+	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean is
 	begin
 		Search_Pre : for I in reverse Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index loop
 			declare
@@ -362,5 +361,19 @@ package body Tabula.Villages is
 			return 7 * 24 * 60 * 60 * 1.0;
 		end if;
 	end Escape_Duration;
+	
+	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : Village_Type) is
+	begin
+		for Position in Village.People.First_Index .. Village.People.Last_Index loop
+			declare
+				P : Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
+			begin
+				-- remove all duplicated characters
+				Casts.Exclude_Person (Cast, +P.Name, P.Group);
+				-- remove one duplicated work
+				Casts.Exclude_Work (Cast, +P.Work);
+			end;
+		end loop;
+	end Exclude_Taken;
 
 end Tabula.Villages;

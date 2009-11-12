@@ -1,17 +1,38 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Tabula.Villages.Village_IO;
-package body Tabula.Villages.Casts.Cast_IO is
+package body Tabula.Casts.Cast_IO is
+	
+	procedure IO (Serializer : in out DYAYaml.Serializer; Item : in out Person'Class) is
+		use DYAYaml;
+		use Person_Sex_IO;
+	begin
+		IO (Serializer, "name", Item.Name);
+		IO (Serializer, "work", Item.Work);
+		IO (Serializer, "image", Item.Image);
+		IO (Serializer, "sex", Item.Sex);
+		IO (Serializer, "group", Item.Group);
+	end IO;
+	
+	use People;
+	package People_IO is new DYAYaml.IO_List(People.Vector, People.Cursor, Person, Default_Person);
+	
 	use Works;
-
 	package Works_IO is new DYAYaml.IO_List(Works.Vector, Works.Cursor, Work, Default_Work);
 	
-	procedure IO(Serializer: in out DYAYaml.Serializer; Cast: in out Cast_Type) is
+	procedure IO (Serializer: in out DYAYaml.Serializer; Item : in out Cast_Collection) is
 		use DYAYaml;
-		use Tabula.Villages.Village_IO;
-		use Tabula.Villages.Village_IO.Sex_Kind_IO;
+		use Sex_Kind_IO;
+		use People_IO;
 		use Works_IO;
 		procedure Root_Callback is
-			procedure Works_Callback(Item : in out Work) is
+			procedure People_Callback (Item : in out Person) is
+				procedure Person_Callback is
+				begin
+					IO (Serializer, Item);
+				end;
+			begin
+				IO(Serializer, Person_Callback'Access);
+			end People_Callback;
+			procedure Works_Callback (Item : in out Work) is
 				procedure Work_Callback is
 				begin
 					IO(Serializer, "name", Item.Name);
@@ -22,11 +43,11 @@ package body Tabula.Villages.Casts.Cast_IO is
 				IO(Serializer, Work_Callback'Access);
 			end Works_Callback;
 		begin
-			IO(Serializer, "people", Cast.People);
-			IO(Serializer, "works", Cast.Works, Works_Callback'Access);
+			IO (Serializer, "people", Item.People, People_Callback'Access);
+			IO (Serializer, "works", Item.Works, Works_Callback'Access);
 		end Root_Callback;
 	begin
 		IO(Serializer, Root_Callback'Access);
 	end IO;
 	
-end Tabula.Villages.Casts.Cast_IO;
+end Tabula.Casts.Cast_IO;

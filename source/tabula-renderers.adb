@@ -6,10 +6,10 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.Numerics.MT19937;
 with Tabula.Calendar;
+with Tabula.Casts;
+with Tabula.Casts.Load;
 with Tabula.Renderers.Rule;
 with Tabula.String_Lists;
-with Tabula.Villages.Casts;
-with Tabula.Villages.Casts.Load;
 with Tabula.Villages.Lists;
 with Web;
 use type Ada.Calendar.Time;
@@ -2348,7 +2348,7 @@ package body Tabula.Renderers is
 						Web.Producers.Produce(Output, Template, "over");
 					else
 						declare
-							Cast : Villages.Casts.Cast_Type;
+							Cast : Casts.Cast_Collection;
 							procedure Handle_Entry(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String; Template : in Web.Producers.Template) is
 							begin
@@ -2357,7 +2357,7 @@ package body Tabula.Renderers is
 										"<option value=""-1"" selected=""selected"">(既定)</option>");
 									for Position in Cast.Works.First_Index .. Cast.Works.Last_Index loop
 										declare
-											Item : Villages.Casts.Work renames Cast.Works.Constant_Reference(Position).Element.all;
+											Item : Casts.Work renames Cast.Works.Constant_Reference(Position).Element.all;
 										begin
 											if Item.Name /= "" then
 												Write(Output, "<option value=""");
@@ -2365,9 +2365,9 @@ package body Tabula.Renderers is
 												Write(Output, """>");
 												Write(Output, +Item.Name);
 												case Item.Sex is
-													when Villages.Male => Write(Output, " (男性職)");
-													when Villages.Female => Write(Output, " (女性職)");
-													when others => null;
+													when Casts.Male => Write(Output, " (男性職)");
+													when Casts.Female => Write(Output, " (女性職)");
+													when Casts.Neutral => null;
 												end case;
 												if Item.Nominated then
 													Write(Output, " (指名職)");
@@ -2380,12 +2380,12 @@ package body Tabula.Renderers is
 								elsif Tag = "names" then
 									Write(Output, "<select id=""name"" name=""name"">");
 									declare
-										type Sex_To_String is array(Villages.Person_Sex) of String(1 .. 9);
+										type Sex_To_String is array(Casts.Person_Sex) of String(1 .. 9);
 										Sex_Name : constant Sex_To_String := (" (男性)", " (女性)");
 									begin
 										for Position in Cast.People.First_Index .. Cast.People.Last_Index loop
 											declare
-												Item : Villages.Person_Type renames Cast.People.Constant_Reference(Position).Element.all;
+												Item : Casts.Person renames Cast.People.Constant_Reference(Position).Element.all;
 											begin
 												if Item.Name /= "" then
 													Write(Output, "<option value=""");
@@ -2415,8 +2415,8 @@ package body Tabula.Renderers is
 								end if;
 							end Handle_Entry;
 						begin
-							Villages.Casts.Load(Cast);
-							Villages.Casts.Exclude_Taken(Cast, Village);
+							Casts.Load(Cast);
+							Villages.Exclude_Taken(Cast, Village);
 							Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
 						end;
 					end if;

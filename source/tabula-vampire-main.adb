@@ -14,14 +14,16 @@ with Tabula.Renderers.Message_Page;
 with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
 with Tabula.Users.Managing;
+with Tabula.Casts.Load;
 with Tabula.Villages.Advance;
-with Tabula.Villages.Casts.Load;
 with Tabula.Villages.Lists.Managing;
 with Tabula.Villages.Load;
 with Tabula.Villages.Save;
 procedure Tabula.Vampire.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Tabula.Casts.Person_Sex;
+	use type Tabula.Casts.Work;
 	use type Tabula.Users.Managing.Check_Result;
 	use type Tabula.Villages.Attack_Mode;
 	use type Tabula.Villages.Doctor_Infected_Mode;
@@ -29,11 +31,9 @@ procedure Tabula.Vampire.Main is
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Time;
 	use type Tabula.Villages.Person_Role;
-	use type Tabula.Villages.Person_Sex;
 	use type Tabula.Villages.Person_State;
 	use type Tabula.Villages.Message_Kind;
 	use type Tabula.Villages.Message;
-	use type Tabula.Villages.Casts.Work;
 	use Tabula.Villages.Messages;
 	use Tabula.Villages.Person_Records;
 	use Tabula.Villages.People;
@@ -496,12 +496,12 @@ begin
 												Work_Num : Integer := Natural'Value(Web.Element(Inputs, "work"));
 												Name_Num : constant Natural := Natural'Value(Web.Element(Inputs, "name"));
 												Request : constant Villages.Requested_Role := Villages.Requested_Role'Value(Web.Element(Inputs, "request"));
-												Cast : Villages.Casts.Cast_Type;
+												Cast : Casts.Cast_Collection;
 											begin
-												Villages.Casts.Load(Cast);
-												Villages.Casts.Exclude_Taken(Cast, Village);
+												Casts.Load (Cast);
+												Villages.Exclude_Taken (Cast, Village);
 												declare
-													Person_Template : Villages.Person_Type renames Cast.People.Constant_Reference (Name_Num).Element.all;
+													Person_Template : Casts.Person renames Cast.People.Constant_Reference (Name_Num).Element.all;
 												begin
 													if Work_Num < 0 then
 														Searching_Established_Work : for I in Cast.Works.First_Index .. Cast.Works.Last_Index loop
@@ -520,14 +520,14 @@ begin
 															User_Id, User_Password);
 													else
 														declare
-															Selected_Work : access constant Villages.Casts.Work := Cast.Works.Constant_Reference(Work_Num).Element;
+															Selected_Work : access constant Casts.Work := Cast.Works.Constant_Reference(Work_Num).Element;
 														begin
 															if Person_Template.Name = "" or Selected_Work.Name = "" then
 																Web.Header_Content_Type (Output, Web.Text_HTML);
 																Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 																Web.Header_Break (Output);
 																Renderer.Message_Page(Output, Village_Id, Village'Access, "既に取られています。", User_Id, User_Password);
-															elsif Selected_Work.Sex /= Villages.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
+															elsif Selected_Work.Sex /= Casts.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
 																Web.Header_Content_Type (Output, Web.Text_HTML);
 																Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 																Web.Header_Break (Output);

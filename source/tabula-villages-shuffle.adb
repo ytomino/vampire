@@ -1,6 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers;
-use type Ada.Containers.Count_Type;
 procedure Tabula.Villages.Shuffle(
 	People : in out Villages.People.Vector;
 	Victim : access Villages.Person_Role;
@@ -9,6 +8,9 @@ procedure Tabula.Villages.Shuffle(
 	Appearance : Villages.Role_Appearances;
 	Generator : not null access Ada.Numerics.MT19937.Generator)
 is
+	use type Ada.Containers.Count_Type;
+	use type Casts.Sex_Kind;
+	
 	subtype Village_Side_Count_Type is Natural range 1 .. 6;
 	subtype Vampire_Count_Type is Natural range 1 .. 3;
 	
@@ -80,8 +82,8 @@ is
 		begin
 			for Position in People_Index loop
 				case People.Constant_Reference(Position).Element.Sex is
-					when Male => Male_Exists := True;
-					when Female => Female_Exists := True;
+					when Casts.Male => Male_Exists := True;
+					when Casts.Female => Female_Exists := True;
 				end case;
 			end loop;
 			return Male_Exists and Female_Exists;
@@ -536,15 +538,15 @@ is
 	function Evaluate(Candidacy : Assignment) return Integer is
 		Bad : constant Integer := -1;
 		Result : Integer := 0;
-		Lover_Sex : Person_Sex := Male;
-		Loved_Sex : Person_Sex := Female;
+		Lover_Sex : Casts.Person_Sex := Casts.Male;
+		Loved_Sex : Casts.Person_Sex := Casts.Female;
 	begin
 		for I in People_Index loop
 			declare
-				S : constant Person_Sex := People.Constant_Reference(I).Element.Sex;
+				S : constant Casts.Person_Sex := People.Constant_Reference(I).Element.Sex;
 			begin
-				if (S = Male and Candidacy(I) = Sweetheart_F) or else
-					(S = Female and Candidacy(I) = Sweetheart_M)
+				if (S = Casts.Male and Candidacy(I) = Sweetheart_F) or else
+					(S = Casts.Female and Candidacy(I) = Sweetheart_M)
 				then
 					return Bad;
 				elsif Candidacy(I) = Lover then
