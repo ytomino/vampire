@@ -137,17 +137,6 @@ p.monologue {
 	color:#dddddd;
 }
 
-p.ghost {
-	margin-right:4%;
-	margin-bottom:1em;
-	padding-left:72px;
-	padding-right:2px;
-}
-
-p.ghost, .narrationg {
-	color:#8888ff;
-}
-
 .narratione {
 	color:silver;
 	font-size: smaller;
@@ -157,30 +146,25 @@ p.ghost, .narrationg {
 	font-style:italic;
 }
 
-p.dying {
-	margin-right:4%;
-	margin-bottom:1em;
-	padding-left:72px;
-	padding-right:2px;
-	color:#88ff88;
+div.speech,
+div.ghost {
+	margin-left: 0%;
+	margin-right: 4%;
+	margin-bottom: 1em;
+	padding: 2px;
+	overflow: hidden;
+	position: relative;
 }
 
-p.vampire {
-	margin-right:4%;
-	padding-left:72px;
-	padding-right:2px;
-	color:#ff8888;
+div.ghost,
+div.vampire,
+div.dying {
+	border:1px solid transparent;
 }
 
 div.speech {
-	margin-left:0%;
-	margin-right:4%;
-	margin-bottom:1em;
 	background-color:#eeeedd;
 	border:1px dashed #777766;
-	padding:2px;
-	overflow:hidden;
-	position:relative;
 }
 
 .s0 .speech {
@@ -204,21 +188,48 @@ div.speech {
 	margin-right:0%;
 }
 
-.speech tr {
+.speech tr,
+.ghost tr,
+.vampire tr,
+.dying tr {
 	height:100%;
 }
 
-.speech img {
+.speech img,
+.ghost img,
+.vampire img,
+.dying img {
 	vertical-align:text-bottom;
+}
+
+div.ghost img,
+div.dying img,
+div.vampire img {
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+	opacity: 0.5;
 }
 
 td.name { height:1em; vertical-align:top; color:#000000; padding-left:4px; }
 td.text { vertical-align:top; color:#000000; padding-left:4px; }
 
-div.name {
-	text-decoration:underline;
+div.ghost td.name,
+div.ghost td.text,
+.narrationg {
+	color:#8888ff;
 }
 
+div.dying td.name,
+div.dying td.text {
+	color:#88ff88;
+}
+
+div.vampire td.name,
+div.vampire td.text {
+	color:#ff8888;
+}
+
+div.name,
 span.name {
 	text-decoration:underline;
 }
