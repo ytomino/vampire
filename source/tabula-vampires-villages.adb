@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
-package body Tabula.Vampire.Villages is
+package body Tabula.Vampires.Villages is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Sex_Kind;
 	use type Tabula.Villages.Village_State;
@@ -378,4 +378,4 @@ package body Tabula.Vampire.Villages is
 		end loop;
 	end Exclude_Taken;
 
-end Tabula.Vampire.Villages;
+end Tabula.Vampires.Villages;

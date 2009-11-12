@@ -11,11 +11,11 @@ package Tabula.Renderers.Rule is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in System.Address; -- Ase.Web.Producers.Template;
 		Village_Id : in Villages.Lists.Village_Id;
-		Village : in Vampire.Villages.Village_Type; 
+		Village : in Vampires.Villages.Village_Type; 
 		Player : in Boolean;
 		User_Id : in String;
 		User_Password : in String);
 	
-	procedure Change(Village : in out Vampire.Villages.Village_Type; Inputs : in Web.Query_Strings);
+	procedure Change(Village : in out Vampires.Villages.Village_Type; Inputs : in Web.Query_Strings);
 	
 end Tabula.Renderers.Rule;

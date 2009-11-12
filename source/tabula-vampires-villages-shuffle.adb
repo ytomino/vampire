@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers;
-procedure Tabula.Vampire.Villages.Shuffle(
+procedure Tabula.Vampires.Villages.Shuffle(
 	People : in out Villages.People.Vector;
 	Victim : access Villages.Person_Role;
 	Teaming : Villages.Teaming;
@@ -625,4 +625,4 @@ begin
 	for I in People_Index loop
 		People.Reference(I).Element.Role := Current.Assignment(I);
 	end loop;
-end Tabula.Vampire.Villages.Shuffle;
+end Tabula.Vampires.Villages.Shuffle;

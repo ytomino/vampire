@@ -1,8 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
-with Tabula.Vampire.Villages.Shuffle;
-procedure Tabula.Vampire.Villages.Advance(
+with Tabula.Vampires.Villages.Shuffle;
+procedure Tabula.Vampires.Villages.Advance(
 	Village : in out Village_Type;
 	Now : in Ada.Calendar.Time;
 	Generator : not null access Ada.Numerics.MT19937.Generator;
@@ -140,7 +140,7 @@ begin
 									case Village.Servant_Knowing is
 										when None => raise Program_Error;
 										when Vampire_K => Kind := Servant_Knew_Vampire_K;
-										when Vampires => Kind := Servant_Knew_Vampires;
+										when All_Vampires => Kind := Servant_Knew_Vampires;
 									end case;
 									Append(Village.Messages, (
 										Kind => Kind,
@@ -743,4 +743,4 @@ begin
 			Changed := False;
 			List_Changed := False;
 	end case;
-end Tabula.Vampire.Villages.Advance;
+end Tabula.Vampires.Villages.Advance;

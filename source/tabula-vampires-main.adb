@@ -15,28 +15,28 @@ with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
 with Tabula.Users.Managing;
 with Tabula.Casts.Load;
-with Tabula.Vampire.Villages.Advance;
-with Tabula.Vampire.Villages.Load;
-with Tabula.Vampire.Villages.Save;
+with Tabula.Vampires.Villages.Advance;
+with Tabula.Vampires.Villages.Load;
+with Tabula.Vampires.Villages.Save;
 with Tabula.Villages.Lists.Managing;
-procedure Tabula.Vampire.Main is
+procedure Tabula.Vampires.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Tabula.Casts.Person_Sex;
 	use type Tabula.Casts.Work;
 	use type Tabula.Users.Managing.Check_Result;
-	use type Tabula.Vampire.Villages.Attack_Mode;
-	use type Tabula.Vampire.Villages.Doctor_Infected_Mode;
-	use type Tabula.Vampire.Villages.Daytime_Preview_Mode;
-	use type Tabula.Vampire.Villages.Person_Role;
-	use type Tabula.Vampire.Villages.Person_State;
-	use type Tabula.Vampire.Villages.Message_Kind;
-	use type Tabula.Vampire.Villages.Message;
+	use type Villages.Attack_Mode;
+	use type Villages.Doctor_Infected_Mode;
+	use type Villages.Daytime_Preview_Mode;
+	use type Villages.Person_Role;
+	use type Villages.Person_State;
+	use type Villages.Message_Kind;
+	use type Villages.Message;
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Time;
-	use Tabula.Vampire.Villages.Messages;
-	use Tabula.Vampire.Villages.Person_Records;
-	use Tabula.Vampire.Villages.People;
+	use Villages.Messages;
+	use Villages.Person_Records;
+	use Villages.People;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -1135,4 +1135,4 @@ exception
 		Web.Header_Break(Output);
 		String'Write(Output, Ada.Exceptions.Exception_Information(E));
 		Character'Write(Output, Ascii.LF);
-end Tabula.Vampire.Main;
+end Tabula.Vampires.Main;

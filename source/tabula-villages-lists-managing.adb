@@ -8,7 +8,7 @@ with Tabula.Configurations.Templates;
 with Tabula.Renderers.Log;
 with Tabula.String_Lists;
 with Tabula.Villages.Lists;
-with Tabula.Vampire.Villages.Load;
+with Tabula.Vampires.Villages.Load;
 package body Tabula.Villages.Lists.Managing is
 	use type Ada.Streams.Stream_Element_Offset;
 	use type Ada.Strings.Unbounded.Unbounded_String;
@@ -122,11 +122,11 @@ package body Tabula.Villages.Lists.Managing is
 			begin
 				if Num(Num'First) in '0' .. '9' then
 					declare
-						Village : Vampire.Villages.Village_Type;
+						Village : Vampires.Villages.Village_Type;
 						Village_Id : String renames Ada.Directories.Simple_Name(File);
 						Id_List : String_Lists.List;
 					begin
-						Vampire.Villages.Load(Village_Id, Village, Info_Only => True);
+						Vampires.Villages.Load(Village_Id, Village, Info_Only => True);
 						for I in Village.People.First_Index .. Village.People.Last_Index loop
 							Append(Id_List, +Village.People.Constant_Reference(I).Element.Id);
 						end loop;
@@ -145,7 +145,7 @@ package body Tabula.Villages.Lists.Managing is
 									Log : String renames Ada.Directories.Compose(Configurations.Villages_HTML_Directory, Num & "-0.html");
 								begin
 									if not Ada.Directories.Exists(Log) then
-										Vampire.Villages.Load(Village_Id, Village, Info_Only => False);
+										Vampires.Villages.Load(Village_Id, Village, Info_Only => False);
 										for Day in 0 .. Village.Today loop
 											declare
 												Renderer : Tabula.Renderers.Log.Renderer(Configurations.Templates.Configuration);

@@ -16,18 +16,18 @@ package body Tabula.Renderers is
 	use type Ada.Streams.Stream_Element_Count;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Web.HTML_Version;
-	use type Tabula.Vampire.Villages.Message_Kind;
-	use type Tabula.Vampire.Villages.Person_Role;
-	use type Tabula.Vampire.Villages.Person_State;
-	use type Tabula.Vampire.Villages.Monster_Side;
-	use type Tabula.Vampire.Villages.Teaming;
-	use type Tabula.Vampire.Villages.Daytime_Preview_Mode;
+	use type Tabula.Vampires.Villages.Message_Kind;
+	use type Tabula.Vampires.Villages.Person_Role;
+	use type Tabula.Vampires.Villages.Person_State;
+	use type Tabula.Vampires.Villages.Monster_Side;
+	use type Tabula.Vampires.Villages.Teaming;
+	use type Tabula.Vampires.Villages.Daytime_Preview_Mode;
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Time;
 	use Ada.Strings.Unbounded;
 	use Tabula.String_Lists;
-	use Tabula.Vampire.Villages.Messages;
-	use Tabula.Vampire.Villages;
+	use Tabula.Vampires.Villages.Messages;
+	use Tabula.Vampires.Villages;
 	use Tabula.Villages;
 	use Tabula.Villages.Lists.Village_Lists;
 	
@@ -84,7 +84,7 @@ package body Tabula.Renderers is
 	
 	For_Execution_Message : constant String := "誰かが古びた杭を持って来ました……これしかないのでしょうか……。 ";
 	
-	function Stage(Village : in Vampire.Villages.Village_Type) return Stage_Kind is
+	function Stage(Village : in Vampires.Villages.Village_Type) return Stage_Kind is
 		L : constant Natural := Ada.Strings.Unbounded.Length(Village.Name);
 	begin
 		if L >= 3 and then Ada.Strings.Unbounded.Slice(Village.Name, L - 2, L) = "城" then
@@ -94,11 +94,11 @@ package body Tabula.Renderers is
 		end if;
 	end Stage;
 	
-	function Image(Role : Vampire.Villages.Requested_Role) return String is
+	function Image(Role : Vampires.Villages.Requested_Role) return String is
 	begin
 		case Role is
 			when Inhabitant => return "村人";
-			when Vampire.Villages.Vampire => return "吸血鬼";
+			when Vampires.Villages.Vampire => return "吸血鬼";
 			when Servant => return "使徒";
 			when Detective => return "探偵";
 			when Astronomer => return "天文家";
@@ -113,7 +113,7 @@ package body Tabula.Renderers is
 		end case;
 	end Image;
 	
-	function Image(Role : Vampire.Villages.Person_Role) return String is
+	function Image(Role : Vampires.Villages.Person_Role) return String is
 	begin
 		case Role is
 			when Inhabitant | Loved_Inhabitant => return "善良な村人";
@@ -131,23 +131,23 @@ package body Tabula.Renderers is
 		end case;
 	end Image;
 	
-	function Name(Person : Vampire.Villages.Person_Type) return String is
+	function Name(Person : Vampires.Villages.Person_Type) return String is
 	begin
 		return (+Person.Work) & (+Person.Name);
 	end Name;
 	
-	Role_Image_File_Name : constant array(Vampire.Villages.Person_Role) of not null access constant String := (
-		Vampire.Villages.Gremlin => new String'("gremlin.png"),
-		Vampire.Villages.Vampire_Role => new String'("vampire.png"),
-		Vampire.Villages.Werewolf => new String'("werewolf.png"),
-		Vampire.Villages.Possessed => new String'("possessed.png"),
-		Vampire.Villages.Servant => new String'("servant.png"),
-		Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant => new String'("inhabitant.png"),
-		Vampire.Villages.Detective => new String'("detective.png"),
-		Vampire.Villages.Doctor => new String'("doctor.png"),
-		Vampire.Villages.Astronomer => new String'("astronomer.png"),
-		Vampire.Villages.Hunter => new String'("hunter.png"),
-		Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F => new String'("sweetheart.png"));
+	Role_Image_File_Name : constant array(Vampires.Villages.Person_Role) of not null access constant String := (
+		Vampires.Villages.Gremlin => new String'("gremlin.png"),
+		Vampires.Villages.Vampire_Role => new String'("Vampires.png"),
+		Vampires.Villages.Werewolf => new String'("werewolf.png"),
+		Vampires.Villages.Possessed => new String'("possessed.png"),
+		Vampires.Villages.Servant => new String'("servant.png"),
+		Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant => new String'("inhabitant.png"),
+		Vampires.Villages.Detective => new String'("detective.png"),
+		Vampires.Villages.Doctor => new String'("doctor.png"),
+		Vampires.Villages.Astronomer => new String'("astronomer.png"),
+		Vampires.Villages.Hunter => new String'("hunter.png"),
+		Vampires.Villages.Lover | Vampires.Villages.Sweetheart_M | Vampires.Villages.Sweetheart_F => new String'("sweetheart.png"));
 	
 	procedure Handle_List(
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -305,7 +305,7 @@ package body Tabula.Renderers is
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
 		Village_Id : in Villages.Lists.Village_Id;
-		Village : in Vampire.Villages.Village_Type;
+		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
 		User_Id : in String;
 		User_Password : in String) is
@@ -329,21 +329,21 @@ package body Tabula.Renderers is
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
 		Village_Id : in Villages.Lists.Village_Id;
-		Village : in Vampire.Villages.Village_Type;
+		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
-		Message : in Vampire.Villages.Message;
+		Message : in Vampires.Villages.Message;
 		Time : in Ada.Calendar.Time;
 		User_Id : in String;
 		User_Password : in String)
 	is
-		People : access constant Vampire.Villages.People.Vector;
+		People : access constant Vampires.Villages.People.Vector;
 		Subject : Natural;
 	begin
 		case Message.Kind is
-			when Vampire.Villages.Escaped_Speech =>
+			when Vampires.Villages.Escaped_Speech =>
 				People := Village.Escaped_People'Access;
 				Subject := Message.Subject;
-			when Vampire.Villages.Detective_Message_Kind =>
+			when Vampires.Villages.Detective_Message_Kind =>
 				People := Village.People'Access;
 				Subject := Message.Target;
 			when others =>
@@ -351,7 +351,7 @@ package body Tabula.Renderers is
 				Subject := Message.Subject;
 		end case;
 		declare
-			Person : Vampire.Villages.Person_Type renames People.Constant_Reference(Subject).Element.all;
+			Person : Vampires.Villages.Person_Type renames People.Constant_Reference(Subject).Element.all;
 		begin
 			if Tag = "image" then
 				Link_Image(Renderer'Class(Object), Output, +Person.Image);
@@ -386,16 +386,16 @@ package body Tabula.Renderers is
 		end;
 	end Handle_Messages;
 	
-	function Fatalities_List(Village : Vampire.Villages.Village_Type; Day : Natural; Executed : Integer) return String is
+	function Fatalities_List(Village : Vampires.Villages.Village_Type; Day : Natural; Executed : Integer) return String is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		pragma Assert(Day >= 2);
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
 			declare
-				P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 			begin
-				if P.Records.Constant_Reference(Day - 1).Element.State /= Vampire.Villages.Died
-					and then P.Records.Constant_Reference(Day).Element.State = Vampire.Villages.Died
+				if P.Records.Constant_Reference(Day - 1).Element.State /= Vampires.Villages.Died
+					and then P.Records.Constant_Reference(Day).Element.State = Vampires.Villages.Died
 					and then Executed /= I
 				then
 					if Result /= Ada.Strings.Unbounded.Null_Unbounded_String then
@@ -413,14 +413,14 @@ package body Tabula.Renderers is
 		return +Result;
 	end Fatalities_List;
 	
-	function Survivors_List(Village : Vampire.Villages.Village_Type; Day : Natural) return String is
+	function Survivors_List(Village : Vampires.Villages.Village_Type; Day : Natural) return String is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
 			declare
-				P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 			begin
-				if P.Records.Constant_Reference(Day).Element.State /= Vampire.Villages.Died then
+				if P.Records.Constant_Reference(Day).Element.State /= Vampires.Villages.Died then
 					if Result /= Ada.Strings.Unbounded.Null_Unbounded_String then
 						Append(Result, "、");
 					end if;
@@ -432,12 +432,12 @@ package body Tabula.Renderers is
 		return +Result;
 	end Survivors_List;
 	
-	function Vote_Report(Village : Vampire.Villages.Village_Type; Day : Natural; Provisional : Boolean; Player_Index : Integer) return String is
+	function Vote_Report(Village : Vampires.Villages.Village_Type; Day : Natural; Provisional : Boolean; Player_Index : Integer) return String is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
 			declare
-				P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 				V : Integer;
 			begin
 				if Provisional then
@@ -448,7 +448,7 @@ package body Tabula.Renderers is
 				if V in Village.People.First_Index .. Village.People.Last_Index then
 					if Village.State >= Villages.Epilogue or Player_Index = I then
 						declare
-							T : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
+							T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
 						begin
 							Append(Result, Name(P) & "は" & Name(T) & "に投票しました。" & Line_Break);
 						end;
@@ -459,14 +459,14 @@ package body Tabula.Renderers is
 		return +Result;
 	end Vote_Report;
 	
-	function Vote_Count(Village : Vampire.Villages.Village_Type; Day : Natural; Provisional : Boolean; Executed: Integer) return String is
+	function Vote_Count(Village : Vampires.Villages.Village_Type; Day : Natural; Provisional : Boolean; Executed: Integer) return String is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 		Voted : array(Village.People.First_Index .. Village.People.Last_Index) of Natural := (others => 0);
 		Max_Voted : Natural := 0;
 	begin
 		for I in Voted'Range loop
 			declare
-				P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 				V : Integer;
 			begin
 				if Provisional then
@@ -486,7 +486,7 @@ package body Tabula.Renderers is
 			for I in Voted'Range loop
 				if Voted(I) = Count then
 					declare
-						P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+						P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 					begin
 						Append(Result, To_String(Voted(I)) & "票が" & Name(P) & "に集まりました。" & Line_Break);
 					end;
@@ -515,16 +515,16 @@ package body Tabula.Renderers is
 		return +Result;
 	end Vote_Count;
 	
-	function Vampires_List(Village : Vampire.Villages.Village_Type) return String is
+	function Vampires_List(Village : Vampires.Villages.Village_Type) return String is
 		Result : Unbounded_String := +"その夜、草木も眠る頃、人知れず月を舞う影がありました……。 ";
 	begin
-		for I in Vampire.Villages.Vampire_Role loop
+		for I in Vampires.Villages.Vampire_Role loop
 			for Position in Village.People.First_Index .. Village.People.Last_Index loop
 				declare
-					P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
+					P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
 				begin
 					if P.Role = I then
-						if I /= Vampire.Villages.Vampire_K then
+						if I /= Vampires.Villages.Vampire_K then
 							Append(Result, "、");
 						end if;
 						Append(Result, Name(P));
@@ -536,39 +536,39 @@ package body Tabula.Renderers is
 		return +Result;
 	end Vampires_List;
 	
-	function Breakdown_List(Village : Vampire.Villages.Village_Type) return String is
+	function Breakdown_List(Village : Vampires.Villages.Village_Type) return String is
 		Detective, Astronomer, Doctor, Hunter, Sweetheart, Lover, Unfortunate, Servant, Gremlin : Boolean := False;
-		Vampires : Natural := 0;
+		Vampire_Count : Natural := 0;
 		Village_Side_Capabilityperson : Natural := 0;
-		procedure Countup(Role : Vampire.Villages.Person_Role) is
+		procedure Countup(Role : Vampires.Villages.Person_Role) is
 		begin
 			case Role is
-				when Vampire.Villages.Detective =>
+				when Vampires.Villages.Detective =>
 					Detective := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Astronomer =>
+				when Vampires.Villages.Astronomer =>
 					Astronomer := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Doctor =>
+				when Vampires.Villages.Doctor =>
 					Doctor := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Hunter =>
+				when Vampires.Villages.Hunter =>
 					Hunter := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Lover =>
+				when Vampires.Villages.Lover =>
 					Lover := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F =>
+				when Vampires.Villages.Sweetheart_M | Vampires.Villages.Sweetheart_F =>
 					Sweetheart := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Unfortunate_Inhabitant =>
+				when Vampires.Villages.Unfortunate_Inhabitant =>
 					Unfortunate := True;
 					Village_Side_Capabilityperson := Village_Side_Capabilityperson + 1;
-				when Vampire.Villages.Servant =>
+				when Vampires.Villages.Servant =>
 					Servant := True;
-				when Vampire.Villages.Vampire_Role =>
-					Vampires := Vampires + 1;
-				when Vampire.Villages.Gremlin =>
+				when Vampires.Villages.Vampire_Role =>
+					Vampire_Count := Vampire_Count + 1;
+				when Vampires.Villages.Gremlin =>
 					Gremlin := True;
 				when others =>
 					null;
@@ -586,7 +586,7 @@ package body Tabula.Renderers is
 		for Position in Village.People.First_Index .. Village.People.Last_Index loop
 			Countup(Village.People.Constant_Reference(Position).Element.Role);
 		end loop;
-		if Village.Teaming in Vampire.Villages.Hidings then
+		if Village.Teaming in Vampires.Villages.Hidings then
 			Append(Result, To_String(Village_Side_Capabilityperson));
 			Append(Result, "人の能力者");
 		else
@@ -613,19 +613,19 @@ package body Tabula.Renderers is
 			end if;
 		end if;
 		Append(Result, "がいます。 ");
-		if Village.Monster_Side = Vampire.Villages.Shuffling then
+		if Village.Monster_Side = Vampires.Villages.Shuffling then
 			Append(Result, "吸血鬼の全貌はわかりません……。 ");
 		else
 			Append(Result, "そして昨夜、月明かりに照らし出された人影が");
-			Append(Result, To_String(Vampires));
+			Append(Result, To_String(Vampire_Count));
 			Append(Result, "つ……。 ");
 			if Servant then
 				case Village.Servant_Knowing is
-					when Vampire.Villages.None =>
+					when Vampires.Villages.None =>
 						Append(Result, "それを崇める者……。 ");
-					when Vampire.Villages.Vampire_K =>
+					when Vampires.Villages.Vampire_K =>
 						Append(Result, "吸血鬼の王を目撃し魅了された者……。 ");
-					when Vampire.Villages.Vampires =>
+					when Vampires.Villages.All_Vampires =>
 						Append(Result, "吸血鬼の集いを目撃し魅了された者……。 ");
 				end case;
 			end if;
@@ -636,21 +636,21 @@ package body Tabula.Renderers is
 		return +Result;
 	end Breakdown_List;
 	
-	function Detective_Survey_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message) return String is
-		Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-		function Showing_Role(Role : Vampire.Villages.Person_Role) return String is
+	function Detective_Survey_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message) return String is
+		Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+		function Showing_Role(Role : Vampires.Villages.Person_Role) return String is
 		begin
 			case Role is
-				when Vampire.Villages.Gremlin | Vampire.Villages.Vampire_K .. Vampire.Villages.Vampire_J => return "人間では無かった";
+				when Vampires.Villages.Gremlin | Vampires.Villages.Vampire_K .. Vampires.Villages.Vampire_J => return "人間では無かった";
 				when others => return Image(Role) & "だった";
 			end case;
 		end Showing_Role;
-		Role : Vampire.Villages.Person_Role;
+		Role : Vampires.Villages.Person_Role;
 	begin
 		case Detective_Message_Kind(Message.Kind) is
 			when Detective_Survey | Detective_Survey_Preview =>
 				declare
-					Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+					Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 				begin
 					if Village.Daytime_Preview = Message_Only and then Message.Kind = Detective_Survey_Preview then
 						return Name(Subject) & "は" & Name(Target) & "を調査しました。";
@@ -666,24 +666,24 @@ package body Tabula.Renderers is
 		end case;
 	end Detective_Survey_Message;
 	
-	function Doctor_Cure_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message) return String is
-		Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-		Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
-		Showing_Result : constant array(Vampire.Villages.Doctor_Message_Kind) of not null access constant String := (
-			Vampire.Villages.Doctor_Found_Infection | Vampire.Villages.Doctor_Found_Infection_Preview |
-			Vampire.Villages.Doctor_Cure | Vampire.Villages.Doctor_Cure_Preview =>
+	function Doctor_Cure_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message) return String is
+		Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+		Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+		Showing_Result : constant array(Vampires.Villages.Doctor_Message_Kind) of not null access constant String := (
+			Vampires.Villages.Doctor_Found_Infection | Vampires.Villages.Doctor_Found_Infection_Preview |
+			Vampires.Villages.Doctor_Cure | Vampires.Villages.Doctor_Cure_Preview =>
 				new String'("を診察し、首筋に牙の跡を見つけました。" & Line_Break & "薬が効くことを祈りましょう。"),
-			Vampire.Villages.Doctor_Failed | Vampire.Villages.Doctor_Failed_Preview =>
+			Vampires.Villages.Doctor_Failed | Vampires.Villages.Doctor_Failed_Preview =>
 				new String'("を診察しましたが、異常は見当たりませんでした。"),
-			Vampire.Villages.Doctor_Found_Gremlin | Vampire.Villages.Doctor_Found_Gremlin_Preview =>
+			Vampires.Villages.Doctor_Found_Gremlin | Vampires.Villages.Doctor_Found_Gremlin_Preview =>
 				new String'("を診察しました。" & Line_Break & "……妖魔だ！"));
 	begin
 		return Name(Subject) & "は" & Name(Target) & Showing_Result(Message.Kind).all;
 	end Doctor_Cure_Message;
 	
-	function Astronomer_Observation_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message) return String is
-		Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-		Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+	function Astronomer_Observation_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message) return String is
+		Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+		Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 		function Showing_Result return String is
 		begin
 			if Target.Role in Vampire_Role
@@ -699,8 +699,8 @@ package body Tabula.Renderers is
 		return Name(Subject) & "は" & Name(Target) & "の家の上空を" & Showing_Result;
 	end Astronomer_Observation_Message;
 	
-	function Hunter_Guard_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message) return String is
-		Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+	function Hunter_Guard_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message) return String is
+		Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 	begin
 		case Message.Kind is
 			when Hunter_Nothing_With_Silver =>
@@ -711,7 +711,7 @@ package body Tabula.Renderers is
 				return Name(Subject) & "は自らの命と引き換えに、銀の弾丸で吸血鬼を撃ち抜きました。";
 			when others =>
 				declare
-					Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+					Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 				begin
 					case Hunter_Message_Kind(Message.Kind) is
 						when Hunter_Guard =>
@@ -729,7 +729,7 @@ package body Tabula.Renderers is
 		end case;
 	end Hunter_Guard_Message;
 
-	function Servant_Knew_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message) return String is
+	function Servant_Knew_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message) return String is
 		Subject : Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 		Result : Ada.Strings.Unbounded.Unbounded_String := +(Name(Subject) & "は見てしまいました。");
 	begin
@@ -740,7 +740,7 @@ package body Tabula.Renderers is
 					declare
 						P : Person_Type renames Village.People.Constant_Reference(Position).Element.all;
 					begin
-						if P.Role = Vampire.Villages.Vampire_K then
+						if P.Role = Vampires.Villages.Vampire_K then
 							Append(Result, Name(P));
 						end if;
 					end;
@@ -748,7 +748,7 @@ package body Tabula.Renderers is
 				Append(Result, "です。");
 			when Servant_Knew_Vampires =>
 				Append(Result, "吸血鬼は");
-				for Role in Vampire.Villages.Vampire_Role loop
+				for Role in Vampires.Villages.Vampire_Role loop
 					for Position in Village.People.First_Index .. Village.People.Last_Index loop
 						declare
 							P : Person_Type renames Village.People.Constant_Reference(Position).Element.all;
@@ -764,19 +764,19 @@ package body Tabula.Renderers is
 		return +Result;
 	end Servant_Knew_Message;
 	
-	function Vampire_Murder_Message(Village : Vampire.Villages.Village_Type; Message : Vampire.Villages.Message;
+	function Vampire_Murder_Message(Village : Vampires.Villages.Village_Type; Message : Vampires.Villages.Message;
 		Executed : Integer) return String
 	is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
-		Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-		Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+		Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+		Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 	begin
-		if Subject.Role in Vampire.Villages.Vampire_Role then
-			for Role in Vampire.Villages.Vampire_Role loop
+		if Subject.Role in Vampires.Villages.Vampire_Role then
+			for Role in Vampires.Villages.Vampire_Role loop
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
 					if I /= Executed then
 						declare
-							P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+							P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 						begin
 							if P.Role = Role then
 								declare
@@ -784,7 +784,7 @@ package body Tabula.Renderers is
 								begin
 									if V >= 0 then
 										declare
-											T : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
+											T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
 										begin
 											Append(Result, Name(P) & "は" & Name(T) & "に目をつけました。" & Line_Break);
 										end;
@@ -799,18 +799,18 @@ package body Tabula.Renderers is
 			Append(Result, Name(Subject) & "は" & Name(Target) & "に目をつけました。" & Line_Break);
 		end if;
 		Append(Result, "吸血鬼は" & Name(Target) & "を");
-		case Vampire.Villages.Vampire_Message_Kind(Message.Kind) is
-			when Vampire.Villages.Vampire_Murder =>
+		case Vampires.Villages.Vampire_Message_Kind(Message.Kind) is
+			when Vampires.Villages.Vampire_Murder =>
 				Append(Result, "襲いました。");
-			when Vampire.Villages.Vampire_Murder_And_Killed =>
+			when Vampires.Villages.Vampire_Murder_And_Killed =>
 				Append(Result, "襲い、抵抗を受け殺されました。");
-			when Vampire.Villages.Vampire_Infection =>
+			when Vampires.Villages.Vampire_Infection =>
 				Append(Result, "感染させました。");
-			when Vampire.Villages.Vampire_Infection_And_Killed =>
+			when Vampires.Villages.Vampire_Infection_And_Killed =>
 				Append(Result, "感染させ、抵抗を受け殺されました。");
-			when Vampire.Villages.Vampire_Failed =>
+			when Vampires.Villages.Vampire_Failed =>
 				Append(Result, "襲おうとしましたが、何者かに妨げられました。");
-			when Vampire.Villages.Vampire_Failed_And_Killed =>
+			when Vampires.Villages.Vampire_Failed_And_Killed =>
 				Append(Result, "襲おうとしましたが、何者かに妨げられ殺されました。");
 		end case;
 		return +Result;
@@ -831,7 +831,7 @@ package body Tabula.Renderers is
 	
 	procedure Get_Day(
 		Object : in Renderer;
-		Village : in Vampire.Villages.Village_Type;
+		Village : in Vampires.Villages.Village_Type;
 		Query_Strings : in Web.Query_Strings;
 		Day : out Natural)
 	is
@@ -849,7 +849,7 @@ package body Tabula.Renderers is
 	
 	procedure Get_Range(
 		Object : in Renderer;
-		Village : in Vampire.Villages.Village_Type;
+		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings;
 		First, Last : out Integer) is
@@ -1112,7 +1112,7 @@ package body Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Vampire.Villages.Village_Type;
+		Village : Vampires.Villages.Village_Type;
 		Day : Natural;
 		First, Last : Integer := -1;
 		User_Id : String;
@@ -1120,7 +1120,7 @@ package body Tabula.Renderers is
 	is
 		Target_Day : Natural;
 		
-		procedure Vote_Form(Player : Integer; Kind : Vampire.Villages.Person_Role; Special: Boolean;
+		procedure Vote_Form(Player : Integer; Kind : Vampires.Villages.Person_Role; Special: Boolean;
 			Current : Integer; Current_Special : Boolean;
 			Message : String; Button : String)
 		is
@@ -1140,16 +1140,16 @@ package body Tabula.Renderers is
 			for Position in Village.People.First_Index .. Village.People.Last_Index loop
 				if Position /= Player then
 					case Kind is
-						when Vampire.Villages.Inhabitant =>
-							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampire.Villages.Died
+						when Vampires.Villages.Inhabitant =>
+							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampires.Villages.Died
 								and then Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.Candidate;
-						when Vampire.Villages.Detective =>
-							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State = Vampire.Villages.Died;
-						when Vampire.Villages.Vampire_Role =>
-							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampire.Villages.Died
-								and then Village.People.Constant_Reference(Position).Element.Role not in Vampire.Villages.Vampire_Role;
+						when Vampires.Villages.Detective =>
+							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State = Vampires.Villages.Died;
+						when Vampires.Villages.Vampire_Role =>
+							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampires.Villages.Died
+								and then Village.People.Constant_Reference(Position).Element.Role not in Vampires.Villages.Vampire_Role;
 						when others =>
-							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampire.Villages.Died;
+							Including := Village.People.Constant_Reference(Position).Element.Records.Constant_Reference(Target_Day).Element.State /= Vampires.Villages.Died;
 					end case;
 					if Including then
 						Write(Output, "<option value=""" & To_String(Position) & """");
@@ -1175,7 +1175,7 @@ package body Tabula.Renderers is
 			end if;
 			Write(Output, "</option>" & Line_Break & "</select>" & Line_Break);
 			case Kind is
-				when Vampire.Villages.Inhabitant =>
+				when Vampires.Villages.Inhabitant =>
 					if Special then
 						Write(Output, " <input name=""apply"" type=""checkbox"" ");
 						if Current_Special then
@@ -1185,7 +1185,7 @@ package body Tabula.Renderers is
 					elsif Current_Special then
 						Write(Output, " <input name=""apply"" type=""hidden"" value=""on"" />");
 					end if;
-				when Vampire.Villages.Hunter =>
+				when Vampires.Villages.Hunter =>
 					if Special then
 						Write(Output, " <input name=""special"" type=""checkbox"" ");
 						if Current_Special then
@@ -1205,41 +1205,41 @@ package body Tabula.Renderers is
 			end if;
 			Write(Output, "<input type=""hidden"" name=""cmd"" value=""");
 			case Kind is
-				when Vampire.Villages.Inhabitant =>
+				when Vampires.Villages.Inhabitant =>
 					Write(Output, "vote");
 				when others =>
 					Write(Output, "target");
 			end case;
 			Write(Output, """ />" & Line_Break & "</form>" & Line_Break);
 		end Vote_Form;
-		function Role_Text(Person : Vampire.Villages.Person_Type) return String is
-			Setting : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
+		function Role_Text(Person : Vampires.Villages.Person_Type) return String is
+			Setting : Vampires.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
 		begin
-			if Setting.State = Vampire.Villages.Died then
+			if Setting.State = Vampires.Villages.Died then
 				return "あなたは幽霊です。";
 			else
 				case Person.Role is
-					when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant =>
+					when Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant =>
 						return "あなたは村人です。";
-					when Vampire.Villages.Doctor =>
+					when Vampires.Villages.Doctor =>
 						if Setting.Target >= 0 then
 							return "あなたは医者、" & Name(Village.People.Constant_Reference(Setting.Target).Element.all) & "を診察しました。";
 						else
 							return "あなたは医者です。";
 						end if;
-					when Vampire.Villages.Detective =>
+					when Vampires.Villages.Detective =>
 						if Setting.Target >= 0 then
 							return "あなたは探偵、" & Name(Village.People.Constant_Reference(Setting.Target).Element.all) & "を調査中です。";
 						else
 							return "あなたは探偵です。";
 						end if;
-					when Vampire.Villages.Astronomer =>
+					when Vampires.Villages.Astronomer =>
 						if Person.Commited and Setting.Target >= 0 then
 							return "あなたは天文家、" & Name(Village.People.Constant_Reference(Setting.Target).Element.all) & "の家の空を観測します。";
 						else
 							return "あなたは天文家です。";
 						end if;
-					when Vampire.Villages.Hunter =>
+					when Vampires.Villages.Hunter =>
 						if Person.Commited and Setting.Target >= 0 and Setting.Special then
 							return "あなたは猟師、" & Name(Village.People.Constant_Reference(Setting.Target).Element.all) & "を銀の弾丸で守ります。";
 						elsif Person.Commited and Setting.Target >= 0 then
@@ -1249,29 +1249,29 @@ package body Tabula.Renderers is
 						else
 							return "あなたは猟師です。";
 						end if;
-					when Vampire.Villages.Lover =>
+					when Vampires.Villages.Lover =>
 						for Position in Village.People.First_Index .. Village.People.Last_Index loop
-							if Village.People.Constant_Reference(Position).Element.Role = Vampire.Villages.Loved_Inhabitant then
+							if Village.People.Constant_Reference(Position).Element.Role = Vampires.Villages.Loved_Inhabitant then
 								return "あなたは" & Name(Village.People.Constant_Reference(Position).Element.all) & "に片想いです。";
 							end if;
 						end loop;
 						pragma Assert(False);
 						return "";
-					when Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F =>
+					when Vampires.Villages.Sweetheart_M | Vampires.Villages.Sweetheart_F =>
 						for Position in Village.People.First_Index .. Village.People.Last_Index loop
 							if Village.People.Constant_Reference(Position).Element.Role /= Person.Role
-								and then Village.People.Constant_Reference(Position).Element.Role in Vampire.Villages.Sweetheart_M .. Vampire.Villages.Sweetheart_F
+								and then Village.People.Constant_Reference(Position).Element.Role in Vampires.Villages.Sweetheart_M .. Vampires.Villages.Sweetheart_F
 							then
 								return "あなたは" & Name(Village.People.Constant_Reference(Position).Element.all) & "の恋人です。";
 							end if;
 						end loop;
 						pragma Assert(False);
 						return "";
-					when Vampire.Villages.Servant =>
+					when Vampires.Villages.Servant =>
 						return "あなたは吸血鬼に身を捧げることが喜びである使徒です。";
-					when Vampire.Villages.Vampire_Role =>
+					when Vampires.Villages.Vampire_Role =>
 						declare
-							Mark : constant array(Vampire.Villages.Vampire_Role) of Character := ('K', 'Q', 'J');
+							Mark : constant array(Vampires.Villages.Vampire_Role) of Character := ('K', 'Q', 'J');
 						begin
 							if Person.Commited and Setting.Target >= 0 then
 								return "あなたは吸血鬼(" & Mark(Person.Role) & ")、" & Name(Village.People.Constant_Reference(Setting.Target).Element.all) & "を襲います。";
@@ -1279,19 +1279,19 @@ package body Tabula.Renderers is
 								return "あなたは吸血鬼(" & Mark(Person.Role) & ")です。";
 							end if;
 						end;
-					when Vampire.Villages.Gremlin =>
+					when Vampires.Villages.Gremlin =>
 						return "あなたは妖魔です。";
-					when Vampire.Villages.Werewolf | Vampire.Villages.Possessed =>
+					when Vampires.Villages.Werewolf | Vampires.Villages.Possessed =>
 						raise Program_Error;
 				end case;
 			end if;
 		end Role_Text;
-		Player_Index : constant Integer := Vampire.Villages.Joined(Village, User_Id);
-		Message_Counts : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages(Village, Day);
+		Player_Index : constant Integer := Vampires.Villages.Joined(Village, User_Id);
+		Message_Counts : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages(Village, Day);
 		Tip_Showed : Boolean := False;
 		type Paging_Pos is (Top, Bottom, Tip);
 		procedure Paging(Pos : Paging_Pos) is
-			Speech_Count : constant Natural := Vampire.Villages.Count_Speech(Village, Day);
+			Speech_Count : constant Natural := Vampires.Villages.Count_Speech(Village, Day);
 			F, L, R : Natural;
 		begin
 			if Pos /= Tip then
@@ -1457,7 +1457,7 @@ package body Tabula.Renderers is
 			elsif Tag = "person" then
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
 					declare
-						Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+						Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 						procedure Handle_Summary(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String; Template : in Web.Producers.Template) is
 						begin
@@ -1495,7 +1495,7 @@ package body Tabula.Renderers is
 						end Handle_Summary;
 					begin
 						if (Village.State >= Villages.Epilogue and then Village.Today = Day)
-							or else Person.Records.Constant_Reference(Day).Element.State /= Vampire.Villages.Died
+							or else Person.Records.Constant_Reference(Day).Element.State /= Vampires.Villages.Died
 						then
 							Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
 						end if;
@@ -1518,7 +1518,7 @@ package body Tabula.Renderers is
 					begin
 						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
 					end Narration;
-					procedure Speech(Message : Vampire.Villages.Message; Class : String; Time : Ada.Calendar.Time) is
+					procedure Speech(Message : Vampires.Villages.Message; Class : String; Time : Ada.Calendar.Time) is
 						procedure Handle_Speech(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String; Template : in Web.Producers.Template) is
 						begin
@@ -1528,7 +1528,7 @@ package body Tabula.Renderers is
 					begin
 						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Speech'Access);
 					end Speech;
-					procedure Note(Subject : Vampire.Villages.Person_Type; Note : Vampire.Villages.Person_Record; Class : String) is
+					procedure Note(Subject : Vampires.Villages.Person_Type; Note : Vampires.Villages.Person_Record; Class : String) is
 						procedure Handle_Note(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String; Template : in Web.Producers.Template) is
 						begin
@@ -1569,16 +1569,16 @@ package body Tabula.Renderers is
 					end if;
 					for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 						declare
-							Message : Vampire.Villages.Message renames Village.Messages.Constant_Reference(Position).Element.all;
+							Message : Vampires.Villages.Message renames Village.Messages.Constant_Reference(Position).Element.all;
 						begin
 							if Message.Day = Day then
 								if (First < 0 or else First <= Speech_Count) and then (Last < 0 or else Speech_Count <= Last) then
 									case Message.Kind is
-										when Vampire.Villages.Narration =>
+										when Vampires.Villages.Narration =>
 											Narration(+Message.Text);
-										when Vampire.Villages.Escape =>
+										when Vampires.Villages.Escape =>
 											declare
-												Subject : Vampire.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
+												Subject : Vampires.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
 											begin
 												if Village.State >= Tabula.Villages.Epilogue then
 													Narration(Name(Subject) & "(" & (+Subject.Id) & ")は人知れず華やいだ都会へと旅立ってゆきました。", Class => "narratione");
@@ -1586,29 +1586,29 @@ package body Tabula.Renderers is
 													Narration(Name(Subject) & "は人知れず華やいだ都会へと旅立ってゆきました。", Class => "narratione");
 												end if;
 											end;
-										when Vampire.Villages.Join =>
+										when Vampires.Villages.Join =>
 											declare
-												Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+												Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 											begin
 												Narration(To_String(Message.Subject + 1) & "人目に" & Name(Subject) & "が現れました。");
 											end;
-										when Vampire.Villages.Escaped_Join =>
+										when Vampires.Villages.Escaped_Join =>
 											declare
-												Subject : Vampire.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
+												Subject : Vampires.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
 											begin
 												Narration(Name(Subject) & "が現れました。", Class => "narratione");
 											end;
-										when Vampire.Villages.Speech | Vampire.Villages.Escaped_Speech =>
-											if Message.Kind = Vampire.Villages.Speech
-												or else Vampire.Villages.Rejoined(Village, Message.Subject) >= 0
+										when Vampires.Villages.Speech | Vampires.Villages.Escaped_Speech =>
+											if Message.Kind = Vampires.Villages.Speech
+												or else Vampires.Villages.Rejoined(Village, Message.Subject) >= 0
 											then
 												declare
 													Subject : Integer;
 												begin
-													if Message.Kind = Vampire.Villages.Speech then
+													if Message.Kind = Vampires.Villages.Speech then
 														Subject := Message.Subject;
 													else
-														Subject := Vampire.Villages.Rejoined(Village, Message.Subject);
+														Subject := Vampires.Villages.Rejoined(Village, Message.Subject);
 													end if;
 													if Last_Speech /= Subject then
 														New_X : loop
@@ -1649,119 +1649,119 @@ package body Tabula.Renderers is
 											else
 												Speech(Message, "escaped", Message.Time);
 											end if;
-										when Vampire.Villages.Monologue =>
+										when Vampires.Villages.Monologue =>
 											if Village.State >= Villages.Epilogue
 												or else Message.Subject = Player_Index
 											then
 												Speech(Message, "monologue", Message.Time);
 											end if;
-										when Vampire.Villages.Ghost =>
+										when Vampires.Villages.Ghost =>
 											if Village.State >= Villages.Epilogue
-												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died)
+												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died)
 											then
 												Speech(Message, "ghost", Message.Time);
 											end if;
-										when Vampire.Villages.Howling =>
+										when Vampires.Villages.Howling =>
 											if Village.State >= Villages.Epilogue
-												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 											then
 												Speech(Message, "vampire", Message.Time);
 											end if;
-										when Vampire.Villages.Howling_Blocked =>
+										when Vampires.Villages.Howling_Blocked =>
 											if Village.State >= Villages.Epilogue
-												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 											then
 												declare
-													The_Unfortunate : constant Integer := Vampire.Villages.Find_Superman(Village, Vampire.Villages.Unfortunate_Inhabitant);
+													The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman(Village, Vampires.Villages.Unfortunate_Inhabitant);
 												begin
 													Narration(Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "のせいで用事ができてしまい、今夜は相談ができません。", "narrationi");
 												end;
 											end if;
-										when Vampire.Villages.Action_Message_Kind =>
+										when Vampires.Villages.Action_Message_Kind =>
 											declare
-												Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-												Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+												Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+												Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 											begin
-												case Vampire.Villages.Action_Message_Kind(Message.Kind) is
-													when Vampire.Villages.Action_Wake =>
+												case Vampires.Villages.Action_Message_Kind(Message.Kind) is
+													when Vampires.Villages.Action_Wake =>
 														Narration(Name(Subject) & "は" & Name(Target) & "を起こした。");
-													when Vampire.Villages.Action_Encourage =>
+													when Vampires.Villages.Action_Encourage =>
 														Narration(Name(Subject) & "は" & Name(Target) & "に話の続きを促した。");
-													when Vampire.Villages.Action_Vampire_Gaze =>
+													when Vampires.Villages.Action_Vampire_Gaze =>
 														if Village.State >= Villages.Epilogue
-															or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+															or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 														then
 															Narration(Name(Subject) & "は" & Name(Target) & "をこっそりと見つめた。", "narrationi");
 														end if;
-													when Vampire.Villages.Action_Vampire_Gaze_Blocked =>
+													when Vampires.Villages.Action_Vampire_Gaze_Blocked =>
 														if Village.State >= Villages.Epilogue
-															or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+															or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 														then
 															declare
-																The_Unfortunate : constant Integer := Vampire.Villages.Find_Superman(Village, Vampire.Villages.Unfortunate_Inhabitant);
+																The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman(Village, Vampires.Villages.Unfortunate_Inhabitant);
 															begin
 																Narration(Name(Subject) & "の視線は" & Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "に遮られた。", "narrationi");
 															end;
 														end if;
 												end case;
 											end;
-										when Vampire.Villages.Servant_Message_Kind =>
+										when Vampires.Villages.Servant_Message_Kind =>
 											if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
 												Narration(Servant_Knew_Message(Village, Message), "narrationi");
 											end if;
-										when Vampire.Villages.Doctor_Message_Kind =>
+										when Vampires.Villages.Doctor_Message_Kind =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												Narration(Doctor_Cure_Message(Village, Message), "narrationi");
 											end if;
-										when Vampire.Villages.Detective_Message_Kind =>
+										when Vampires.Villages.Detective_Message_Kind =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												Narration(Detective_Survey_Message(Village, Message), "narrationi");
 												if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String
 													and then (
-														Village.Daytime_Preview = Vampire.Villages.Role_And_Message
-														or else Village.Daytime_Preview = Vampire.Villages.Message_Only
-														or else Message.Kind /= Vampire.Villages.Detective_Survey_Preview)
+														Village.Daytime_Preview = Vampires.Villages.Role_And_Message
+														or else Village.Daytime_Preview = Vampires.Villages.Message_Only
+														or else Message.Kind /= Vampires.Villages.Detective_Survey_Preview)
 												then
 													Speech(Message, "dying", Message.Time);
 												end if;
 											end if;
-										when Vampire.Villages.Provisional_Vote =>
+										when Vampires.Villages.Provisional_Vote =>
 											Narration(Vote_Report(Village, Day => Message.Day, Provisional => True, Player_Index => Player_Index), "narrationi");
 											Narration(Vote_Count(Village, Day => Message.Day, Provisional => True, Executed => -1));
-										when Vampire.Villages.Execution =>
+										when Vampires.Villages.Execution =>
 											Narration(Vote_Report(Village, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
 											Narration(Vote_Count(Village, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
 											Executed := Message.Target;
-										when Vampire.Villages.Awareness =>
+										when Vampires.Villages.Awareness =>
 											if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
 												declare
-													Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+													Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 												begin
 													Narration(Name(Subject) & "は無性に闇が恋しくなり……夜空へと飛び立ちました。", "narrationi");
 												end;
 											end if;
-										when Vampire.Villages.Astronomer_Observation =>
+										when Vampires.Villages.Astronomer_Observation =>
 											if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
 												Narration(Astronomer_Observation_Message(Village, Message), "narrationi");
 											end if;
-										when Vampire.Villages.Hunter_Message_Kind =>
+										when Vampires.Villages.Hunter_Message_Kind =>
 											if Village.State >= Tabula.Villages.Epilogue or else Player_Index = Message.Subject then
 												Narration(Hunter_Guard_Message(Village, Message), "narrationi");
 											end if;
-										when Vampire.Villages.Meeting => null;
+										when Vampires.Villages.Meeting => null;
 											if Village.State >= Villages.Epilogue
-												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 											then
-												for Role in Vampire.Villages.Vampire_Role loop
+												for Role in Vampires.Villages.Vampire_Role loop
 													for I in Village.People.First_Index .. Village.People.Last_Index loop
 														declare
-															Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+															Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 														begin
 															if Person.Role = Role then
 																declare
-																	Yesterday_Record : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Day - 1).Element.all;
+																	Yesterday_Record : Vampires.Villages.Person_Record renames Person.Records.Constant_Reference(Day - 1).Element.all;
 																begin
-																	if Yesterday_Record.State /= Vampire.Villages.Died and then Executed /= I then
+																	if Yesterday_Record.State /= Vampires.Villages.Died and then Executed /= I then
 																		Note(Person, Yesterday_Record, "vampire");
 																	end if;
 																end;
@@ -1770,25 +1770,25 @@ package body Tabula.Renderers is
 													end loop;
 												end loop;
 											end if;
-										when Vampire.Villages.Vampire_Message_Kind =>
+										when Vampires.Villages.Vampire_Message_Kind =>
 											if Village.State >= Villages.Epilogue or else (Player_Index >= 0 and then (Message.Subject = Player_Index or else (
-												Village.People.Constant_Reference(Message.Subject).Element.Role in Vampire.Villages.Vampire_Role
-												and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)))
+												Village.People.Constant_Reference(Message.Subject).Element.Role in Vampires.Villages.Vampire_Role
+												and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)))
 											then
 												Narration(Vampire_Murder_Message(Village, Message, Executed), "narrationi");
 											end if;
-										when Vampire.Villages.Gremlin_Sense =>
+										when Vampires.Villages.Gremlin_Sense =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												declare
 													Vampire_Count : Natural := 0;
 												begin
 													for I in Village.People.First_Index .. Village.People.Last_Index loop
 														declare
-															P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-															R : Vampire.Villages.Person_Record renames P.Records.Constant_Reference(Message.Day).Element.all;
+															P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+															R : Vampires.Villages.Person_Record renames P.Records.Constant_Reference(Message.Day).Element.all;
 														begin
-															if (R.State = Vampire.Villages.Normal and then P.Role in Vampire.Villages.Vampire_Role)
-																or else R.State = Vampire.Villages.Infected
+															if (R.State = Vampires.Villages.Normal and then P.Role in Vampires.Villages.Vampire_Role)
+																or else R.State = Vampires.Villages.Infected
 															then
 																Vampire_Count := Vampire_Count + 1;
 															end if;
@@ -1797,28 +1797,28 @@ package body Tabula.Renderers is
 													Narration("残り吸血鬼の数は" & To_String(Vampire_Count) & "匹……。", "narrationi");
 												end;
 											end if;
-										when Vampire.Villages.Gremlin_Killed =>
+										when Vampires.Villages.Gremlin_Killed =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												Narration("妖魔は滅びました。", "narrationi");
 											end if;
-										when Vampire.Villages.Sweetheart_Incongruity =>
+										when Vampires.Villages.Sweetheart_Incongruity =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
 												declare
-													S : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-													T : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
+													S : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+													T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 												begin
 													Narration(Name(S) & "は" & Name(T) & "に違和感を感じました。", "narrationi");
 												end;
 											end if;
-										when Vampire.Villages.Sweetheart_Suicide =>
+										when Vampires.Villages.Sweetheart_Suicide =>
 											if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) or else (Player_Index = Message.Target) then
 												declare
-													S : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
+													S : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 												begin
 													Narration(Name(S) & "は想い人の後を追いました。", "narrationi");
 												end;
 											end if;
-										when Vampire.Villages.List =>
+										when Vampires.Villages.List =>
 											declare
 												Log : Ada.Strings.Unbounded.Unbounded_String;
 											begin
@@ -1831,14 +1831,14 @@ package body Tabula.Renderers is
 														end if;
 													end;
 													declare
-														Last_Day_Messages : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages(Village, Message.Day - 1);
+														Last_Day_Messages : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages(Village, Message.Day - 1);
 														G_Win : Boolean := False;
 														V_Win : Boolean := False;
 														Second : Boolean := False;
 													begin
 														for I in Village.People.First_Index .. Village.People.Last_Index loop
 															declare
-																P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+																P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 																Speech_Count : constant Natural := Last_Day_Messages(I).Speech;
 															begin
 																if Second then
@@ -1846,14 +1846,14 @@ package body Tabula.Renderers is
 																end if;
 																Append(Log, Name(P) & "(" & P.Id & ")は" & Image(P.Role) & "でした。");
 																case P.Records.Constant_Reference(Message.Day).Element.State is
-																	when Vampire.Villages.Normal =>
+																	when Vampires.Villages.Normal =>
 																		Append(Log, "生存しました。");
 																		case P.Role is
-																			when Vampire.Villages.Vampire_Role =>
+																			when Vampires.Villages.Vampire_Role =>
 																				if Speech_Count > 0 then
 																					V_Win := True;
 																				end if;
-																			when Vampire.Villages.Gremlin =>
+																			when Vampires.Villages.Gremlin =>
 																				if Speech_Count > 0 then
 																					G_Win := True;
 																				end if;
@@ -1862,9 +1862,9 @@ package body Tabula.Renderers is
 																		if Speech_Count = 0 then
 																			Append(Log, "蚊帳の外でした。");
 																		end if;
-																	when Vampire.Villages.Infected =>
+																	when Vampires.Villages.Infected =>
 																		Append(Log, "吸血鬼にされました。");
-																	when Vampire.Villages.Died =>
+																	when Vampires.Villages.Died =>
 																		Append(Log, "死亡しました。");
 																end case;
 																Second := True;
@@ -1900,11 +1900,11 @@ package body Tabula.Renderers is
 												end if;
 												Narration(+Log);
 											end;
-										when Vampire.Villages.Introduction =>
+										when Vampires.Villages.Introduction =>
 											Narration(Stages(Stage(Village)).Introduction.all);
-										when Vampire.Villages.Breakdown =>
+										when Vampires.Villages.Breakdown =>
 											if Village.State >= Villages.Epilogue
-												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+												or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 											then
 												Narration(Vampires_List(Village), "narrationi");
 											end if;
@@ -1916,7 +1916,7 @@ package body Tabula.Renderers is
 											Narration(Breakdown_List(Village));
 									end case;
 								end if;
-								if Message.Kind = Vampire.Villages.Speech or else Message.Kind = Vampire.Villages.Escaped_Speech then
+								if Message.Kind = Vampires.Villages.Speech or else Message.Kind = Vampires.Villages.Escaped_Speech then
 									Speech_Count := Speech_Count + 1;
 								end if;
 							end if;
@@ -1927,10 +1927,10 @@ package body Tabula.Renderers is
 						if Village.State >= Villages.Epilogue and then Day < Village.Today then
 							for I in Village.People.First_Index .. Village.People.Last_Index loop
 								declare
-									Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-									Rec : Vampire.Villages.Person_Record renames Subject.Records.Constant_Reference(Day).Element.all;
+									Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+									Rec : Vampires.Villages.Person_Record renames Subject.Records.Constant_Reference(Day).Element.all;
 								begin
-									if Rec.State = Vampire.Villages.Died and then Rec.Note /= Ada.Strings.Unbounded.Null_Unbounded_String then
+									if Rec.State = Vampires.Villages.Died and then Rec.Note /= Ada.Strings.Unbounded.Null_Unbounded_String then
 										Note(Subject, Rec, "dying");
 									end if;
 								end;
@@ -1947,9 +1947,9 @@ package body Tabula.Renderers is
 										begin
 											for I in Village.People.First_Index .. Village.People.Last_Index loop
 												declare
-													P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+													P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 												begin
-													if not P.Commited and then P.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died then
+													if not P.Commited and then P.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died then
 														if Second then
 															Write(Output, "、");
 														end if;
@@ -2018,7 +2018,7 @@ package body Tabula.Renderers is
 						Web.Producers.Produce(Output, Template, "closed");
 					elsif Player_Index >= 0 then
 						declare
-							Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Player_Index).Element.all;
+							Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Player_Index).Element.all;
 							Bottom : Boolean := True;
 							procedure Handle_Player(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String; Template : in Web.Producers.Template) is
@@ -2035,7 +2035,7 @@ package body Tabula.Renderers is
 								elsif Tag = "speech" then
 									if Village.State = Villages.Epilogue or else (
 										(Village.State = Villages.Opened or else Village.State = Villages.Prologue)
-										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
+										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 										and then not Person.Commited)
 									then
 										if Village.State = Villages.Opened then
@@ -2063,7 +2063,7 @@ package body Tabula.Renderers is
 									end if;
 								elsif Tag = "monologue" then
 									if Village.State = Villages.Opened
-										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
+										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 										and then not Person.Commited
 									then
 										declare
@@ -2087,7 +2087,7 @@ package body Tabula.Renderers is
 									end if;
 								elsif Tag ="ghost" then
 									if Village.State = Villages.Opened
-										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died
+										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
 									then
 										declare
 											Rest : constant Integer := Ghost_Limit - Message_Counts(Player_Index).Ghost;
@@ -2111,7 +2111,7 @@ package body Tabula.Renderers is
 								elsif Tag ="vampire" then
 									if Village.State = Villages.Opened
 										and then not Person.Commited
-										and then Person.Role in Vampire.Villages.Vampire_Role
+										and then Person.Role in Vampires.Villages.Vampire_Role
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
 									then
 										Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
@@ -2119,7 +2119,7 @@ package body Tabula.Renderers is
 								elsif Tag ="dying" then
 									if Village.State = Villages.Opened
 										and then not Person.Commited
-										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died
+										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
 									then
 										Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 									end if;
@@ -2131,14 +2131,14 @@ package body Tabula.Renderers is
 									if Village.State = Villages.Opened
 										and then Village.Time /= Villages.Night
 										and then not Village.People.Constant_Reference(Player_Index).Element.Commited
-										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
+										and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 										and then Message_Counts(Player_Index).Speech = 0
 									then
 										Web.Producers.Produce(Output, Template);
 									end if;
 								elsif Tag = "role" then
 									if Village.State = Villages.Opened then
-										if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died then
+										if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died then
 											Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 										else
 											Write(Output, Role_Text(Person));
@@ -2147,7 +2147,7 @@ package body Tabula.Renderers is
 								elsif Tag = "roletext" then
 									Write(Output, Role_Text(Person));
 								elsif Tag = "roleimg" then
-									if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died then
+									if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died then
 										Link_Image(Renderer'Class(Object), Output, Role_Image_File_Name(Person.Role).all);
 									end if;
 								elsif Tag = "vote" then
@@ -2157,14 +2157,14 @@ package body Tabula.Renderers is
 									then
 										if Person.Commited then
 											declare
-												Setting : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
+												Setting : Vampires.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
 											begin
 												if Setting.Vote < 0 then
 													Write(Output, "<div>処刑を選ぶ投票は棄権します。</div>");
 												else
 													Write(Output, "<div>処刑には");
 													declare
-														Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Setting.Vote).Element.all;
+														Target : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Setting.Vote).Element.all;
 													begin
 														Write(Output, Name(Target));
 													end;
@@ -2172,7 +2172,7 @@ package body Tabula.Renderers is
 												end if;
 											end;
 										else
-											Vote_Form(Player_Index, Vampire.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampire.Villages.Provisional_Voted(Village),
+											Vote_Form(Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted(Village),
 												Current => Person.Records.Constant_Reference(Village.Today).Element.Vote,
 												Current_Special => Person.Records.Constant_Reference(Village.Today).Element.Applied,
 												Message => "誰を処刑に……",
@@ -2185,23 +2185,23 @@ package body Tabula.Renderers is
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
 									then
 										case Person.Role is
-											when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant
-												| Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F
-												| Vampire.Villages.Servant | Vampire.Villages.Gremlin => null;
-											when Vampire.Villages.Doctor =>
+											when Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant
+												| Vampires.Villages.Lover | Vampires.Villages.Sweetheart_M | Vampires.Villages.Sweetheart_F
+												| Vampires.Villages.Servant | Vampires.Villages.Gremlin => null;
+											when Vampires.Villages.Doctor =>
 												if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
 													if Village.Today >= 2 then
-														Vote_Form(Player_Index, Vampire.Villages.Doctor, False,
+														Vote_Form(Player_Index, Vampires.Villages.Doctor, False,
 															Person.Records.Constant_Reference(Village.Today).Element.Target, False, "貴重な薬を誰に……", "診察");
 													else
 														Write(Output, "<div>今は他に犠牲者がいないと信じましょう。</div>");
 													end if;
 												end if;
-											when Vampire.Villages.Detective =>
+											when Vampires.Villages.Detective =>
 												if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
 													for I in Village.People.First_Index .. Village.People.Last_Index loop
-														if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died then
-															Vote_Form(Player_Index, Vampire.Villages.Detective, False,
+														if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died then
+															Vote_Form(Player_Index, Vampires.Villages.Detective, False,
 																Person.Records.Constant_Reference(Village.Today).Element.Target, False, "どの被害者を調べますか……", "調査");
 															goto Exit_Detective_Target;
 														end if;
@@ -2213,10 +2213,10 @@ package body Tabula.Renderers is
 													end if;
 													<<Exit_Detective_Target>> null;
 												end if;
-											when Vampire.Villages.Astronomer =>
-												Vote_Form(Player_Index, Vampire.Villages.Astronomer, False,
+											when Vampires.Villages.Astronomer =>
+												Vote_Form(Player_Index, Vampires.Villages.Astronomer, False,
 													Person.Records.Constant_Reference(Target_Day).Element.Target, False, "どの家の上空の星が奇麗……", "観測");
-											when Vampire.Villages.Hunter =>
+											when Vampires.Villages.Hunter =>
 												declare
 													Has_Silver_Bullet : Boolean := True;
 												begin
@@ -2225,13 +2225,13 @@ package body Tabula.Renderers is
 															Has_Silver_Bullet := False;
 														end if;
 													end loop;
-													Vote_Form(Player_Index, Vampire.Villages.Hunter, Has_Silver_Bullet,
+													Vote_Form(Player_Index, Vampires.Villages.Hunter, Has_Silver_Bullet,
 														Person.Records.Constant_Reference(Target_Day).Element.Target, Person.Records.Constant_Reference(Target_Day).Element.Special, "誰を守りますか……", "護衛");
 												end;
-											when Vampire.Villages.Vampire_Role =>
-												Vote_Form(Player_Index, Vampire.Villages.Vampire_K, False,
+											when Vampires.Villages.Vampire_Role =>
+												Vote_Form(Player_Index, Vampires.Villages.Vampire_K, False,
 													Person.Records.Constant_Reference(Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");
-											when Vampire.Villages.Werewolf | Vampire.Villages.Possessed =>
+											when Vampires.Villages.Werewolf | Vampires.Villages.Possessed =>
 												raise Program_Error;
 										end case;
 									end if;
@@ -2239,7 +2239,7 @@ package body Tabula.Renderers is
 									if Village.State = Villages.Opened and then (
 										Message_Counts(Player_Index).Wake = 0
 										or else Message_Counts(Player_Index).Encourage = 0
-										or else ((Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+										or else ((Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 											and then Message_Counts(Player_Index).Vampire_Gaze = 0))
 									then
 										if HTML_Version(Renderer'Class(Object)) = Web.XHTML then
@@ -2254,10 +2254,10 @@ package body Tabula.Renderers is
 										Write(Output, "<option value=""-1"" selected=""selected""></option>" & Line_Break);
 										for I in Village.People.First_Index .. Village.People.Last_Index loop
 											if I /= Player_Index
-												and then Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
+												and then Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 											then
 												declare
-													Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+													Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
 												begin
 													Write(Output, "<option value=""" & To_String(I) & """>");
 													Write(Output, Name(Person));
@@ -2274,7 +2274,7 @@ package body Tabula.Renderers is
 										if Message_Counts(Player_Index).Encourage = 0 then
 											Write(Output, "<option value=""encourage"">に話の続きを促す</option>" & Line_Break);
 										end if;
-										if Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
+										if Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role
 											and then Message_Counts(Player_Index).Vampire_Gaze = 0
 										then
 											Write(Output, "<option value=""vampire_gaze"">をこっそり見つめる。</option>" & Line_Break);
@@ -2290,9 +2290,9 @@ package body Tabula.Renderers is
 										and then (Message_Counts(Player_Index).Speech > 0 or else Village.State = Villages.Prologue)
 									then
 										declare
-											Setting : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
+											Setting : Vampires.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
 										begin
-											if Setting.State /= Vampire.Villages.Died then
+											if Setting.State /= Vampires.Villages.Died then
 												Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 											end if;
 										end;
@@ -2400,9 +2400,9 @@ package body Tabula.Renderers is
 									Write(Output, "</select>");
 								elsif Tag = "request" then
 									Write(Output, "<select id=""request"" name=""request"">");
-									for I in Vampire.Villages.Requested_Role loop
+									for I in Vampires.Villages.Requested_Role loop
 										Write(Output, "<option value=""");
-										Write(Output, Vampire.Villages.Requested_Role'Image(I));
+										Write(Output, Vampires.Villages.Requested_Role'Image(I));
 										Write(Output, """>");
 										Write(Output, Image(I));
 										Write(Output, "</option>");
@@ -2414,7 +2414,7 @@ package body Tabula.Renderers is
 								end if;
 							end Handle_Entry;
 						begin
-							Vampire.Villages.Exclude_Taken(Cast, Village);
+							Vampires.Villages.Exclude_Taken(Cast, Village);
 							Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
 						end;
 					end if;
@@ -2479,8 +2479,8 @@ package body Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Vampire.Villages.Village_Type;
-		Message : Vampire.Villages.Message;
+		Village : Vampires.Villages.Village_Type;
+		Message : Vampires.Villages.Message;
 		User_Id : String;
 		User_Password : String)
 	is
@@ -2524,22 +2524,22 @@ package body Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Vampire.Villages.Village_Type;
+		Village : Vampires.Villages.Village_Type;
 		Player : Natural;
 		Target : Natural;
 		User_Id : String;
 		User_Password : String)
 	is
-		Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Player).Element.all;
-		Target_Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Target).Element.all;
+		Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Player).Element.all;
+		Target_Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Target).Element.all;
 		procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String; Template : in Web.Producers.Template) is
 		begin
 			if Tag = "message" then
 				case Person.Role is
-					when Vampire.Villages.Doctor =>
+					when Vampires.Villages.Doctor =>
 						Write(Output, Renderers.Name(Target_Person) & "を診察しますか？");
-					when Vampire.Villages.Detective =>
+					when Vampires.Villages.Detective =>
 						if Target_Person.Records.Constant_Reference(Village.Today).Element.Note = "" then
 							Write(Output, "遺言を読み解くにはもう少しかかりそうですが、現時点で");
 						end if;
@@ -2549,8 +2549,8 @@ package body Tabula.Renderers is
 				end case;
 			elsif Tag = "button" then
 				case Person.Role is
-					when Vampire.Villages.Doctor => Write(Output, "診察");
-					when Vampire.Villages.Detective => Write(Output, "調査");
+					when Vampires.Villages.Doctor => Write(Output, "診察");
+					when Vampires.Villages.Detective => Write(Output, "調査");
 					when others => raise Program_Error;
 				end case;
 			elsif Tag = "target" then

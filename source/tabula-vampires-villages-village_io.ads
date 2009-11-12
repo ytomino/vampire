@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with DYAYaml;
 with Tabula.Casts.Cast_IO;
-package Tabula.Vampire.Villages.Village_IO is
+package Tabula.Vampires.Villages.Village_IO is
 	
 	package Village_State_IO is new DYAYaml.IO_Enumeration(Tabula.Villages.Village_State);
 	package Village_Time_IO is new DYAYaml.IO_Enumeration(Tabula.Villages.Village_Time);
@@ -34,4 +34,4 @@ package Tabula.Vampire.Villages.Village_IO is
 	package Doctor_Infected_IO is new DYAYaml.IO_Enumeration(Doctor_Infected_Mode);
 	package Unfortunate_IO is new DYAYaml.IO_Enumeration(Unfortunate_Mode);
 	
-end Tabula.Vampire.Villages.Village_IO;
+end Tabula.Vampires.Villages.Village_IO;

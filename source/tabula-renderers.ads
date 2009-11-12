@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams;
 with Web;
-with Tabula.Vampire.Villages;
+with Tabula.Vampires.Villages;
 with Tabula.Villages.Lists;
 with Tabula.Users;
 private with Web.Producers;
@@ -40,13 +40,13 @@ package Tabula.Renderers is
 	
 	procedure Get_Day(
 		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
+		Village : in Vampires.Villages.Village_Type; 
 		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural);
 	
 	procedure Get_Range(
 		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
+		Village : in Vampires.Villages.Village_Type; 
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer);
@@ -115,7 +115,7 @@ package Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id; 
-		Village : Vampire.Villages.Village_Type; 
+		Village : Vampires.Villages.Village_Type; 
 		Day : Natural;
 		First, Last : Integer := -1;
 		User_Id : String;
@@ -125,8 +125,8 @@ package Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Vampire.Villages.Village_Type; 
-		Message : Vampire.Villages.Message;
+		Village : Vampires.Villages.Village_Type; 
+		Message : Vampires.Villages.Message;
 		User_Id : String;
 		User_Password : String);
 	
@@ -135,7 +135,7 @@ package Tabula.Renderers is
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Village_Id : Villages.Lists.Village_Id;
-		Village : Vampire.Villages.Village_Type;
+		Village : Vampires.Villages.Village_Type;
 		Player : Natural;
 		Target : Natural;
 		User_Id : String;

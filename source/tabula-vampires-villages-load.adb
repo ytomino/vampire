@@ -3,8 +3,8 @@ with Ada.Directories;
 with DYAYaml;
 with Tabula.Configurations;
 with Tabula.File_IO;
-with Tabula.Vampire.Villages.Village_IO;
-procedure Tabula.Vampire.Villages.Load (
+with Tabula.Vampires.Villages.Village_IO;
+procedure Tabula.Vampires.Villages.Load (
 	Id : in Tabula.Villages.Lists.Village_Id;
 	Village : in out Village_Type;
 	Info_Only : in Boolean := False)
@@ -15,4 +15,4 @@ is
 		File_IO.Read_File(File_Name));
 begin
 	Villages.Village_IO.IO(Reader, Village, Info_Only);
-end Tabula.Vampire.Villages.Load;
+end Tabula.Vampires.Villages.Load;

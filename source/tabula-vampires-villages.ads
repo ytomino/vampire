@@ -5,11 +5,11 @@ with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts;
 with Tabula.Villages;
-package Tabula.Vampire.Villages is
+package Tabula.Vampires.Villages is
 	
 	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
-	type Servant_Knowing_Mode is (None, Vampire_K, Vampires);
+	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
 	type Monster_Side is (Fixed, Shuffling, Gremlin);
 	type Daytime_Preview_Mode is (None, Role_Only, Message_Only, Role_And_Message);
 	type Doctor_Infected_Mode is (Cure, Find_Infection);
@@ -218,4 +218,4 @@ package Tabula.Vampire.Villages is
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
-end Tabula.Vampire.Villages;
+end Tabula.Vampires.Villages;

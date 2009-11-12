@@ -3,8 +3,8 @@ with Ada.Directories;
 with DYAYaml;
 with Tabula.Configurations;
 with Tabula.File_IO;
-with Tabula.Vampire.Villages.Village_IO;
-procedure Tabula.Vampire.Villages.Save (
+with Tabula.Vampires.Villages.Village_IO;
+procedure Tabula.Vampires.Villages.Save (
 	Id : Tabula.Villages.Lists.Village_Id;
 	Village : in out Villages.Village_Type)
 is
@@ -13,4 +13,4 @@ is
 begin
 	Villages.Village_IO.IO(Writer, Village);
 	File_IO.Write_File(File_Name, DYAYaml.Output(Writer));
-end Tabula.Vampire.Villages.Save;
+end Tabula.Vampires.Villages.Save;

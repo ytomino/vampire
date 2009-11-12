@@ -54,7 +54,7 @@ all: site/vampire$(CGISUFFIX)
 clean:
 	-rm -rf build*
 
-site/vampire$(CGISUFFIX): source/tabula-vampire-main.adb $(BUILDDIR)
+site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
