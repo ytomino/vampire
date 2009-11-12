@@ -8,13 +8,13 @@ with Tabula.Configurations.Templates;
 with Tabula.Renderers.Log;
 with Tabula.String_Lists;
 with Tabula.Villages.Lists;
-with Tabula.Villages.Load;
-use type Ada.Streams.Stream_Element_Offset;
-use type Ada.Strings.Unbounded.Unbounded_String;
-use type Tabula.Villages.Lists.Village_List_Item;
-use Tabula.String_Lists;
-use Tabula.Villages.Lists.Village_Lists;
+with Tabula.Vampire.Villages.Load;
 package body Tabula.Villages.Lists.Managing is
+	use type Ada.Streams.Stream_Element_Offset;
+	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Tabula.Villages.Lists.Village_List_Item;
+	use Tabula.String_Lists;
+	use Tabula.Villages.Lists.Village_Lists;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
@@ -122,11 +122,11 @@ package body Tabula.Villages.Lists.Managing is
 			begin
 				if Num(Num'First) in '0' .. '9' then
 					declare
-						Village : Villages.Village_Type;
+						Village : Vampire.Villages.Village_Type;
 						Village_Id : String renames Ada.Directories.Simple_Name(File);
 						Id_List : String_Lists.List;
 					begin
-						Villages.Load(Village_Id, Village, Info_Only => True);
+						Vampire.Villages.Load(Village_Id, Village, Info_Only => True);
 						for I in Village.People.First_Index .. Village.People.Last_Index loop
 							Append(Id_List, +Village.People.Constant_Reference(I).Element.Id);
 						end loop;
@@ -145,7 +145,7 @@ package body Tabula.Villages.Lists.Managing is
 									Log : String renames Ada.Directories.Compose(Configurations.Villages_HTML_Directory, Num & "-0.html");
 								begin
 									if not Ada.Directories.Exists(Log) then
-										Villages.Load(Village_Id, Village, Info_Only => False);
+										Vampire.Villages.Load(Village_Id, Village, Info_Only => False);
 										for Day in 0 .. Village.Today loop
 											declare
 												Renderer : Tabula.Renderers.Log.Renderer(Configurations.Templates.Configuration);

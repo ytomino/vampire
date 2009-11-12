@@ -1,4 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers.Vectors;
+with Ada.Strings.Unbounded;
 with Tabula.String_Lists;
 package Tabula.Villages.Lists is
 

@@ -1,15 +1,15 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Unchecked_Conversion;
 package body Tabula.Renderers.Rule is
-	use type Villages.Servant_Knowing_Mode;
-	use type Villages.Monster_Side;
-	use type Villages.Attack_Mode;
-	use type Villages.Teaming;
-	use type Villages.Hunter_Silver_Bullet_Mode;
-	use type Villages.Unfortunate_Mode;
+	use type Vampire.Villages.Servant_Knowing_Mode;
+	use type Vampire.Villages.Monster_Side;
+	use type Vampire.Villages.Attack_Mode;
+	use type Vampire.Villages.Teaming;
+	use type Vampire.Villages.Hunter_Silver_Bullet_Mode;
+	use type Vampire.Villages.Unfortunate_Mode;
+	use type Vampire.Villages.Daytime_Preview_Mode;
+	use type Vampire.Villages.Doctor_Infected_Mode;
 	use type Villages.Village_State;
-	use type Villages.Daytime_Preview_Mode;
-	use type Villages.Doctor_Infected_Mode;
 	
 	type String_Access is not null access constant String;
 	type Item is record
@@ -39,135 +39,135 @@ package body Tabula.Renderers.Rule is
 			Guide => new String'("初日から処刑を行います。"),
 			others => <>));
 	
-	subtype VT is Villages.Teaming;
+	subtype VT is Vampire.Villages.Teaming;
 	Teaming_Message : constant Item_Array(VT'Pos(VT'First) .. VT'Pos(VT'Last)) := (
-		VT'Pos(Villages.Low_Density) => (
-			Value => new String'(VT'Image(Villages.Low_Density)),
+		VT'Pos(Vampire.Villages.Low_Density) => (
+			Value => new String'(VT'Image(Vampire.Villages.Low_Density)),
 			Guide => new String'("能力者の密度を線形にします。"),
 			others => <>),
-		VT'Pos(Villages.Shuffling_Headless) => (
-			Value => new String'(VT'Image(Villages.Shuffling_Headless)),
+		VT'Pos(Vampire.Villages.Shuffling_Headless) => (
+			Value => new String'(VT'Image(Vampire.Villages.Shuffling_Headless)),
 			Guide => new String'("村側能力者を増やします(首無し騎士に似せます)。"),
 			Unrecommended => True),
-		VT'Pos(Villages.Shuffling_Euro) => (
-			Value => new String'(Villages.Teaming'Image(Villages.Shuffling_Euro)),
+		VT'Pos(Vampire.Villages.Shuffling_Euro) => (
+			Value => new String'(VT'Image(Vampire.Villages.Shuffling_Euro)),
 			Guide => new String'("妖魔が早く出ます(欧州に似せます)。"),
 			others => <>),
-		VT'Pos(Villages.Shuffling) => (
-			Value => new String'(Villages.Teaming'Image(Villages.Shuffling)),
+		VT'Pos(Vampire.Villages.Shuffling) => (
+			Value => new String'(VT'Image(Vampire.Villages.Shuffling)),
 			Guide => new String'("基本的な編成です。"),
 			others => <>), 
-		VT'Pos(Villages.Shuffling_Gremlin) => (
-			Value => new String'(Villages.Teaming'Image(Villages.Shuffling_Gremlin)),
+		VT'Pos(Vampire.Villages.Shuffling_Gremlin) => (
+			Value => new String'(VT'Image(Vampire.Villages.Shuffling_Gremlin)),
 			Guide => new String'("基本的な編成に加え、妖魔が早く出ます。"),
 			others => <>), 
-		VT'Pos(Villages.Hiding) => (
-			Value => new String'(Villages.Teaming'Image(Villages.Hiding)),
+		VT'Pos(Vampire.Villages.Hiding) => (
+			Value => new String'(VT'Image(Vampire.Villages.Hiding)),
 			Guide => new String'("村側能力者の構成はわかりません。"),
 			others => <>),
-		VT'Pos(Villages.Hiding_Gremlin) => (
-			Value => new String'(Villages.Teaming'Image(Villages.Hiding_Gremlin)),
+		VT'Pos(Vampire.Villages.Hiding_Gremlin) => (
+			Value => new String'(VT'Image(Vampire.Villages.Hiding_Gremlin)),
 			Guide => new String'("村側能力者の構成はわからず、妖魔が早く出ます。"),
 			others => <>));
 	
-	subtype MS is Villages.Monster_Side;
+	subtype MS is Vampire.Villages.Monster_Side;
 	Monster_Side_Message : constant Item_Array(MS'Pos(MS'First) .. MS'Pos(MS'Last)) := (
-		MS'Pos(Villages.Fixed) => (
-			Value => new String'(Villages.Monster_Side'Image(Villages.Fixed)),
+		MS'Pos(Vampire.Villages.Fixed) => (
+			Value => new String'(MS'Image(Vampire.Villages.Fixed)),
 			Guide => new String'("吸血鬼が襲ってきます。"),
 			others => <>), 
-		MS'Pos(Villages.Shuffling) => (
-			Value => new String'(Villages.Monster_Side'Image(Villages.Shuffling)),
+		MS'Pos(Vampire.Villages.Shuffling) => (
+			Value => new String'(MS'Image(Vampire.Villages.Shuffling)),
 			Guide => new String'("吸血鬼の全貌はわかりません。"),
 			Unrecommended => True),
-		MS'Pos(Villages.Gremlin) => (
-			Value => new String'(Villages.Monster_Side'Image(Villages.Gremlin)),
+		MS'Pos(Vampire.Villages.Gremlin) => (
+			Value => new String'(MS'Image(Vampire.Villages.Gremlin)),
 			Guide => new String'("使徒よりも妖魔が先に現れます。"),
 			others => <>));
 	
-	subtype AM is Villages.Attack_Mode;
+	subtype AM is Vampire.Villages.Attack_Mode;
 	Attack_Message : constant Item_Array(AM'Pos(AM'First) .. AM'Pos(AM'Last)) := (
-		AM'Pos(Villages.Two) => (
-			Value => new String'(AM'Image(Villages.Two)), 
+		AM'Pos(Vampire.Villages.Two) => (
+			Value => new String'(AM'Image(Vampire.Villages.Two)), 
 			Guide => new String'("吸血鬼ふたり以上に襲われると死亡します。"),
 			others => <>),
-		AM'Pos(Villages.Mocturnal_Infecting) => (
-			Value => new String'(AM'Image(Villages.Mocturnal_Infecting)), 
+		AM'Pos(Vampire.Villages.Mocturnal_Infecting) => (
+			Value => new String'(AM'Image(Vampire.Villages.Mocturnal_Infecting)), 
 			Guide => new String'("天文家と猟師は感染したら襲撃を行います。"),
 			others => <>),
-		AM'Pos(Villages.Unanimity) => (
-			Value => new String'(AM'Image(Villages.Unanimity)), 
+		AM'Pos(Vampire.Villages.Unanimity) => (
+			Value => new String'(AM'Image(Vampire.Villages.Unanimity)), 
 			Guide => new String'("すべての吸血鬼に襲われると死亡します。"),
 			others => <>));
 	
-	subtype SK is Villages.Servant_Knowing_Mode;
+	subtype SK is Vampire.Villages.Servant_Knowing_Mode;
 	Servant_Knowing_Message : constant Item_Array(SK'Pos(SK'First) .. SK'Pos(SK'Last)) := (
-		SK'Pos(Villages.None) => (
-			Value => new String'(SK'Image(Villages.None)),
+		SK'Pos(Vampire.Villages.None) => (
+			Value => new String'(SK'Image(Vampire.Villages.None)),
 			Guide => new String'("使徒は吸血鬼の正体を知りません。"),
 			others => <>),
-		SK'Pos(Villages.Vampire_K) => (
-			Value => new String'(SK'Image(Villages.Vampire_K)),
+		SK'Pos(Vampire.Villages.Vampire_K) => (
+			Value => new String'(SK'Image(Vampire.Villages.Vampire_K)),
 			Guide => new String'("使徒は吸血鬼の王を知っています。"),
 			others => <>),
-		SK'Pos(Villages.Vampires) => (
-			Value => new String'(SK'Image(Villages.Vampires)),
+		SK'Pos(Vampire.Villages.Vampires) => (
+			Value => new String'(SK'Image(Vampire.Villages.Vampires)),
 			Guide => new String'("使徒は吸血鬼を知っています。"),
 			others => <>));
 	
-	subtype DP is Villages.Daytime_Preview_Mode;
+	subtype DP is Vampire.Villages.Daytime_Preview_Mode;
 	Daytime_Preview_Message : constant Item_Array(DP'Pos(DP'First) .. DP'Pos(DP'Last)) := (
-		DP'Pos(Villages.None) => (
-			Value => new String'(DP'Image(Villages.None)),
+		DP'Pos(Vampire.Villages.None) => (
+			Value => new String'(DP'Image(Vampire.Villages.None)),
 			Guide => new String'("探偵と医者は翌日まで結果がわかりません。"),
 			Unrecommended => True),
-		DP'Pos(Villages.Role_Only) => (
-			Value => new String'(DP'Image(Villages.Role_Only)),
+		DP'Pos(Vampire.Villages.Role_Only) => (
+			Value => new String'(DP'Image(Vampire.Villages.Role_Only)),
 			Guide => new String'("探偵は日中に正体を調べ翌日までに遺言を調べます。"),
 			others => <>),
-		DP'Pos(Villages.Message_Only) => (
-			Value => new String'(DP'Image(Villages.Message_Only)),
+		DP'Pos(Vampire.Villages.Message_Only) => (
+			Value => new String'(DP'Image(Vampire.Villages.Message_Only)),
 			Guide => new String'("探偵は日中に遺言を調べ翌日までに正体を調べます。"),
 			others => <>),
-		DP'Pos(Villages.Role_And_Message) => (
-			Value => new String'(DP'Image(Villages.Role_And_Message)),
+		DP'Pos(Vampire.Villages.Role_And_Message) => (
+			Value => new String'(DP'Image(Vampire.Villages.Role_And_Message)),
 			Guide => new String'("探偵は日中に正体と遺言を調べます。"),
 			others => <>));
 
-	subtype DI is Villages.Doctor_Infected_Mode;
+	subtype DI is Vampire.Villages.Doctor_Infected_Mode;
 	Doctor_Infected_Message : constant Item_Array(DI'Pos(DI'First) .. DI'Pos(DI'Last)) := (
-		DI'Pos(Villages.Cure) => (
-			Value => new String'(DI'Image(Villages.Cure)),
+		DI'Pos(Vampire.Villages.Cure) => (
+			Value => new String'(DI'Image(Vampire.Villages.Cure)),
 			Guide => new String'("医者自身の感染は治療に影響しません。"),
 			others => <>),
-		DI'Pos(Villages.Find_Infection) => (
-			Value => new String'(DI'Image(Villages.Find_Infection)),
+		DI'Pos(Vampire.Villages.Find_Infection) => (
+			Value => new String'(DI'Image(Vampire.Villages.Find_Infection)),
 			Guide => new String'("医者自身が感染していると治療の効果はありません。"),
 			others => <>));
 
-	subtype HS is Villages.Hunter_Silver_Bullet_Mode;
+	subtype HS is Vampire.Villages.Hunter_Silver_Bullet_Mode;
 	Hunter_Silver_Bullet_Message : constant Item_Array(HS'Pos(HS'First) .. HS'Pos(HS'Last)) := (
-		HS'Pos(Villages.Target) => (
-			Value => new String'(HS'Image(Villages.Target)),
+		HS'Pos(Vampire.Villages.Target) => (
+			Value => new String'(HS'Image(Vampire.Villages.Target)),
 			Guide => new String'("護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。"),
 			others => <>),
-		HS'Pos(Villages.Target_And_Self) => (
-			Value => new String'(HS'Image(Villages.Target_And_Self)),
+		HS'Pos(Vampire.Villages.Target_And_Self) => (
+			Value => new String'(HS'Image(Vampire.Villages.Target_And_Self)),
 			Guide => new String'("護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。"),
 			others => <>));
 
-	subtype UM is Villages.Unfortunate_Mode;
+	subtype UM is Vampire.Villages.Unfortunate_Mode;
 	Unfortunate_Message : constant Item_Array(UM'Pos(UM'First) .. UM'Pos(UM'Last)) := (
-		UM'Pos(Villages.None) => (
-			Value => new String'(UM'Image(Villages.None)),
+		UM'Pos(Vampire.Villages.None) => (
+			Value => new String'(UM'Image(Vampire.Villages.None)),
 			Guide => new String'("数奇な運命の村人はいません。"),
 			others => <>),
-		UM'Pos(Villages.Appear) => (
-			Value => new String'(UM'Image(Villages.Appear)),
+		UM'Pos(Vampire.Villages.Appear) => (
+			Value => new String'(UM'Image(Vampire.Villages.Appear)),
 			Guide => new String'("数奇な運命の村人がいるかもしれません。"),
 			Unrecommended => True),
-		UM'Pos(Villages.Infected_Only) => (
-			Value => new String'(UM'Image(Villages.Infected_Only)),
+		UM'Pos(Vampire.Villages.Infected_Only) => (
+			Value => new String'(UM'Image(Vampire.Villages.Infected_Only)),
 			Guide => new String'("数奇な運命の村人は襲撃では殺されません。"),
 			others => <>));
 	
@@ -234,7 +234,7 @@ package body Tabula.Renderers.Rule is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in System.Address; -- Web.Producers.Template;
 		Village_Id : in Villages.Lists.Village_Id;
-		Village : in Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Player : in Boolean;
 		User_Id : in String;
 		User_Password : in String)
@@ -283,42 +283,42 @@ package body Tabula.Renderers.Rule is
 					List(Object, Output,
 						Name => "teaming", 
 						Items => Teaming_Message,
-						Selected => Villages.Teaming'Pos(Village.Teaming));
+						Selected => Vampire.Villages.Teaming'Pos(Village.Teaming));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "monster-side", 
 						Items => Monster_Side_Message,
-						Selected => Villages.Monster_Side'Pos(Village.Monster_Side));
+						Selected => Vampire.Villages.Monster_Side'Pos(Village.Monster_Side));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "attack", 
 						Items => Attack_Message,
-						Selected => Villages.Attack_Mode'Pos(Village.Attack));
+						Selected => Vampire.Villages.Attack_Mode'Pos(Village.Attack));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "servant-knowing", 
 						Items => Servant_Knowing_Message,
-						Selected => Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
+						Selected => Vampire.Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "daytime-preview", 
 						Items => Daytime_Preview_Message,
-						Selected => Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
+						Selected => Vampire.Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "doctor-infected", 
 						Items => Doctor_Infected_Message,
-						Selected => Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
+						Selected => Vampire.Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "hunter-silver-bullet", 
 						Items => Hunter_Silver_Bullet_Message,
-						Selected => Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
+						Selected => Vampire.Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
 					Web.Producers.Produce(Output, Template);
 					List(Object, Output,
 						Name => "unfortunate", 
 						Items => Unfortunate_Message,
-						Selected => Villages.Unfortunate_Mode'Pos(Village.Unfortunate));
+						Selected => Vampire.Villages.Unfortunate_Mode'Pos(Village.Unfortunate));
 				else
 					if Village.Day_Duration < 24 * 60 * 60.0 then
 						for I in Day_Duration_Message'Range loop
@@ -346,35 +346,35 @@ package body Tabula.Renderers.Rule is
 							Write(Output, ' ' & Ascii.LF);
 						end Put;
 					begin
-						if Player or else Village.Victim_Existing /= Villages.Initial_Victim_Existing then
+						if Player or else Village.Victim_Existing /= Vampire.Villages.Initial_Victim_Existing then
 							Put(Victim_Existing_Message, Boolean'Pos(Village.Victim_Existing));
 						end if;
-						if Player or else Village.First_Execution /= Villages.Initial_First_Execution then
+						if Player or else Village.First_Execution /= Vampire.Villages.Initial_First_Execution then
 							Put (First_Execution_Message, Boolean'Pos (Village.First_Execution));
 						end if;
-						if Player or else Village.Teaming /= Villages.Initial_Teaming then
-							Put(Teaming_Message, Villages.Teaming'Pos(Village.Teaming));
+						if Player or else Village.Teaming /= Vampire.Villages.Initial_Teaming then
+							Put(Teaming_Message, Vampire.Villages.Teaming'Pos(Village.Teaming));
 						end if;
-						if Player or else Village.Monster_Side /= Villages.Initial_Monster_Side then
-							Put(Monster_Side_Message, Villages.Monster_SIde'Pos(Village.Monster_Side));
+						if Player or else Village.Monster_Side /= Vampire.Villages.Initial_Monster_Side then
+							Put(Monster_Side_Message, Vampire.Villages.Monster_SIde'Pos(Village.Monster_Side));
 						end if;
-						if Player or else Village.Attack /= Villages.Initial_Attack then
-							Put(Attack_Message, Villages.Attack_Mode'Pos(Village.Attack));
+						if Player or else Village.Attack /= Vampire.Villages.Initial_Attack then
+							Put(Attack_Message, Vampire.Villages.Attack_Mode'Pos(Village.Attack));
 						end if;
-						if Player or else Village.Servant_Knowing /= Villages.Initial_Servant_Knowing then
-							Put(Servant_Knowing_Message, Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
+						if Player or else Village.Servant_Knowing /= Vampire.Villages.Initial_Servant_Knowing then
+							Put(Servant_Knowing_Message, Vampire.Villages.Servant_Knowing_Mode'Pos(Village.Servant_Knowing));
 						end if;
-						if Player or else Village.Daytime_Preview /= Villages.Initial_Daytime_Preview then
-							Put(Daytime_Preview_Message, Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
+						if Player or else Village.Daytime_Preview /= Vampire.Villages.Initial_Daytime_Preview then
+							Put(Daytime_Preview_Message, Vampire.Villages.Daytime_Preview_Mode'Pos(Village.Daytime_Preview));
 						end if;
-						if Player or else Village.Doctor_Infected /= Villages.Initial_Doctor_Infected then
-							Put(Doctor_Infected_Message, Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
+						if Player or else Village.Doctor_Infected /= Vampire.Villages.Initial_Doctor_Infected then
+							Put(Doctor_Infected_Message, Vampire.Villages.Doctor_Infected_Mode'Pos(Village.Doctor_Infected));
 						end if;
-						if Player or else Village.Hunter_Silver_Bullet /= Villages.Initial_Hunter_Silver_Bullet then
-							Put(Hunter_Silver_Bullet_Message, Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
+						if Player or else Village.Hunter_Silver_Bullet /= Vampire.Villages.Initial_Hunter_Silver_Bullet then
+							Put(Hunter_Silver_Bullet_Message, Vampire.Villages.Hunter_Silver_Bullet_Mode'Pos(Village.Hunter_Silver_Bullet));
 						end if;
-						if Player or else Village.Unfortunate /= Villages.Initial_Unfortunate then
-							Put(Unfortunate_Message, Villages.Unfortunate_Mode'Pos(Village.Unfortunate));
+						if Player or else Village.Unfortunate /= Vampire.Villages.Initial_Unfortunate then
+							Put(Unfortunate_Message, Vampire.Villages.Unfortunate_Mode'Pos(Village.Unfortunate));
 						end if;
 					end;
 				end if;
@@ -399,20 +399,20 @@ package body Tabula.Renderers.Rule is
 		end if;
 		if Player 
 			or else Village.Day_Duration < 24 * 60 * 60.0
-			or else Village.Victim_Existing      /= Villages.Initial_Victim_Existing
-			or else Village.First_Execution      /= Villages.Initial_First_Execution
-			or else Village.Teaming              /= Villages.Initial_Teaming
-			or else Village.Monster_Side         /= Villages.Initial_Monster_Side
-			or else Village.Attack               /= Villages.Initial_Attack
-			or else Village.Servant_Knowing      /= Villages.Initial_Servant_Knowing
-			or else Village.Hunter_Silver_Bullet /= Villages.Initial_Hunter_Silver_Bullet
-			or else Village.Unfortunate          /= Villages.Initial_Unfortunate
+			or else Village.Victim_Existing      /= Vampire.Villages.Initial_Victim_Existing
+			or else Village.First_Execution      /= Vampire.Villages.Initial_First_Execution
+			or else Village.Teaming              /= Vampire.Villages.Initial_Teaming
+			or else Village.Monster_Side         /= Vampire.Villages.Initial_Monster_Side
+			or else Village.Attack               /= Vampire.Villages.Initial_Attack
+			or else Village.Servant_Knowing      /= Vampire.Villages.Initial_Servant_Knowing
+			or else Village.Hunter_Silver_Bullet /= Vampire.Villages.Initial_Hunter_Silver_Bullet
+			or else Village.Unfortunate          /= Vampire.Villages.Initial_Unfortunate
 		then
 			Web.Producers.Produce(Output, Template_Body.all, Extract(Changable).all, Handler => Handle'Access);
 		end if;
 	end Rule_Panel;
 	
-	procedure Change(Village : in out Villages.Village_Type; Inputs : in Web.Query_Strings) is
+	procedure Change(Village : in out Vampire.Villages.Village_Type; Inputs : in Web.Query_Strings) is
 		Day_D : String renames Web.Element(Inputs, "day-duration");
 	begin
 		if Day_D /= "" and then Village.Day_Duration < 24 * 60 * 60.0 then
@@ -421,14 +421,14 @@ package body Tabula.Renderers.Rule is
 		end if;
 		Village.Victim_Existing := Boolean'Value(Web.Element(Inputs, "victim-existing"));
 		Village.First_Execution := Boolean'Value(Web.Element(Inputs, "first-execution"));
-		Village.Teaming := Villages.Teaming'Value(Web.Element(Inputs, "teaming"));
-		Village.Attack := Villages.Attack_Mode'Value(Web.Element(Inputs, "attack"));
-		Village.Monster_Side := Villages.Monster_Side'Value(Web.Element(Inputs, "monster-side"));
-		Village.Servant_Knowing := Villages.Servant_Knowing_Mode'Value(Web.Element(Inputs, "servant-knowing"));
-		Village.Daytime_Preview := Villages.Daytime_Preview_Mode'Value(Web.Element(Inputs, "daytime-preview"));
-		Village.Doctor_Infected := Villages.Doctor_Infected_Mode'Value(Web.Element(Inputs, "doctor-infected"));
-		Village.Hunter_Silver_Bullet := Villages.Hunter_Silver_Bullet_Mode'Value(Web.Element(Inputs, "hunter-silver-bullet"));
-		Village.Unfortunate := Villages.Unfortunate_Mode'Value(Web.Element(Inputs, "unfortunate"));
+		Village.Teaming := Vampire.Villages.Teaming'Value(Web.Element(Inputs, "teaming"));
+		Village.Attack := Vampire.Villages.Attack_Mode'Value(Web.Element(Inputs, "attack"));
+		Village.Monster_Side := Vampire.Villages.Monster_Side'Value(Web.Element(Inputs, "monster-side"));
+		Village.Servant_Knowing := Vampire.Villages.Servant_Knowing_Mode'Value(Web.Element(Inputs, "servant-knowing"));
+		Village.Daytime_Preview := Vampire.Villages.Daytime_Preview_Mode'Value(Web.Element(Inputs, "daytime-preview"));
+		Village.Doctor_Infected := Vampire.Villages.Doctor_Infected_Mode'Value(Web.Element(Inputs, "doctor-infected"));
+		Village.Hunter_Silver_Bullet := Vampire.Villages.Hunter_Silver_Bullet_Mode'Value(Web.Element(Inputs, "hunter-silver-bullet"));
+		Village.Unfortunate := Vampire.Villages.Unfortunate_Mode'Value(Web.Element(Inputs, "unfortunate"));
 	end Change;
 	
 end Tabula.Renderers.Rule;

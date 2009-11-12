@@ -4,7 +4,8 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts;
-package Tabula.Villages is
+with Tabula.Villages;
+package Tabula.Vampire.Villages is
 	
 	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
@@ -164,15 +165,12 @@ package Tabula.Villages is
 	
 	package Messages is new Ada.Containers.Vectors (Natural, Message);
 	
-	type Village_State is (Prologue, Opened, Epilogue, Closed);
-	type Village_Time is (Daytime, Vote, Night);
-	
 	type Village_Type is limited record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
 		By : Ada.Strings.Unbounded.Unbounded_String;
-		State : Village_State;
+		State : Tabula.Villages.Village_State;
 		Today : Integer;
-		Time : Village_Time := Daytime;
+		Time : Tabula.Villages.Village_Time := Tabula.Villages.Daytime;
 		Dawn : Ada.Calendar.Time;
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
@@ -220,4 +218,4 @@ package Tabula.Villages is
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
-end Tabula.Villages;
+end Tabula.Vampire.Villages;

@@ -1,8 +1,10 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
-package body Tabula.Villages is
+package body Tabula.Vampire.Villages is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Sex_Kind;
+	use type Tabula.Villages.Village_State;
+	use type Tabula.Villages.Village_Time;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
@@ -117,7 +119,7 @@ package body Tabula.Villages is
 				end if;
 			end if;
 		end loop;
-		return (Count >= Minimum_Number_Of_Persons or else Village.State /= Villages.Prologue)
+		return (Count >= Minimum_Number_Of_Persons or else Village.State /= Tabula.Villages.Prologue)
 			and then Commited_Count = Count;
 	end Commit_Finished;
 	
@@ -249,7 +251,7 @@ package body Tabula.Villages is
 		pragma Assert(Target < 0 or else Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate);
 		Rec.Vote := Target;
 		if not Provisional_Voted(Village)
-			and then Village.Time = Daytime -- 短期の投票延長期間は仮投票は発生させない
+			and then Village.Time = Tabula.Villages.Daytime -- 短期の投票延長期間は仮投票は発生させない
 		then
 			Rec.Provisional_Vote := Target;
 			Rec.Applied := Apply;
@@ -376,4 +378,4 @@ package body Tabula.Villages is
 		end loop;
 	end Exclude_Taken;
 
-end Tabula.Villages;
+end Tabula.Vampire.Villages;

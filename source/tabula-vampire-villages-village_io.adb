@@ -1,9 +1,9 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
-package body Tabula.Villages.Village_IO is
-	use Tabula.Villages.People;
-	use Tabula.Villages.Person_Records;
+package body Tabula.Vampire.Villages.Village_IO is
+	use People;
+	use Person_Records;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Villages.People.Vector) is
@@ -139,4 +139,4 @@ package body Tabula.Villages.Village_IO is
 		IO(Serializer, Root_Callback'Access);
 	end IO;
 	
-end Tabula.Villages.Village_IO;
+end Tabula.Vampire.Villages.Village_IO;

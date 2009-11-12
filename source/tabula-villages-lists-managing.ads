@@ -5,8 +5,8 @@ package Tabula.Villages.Lists.Managing is
 	procedure Clear_Village_List;
 	function New_Village_Id return Village_Id;
 	function Village_List return Village_Lists.Vector;
-	procedure Make (List : not null access constant Lists.Village_Lists.Vector);
-	procedure Make_RSS (List : not null access constant Lists.Village_Lists.Vector);
+	procedure Make (List : not null access constant Village_Lists.Vector);
+	procedure Make_RSS (List : not null access constant Village_Lists.Vector);
 	
 	function Exists(Id : Village_Id) return Boolean;
 	
