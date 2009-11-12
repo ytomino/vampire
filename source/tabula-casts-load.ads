@@ -1,2 +1,2 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-procedure Tabula.Casts.Load (Cast : in out Cast_Collection);
+function Tabula.Casts.Load return Cast_Collection;

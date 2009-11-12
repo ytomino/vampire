@@ -82,15 +82,6 @@ package Tabula.Villages is
 		Commited : Boolean;
 	end record;
 	
-	Default_Person : constant Person_Type := (
-		Casts.Default_Person with
-		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
-		Request => Random,
-		Ignore_Request => False,
-		Role => Inhabitant,
-		Records => Person_Records.Empty_Vector,
-		Commited => False);
-
 	package People is new Ada.Containers.Vectors (Natural, Person_Type);
 	
 	type Message_Kind is (

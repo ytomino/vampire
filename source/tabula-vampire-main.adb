@@ -496,9 +496,8 @@ begin
 												Work_Num : Integer := Natural'Value(Web.Element(Inputs, "work"));
 												Name_Num : constant Natural := Natural'Value(Web.Element(Inputs, "name"));
 												Request : constant Villages.Requested_Role := Villages.Requested_Role'Value(Web.Element(Inputs, "request"));
-												Cast : Casts.Cast_Collection;
+												Cast : Casts.Cast_Collection := Casts.Load;
 											begin
-												Casts.Load (Cast);
 												Villages.Exclude_Taken (Cast, Village);
 												declare
 													Person_Template : Casts.Person renames Cast.People.Constant_Reference (Name_Num).Element.all;

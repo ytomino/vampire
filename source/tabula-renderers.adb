@@ -2348,7 +2348,7 @@ package body Tabula.Renderers is
 						Web.Producers.Produce(Output, Template, "over");
 					else
 						declare
-							Cast : Casts.Cast_Collection;
+							Cast : Casts.Cast_Collection := Casts.Load;
 							procedure Handle_Entry(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String; Template : in Web.Producers.Template) is
 							begin
@@ -2359,7 +2359,7 @@ package body Tabula.Renderers is
 										declare
 											Item : Casts.Work renames Cast.Works.Constant_Reference(Position).Element.all;
 										begin
-											if Item.Name /= "" then
+											if not Casts.Is_Empty (Item) then
 												Write(Output, "<option value=""");
 												Write(Output, To_String(Position));
 												Write(Output, """>");
@@ -2387,7 +2387,7 @@ package body Tabula.Renderers is
 											declare
 												Item : Casts.Person renames Cast.People.Constant_Reference(Position).Element.all;
 											begin
-												if Item.Name /= "" then
+												if not Casts.Is_Empty (Item) then
 													Write(Output, "<option value=""");
 													Write(Output, To_String(Position));
 													Write(Output, """>");
@@ -2415,7 +2415,6 @@ package body Tabula.Renderers is
 								end if;
 							end Handle_Entry;
 						begin
-							Casts.Load(Cast);
 							Villages.Exclude_Taken(Cast, Village);
 							Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
 						end;

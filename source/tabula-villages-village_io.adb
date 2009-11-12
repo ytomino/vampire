@@ -1,7 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
-with Tabula.Casts.Cast_IO;
 package body Tabula.Villages.Village_IO is
 	use Tabula.Villages.People;
 	use Tabula.Villages.Person_Records;

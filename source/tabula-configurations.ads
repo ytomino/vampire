@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package Tabula.Configurations is
-
+	pragma Preelaborate;
+	
 	Temporary_Directory : constant String := "temp";
 	
 	Lock_Name : aliased constant String := "temp/lock-vampire";

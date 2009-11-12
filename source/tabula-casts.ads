@@ -14,12 +14,7 @@ package Tabula.Casts is
 		Group : Integer;
 	end record;
 	
-	Default_Person : constant Person := (
-		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Work => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Image => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Sex => Casts.Male,
-		Group => 0);
+	function Is_Empty (Item : Person) return Boolean;
 	
 	package People is new Ada.Containers.Vectors (Natural, Person);
 	
@@ -29,10 +24,7 @@ package Tabula.Casts is
 		Nominated : Boolean;
 	end record;
 	
-	Default_Work : constant Work := (
-		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
-		Sex => Neutral,
-		Nominated => False);
+	function Is_Empty (Item : Work) return Boolean;
 	
 	package Works is new Ada.Containers.Vectors (Natural, Work);
 	
