@@ -233,7 +233,7 @@ package body Tabula.Renderers.Rule is
 		Object : in Renderer'Class;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in System.Address; -- Web.Producers.Template;
-		Village_Id : in Villages.Lists.Village_Id;
+		Village_Id : in Villages.Village_Id;
 		Village : in Vampires.Villages.Village_Type; 
 		Player : in Boolean;
 		User_Id : in String;

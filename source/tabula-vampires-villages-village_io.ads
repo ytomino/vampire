@@ -3,9 +3,6 @@ with DYAYaml;
 with Tabula.Casts.Cast_IO;
 package Tabula.Vampires.Villages.Village_IO is
 	
-	package Village_State_IO is new DYAYaml.IO_Enumeration(Tabula.Villages.Village_State);
-	package Village_Time_IO is new DYAYaml.IO_Enumeration(Tabula.Villages.Village_Time);
-	
 	Default_Person : constant Person_Type := (
 		Casts.Cast_IO.Default_Person with
 		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 

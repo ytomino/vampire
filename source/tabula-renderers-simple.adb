@@ -23,14 +23,14 @@ package body Tabula.Renderers.Simple is
 	
 	overriding function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id
+		Query_Strings : Web.Query_Strings) return Villages.Village_Id
 	is
 		S : String renames Web.Element(Query_Strings, "v");
 	begin
-		if S'Length = Villages.Lists.Village_Id'Length then
+		if S'Length = Villages.Village_Id'Length then
 			return S;
 		else
-			return Villages.Lists.Invalid_Village_Id;
+			return Villages.Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 
@@ -169,7 +169,7 @@ package body Tabula.Renderers.Simple is
 	procedure Register_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
 		New_User_Id : String;
 		New_User_Password : String)
 	is
@@ -196,7 +196,7 @@ package body Tabula.Renderers.Simple is
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id; 
+		Village_Id : Villages.Village_Id; 
 		Village : Vampires.Villages.Village_Type; 
 		Day : Natural;
 		First, Last : Integer := -1;
@@ -213,7 +213,7 @@ package body Tabula.Renderers.Simple is
 	procedure Preview_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type; 
 		Message : Vampires.Villages.Message;
 		User_Id : String;
@@ -229,7 +229,7 @@ package body Tabula.Renderers.Simple is
 	procedure Target_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type;
 		Player : Natural;
 		Target : Natural;
@@ -258,7 +258,7 @@ package body Tabula.Renderers.Simple is
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -301,7 +301,7 @@ package body Tabula.Renderers.Simple is
 		if User_Page then
 			Write(Output, "&u=");
 			Write(Output, User_Id);
-		elsif Village_Id /= Villages.Lists.Invalid_Village_Id then
+		elsif Village_Id /= Villages.Invalid_Village_Id then
 			Write(Output, "&v=");
 			Write(Output, Village_Id);
 			if Day >= 0 then

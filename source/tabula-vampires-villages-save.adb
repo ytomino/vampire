@@ -5,7 +5,7 @@ with Tabula.Configurations;
 with Tabula.File_IO;
 with Tabula.Vampires.Villages.Village_IO;
 procedure Tabula.Vampires.Villages.Save (
-	Id : Tabula.Villages.Lists.Village_Id;
+	Id : Tabula.Villages.Village_Id;
 	Village : in out Villages.Village_Type)
 is
 	File_Name : String renames Ada.Directories.Compose(Tabula.Configurations.Villages_Data_Directory, Id);

@@ -9,7 +9,7 @@ is
 		if Tag = "message" then
 			Web.Write_In_HTML (Output, Object.HTML_Version, Message);
 		elsif Tag = "uri" then
-			Link(Object, Output, Village_Id => Villages.Lists.Invalid_Village_Id,
+			Link(Object, Output, Village_Id => Villages.Invalid_Village_Id,
 				User_Id => "", User_Password => "");
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";

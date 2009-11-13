@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
+with Tabula.Villages.Village_IO;
 package body Tabula.Vampires.Villages.Village_IO is
 	use People;
 	use Person_Records;
@@ -83,13 +84,13 @@ package body Tabula.Vampires.Villages.Village_IO is
 	procedure IO(Serializer: in out DYAYaml.Serializer; Village: in out Village_Type; Info_Only : Boolean := False) is
 		use DYAYaml;
 		use Tabula.Calendar.Time_IO;
-		use Village_State_IO;
+		use Tabula.Villages.Village_IO.Village_State_IO;
+		use Tabula.Villages.Village_IO.Village_Time_IO;
 		use Attack_IO;
 		use Servant_Knowing_IO;
 		use Person_Role_IO;
 		use Monster_Side_IO;
 		use Teaming_IO;
-		use Village_Time_IO;
 		use Role_Appearance_IO;
 		use Hunter_Silver_Bullet_IO;
 		use Unfortunate_IO;

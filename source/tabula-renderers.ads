@@ -36,7 +36,7 @@ package Tabula.Renderers is
 	
 	function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id;
+		Query_Strings : Web.Query_Strings) return Villages.Village_Id;
 	
 	procedure Get_Day(
 		Object : in Renderer; 
@@ -99,7 +99,7 @@ package Tabula.Renderers is
 	procedure Register_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
 		New_User_Id : String;
 		New_User_Password : String);
 	
@@ -114,7 +114,7 @@ package Tabula.Renderers is
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id; 
+		Village_Id : Villages.Village_Id; 
 		Village : Vampires.Villages.Village_Type; 
 		Day : Natural;
 		First, Last : Integer := -1;
@@ -124,7 +124,7 @@ package Tabula.Renderers is
 	procedure Preview_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type; 
 		Message : Vampires.Villages.Message;
 		User_Id : String;
@@ -134,7 +134,7 @@ package Tabula.Renderers is
 	procedure Target_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type;
 		Player : Natural;
 		Target : Natural;
@@ -164,7 +164,7 @@ private
 	procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;

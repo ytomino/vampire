@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Tabula.Villages.Lists;
+with Tabula.Villages;
 procedure Tabula.Vampires.Villages.Save (
-	Id : Tabula.Villages.Lists.Village_Id;
+	Id : Tabula.Villages.Village_Id;
 	Village : in out Villages.Village_Type);

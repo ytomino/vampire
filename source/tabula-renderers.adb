@@ -259,7 +259,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
 		User_Id : in String;
 		User_Password : in String) is
 	begin
@@ -275,7 +275,7 @@ package body Tabula.Renderers is
 			Link(Renderer'Class(Object), Output, Village_Id => Village_Id,
 				User_Id => User_Id, User_Password => User_Password);
 		elsif Tag = "villageid" then
-			if Village_Id = Villages.Lists.Invalid_Village_Id then
+			if Village_Id = Villages.Invalid_Village_Id then
 				Write(Output, """""");
 			else
 				Write(Output, '"');
@@ -290,7 +290,7 @@ package body Tabula.Renderers is
 					Handle_Users(Output, Tag, Template, Object, Village_Id, User_Id, User_Password);
 				end Handle;
 			begin
-				if Village_Id /= Villages.Lists.Invalid_Village_Id then
+				if Village_Id /= Villages.Invalid_Village_Id then
 					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
 			end;
@@ -304,7 +304,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Lists.Village_Id;
+		Village_Id : in Villages.Village_Id;
 		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
 		User_Id : in String;
@@ -328,7 +328,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Lists.Village_Id;
+		Village_Id : in Villages.Village_Id;
 		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
 		Message : in Vampires.Villages.Message;
@@ -818,14 +818,14 @@ package body Tabula.Renderers is
 	
 	function Get_Village_Id(
 		Object : Renderer;
-		Query_Strings : Web.Query_Strings) return Villages.Lists.Village_Id
+		Query_Strings : Web.Query_Strings) return Villages.Village_Id
 	is
 		S : String renames Web.Element(Query_Strings, "village");
 	begin
-		if S'Length = Villages.Lists.Village_Id'Length then
+		if S'Length = Villages.Village_Id'Length then
 			return S;
 		else
-			return Villages.Lists.Invalid_Village_Id;
+			return Villages.Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 	
@@ -984,7 +984,7 @@ package body Tabula.Renderers is
 	procedure Register_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
 		New_User_Id : String;
 		New_User_Password : String)
 	is
@@ -1111,7 +1111,7 @@ package body Tabula.Renderers is
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type;
 		Day : Natural;
 		First, Last : Integer := -1;
@@ -2478,7 +2478,7 @@ package body Tabula.Renderers is
 	procedure Preview_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type;
 		Message : Vampires.Villages.Message;
 		User_Id : String;
@@ -2523,7 +2523,7 @@ package body Tabula.Renderers is
 	procedure Target_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Village : Vampires.Villages.Village_Type;
 		Player : Natural;
 		Target : Natural;
@@ -2648,7 +2648,7 @@ package body Tabula.Renderers is
 	procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -2670,7 +2670,7 @@ package body Tabula.Renderers is
 			Write(Output, "-0.html");
 		else
 			Write(Output, '?');
-			if Village_Id /= Villages.Lists.Invalid_Village_Id then
+			if Village_Id /= Villages.Invalid_Village_Id then
 				Write(Output, "village=");
 				Write(Output, Village_Id);
 				if Day >= 0 then

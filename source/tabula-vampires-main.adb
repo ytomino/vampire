@@ -13,12 +13,13 @@ with Tabula.Renderers.Error_Page;
 with Tabula.Renderers.Message_Page;
 with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
+with Tabula.Renderers.Log;
 with Tabula.Users.Managing;
 with Tabula.Casts.Load;
 with Tabula.Vampires.Villages.Advance;
 with Tabula.Vampires.Villages.Load;
 with Tabula.Vampires.Villages.Save;
-with Tabula.Villages.Lists.Managing;
+with Tabula.Villages.Lists;
 procedure Tabula.Vampires.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
@@ -95,7 +96,7 @@ begin
 		Renderer : Renderers.Renderer'Class renames Get_Renderer(Query_Strings);
 		User_Id : String renames Renderers.Get_User_Id(Renderer, Query_Strings => Query_Strings, Cookie => Cookie);
 		User_Password : String renames Renderers.Get_User_Password(Renderer, Query_Strings => Query_Strings, Cookie => Cookie);
-		Village_Id : Tabula.Villages.Lists.Village_Id renames Renderers.Get_Village_Id(Renderer, Query_Strings);
+		Village_Id : Tabula.Villages.Village_Id renames Renderers.Get_Village_Id(Renderer, Query_Strings);
 		Cmd : String renames Web.Element (Inputs, "cmd");
 		procedure Render_Reload_Page is
 		begin
@@ -238,7 +239,10 @@ begin
 					Result => User_State, User_Info => User_Info);
 				if User_State = Users.Managing.Valid then
 					if User_Id /= Users.Administrator
-						and then Tabula.Villages.Lists.Created(User_Id, Tabula.Villages.Lists.Managing.Village_List, Tabula.Villages.Lists.Invalid_Village_Id)
+						and then Tabula.Villages.Lists.Created(
+							User_Id,
+							Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
+							Tabula.Villages.Invalid_Village_Id)
 					then
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -246,7 +250,7 @@ begin
 						Renderer.Message_Page(Output, Message => "同時に村をふたつ作成することはできません。",
 							User_Id => User_Id, User_Password => User_Password);
 					elsif Cmd = "news" and then (User_Info.Disallow_New_Village or else (
-						Tabula.Villages.Lists.Managing.Short_Term_Village_Blocking
+						Tabula.Villages.Lists.Short_Term_Village_Blocking
 						and then User_Id /= Users.Administrator
 						and then User_ID /= "she")) -- ハードコーディングですよ酷いコードですね
 					then
@@ -262,7 +266,7 @@ begin
 							Day_Duration := Tabula.Default_Long_Day_Duration;
 						end if;
 						declare
-							New_Village_Id : String renames Tabula.Villages.Lists.Managing.New_Village_Id;
+							New_Village_Id : String renames Tabula.Villages.Lists.New_Village_Id;
 							Village_Name : String renames Web.Element (Inputs, "name");
 							Village : Villages.Village_Type := (
 								Name => +Village_Name,
@@ -305,7 +309,10 @@ begin
 									Renderer.Message_Page(Output,
 										Message => "新たな村「" & Village_Name & "」を作成しました。",
 										User_Id => User_Id, User_Password => User_Password);
-									Tabula.Villages.Lists.Managing.Refresh_Village_List;
+									Tabula.Villages.Lists.Update_Village_List (
+										Remake_All => False,
+										Load_Info => Renderers.Log.Load_Info'Access,
+										Create_Log => Renderers.Log.Create_Log'Access);
 									Users.Managing.Update(Id => User_Id,
 										Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
 										User_Info => User_Info);
@@ -337,7 +344,10 @@ begin
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
 				if User_State = Users.Managing.Valid and then User_Id = Tabula.Users.Administrator then
-					Tabula.Villages.Lists.Managing.Clear_Village_List;
+					Tabula.Villages.Lists.Update_Village_List (
+						Remake_All => True,
+						Load_Info => Renderers.Log.Load_Info'Access,
+						Create_Log => Renderers.Log.Create_Log'Access);
 					Render_Reload_Page;
 				else
 					Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -346,7 +356,7 @@ begin
 					Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 				end if;
 			end;
-		elsif Village_Id = Tabula.Villages.Lists.Invalid_Village_Id then
+		elsif Village_Id = Tabula.Villages.Invalid_Village_Id then
 			if Cmd = "" then
 				if Post then
 					Render_Reload_Page;
@@ -363,7 +373,7 @@ begin
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.User_Page(Output,
-								Tabula.Villages.Lists.Managing.Village_List,
+								Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
 								User_Id => User_Id,
 								User_Password => User_Password,
 								User_Info => User_Info);
@@ -379,7 +389,7 @@ begin
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Index_Page(Output,
-						Tabula.Villages.Lists.Managing.Village_List,
+						Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
 						Users.Managing.Muramura_Count(Now),
 						User_Id => User_Id,
 						User_Password => User_Password);
@@ -403,7 +413,7 @@ begin
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Error_Page(Output, "パスワードが不正です。");
-				elsif not Tabula.Villages.Lists.Managing.Exists(Village_Id) then
+				elsif not Tabula.Villages.Lists.Exists (Village_Id) then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
@@ -427,7 +437,10 @@ begin
 										Villages.Save(Village_Id, Village);
 									end if;
 									if List_Changed then
-										Tabula.Villages.Lists.Managing.Refresh_Village_List;
+										Tabula.Villages.Lists.Update_Village_List (
+											Remake_All => False,
+											Load_Info => Renderers.Log.Load_Info'Access,
+											Create_Log => Renderers.Log.Create_Log'Access);
 									end if;
 								end;
 								-- 村レンダリング
@@ -467,7 +480,8 @@ begin
 									Renderer.Error_Page(Output, "正常にログオンしてください。");
 								elsif Cmd = "join" then
 									declare
-										Village_List : Tabula.Villages.Lists.Village_Lists.Vector renames Tabula.Villages.Lists.Managing.Village_List;
+										Village_List : Tabula.Villages.Lists.Village_Lists.Vector
+											renames Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access);
 									begin
 										if Player >= 0 then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -556,7 +570,10 @@ begin
 																	Records => To_Vector (Villages.Default_Person_Record, Length => 1)));
 																Add(Village, Villages.Join, Subject => Village.People.Last);
 																Villages.Save(Village_Id, Village);
-																Tabula.Villages.Lists.Managing.Refresh_Village_List;
+																Tabula.Villages.Lists.Update_Village_List (
+																	Remake_All => False,
+																	Load_Info => Renderers.Log.Load_Info'Access,
+																	Create_Log => Renderers.Log.Create_Log'Access);
 																Web.Header_Content_Type (Output, Web.Text_HTML);
 																Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 																Web.Header_Break (Output);
@@ -601,7 +618,10 @@ begin
 										begin
 											Villages.Escape(Village, Target, Now);
 											Villages.Save(Village_Id, Village);
-											Tabula.Villages.Lists.Managing.Refresh_Village_List;
+											Tabula.Villages.Lists.Update_Village_List (
+												Remake_All => False,
+												Load_Info => Renderers.Log.Load_Info'Access,
+												Create_Log => Renderers.Log.Create_Log'Access);
 											Web.Header_Content_Type (Output, Web.Text_HTML);
 											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 											Web.Header_Break (Output);
@@ -637,7 +657,10 @@ begin
 													Changed => Changed, List_Changed => List_Changed);
 												Villages.Save(Village_Id, Village);
 												if List_Changed then
-													Tabula.Villages.Lists.Managing.Refresh_Village_List;
+													Tabula.Villages.Lists.Update_Village_List (
+														Remake_All => False,
+														Load_Info => Renderers.Log.Load_Info'Access,
+														Create_Log => Renderers.Log.Create_Log'Access);
 												end if;
 											end;
 										end if;
@@ -678,7 +701,10 @@ begin
 											if OK then
 												Villages.Escape(Village, Player, Now);
 												Villages.Save(Village_Id, Village);
-												Tabula.Villages.Lists.Managing.Refresh_Village_List;
+												Tabula.Villages.Lists.Update_Village_List (
+													Remake_All => False,
+													Load_Info => Renderers.Log.Load_Info'Access,
+													Create_Log => Renderers.Log.Create_Log'Access);
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);

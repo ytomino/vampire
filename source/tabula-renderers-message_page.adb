@@ -2,7 +2,7 @@ with Ada.Strings.Unbounded;
 procedure Tabula.Renderers.Message_Page(
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Village_Id : in Villages.Lists.Village_Id := Villages.Lists.Invalid_Village_Id;
+	Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
 	Village : access Vampires.Villages.Village_Type := null;
 	Message : in String;
 	User_Id : in String;
@@ -17,7 +17,7 @@ is
 			Link(Object, Output, Village_Id => Village_Id,
 				User_Id => User_Id, User_Password => User_Password);
 		elsif Tag = "villageid" then
-			if Village_Id = Villages.Lists.Invalid_Village_Id then
+			if Village_Id = Villages.Invalid_Village_Id then
 				Write(Output, """""");
 			else
 				Write(Output, '"');
@@ -32,7 +32,7 @@ is
 				Write(Output, " - ");
 			end if;
 		elsif Tag = "invillage" then
-			if Village /= null or else Village_Id /= Villages.Lists.Invalid_Village_Id then
+			if Village /= null or else Village_Id /= Villages.Invalid_Village_Id then
 				Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
 			end if;
 		elsif Tag = "id" then

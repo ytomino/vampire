@@ -5,7 +5,7 @@ with Tabula.Configurations;
 with Tabula.File_IO;
 with Tabula.Vampires.Villages.Village_IO;
 procedure Tabula.Vampires.Villages.Load (
-	Id : in Tabula.Villages.Lists.Village_Id;
+	Id : in Tabula.Villages.Village_Id;
 	Village : in out Village_Type;
 	Info_Only : in Boolean := False)
 is
