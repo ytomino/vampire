@@ -333,12 +333,15 @@ table.summary td.name {
 	padding-right:0.5em;
 }
 
+td.count {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	text-align: right;
+}
+
 table.summary td.count {
 	border-left:1px solid white;
 	border-right:1px solid white;
-	padding-left:0.5em;
-	padding-right:0.5em;
-	text-align:right;
 }
 
 table.summary td.checkall {
