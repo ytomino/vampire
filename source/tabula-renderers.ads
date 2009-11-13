@@ -17,6 +17,7 @@ package Tabula.Renderers is
 		Background_Image_File_Name : File_Name;
 		Template_Index_File_Name : not null access constant String;
 		Template_List_File_Name : not null access constant String;
+		Template_Users_File_Name : not null access constant String;
 		Template_Register_File_Name : not null access constant String;
 		Template_User_File_Name : not null access constant String;
 		Template_Village_File_Name : not null access constant String;

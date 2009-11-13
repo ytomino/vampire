@@ -1,3 +1,4 @@
+-- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams.Stream_IO;
 package body Tabula.File_IO is
 

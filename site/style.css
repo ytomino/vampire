@@ -390,18 +390,24 @@ table.readmepersons td.desc {
 	text-align:center;
 }
 
-table.villagelist td, table.daylist td, table.readmepersons td {
+table.villagelist td,
+table.daylist td,
+table.readmepersons td,
+table.users td {
 	border-left:1px dashed;
 	border-bottom:1px dashed;
 	padding-left:4px;
 	padding-right:4px;
 }
 
-table.villagelist td a, table.daylist td a, table.readmepersons td a {
+table.villagelist td a,
+table.daylist td a,
+table.readmepersons td a {
 	text-decoration:none;
 }
 
-table.villagelist td.people, table.villagelist td.day {
+table.villagelist td.people,
+table.villagelist td.day {
 	white-space: nowrap;
 }
 

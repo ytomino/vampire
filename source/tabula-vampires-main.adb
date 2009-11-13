@@ -11,10 +11,11 @@ with Tabula.Calendar;
 with Tabula.Configurations.Templates;
 with Tabula.Renderers.Error_Page;
 with Tabula.Renderers.Message_Page;
+with Tabula.Renderers.Users_Page;
 with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
 with Tabula.Renderers.Log;
-with Tabula.Users.Managing;
+with Tabula.Users.Lists;
 with Tabula.Casts.Load;
 with Tabula.Vampires.Villages.Advance;
 with Tabula.Vampires.Villages.Load;
@@ -25,7 +26,7 @@ procedure Tabula.Vampires.Main is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Tabula.Casts.Person_Sex;
 	use type Tabula.Casts.Work;
-	use type Tabula.Users.Managing.Check_Result;
+	use type Tabula.Users.Lists.Check_Result;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -118,21 +119,21 @@ begin
 			declare
 				New_User_Id : String renames Web.Element (Inputs, "id");
 				New_User_Password : String renames Web.Element (Inputs, "password");
-				User_State : Users.Managing.Check_Result;
+				User_State : Users.Lists.Check_Result;
 				User_Info : Users.User_Info;
 			begin
-				Users.Managing.Check(Id => New_User_Id, Password => New_User_Password,
+				Users.Lists.Check(Id => New_User_Id, Password => New_User_Password,
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
 				case User_State is
-					when Users.Managing.Log_Off =>
+					when Users.Lists.Log_Off =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "IDを入力してください。",
 							User_Id => "", User_Password => "");
-					when Users.Managing.Unknown =>
+					when Users.Lists.Unknown =>
 						if Users.Valid_Id_String(New_User_Id) then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -148,14 +149,14 @@ begin
 								Village_Id => Village_Id, Message => "変な文字は使わないでください。",
 								User_Id => "", User_Password => "");
 						end if;
-					when Users.Managing.Invalid =>
+					when Users.Lists.Invalid =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "パスワードが異なります。",
 							User_Id => "", User_Password => "");
-					when Users.Managing.Valid =>
+					when Users.Lists.Valid =>
 						Renderer.Set_User(Cookie,
 							New_User_Id => New_User_Id, New_User_Password => New_User_Password);
 						Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -164,21 +165,21 @@ begin
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "ログオンしました。",
 							User_Id => New_User_Id, User_Password => New_User_Password);
-						Users.Managing.Update(Id => New_User_Id,
+						Users.Lists.Update(Id => New_User_Id,
 							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
 							User_Info => User_Info);
 				end case;
 			end;
 		elsif Cmd = "logoff" then
 			declare
-				User_State : Users.Managing.Check_Result;
+				User_State : Users.Lists.Check_Result;
 				User_Info : Users.User_Info;
 			begin
-				Users.Managing.Check(Id => User_Id, Password => User_Password,
+				Users.Lists.Check(Id => User_Id, Password => User_Password,
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Managing.Valid then
-					Users.Managing.Update(Id => User_Id,
+				if User_State = Users.Lists.Valid then
+					Users.Lists.Update(Id => User_Id,
 						Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
 						User_Info => User_Info);
 				end if;
@@ -206,7 +207,7 @@ begin
 						Village_Id => Village_Id, Message => "再入力されたパスワードが異なります。",
 						User_Id => "", User_Password => "");
 				else
-					Users.Managing.New_User(Id => New_User_Id, Password => New_User_Password,
+					Users.Lists.New_User(Id => New_User_Id, Password => New_User_Password,
 						Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 						Result => Registered);
 					if Registered then
@@ -230,14 +231,14 @@ begin
 			end;
 		elsif Cmd = "newl" or else Cmd = "news" then -- 村作成
 			declare
-				User_State : Users.Managing.Check_Result;
+				User_State : Users.Lists.Check_Result;
 				User_Info : Users.User_Info;
 				Day_Duration : Duration;
 			begin
-				Users.Managing.Check(Id => User_Id, Password => User_Password,
+				Users.Lists.Check(Id => User_Id, Password => User_Password,
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Managing.Valid then
+				if User_State = Users.Lists.Valid then
 					if User_Id /= Users.Administrator
 						and then Tabula.Villages.Lists.Created(
 							User_Id,
@@ -313,7 +314,7 @@ begin
 										Remake_All => False,
 										Load_Info => Renderers.Log.Load_Info'Access,
 										Create_Log => Renderers.Log.Create_Log'Access);
-									Users.Managing.Update(Id => User_Id,
+									Users.Lists.Update(Id => User_Id,
 										Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
 										User_Info => User_Info);
 								exception
@@ -337,13 +338,13 @@ begin
 			end;
 		elsif Cmd = "remakelog" then
 			declare
-				User_State : Users.Managing.Check_Result;
+				User_State : Users.Lists.Check_Result;
 				User_Info : Users.User_Info;
 			begin
-				Users.Managing.Check(Id => User_Id, Password => User_Password,
+				Users.Lists.Check(Id => User_Id, Password => User_Password,
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Managing.Valid and then User_Id = Tabula.Users.Administrator then
+				if User_State = Users.Lists.Valid and then User_Id = Tabula.Users.Administrator then
 					Tabula.Villages.Lists.Update_Village_List (
 						Remake_All => True,
 						Load_Info => Renderers.Log.Load_Info'Access,
@@ -362,13 +363,13 @@ begin
 					Render_Reload_Page;
 				elsif Renderer.Is_User_Page(Query_Strings => Query_Strings, Cookie => Cookie) then
 					declare
-						User_State : Users.Managing.Check_Result;
+						User_State : Users.Lists.Check_Result;
 						User_Info : Users.User_Info;
 					begin
-						Users.Managing.Check(Id => User_Id, Password => User_Password,
+						Users.Lists.Check(Id => User_Id, Password => User_Password,
 							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 							Result => User_State, User_Info => User_Info);
-						if User_State = Users.Managing.Valid and then User_Id /= Users.Administrator then
+						if User_State = Users.Lists.Valid and then User_Id /= Users.Administrator then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 							Web.Header_Break (Output);
@@ -384,13 +385,22 @@ begin
 							Renderer.Error_Page(Output, "正常にログオンしないとユーザーページは表示できません。");
 						end if;
 					end;
+				elsif Web.Element (Query_Strings, "users") = "all" then
+					Web.Header_Content_Type (Output, Web.Text_HTML);
+					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Break (Output);
+					Renderers.Users_Page (Renderer, Output,
+						Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
+						User_List => Users.Lists.User_List,
+						User_Id => User_Id,
+						User_Password => User_Password);
 				else
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Index_Page(Output,
 						Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
-						Users.Managing.Muramura_Count(Now),
+						Users.Lists.Muramura_Count(Now),
 						User_Id => User_Id,
 						User_Password => User_Password);
 				end if;
@@ -402,13 +412,13 @@ begin
 			end if;
 		else
 			declare
-				User_State : Users.Managing.Check_Result;
+				User_State : Users.Lists.Check_Result;
 				User_Info : Users.User_Info;
 			begin
-				Users.Managing.Check(Id => User_Id, Password => User_Password,
+				Users.Lists.Check(Id => User_Id, Password => User_Password,
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
 					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Managing.Invalid then
+				if User_State = Users.Lists.Invalid then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
@@ -473,7 +483,7 @@ begin
 								Player : Integer;
 							begin
 								Player := Villages.Joined(Village, User_Id);
-								if User_State /= Users.Managing.Valid then
+								if User_State /= Users.Lists.Valid then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 									Web.Header_Break (Output);

@@ -70,16 +70,9 @@ package body Tabula.Villages.Lists is
 			begin
 				if not Long_Only or else V.Day_Duration >= 24 * 60 * 60.0 then
 					if V.State <= Opened then
-						declare
-							J : String_Lists.Cursor := V.People.First;
-						begin
-							while String_Lists.Has_Element (J) loop
-								if String_Lists.Element (J) = User_Id then
-									return True;
-								end if;
-								String_Lists.Next(J);
-							end loop;
-						end;
+						if V.People.Contains (User_Id) then
+							return True;
+						end if;
 					end if;
 				end if;
 			end;
@@ -105,6 +98,30 @@ package body Tabula.Villages.Lists is
 		end loop;
 		return False;
 	end Created;
+	
+	function Closed_Only_Joined_Count (
+		User_Id : String;
+		List : Village_Lists.Vector;
+		Escaped : Boolean) return Natural
+	is
+		Result : Natural := 0;
+	begin
+		for I in List.First_Index .. List.Last_Index loop
+			declare
+				V : Village_List_Item renames List.Constant_Reference(I).Element.all;
+			begin
+				case V.State is
+					when Prologue | Opened =>
+						null;
+					when Epilogue | Closed =>
+						if V.People.Contains (User_Id) then
+							Result := Result + 1;
+						end if;
+				end case;
+			end;
+		end loop;
+		return Result;
+	end Closed_Only_Joined_Count;
 	
 	procedure Make_Log_Index (List : not null access constant Lists.Village_Lists.Vector) is
 		Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Templates.Configuration);

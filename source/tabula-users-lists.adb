@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Containers.Indefinite_Ordered_Maps;
 with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
@@ -7,7 +6,7 @@ with Ada.Strings.Unbounded;
 with Tabula.Configurations;
 with Tabula.Users.Load;
 with Tabula.Users.Save;
-package body Tabula.Users.Managing is
+package body Tabula.Users.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Ada.Calendar.Time;
 	
@@ -52,7 +51,7 @@ package body Tabula.Users.Managing is
 		Now : in Ada.Calendar.Time;
 		Result : out Boolean) is
 	begin
-		if Users.Managing.Exists(Id) then
+		if Exists (Id) then
 			Result := False;
 		else
 			declare
@@ -116,7 +115,6 @@ package body Tabula.Users.Managing is
 	end "<";
 	
 	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps(User_Log_Item, Ada.Calendar.Time);
-	use Users_Log;
 	Log : Users_Log.Map;
 	Log_Loaded : Boolean := False;
 
@@ -146,7 +144,7 @@ package body Tabula.Users.Managing is
 		Item : User_Log_Item := (+User_Id, +Remote_Addr, +Remote_Host);
 	begin
 		Load;
-		Include(Log, Item, Time);
+		Users_Log.Include(Log, Item, Time);
 		declare
 			File : Ada.Streams.Stream_IO.File_Type;
 		begin
@@ -164,22 +162,51 @@ package body Tabula.Users.Managing is
 
 	function Muramura_Count(Time : Ada.Calendar.Time) return Natural is
 		Muramura_Set : Users_Log.Map;
-		procedure Process(Position : Cursor) is
+		procedure Process(Position : Users_Log.Cursor) is
 		begin
-			if Time - Element(Position) <= Muramura_Duration then
+			if Time - Users_Log.Element(Position) <= Muramura_Duration then
 				declare
-					Item : User_Log_Item := (Key(Position).Id, 
+					Item : User_Log_Item := (Users_Log.Key(Position).Id, 
 						Ada.Strings.Unbounded.Null_Unbounded_String,
 						Ada.Strings.Unbounded.Null_Unbounded_String);
 				begin
-					Include(Muramura_Set, Item, Time);
+					Users_Log.Include(Muramura_Set, Item, Time);
 				end;
 			end if;
 		end Process;
 	begin
 		Load;
-		Iterate(Log, Process'Access);
-		return Natural(Length(Muramura_Set));
+		Users_Log.Iterate(Log, Process'Access);
+		return Natural(Muramura_Set.Length);
 	end Muramura_Count;
-
-end Tabula.Users.Managing;
+	
+	function User_List return User_Info_Maps.Map is
+		Search : Ada.Directories.Search_Type;
+		File : Ada.Directories.Directory_Entry_Type;
+	begin
+		return Result : User_Info_Maps.Map do
+			Ada.Directories.Start_Search (
+				Search,
+				Configurations.Users_Directory,
+				"*",
+				Filter => (Ada.Directories.Ordinary_File => True, others => False));
+			while Ada.Directories.More_Entries(Search) loop
+				Ada.Directories.Get_Next_Entry(Search, File);
+				declare
+					User_Id : String := Ada.Directories.Simple_Name (File);
+				begin
+					if User_Id (User_Id'First) /= '.' then
+						declare
+							User_Info : Tabula.Users.User_Info;
+						begin
+							Tabula.Users.Load (User_Id, User_Info);
+							User_Info_Maps.Include (Result, User_Id, User_Info);
+						end;
+					end if;
+				end;
+			end loop;
+			Ada.Directories.End_Search(Search);
+		end return;
+	end User_List;
+	
+end Tabula.Users.Lists;

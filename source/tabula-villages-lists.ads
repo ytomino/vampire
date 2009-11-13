@@ -33,6 +33,11 @@ package Tabula.Villages.Lists is
 		List : Village_Lists.Vector;
 		Excluding : Village_Id) return Boolean;
 	
+	function Closed_Only_Joined_Count (
+		User_Id : String;
+		List : Village_Lists.Vector;
+		Escaped : Boolean) return Natural;
+	
 	-- I/O
 	procedure Make_Log_Index (List : not null access constant Village_Lists.Vector);
 	procedure Make_RSS (List : not null access constant Village_Lists.Vector);

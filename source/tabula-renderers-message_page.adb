@@ -1,3 +1,4 @@
+-- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 procedure Tabula.Renderers.Message_Page(
 	Object : in Renderer'Class;
