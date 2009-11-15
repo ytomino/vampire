@@ -84,19 +84,6 @@ package Tabula.Renderers is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		URI : in String);
 	
-	procedure Index_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : in Villages.Lists.Village_Lists.Vector; 
-		Muramura : Natural;
-		User_Id: in String;
-		User_Password : in String);
-	
-	procedure List_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : in Villages.Lists.Village_Lists.Vector);
-	
 	procedure Register_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -153,6 +140,15 @@ private
 	procedure Link_Style_Sheet(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class);
+	
+	procedure Handle_List(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template;
+		Object : in Renderer;
+		Village_List : in Villages.Lists.Village_Lists.Vector;
+		Log_Limits : in Natural;
+		User_Id, User_Password : in String);
 	
 	procedure User_Panel(
 		Object : in Renderer;

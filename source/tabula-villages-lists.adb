@@ -4,6 +4,7 @@ with Ada.Streams.Stream_IO;
 with Web.RSS;
 with Tabula.Configurations;
 with Tabula.Configurations.Templates;
+with Tabula.Renderers.List_Page;
 with Tabula.Renderers.Log;
 package body Tabula.Villages.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
@@ -129,7 +130,7 @@ package body Tabula.Villages.Lists is
 	begin
 		Ada.Streams.Stream_IO.Create (File, Name => Configurations.List_HTML_File_Name);
 		begin
-			Renderer.List_Page(Ada.Streams.Stream_IO.Stream (File), List.all);
+			Renderers.List_Page (Renderer, Ada.Streams.Stream_IO.Stream (File), List.all);
 		exception
 			when others =>
 				Ada.Streams.Stream_IO.Close (File);

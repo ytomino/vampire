@@ -152,20 +152,6 @@ package body Tabula.Renderers.Simple is
 			"</html>");
 	end Refresh_Page;
 	
-	procedure Index_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : in Villages.Lists.Village_Lists.Vector; 
-		Muramura : Natural;
-		User_Id: in String;
-		User_Password : in String)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		Index_Page(Super(Object), Encoder_Stream'Access, Village_List, Muramura, User_Id, User_Password);
-	end Index_Page;
-	
 	procedure Register_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
