@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Calendar;
 with Ada.Streams;
 with Web;
 with Tabula.Vampires.Villages;
@@ -109,26 +110,6 @@ package Tabula.Renderers is
 		User_Id : String;
 		User_Password : String);
 	
-	procedure Preview_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type; 
-		Message : Vampires.Villages.Message;
-		User_Id : String;
-		User_Password : String);
-	
-	-- 医者と探偵の確認用ページ
-	procedure Target_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type;
-		Player : Natural;
-		Target : Natural;
-		User_Id : String;
-		User_Password : String);
-	
 private
 	
 	procedure Produce(
@@ -184,6 +165,32 @@ private
 		State : Villages.Village_State);
 	
 	function HTML_Version(Object : in Renderer) return Web.HTML_Version;
+	
+	function Name (Person : Vampires.Villages.Person_Type) return String;
+	
+	procedure Handle_Villages(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template;
+		Object : in Renderer;
+		Village_Id : in Villages.Village_Id;
+		Village : in Vampires.Villages.Village_Type;
+		Day : in Natural;
+		User_Id : in String;
+		User_Password : in String);
+	
+	procedure Handle_Messages(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template;
+		Object : in Renderer;
+		Village_Id : in Villages.Village_Id;
+		Village : in Vampires.Villages.Village_Type;
+		Day : in Natural;
+		Message : in Vampires.Villages.Message;
+		Time : in Ada.Calendar.Time;
+		User_Id : in String;
+		User_Password : in String);
 	
 	procedure Write(Output : not null access Ada.Streams.Root_Stream_Type'Class; Item : in Character)
 		renames Character'Write;

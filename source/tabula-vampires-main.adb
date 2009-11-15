@@ -12,6 +12,8 @@ with Tabula.Configurations.Templates;
 with Tabula.Renderers.Error_Page;
 with Tabula.Renderers.Index_Page;
 with Tabula.Renderers.Message_Page;
+with Tabula.Renderers.Preview_Page;
+with Tabula.Renderers.Target_Page;
 with Tabula.Renderers.Users_Page;
 with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;

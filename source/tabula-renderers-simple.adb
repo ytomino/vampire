@@ -196,39 +196,6 @@ package body Tabula.Renderers.Simple is
 			Village_Id, Village, Day, First, Last, User_Id, User_Password);
 	end Village_Page;
 	
-	procedure Preview_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type; 
-		Message : Vampires.Villages.Message;
-		User_Id : String;
-		User_Password : String)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		Preview_Page(Super(Object), Encoder_Stream'Access, 
-			Village_Id, Village, Message, User_Id, User_Password);
-	end Preview_Page;
-	
-	procedure Target_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type;
-		Player : Natural;
-		Target : Natural;
-		User_Id : String;
-		User_Password : String)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		Target_Page(Super(Object), Encoder_Stream'Access, 
-			Village_Id, Village, Player, Target, User_Id, User_Password);
-	end Target_Page;
-	
 	overriding procedure Produce(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -240,7 +207,7 @@ package body Tabula.Renderers.Simple is
 	begin
 		Produce(Super(Object), Encoder_Stream'Access, File_Name, Handler);
 	end Produce;
-
+	
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

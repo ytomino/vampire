@@ -79,25 +79,6 @@ package Tabula.Renderers.Simple is
 		User_Id : String;
 		User_Password : String);
 	
-	overriding procedure Preview_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type; 
-		Message : Vampires.Villages.Message;
-		User_Id : String;
-		User_Password : String);
-	
-	overriding procedure Target_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id;
-		Village : Vampires.Villages.Village_Type;
-		Player : Natural;
-		Target : Natural;
-		User_Id : String;
-		User_Password : String);
-	
 private
 	
 	overriding procedure Produce(
