@@ -152,23 +152,6 @@ package body Tabula.Renderers.Simple is
 			"</html>");
 	end Refresh_Page;
 	
-	procedure Village_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id; 
-		Village : Vampires.Villages.Village_Type; 
-		Day : Natural;
-		First, Last : Integer := -1;
-		User_Id : String;
-		User_Password : String)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		Village_Page(Super(Object), Encoder_Stream'Access, 
-			Village_Id, Village, Day, First, Last, User_Id, User_Password);
-	end Village_Page;
-	
 	overriding procedure Produce(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

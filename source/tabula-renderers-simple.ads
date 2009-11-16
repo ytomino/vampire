@@ -54,16 +54,6 @@ package Tabula.Renderers.Simple is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		URI : in String);
 	
-	overriding procedure Village_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id; 
-		Village : Vampires.Villages.Village_Type; 
-		Day : Natural;
-		First, Last : Integer := -1;
-		User_Id : String;
-		User_Password : String);
-	
 private
 	
 	overriding procedure Produce(

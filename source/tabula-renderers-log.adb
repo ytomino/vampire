@@ -3,6 +3,7 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
 with Tabula.Configurations.Templates;
+with Tabula.Renderers.Village_Page;
 with Tabula.String_Lists;
 with Tabula.Vampires.Villages.Load;
 package body Tabula.Renderers.Log is
@@ -40,7 +41,7 @@ package body Tabula.Renderers.Log is
 				Output : Ada.Streams.Stream_IO.File_Type;
 			begin
 				Ada.Streams.Stream_IO.Create(Output, Ada.Streams.Stream_IO.Out_File, Log_File_Name);
-				Renderers.Log.Village_Page(
+				Village_Page (
 					Renderer,
 					Ada.Streams.Stream_IO.Stream(Output),
 					Id,

@@ -17,6 +17,7 @@ with Tabula.Renderers.Register_Page;
 with Tabula.Renderers.Target_Page;
 with Tabula.Renderers.User_Page;
 with Tabula.Renderers.Users_Page;
+with Tabula.Renderers.Village_Page;
 with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
 with Tabula.Renderers.Log;
