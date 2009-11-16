@@ -563,9 +563,15 @@ is
 	
 	Target_Day : Natural;
 	
-	procedure Vote_Form(Player : Integer; Kind : Vampires.Villages.Person_Role; Special: Boolean;
-		Current : Integer; Current_Special : Boolean;
-		Message : String; Button : String)
+	procedure Vote_Form (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Player : Integer;
+		Kind : Vampires.Villages.Person_Role;
+		Special: Boolean;
+		Current : Integer;
+		Current_Special : Boolean;
+		Message : String;
+		Button : String)
 	is
 		Including : Boolean;
 	begin
@@ -655,6 +661,7 @@ is
 		end case;
 		Write(Output, """ />" & Line_Break & "</form>" & Line_Break);
 	end Vote_Form;
+	
 	function Role_Text(Person : Vampires.Villages.Person_Type) return String is
 		Setting : Vampires.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
 	begin
@@ -729,11 +736,17 @@ is
 			end case;
 		end if;
 	end Role_Text;
+	
 	Player_Index : constant Integer := Vampires.Villages.Joined(Village, User_Id);
 	Message_Counts : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages(Village, Day);
 	Tip_Showed : Boolean := False;
+	
 	type Paging_Pos is (Top, Bottom, Tip);
-	procedure Paging(Pos : Paging_Pos) is
+	
+	procedure Paging(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Pos : Paging_Pos)
+	is
 		Speech_Count : constant Natural := Vampires.Villages.Count_Speech(Village, Day);
 		F, L, R : Natural;
 	begin
@@ -803,6 +816,7 @@ is
 			Write(Output, "<a name=""bottom"" href=""#top"">上</a></div>");
 		end if;
 	end Paging;
+	
 	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String; Template : in Web.Producers.Template) is
 	begin
@@ -1008,7 +1022,7 @@ is
 			begin
 				Ada.Numerics.MT19937.Reset(X_Generator, 12);
 				if Object.HTML_Version = Web.HTML then
-					Paging(Top);
+					Paging (Output, Top);
 				end if;
 				for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 					declare
@@ -1445,11 +1459,11 @@ is
 						end;
 					end if;
 					if Object.HTML_Version = Web.HTML then
-						Paging(Village_Page.Tip);
+						Paging (Output, Village_Page.Tip);
 					end if;
 				else
 					if Object.HTML_Version = Web.HTML then
-						Paging(Bottom);
+						Paging (Output, Bottom);
 					end if;
 				end if;
 			end;
@@ -1615,7 +1629,7 @@ is
 											end if;
 										end;
 									else
-										Vote_Form(Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted(Village),
+										Vote_Form (Output, Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted(Village),
 											Current => Person.Records.Constant_Reference(Village.Today).Element.Vote,
 											Current_Special => Person.Records.Constant_Reference(Village.Today).Element.Applied,
 											Message => "誰を処刑に……",
@@ -1634,7 +1648,7 @@ is
 										when Vampires.Villages.Doctor =>
 											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
 												if Village.Today >= 2 then
-													Vote_Form(Player_Index, Vampires.Villages.Doctor, False,
+													Vote_Form (Output, Player_Index, Vampires.Villages.Doctor, False,
 														Person.Records.Constant_Reference(Village.Today).Element.Target, False, "貴重な薬を誰に……", "診察");
 												else
 													Write(Output, "<div>今は他に犠牲者がいないと信じましょう。</div>");
@@ -1644,7 +1658,7 @@ is
 											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
 												for I in Village.People.First_Index .. Village.People.Last_Index loop
 													if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died then
-														Vote_Form(Player_Index, Vampires.Villages.Detective, False,
+														Vote_Form (Output, Player_Index, Vampires.Villages.Detective, False,
 															Person.Records.Constant_Reference(Village.Today).Element.Target, False, "どの被害者を調べますか……", "調査");
 														goto Exit_Detective_Target;
 													end if;
@@ -1657,7 +1671,7 @@ is
 												<<Exit_Detective_Target>> null;
 											end if;
 										when Vampires.Villages.Astronomer =>
-											Vote_Form(Player_Index, Vampires.Villages.Astronomer, False,
+											Vote_Form (Output, Player_Index, Vampires.Villages.Astronomer, False,
 												Person.Records.Constant_Reference(Target_Day).Element.Target, False, "どの家の上空の星が奇麗……", "観測");
 										when Vampires.Villages.Hunter =>
 											declare
@@ -1668,11 +1682,11 @@ is
 														Has_Silver_Bullet := False;
 													end if;
 												end loop;
-												Vote_Form(Player_Index, Vampires.Villages.Hunter, Has_Silver_Bullet,
+												Vote_Form (Output, Player_Index, Vampires.Villages.Hunter, Has_Silver_Bullet,
 													Person.Records.Constant_Reference(Target_Day).Element.Target, Person.Records.Constant_Reference(Target_Day).Element.Special, "誰を守りますか……", "護衛");
 											end;
 										when Vampires.Villages.Vampire_Role =>
-											Vote_Form(Player_Index, Vampires.Villages.Vampire_K, False,
+											Vote_Form (Output, Player_Index, Vampires.Villages.Vampire_K, False,
 												Person.Records.Constant_Reference(Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");
 										when Vampires.Villages.Werewolf | Vampires.Villages.Possessed =>
 											raise Program_Error;
