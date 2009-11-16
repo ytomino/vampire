@@ -10,6 +10,7 @@ with Tabula.Casts;
 with Tabula.Casts.Load;
 with Tabula.Renderers.Rule;
 with Tabula.String_Lists;
+with Tabula.Users;
 package body Tabula.Renderers is
 	use type Ada.Calendar.Time;
 	use type Ada.Containers.Count_Type;
@@ -916,133 +917,6 @@ package body Tabula.Renderers is
 			"<meta http-equiv=""REFRESH"" content=""0;URL=" & URI & """ />" &
 			"<style>body{background-color:black;}</style>");
 	end Refresh_Page;
-	
-	procedure Register_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
-		New_User_Id : String;
-		New_User_Password : String)
-	is
-		procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String; Template : in Web.Producers.Template) is
-		begin
-			if Tag = "id" then
-				Write(Output, New_User_Id);
-			elsif Tag = "newid" then
-				Write(Output, '"');
-				Write(Output, New_User_Id);
-				Write(Output, '"');
-			elsif Tag = "newpassword" then
-				Write(Output, '"');
-				Web.Write_In_Attribute (Output, Renderer'Class(Object).HTML_Version, New_User_Password);
-				Write(Output, '"');
-			else
-				Handle_Users(Output, Tag, Template, Object,
-					Village_Id => Village_Id, User_Id => "", User_Password => "");
-			end if;
-		end Handle;
-		File: Ada.Streams.Stream_IO.File_Type;
-	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
-			Object.Configuration.Template_Register_File_Name.all);
-		begin
-			Web.Producers.Produce(Output,
-				Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
-				Handler => Handle'Access);
-		exception
-			when others =>
-				Ada.Streams.Stream_IO.Close(File);
-				raise;
-		end;
-		Ada.Streams.Stream_IO.Close(File);
-	end Register_Page;
-	
-	procedure User_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : Villages.Lists.Village_Lists.Vector;
-		User_Id : in String;
-		User_Password : in String;
-		User_Info : in Users.User_Info)
-	is
-		Joined : Ada.Strings.Unbounded.Unbounded_String;
-		Created : Ada.Strings.Unbounded.Unbounded_String;
-		procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String; Template : in Web.Producers.Template) is
-		begin
-			if Tag = "userpanel" then
-				User_Panel(Renderer'Class(Object), Output, Template, User_Id, User_Password, False);
-			elsif Tag = "back" then
-				Write(Output, "<a href=");
-				Link(Renderer'Class(Object), Output, User_Id => User_Id, User_Password => User_Password);
-				Write(Output, '>');
-				Web.Producers.Produce(Output, Template);
-				Write(Output, "</a>");
-			elsif Tag = "joined" then
-				if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
-					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-				end if;
-			elsif Tag = "nojoined" then
-				if Joined = Ada.Strings.Unbounded.Null_Unbounded_String then
-					Web.Producers.Produce(Output, Template);
-				end if;
-			elsif Tag = "created" then
-				if Created /= Ada.Strings.Unbounded.Null_Unbounded_String then
-					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-				end if;
-			elsif Tag = "creatable" then
-				if Joined = Ada.Strings.Unbounded.Null_Unbounded_String
-					and then Created = Ada.Strings.Unbounded.Null_Unbounded_String
-				then
-					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-				end if;
-			elsif Tag = "activevillage" then
-				Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Joined);
-			elsif Tag = "createdvillage" then
-				Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Created);
-			else
-				Handle_Users(Output, Tag, Template, Object,
-					User_Id => User_Id, User_Password => User_Password);
-			end if;
-		end Handle;
-		File: Ada.Streams.Stream_IO.File_Type;
-	begin
-		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File,
-			Object.Configuration.Template_User_File_Name.all);
-		begin
-			for I in Village_List.First_Index .. Village_List.Last_Index loop
-				declare
-					V : Villages.Lists.Village_List_Item renames Element(Village_List, I);
-					J : String_Lists.Cursor;
-				begin
-					if V.State < Villages.Epilogue then
-						J := V.People.First;
-						while Has_Element(J) loop
-							if Element(J) = User_Id then
-								if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
-									Append(Joined, "、");
-								end if;
-								Append(Joined, V.Name);
-							end if;
-							Next(J);
-						end loop;
-						if V.By = User_Id then
-							Created := V.Name;
-						end if;
-					end if;
-				end;
-			end loop;
-			Web.Producers.Produce(Output,
-				Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
-				Handler => Handle'Access);
-		exception
-			when others =>
-				Ada.Streams.Stream_IO.Close(File);
-				raise;
-		end;
-		Ada.Streams.Stream_IO.Close(File);
-	end User_Page;
 	
 	procedure Village_Page(
 		Object : in Renderer;

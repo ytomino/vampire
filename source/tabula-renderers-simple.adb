@@ -152,33 +152,6 @@ package body Tabula.Renderers.Simple is
 			"</html>");
 	end Refresh_Page;
 	
-	procedure Register_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
-		New_User_Id : String;
-		New_User_Password : String)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		Register_Page(Super(Object), Encoder_Stream'Access, Village_Id, New_User_Id, New_User_Password);
-	end Register_Page;
-	
-	overriding procedure User_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : Villages.Lists.Village_Lists.Vector;
-		User_Id : in String;
-		User_Password : in String;
-		User_Info : in Users.User_Info)
-	is
-		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
-	begin
-		User_Page(Super(Object), Encoder_Stream'Access, Village_List, User_Id, User_Password, User_Info);
-	end User_Page;
-	
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

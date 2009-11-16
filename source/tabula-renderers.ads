@@ -4,7 +4,6 @@ with Ada.Streams;
 with Web;
 with Tabula.Vampires.Villages;
 with Tabula.Villages.Lists;
-with Tabula.Users;
 private with Web.Producers;
 package Tabula.Renderers is
 	
@@ -85,21 +84,6 @@ package Tabula.Renderers is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		URI : in String);
 	
-	procedure Register_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
-		New_User_Id : String;
-		New_User_Password : String);
-	
-	procedure User_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_List : Villages.Lists.Village_Lists.Vector;
-		User_Id : in String;
-		User_Password : in String;
-		User_Info : in Users.User_Info);
-	
 	procedure Village_Page(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -167,6 +151,15 @@ private
 	function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 	
 	function Name (Person : Vampires.Villages.Person_Type) return String;
+	
+	procedure Handle_Users(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template;
+		Object : in Renderer;
+		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
+		User_Id : in String;
+		User_Password : in String);
 	
 	procedure Handle_Villages(
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
