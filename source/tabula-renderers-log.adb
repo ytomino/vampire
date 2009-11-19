@@ -30,7 +30,7 @@ package body Tabula.Renderers.Log is
 	end Load_Info;
 	
 	procedure Create_Log (Id : Villages.Village_Id) is
-		Village : Vampires.Villages.Village_Type;
+		Village : aliased Vampires.Villages.Village_Type;
 	begin
 		Vampires.Villages.Load (Id, Village, Info_Only => False);
 		for Day in 0 .. Village.Today loop
@@ -45,7 +45,7 @@ package body Tabula.Renderers.Log is
 					Renderer,
 					Ada.Streams.Stream_IO.Stream(Output),
 					Id,
-					Village, 
+					Village'Access, 
 					Day => Day, 
 					User_Id => "",
 					User_Password => "");

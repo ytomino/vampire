@@ -18,7 +18,6 @@ with Tabula.Renderers.Target_Page;
 with Tabula.Renderers.User_Page;
 with Tabula.Renderers.Users_Page;
 with Tabula.Renderers.Village_Page;
-with Tabula.Renderers.Rule;
 with Tabula.Renderers.Simple;
 with Tabula.Renderers.Log;
 with Tabula.Users.Lists;
@@ -284,9 +283,7 @@ begin
 								Dawn => Now,
 								Day_Duration => Day_Duration,
 								Night_Duration => Default_Night_Duration,
-								Victim_Existing      => Villages.Initial_Victim_Existing,
-								Victim_Role          => Villages.Inhabitant,
-								First_Execution      => Villages.Initial_First_Execution,
+								Execution            => Villages.Initial_Execution,
 								Teaming              => Villages.Initial_Teaming,
 								Monster_Side         => Villages.Initial_Monster_Side,
 								Attack               => Villages.Initial_Attack,
@@ -296,6 +293,7 @@ begin
 								Hunter_Silver_Bullet => Villages.Initial_Hunter_Silver_Bullet,
 								Unfortunate          => Villages.Initial_Unfortunate,
 								Appearance => (others => Villages.Random),
+								Dummy_Role => Villages.Inhabitant,
 								People => Empty_Vector,
 								Escaped_People => Empty_Vector,
 								Messages => Villages.Messages.Empty_Vector);
@@ -469,9 +467,11 @@ begin
 									Web.Header_Break (Output);
 									Renderer.Get_Day(Village, Query_Strings, Day);
 									Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
-									Renderer.Village_Page(Output,
+									Renderers.Village_Page(
+										Renderer,
+										Output,
 										Village_Id,
-										Village,
+										Village'Access,
 										Day => Day,
 										First => First,
 										Last => Last,
@@ -1151,7 +1151,14 @@ begin
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "開始以降ルールは変更できません。", User_Id, User_Password);
 									else
-										Renderers.Rule.Change(Village, Inputs);
+										declare
+											procedure Process (Item : in Tabula.Villages.Root_Option_Item'Class) is
+											begin
+												Tabula.Villages.Change (Village'Access, Item, Web.Element (Inputs, Item.Name));
+											end Process;
+										begin
+											Vampires.Villages.Iterate (Village'Access, Process'Access);
+										end;
 										Villages.Save(Village_Id, Village);
 										Render_Reload_Page;
 									end if;

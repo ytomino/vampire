@@ -86,6 +86,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 		use Tabula.Calendar.Time_IO;
 		use Tabula.Villages.Village_IO.Village_State_IO;
 		use Tabula.Villages.Village_IO.Village_Time_IO;
+		use Execution_Mode_IO;
 		use Attack_IO;
 		use Servant_Knowing_IO;
 		use Person_Role_IO;
@@ -104,40 +105,39 @@ package body Tabula.Vampires.Villages.Village_IO is
 				end loop;
 			end Appearance_Callback;
 		begin
-			IO(Serializer, "name", Village.Name);
-			IO(Serializer, "by", Village.By, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
-			IO(Serializer, "state", Village.State);
-			IO(Serializer, "today", Village.Today);
-			IO(Serializer, "time", Village.Time);
-			IO(Serializer, "dawn", Village.Dawn);
-			IO(Serializer, "day-duration", Village.Day_Duration);
-			IO(Serializer, "night-duration", Village.Night_Duration);
-			if Serializer in DYAYaml.Reader or else Village.Victim_Existing then
-				IO(Serializer, "victim-existing", Village.Victim_Existing);
-				IO(Serializer, "victim-role", Village.Victim_Role);
-			end if;
-			IO (Serializer, "first-execution", Village.First_Execution, Default => True);
-			IO(Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
-			IO(Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
-			IO(Serializer, "attack", Village.Attack, Default => Two);
-			IO(Serializer, "servant-knowing", Village.Servant_Knowing, Default => None);
-			IO(Serializer, "daytime-preview", Village.Daytime_Preview, Default => Role_And_Message);
-			IO(Serializer, "doctor-infected", Village.Doctor_Infected, Default => Cure);
-			IO(Serializer, "hunter-silver-bullet", Village.Hunter_Silver_Bullet, Default => Target_And_Self);
-			IO(Serializer, "unfortunate", Village.Unfortunate, Default => None);
+			IO (Serializer, "name", Village.Name);
+			IO (Serializer, "by", Village.By, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
+			IO (Serializer, "state", Village.State);
+			IO (Serializer, "today", Village.Today);
+			IO (Serializer, "time", Village.Time);
+			IO (Serializer, "dawn", Village.Dawn);
+			IO (Serializer, "day-duration", Village.Day_Duration);
+			IO (Serializer, "night-duration", Village.Night_Duration);
+			IO (Serializer, "execution", Village.Execution, Default => From_Second);
+			IO (Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
+			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
+			IO (Serializer, "attack", Village.Attack, Default => Two);
+			IO (Serializer, "servant-knowing", Village.Servant_Knowing, Default => None);
+			IO (Serializer, "daytime-preview", Village.Daytime_Preview, Default => Role_And_Message);
+			IO (Serializer, "doctor-infected", Village.Doctor_Infected, Default => Cure);
+			IO (Serializer, "hunter-silver-bullet", Village.Hunter_Silver_Bullet, Default => Target_And_Self);
+			IO (Serializer, "unfortunate", Village.Unfortunate, Default => None);
 			if Serializer in DYAYaml.Reader or else Village.Appearance /= Role_Appearances'(others => Random) then
-				IO(Serializer, "appearance", Appearance_Callback'Access);
+				IO (Serializer, "appearance", Appearance_Callback'Access);
 			end if;
-			IO(Serializer, "people", Village.People);
+			if Serializer in DYAYaml.Reader or else Village.Execution = Dummy_Killed_And_From_First then
+				IO (Serializer, "dummy-role", Village.Dummy_Role);
+			end if;
+			IO (Serializer, "people", Village.People);
 			if Serializer in DYAYaml.Reader or else not Village.Escaped_People.Is_Empty then
-				IO(Serializer, "escaped-people", Village.Escaped_People);
+				IO (Serializer, "escaped-people", Village.Escaped_People);
 			end if;
 			if not Info_Only then
-				IO(Serializer, "messages", Village.Messages);
+				IO (Serializer, "messages", Village.Messages);
 			end if;
 		end Root_Callback;
 	begin
-		IO(Serializer, Root_Callback'Access);
+		IO (Serializer, Root_Callback'Access);
 	end IO;
 	
 end Tabula.Vampires.Villages.Village_IO;

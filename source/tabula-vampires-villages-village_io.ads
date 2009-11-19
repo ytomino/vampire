@@ -21,6 +21,7 @@ package Tabula.Vampires.Villages.Village_IO is
 	package Person_Role_IO is new DYAYaml.IO_Enumeration(Person_Role);
 	package Person_State_IO is new DYAYaml.IO_Enumeration(Person_State);
 	package Message_Kind_IO is new DYAYaml.IO_Enumeration(Message_Kind);
+	package Execution_Mode_IO is new DYAYaml.IO_Enumeration (Execution_Mode);
 	package Attack_IO is new DYAYaml.IO_Enumeration(Attack_Mode);
 	package Servant_Knowing_IO is new DYAYaml.IO_Enumeration(Servant_Knowing_Mode);
 	package Monster_Side_IO is new DYAYaml.IO_Enumeration(Monster_Side);

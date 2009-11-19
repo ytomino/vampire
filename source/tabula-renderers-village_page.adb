@@ -5,13 +5,12 @@ with Ada.Numerics.MT19937;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts.Load;
-with Tabula.Renderers.Rule;
 with Tabula.Users;
 procedure Tabula.Renderers.Village_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
 	Village_Id : in Villages.Village_Id; 
-	Village : in Vampires.Villages.Village_Type; 
+	Village : not null access constant Vampires.Villages.Village_Type; 
 	Day : in Natural;
 	First, Last : in Integer := -1;
 	User_Id : in String;
@@ -22,6 +21,7 @@ is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Web.HTML_Version;
 	use type Tabula.Vampires.Villages.Daytime_Preview_Mode;
+	use type Tabula.Vampires.Villages.Execution_Mode;
 	use type Tabula.Vampires.Villages.Message_Kind;
 	use type Tabula.Vampires.Villages.Monster_Side;
 	use type Tabula.Vampires.Villages.Person_Role;
@@ -321,9 +321,9 @@ is
 		end Countup;
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
-		if Village.Victim_Existing then
+		if Village.Execution = Vampires.Villages.Dummy_Killed_And_From_First then
 			Result := "地主さんを含む" & (+To_String(1 + Integer(Village.People.Length)));
-			Countup(Village.Victim_Role);
+			Countup (Village.Dummy_Role);
 		else
 			Result := +To_String(Integer(Village.People.Length));
 		end if;
@@ -422,7 +422,7 @@ is
 				end;
 			when Vampires.Villages.Detective_Survey_Victim =>
 				return Name(Subject) & "は地主さんを調査しました。" & Line_Break &
-					"どうやら" & Showing_Role(Village.Victim_Role) & "ようです。" & Line_Break;
+					"どうやら" & Showing_Role (Village.Dummy_Role) & "ようです。" & Line_Break;
 		end case;
 	end Detective_Survey_Message;
 	
@@ -560,6 +560,116 @@ is
 		end case;
 		return +Result;
 	end Vampire_Murder_Message;
+	
+	procedure Rule_Panel (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Template : in Web.Producers.Template;
+		Village_Id : in Villages.Village_Id;
+		Village : not null access constant Vampires.Villages.Village_Type; 
+		Player : in Boolean;
+		User_Id : in String;
+		User_Password : in String)
+	is
+		Changable : constant Boolean := Player and then Village.Today = 0 and then Village.No_Commit;
+		procedure Handle (
+			Output : not null access Ada.Streams.Root_Stream_Type'Class;
+			Tag : in String;
+			Template : in Web.Producers.Template) is
+		begin
+			if Tag = "items" then
+				if Changable then
+					declare
+						procedure Process (Item : in Villages.Root_Option_Item'Class) is
+						begin
+							if Item.Available then
+								Write (Output, "<select name=""");
+								Write (Output, Item.Name);
+								Write (Output, """>");
+								declare
+									procedure Process (
+										Value : in String;
+										Selected : in Boolean;
+										Message : in String;
+										Unrecommended : in Boolean) is
+									begin
+										Write (Output, "<option value=""");
+										Write (Output, Value);
+										Write (Output, '"');
+										if Selected then
+											Write (Output, " selected=""selected""");
+										end if;
+										Write (Output, '>');
+										Web.Write_In_HTML (Output, Object.HTML_Version, Message);
+										if Unrecommended then
+											Write(Output, " お薦めしません。");
+										end if;
+										if Selected then
+											Write(Output, " *");
+										end if;
+										Write (Output, "</option>");
+									end Process;
+								begin
+									Tabula.Villages.Iterate (Item, Process'Access);
+								end;
+								Write(Output, "</select>");
+								Web.Producers.Produce (Output, Template);
+							end if;
+						end Process;
+					begin
+						Vampires.Villages.Iterate (Village, Process'Access);
+					end;
+				else
+					declare
+						procedure Process (Item : in Villages.Root_Option_Item'Class) is
+						begin
+							if Item.Available and then (Player or else Item.Changed) then
+								declare
+									procedure Process (
+										Value : in String;
+										Selected : in Boolean;
+										Message : in String;
+										Unrecommended : in Boolean) is
+									begin
+										if Selected then
+											if Item.Changed and then Village.State /= Villages.Closed then
+												Write (Output, "<em>");
+											end if;
+											Write (Output, Message);
+											if Village.State /= Villages.Closed and then Unrecommended then
+												Write (Output, " お薦めしません。");
+											end if;
+											if Item.Changed and then Village.State /= Villages.Closed then
+												Write (Output, "</em>");
+											end if;
+											Write (Output, ' ' & Ascii.LF);
+										end if;
+									end Process;
+								begin
+									Tabula.Villages.Iterate (Item, Process'Access);
+								end;
+							end if;
+						end Process;
+					begin
+						Vampires.Villages.Iterate (Village, Process'Access);
+					end;
+				end if;
+			elsif Tag = "uri" then
+				Link(Object, Output, Village_Id => Village_Id,
+					User_Id => User_Id, User_Password => User_Password);
+			else
+				raise Program_Error with "Invalid template """ & Tag & """";
+			end if;
+		end Handle;
+		Extract : constant array(Boolean) of access constant String := (
+			new String'("static"), new String'("changable"));
+	begin
+		if Player 
+			or else Village.Day_Duration < 24 * 60 * 60.0
+			or else Village.Option_Changed
+		then
+			Web.Producers.Produce (Output, Template, Extract (Changable).all, Handler => Handle'Access);
+		end if;
+	end Rule_Panel;
 	
 	Target_Day : Natural;
 	
@@ -737,8 +847,8 @@ is
 		end if;
 	end Role_Text;
 	
-	Player_Index : constant Integer := Vampires.Villages.Joined(Village, User_Id);
-	Message_Counts : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages(Village, Day);
+	Player_Index : constant Integer := Vampires.Villages.Joined (Village.all, User_Id);
+	Message_Counts : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages (Village.all, Day);
 	Tip_Showed : Boolean := False;
 	
 	type Paging_Pos is (Top, Bottom, Tip);
@@ -747,7 +857,7 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Pos : Paging_Pos)
 	is
-		Speech_Count : constant Natural := Vampires.Villages.Count_Speech(Village, Day);
+		Speech_Count : constant Natural := Vampires.Villages.Count_Speech (Village.all, Day);
 		F, L, R : Natural;
 	begin
 		if Pos /= Tip then
@@ -903,8 +1013,8 @@ is
 								Write(Output, "</a>");
 							end if;
 						else
-							Handle_Villages(Output, Tag, Template, Object,
-								Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+							Handle_Villages (Output, Tag, Template, Object,
+								Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 						end if;
 					end Handle_Days;
 				begin
@@ -946,8 +1056,8 @@ is
 							Write(Output, To_String(I));
 							Write(Output, """/>");
 						else
-							Handle_Villages(Output, Tag, Template, Object,
-								Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+							Handle_Villages (Output, Tag, Template, Object,
+								Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 						end if;
 					end Handle_Summary;
 				begin
@@ -979,8 +1089,8 @@ is
 					procedure Handle_Speech(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String; Template : in Web.Producers.Template) is
 					begin
-						Handle_Messages(Output, Tag, Template, Object,
-							Village_Id, Village, Day, Message, Time, User_Id => User_Id, User_Password => User_Password);
+						Handle_Messages (Output, Tag, Template, Object,
+							Village_Id, Village.all, Day, Message, Time, User_Id => User_Id, User_Password => User_Password);
 					end Handle_Speech;
 				begin
 					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Speech'Access);
@@ -1004,8 +1114,8 @@ is
 								end if;
 							end;
 						else
-							Handle_Villages(Output, Tag, Template, Object,
-								Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+							Handle_Villages (Output, Tag, Template, Object,
+								Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 						end if;
 					end Handle_Note;
 				begin
@@ -1057,7 +1167,7 @@ is
 										end;
 									when Vampires.Villages.Speech | Vampires.Villages.Escaped_Speech =>
 										if Message.Kind = Vampires.Villages.Speech
-											or else Vampires.Villages.Rejoined(Village, Message.Subject) >= 0
+											or else Vampires.Villages.Rejoined (Village.all, Message.Subject) >= 0
 										then
 											declare
 												Subject : Integer;
@@ -1065,7 +1175,7 @@ is
 												if Message.Kind = Vampires.Villages.Speech then
 													Subject := Message.Subject;
 												else
-													Subject := Vampires.Villages.Rejoined(Village, Message.Subject);
+													Subject := Vampires.Villages.Rejoined (Village.all, Message.Subject);
 												end if;
 												if Last_Speech /= Subject then
 													New_X : loop
@@ -1129,7 +1239,7 @@ is
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 										then
 											declare
-												The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman(Village, Vampires.Villages.Unfortunate_Inhabitant);
+												The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman (Village.all, Vampires.Villages.Unfortunate_Inhabitant);
 											begin
 												Narration(Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "のせいで用事ができてしまい、今夜は相談ができません。", "narrationi");
 											end;
@@ -1155,7 +1265,7 @@ is
 														or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 													then
 														declare
-															The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman(Village, Vampires.Villages.Unfortunate_Inhabitant);
+															The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman (Village.all, Vampires.Villages.Unfortunate_Inhabitant);
 														begin
 															Narration(Name(Subject) & "の視線は" & Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "に遮られた。", "narrationi");
 														end;
@@ -1164,15 +1274,15 @@ is
 										end;
 									when Vampires.Villages.Servant_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration(Servant_Knew_Message(Village, Message), "narrationi");
+											Narration (Servant_Knew_Message (Village.all, Message), "narrationi");
 										end if;
 									when Vampires.Villages.Doctor_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
-											Narration(Doctor_Cure_Message(Village, Message), "narrationi");
+											Narration (Doctor_Cure_Message (Village.all, Message), "narrationi");
 										end if;
 									when Vampires.Villages.Detective_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
-											Narration(Detective_Survey_Message(Village, Message), "narrationi");
+											Narration (Detective_Survey_Message (Village.all, Message), "narrationi");
 											if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String
 												and then (
 													Village.Daytime_Preview = Vampires.Villages.Role_And_Message
@@ -1183,11 +1293,11 @@ is
 											end if;
 										end if;
 									when Vampires.Villages.Provisional_Vote =>
-										Narration(Vote_Report(Village, Day => Message.Day, Provisional => True, Player_Index => Player_Index), "narrationi");
-										Narration(Vote_Count(Village, Day => Message.Day, Provisional => True, Executed => -1));
+										Narration (Vote_Report (Village.all, Day => Message.Day, Provisional => True, Player_Index => Player_Index), "narrationi");
+										Narration (Vote_Count (Village.all, Day => Message.Day, Provisional => True, Executed => -1));
 									when Vampires.Villages.Execution =>
-										Narration(Vote_Report(Village, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
-										Narration(Vote_Count(Village, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
+										Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
+										Narration (Vote_Count (Village.all, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
 										Executed := Message.Target;
 									when Vampires.Villages.Awareness =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
@@ -1199,11 +1309,11 @@ is
 										end if;
 									when Vampires.Villages.Astronomer_Observation =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration(Astronomer_Observation_Message(Village, Message), "narrationi");
+											Narration (Astronomer_Observation_Message (Village.all, Message), "narrationi");
 										end if;
 									when Vampires.Villages.Hunter_Message_Kind =>
 										if Village.State >= Tabula.Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration(Hunter_Guard_Message(Village, Message), "narrationi");
+											Narration (Hunter_Guard_Message (Village.all, Message), "narrationi");
 										end if;
 									when Vampires.Villages.Meeting => null;
 										if Village.State >= Villages.Epilogue
@@ -1232,7 +1342,7 @@ is
 											Village.People.Constant_Reference(Message.Subject).Element.Role in Vampires.Villages.Vampire_Role
 											and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)))
 										then
-											Narration(Vampire_Murder_Message(Village, Message, Executed), "narrationi");
+											Narration (Vampire_Murder_Message (Village.all, Message, Executed), "narrationi");
 										end if;
 									when Vampires.Villages.Gremlin_Sense =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
@@ -1281,14 +1391,14 @@ is
 										begin
 											if Village.Today = Message.Day and Village.State >= Villages.Epilogue then
 												declare
-													S : String renames Fatalities_List(Village, Message.Day, Executed);
+													S : String renames Fatalities_List (Village.all, Message.Day, Executed);
 												begin
 													if S /= "" then
 														Narration(S);
 													end if;
 												end;
 												declare
-													Last_Day_Messages : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages(Village, Message.Day - 1);
+													Last_Day_Messages : Vampires.Villages.Message_Counts renames Vampires.Villages.Count_Messages (Village.all, Message.Day - 1);
 													G_Win : Boolean := False;
 													V_Win : Boolean := False;
 													Second : Boolean := False;
@@ -1342,35 +1452,41 @@ is
 													end if;
 												end;
 											else
-												if not Village.First_Execution and then Message.Day = 2 then
-													Narration (For_Execution_Message);
+												if Message.Day = 2 then
+													case Village.Execution is
+														when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
+															Narration (For_Execution_Message);
+														when others =>
+															null;
+													end case;
 												end if;
 												declare
-													S : String renames Fatalities_List(Village, Message.Day, Executed);
+													S : String renames Fatalities_List (Village.all, Message.Day, Executed);
 												begin
 													Ada.Strings.Unbounded.Append(Log, S);
 													if S /= "" then
 														Ada.Strings.Unbounded.Append(Log, Line_Break);
 													end if;
 												end;
-												Ada.Strings.Unbounded.Append(Log, Survivors_List(Village, Message.Day));
+												Ada.Strings.Unbounded.Append (Log, Survivors_List (Village.all, Message.Day));
 											end if;
 											Narration(+Log);
 										end;
 									when Vampires.Villages.Introduction =>
-										Narration(Stages(Stage(Village)).Introduction.all);
+										Narration (Stages (Stage (Village.all)).Introduction.all);
 									when Vampires.Villages.Breakdown =>
 										if Village.State >= Villages.Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 										then
-											Narration(Vampires_List(Village), "narrationi");
+											Narration (Vampires_List (Village.all), "narrationi");
 										end if;
-										if not Village.First_Execution then
-											Narration(Stages(Stage(Village)).Breakdown.all);
-										else
-											Narration(Stages(Stage(Village)).Breakdown.all & Line_Break & For_Execution_Message);
-										end if;
-										Narration(Breakdown_List(Village));
+										case Village.Execution is
+											when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
+												Narration (Stages (Stage (Village.all)).Breakdown.all);
+											when Vampires.Villages.Dummy_Killed_And_From_First | Vampires.Villages.From_First =>
+												Narration (Stages (Stage (Village.all)).Breakdown.all & Line_Break & For_Execution_Message);
+										end case;
+										Narration (Breakdown_List (Village.all));
 								end case;
 							end if;
 							if Message.Kind = Vampires.Villages.Speech or else Message.Kind = Vampires.Villages.Escaped_Speech then
@@ -1610,7 +1726,7 @@ is
 							elsif Tag = "vote" then
 								if Village.State = Villages.Opened
 									and then Message_Counts(Player_Index).Speech > 0
-									and then (Village.First_Execution or else Village.Today /= 1)
+									and then (Village.Execution = Vampires.Villages.From_First or else Village.Execution = Vampires.Villages.Dummy_Killed_And_From_First or else Village.Today /= 1)
 								then
 									if Person.Commited then
 										declare
@@ -1629,7 +1745,7 @@ is
 											end if;
 										end;
 									else
-										Vote_Form (Output, Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted(Village),
+										Vote_Form (Output, Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted (Village.all),
 											Current => Person.Records.Constant_Reference(Village.Today).Element.Vote,
 											Current_Special => Person.Records.Constant_Reference(Village.Today).Element.Applied,
 											Message => "誰を処刑に……",
@@ -1663,7 +1779,7 @@ is
 														goto Exit_Detective_Target;
 													end if;
 												end loop;
-												if Village.Victim_Existing and Day <= 1 then
+												if Village.Execution = Vampires.Villages.Dummy_Killed_And_From_First and Day <= 1 then
 													Write(Output, "<div>地主さんを調査しています。</div>");
 												else
 													Write(Output, "<div>まだ村人に被害者はいません。</div>");
@@ -1789,8 +1905,8 @@ is
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
 							else
-								Handle_Villages(Output, Tag, Template, Object,
-									Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+								Handle_Villages (Output, Tag, Template, Object,
+									Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 							end if;
 						end Handle_Player;
 					begin
@@ -1866,22 +1982,26 @@ is
 								end loop;
 								Write(Output, "</select>");
 							else
-								Handle_Villages(Output, Tag, Template, Object,
-									Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+								Handle_Villages (Output, Tag, Template, Object,
+									Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 							end if;
 						end Handle_Entry;
 					begin
-						Vampires.Villages.Exclude_Taken(Cast, Village);
+						Vampires.Villages.Exclude_Taken (Cast, Village.all);
 						Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
 					end;
 				end if;
 			end if;
 		elsif Tag = "rule" then
 			if Day = 0 and then Tip_Showed then
-				Rule.Rule_Panel(Object, Output,
-					Template => Template'Address, -- avoiding compiler's bug of gcc 4.4.0
-					Village_Id => Village_Id, Village => Village, Player => Player_Index >= 0,
-					User_Id => User_Id, User_Password => User_Password);
+				Rule_Panel (
+					Output => Output,
+					Template => Template,
+					Village_Id => Village_Id,
+					Village => Village,
+					Player => Player_Index >= 0,
+					User_Id => User_Id,
+					User_Password => User_Password);
 			end if;
 		elsif Tag = "next" then
 			if Day < Village.Today and then Tip_Showed then
@@ -1909,7 +2029,7 @@ is
 			end if;
 		else
 			Handle_Villages(Output, Tag, Template, Object,
-				Village_Id, Village, Day, User_Id => User_Id, User_Password => User_Password);
+				Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
 		end if;
 	end Handle;
 begin

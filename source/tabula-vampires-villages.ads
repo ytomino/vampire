@@ -7,6 +7,7 @@ with Tabula.Casts;
 with Tabula.Villages;
 package Tabula.Vampires.Villages is
 	
+	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second, Provisional_Voting_From_Second);
 	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
@@ -19,8 +20,7 @@ package Tabula.Vampires.Villages is
 	subtype Hidings is Teaming range Hiding .. Hiding_Gremlin;
 	
 	-- オプションルール初期値
-	Initial_Victim_Existing      : constant Boolean                   := False;
-	Initial_First_Execution      : constant Boolean                   := True;
+	Initial_Execution            : constant Execution_Mode            := From_Second;
 	Initial_Teaming              : constant Teaming                   := Shuffling;
 	Initial_Monster_Side         : constant Monster_Side              := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
@@ -165,7 +165,13 @@ package Tabula.Vampires.Villages is
 	
 	package Messages is new Ada.Containers.Vectors (Natural, Message);
 	
-	type Village_Type is limited record
+	type Message_Count is record
+		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
+		Last_Action_Time : Ada.Calendar.Time ;
+	end record;
+	type Message_Counts is array(Natural range <>) of Message_Count;
+	
+	type Village_Type is new Tabula.Villages.Village with record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
 		By : Ada.Strings.Unbounded.Unbounded_String;
 		State : Tabula.Villages.Village_State;
@@ -174,9 +180,7 @@ package Tabula.Vampires.Villages is
 		Dawn : Ada.Calendar.Time;
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
-		Victim_Existing : Boolean := False;
-		Victim_Role : aliased Person_Role := Inhabitant;
-		First_Execution : Boolean := True;
+		Execution : Execution_Mode := From_Second;
 		Teaming : Villages.Teaming := Shuffling_Headless;
 		Monster_Side : Villages.Monster_Side := Fixed;
 		Attack : Attack_Mode := Two;
@@ -186,16 +190,12 @@ package Tabula.Vampires.Villages is
 		Hunter_Silver_Bullet : Hunter_Silver_Bullet_Mode := Target_And_Self;
 		Unfortunate : Unfortunate_Mode := None;
 		Appearance : Role_Appearances := (others => Random);
+		Dummy_Role : aliased Person_Role := Inhabitant;
 		People : aliased Villages.People.Vector;
 		Escaped_People : aliased Villages.People.Vector;
 		Messages : aliased Villages.Messages.Vector;
 	end record;
 	
-	type Message_Count is record
-		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
-		Last_Action_Time : Ada.Calendar.Time ;
-	end record;
-	type Message_Counts is array(Natural range <>) of Message_Count;
 	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts;
 	function Count_Speech(Village : Village_Type; Day : Natural) return Natural;
 	function Last_Joined_Time(Village : Village_Type) return Ada.Calendar.Time;
@@ -203,19 +203,238 @@ package Tabula.Vampires.Villages is
 	function Joined(Village : Village_Type; User_Id : String) return Integer;
 	function Rejoined(Village : Village_Type; Escaped_Subject : Natural) return Integer;
 	
+	function Be_Voting (Village : Village_Type) return Boolean;
 	function Provisional_Voted(Village : Village_Type) return Boolean;
 	function Vote_Finished(Village : Village_Type) return Boolean;
+	function No_Commit (Village : Village_Type) return Boolean;
 	function Commit_Finished(Village : Village_Type) return Boolean;
 	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer;
 	function Unfortunate(Village : Village_Type) return Boolean;
 	
 	procedure Escape(Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
 	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
-
+	
 	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean;
 	
 	function Escape_Duration(Village : Village_Type) return Duration;
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
+	
+	overriding procedure Iterate (
+		Village : not null access constant Village_Type;
+		Process : not null access procedure (Item : in Tabula.Villages.Root_Option_Item'Class));
+	
+	package Options is
+		
+		package Day_Duration is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Day_Duration;
+		
+		package Night_Duration is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Night_Duration;
+		
+		package Execution is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Execution;
+		
+		package Teaming is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Teaming;
+		
+		package Monster_Side is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Monster_Side;
+		
+		package Attack is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Attack;
+		
+		package Servant_Knowing is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Servant_Knowing;
+		
+		package Daytime_Preview is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Daytime_Preview;
+		
+		package Doctor_Infected is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Doctor_Infected;
+		
+		package Hunter_Silver_Bullet is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Hunter_Silver_Bullet;
+		
+		package Unfortunate is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Tabula.Villages.Root_Option_Item with null record;
+			function Available (Item : Option_Item) return Boolean;
+			function Name (Item : Option_Item) return String;
+			function Changed (Item : Option_Item) return Boolean;
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Unfortunate;
+		
+	end Options;
 	
 end Tabula.Vampires.Villages;

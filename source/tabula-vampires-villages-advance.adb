@@ -109,8 +109,8 @@ begin
 				Village.Time := Tabula.Villages.Daytime; -- 常に昼スタート
 				-- 能力決定
 				Victim := null;
-				if Village.Victim_Existing then
-					Victim := Village.Victim_Role'Access;
+				if Village.Execution = Dummy_Killed_And_From_First then
+					Victim := Village.Dummy_Role'Access;
 				end if;
 				if Village.Unfortunate = None then
 					Village.Appearance(Unfortunate_Inhabitant) := None;
@@ -154,7 +154,7 @@ begin
 						end if;
 					end;
 				end if;
-				if Village.Victim_Existing then
+				if Village.Execution = Dummy_Killed_And_From_First then
 					declare
 						The_Detective : constant Integer := Find_Superman(Village, Detective);
 					begin
@@ -206,7 +206,7 @@ begin
 							Daytime_To_Vote := True;
 							if Village.Day_Duration >= 24 * 60 * 60.0
 								or else Vote_Finished (Village)
-								or else (not Village.First_Execution and then Village.Today = 1)
+								or else not Village.Be_Voting
 							then
 								Vote_To_Night := True;
 								if Village.Night_Duration = 0.0 then
@@ -279,7 +279,7 @@ begin
 					begin
 						if The_Detective >= 0 and then Village.People.Constant_Reference(The_Detective).Element.Records.Constant_Reference(Village.Today).Element.State /= Died then
 							if Village.Today <= 2 then
-								if Village.Victim_Existing then
+								if Village.Execution = Dummy_Killed_And_From_First then
 									Append(Village.Messages, (
 										Kind => Detective_Survey_Victim,
 										Day => Village.Today,

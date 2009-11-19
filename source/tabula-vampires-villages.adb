@@ -8,6 +8,14 @@ package body Tabula.Vampires.Villages is
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
+	function Be_Voting (Village : Village_Type) return Boolean is
+	begin
+		return Village.State = Tabula.Villages.Opened and then (
+			Village.Today >= 2 or else
+			Village.Execution = Dummy_Killed_And_From_First or else
+			Village.Execution = From_First);
+	end Be_Voting;
+	
 	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
 			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0, 
@@ -106,6 +114,18 @@ package body Tabula.Vampires.Villages is
 			end;
 		end if;
 	end Rejoined;
+	
+	function No_Commit (Village : Village_Type) return Boolean is
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Died then
+				if Village.People.Constant_Reference(I).Element.Commited then
+					return False;
+				end if;
+			end if;
+		end loop;
+		return True;
+	end No_Commit;
 	
 	function Commit_Finished(Village : Village_Type) return Boolean is
 		Count : Integer := 0;
@@ -377,5 +397,633 @@ package body Tabula.Vampires.Villages is
 			end;
 		end loop;
 	end Exclude_Taken;
+	
+	overriding procedure Iterate (
+		Village : not null access constant Village_Type;
+		Process : not null access procedure (Item : in Tabula.Villages.Root_Option_Item'Class)) is
+	begin
+		Process (Options.Day_Duration.Option_Item'(Village => Village));
+		Process (Options.Night_Duration.Option_Item'(Village => Village));
+		Process (Options.Execution.Option_Item'(Village => Village));
+		Process (Options.Teaming.Option_Item'(Village => Village));
+		Process (Options.Monster_Side.Option_Item'(Village => Village));
+		Process (Options.Attack.Option_Item'(Village => Village));
+		Process (Options.Servant_Knowing.Option_Item'(Village => Village));
+		Process (Options.Daytime_Preview.Option_Item'(Village => Village));
+		Process (Options.Doctor_Infected.Option_Item'(Village => Village));
+		Process (Options.Hunter_Silver_Bullet.Option_Item'(Village => Village));
+		Process (Options.Unfortunate.Option_Item'(Village => Village));
+	end Iterate;
+	
+	package body Options is
+		
+		package body Day_Duration is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Day_Duration < 24 * 60 * 60.0;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "day-duration";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Duration'Image (15 * 60.0),
+					Item.Village.Day_Duration = 15 * 60.0,
+					"ゲームの1日は実時間の15分です。",
+					False);
+				Process (
+					Duration'Image (20 * 60.0),
+					Item.Village.Day_Duration = 20 * 60.0,
+					"ゲームの1日は実時間の20分です。",
+					False);
+				Process (
+					Duration'Image (25 * 60.0),
+					Item.Village.Day_Duration = 25 * 60.0,
+					"ゲームの1日は実時間の25分です。",
+					False);
+				Process (
+					Duration'Image (30 * 60.0),
+					Item.Village.Day_Duration = 30 * 60.0,
+					"ゲームの1日は実時間の30分です。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				if Value /= "" and then Available (Item) then
+					Village_Type (Village.all).Day_Duration := Duration'Value (Value);
+				end if;
+			end Change;
+			
+		end Day_Duration;
+		
+		package body Night_Duration is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Day_Duration < 24 * 60 * 60.0;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "night-duration";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Duration'Image (0 * 60.0),
+					Item.Village.Night_Duration = 0 * 60.0,
+					"夜はありません。",
+					False);
+				Process (
+					Duration'Image (5 * 60.0),
+					Item.Village.Night_Duration = 5 * 60.0,
+					"夜は5分です。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				if Value /= "" and then Available (Item) then
+					Village_Type (Village.all).Night_Duration := Duration'Value (Value);
+				end if;
+			end Change;
+			
+		end Night_Duration;
+		
+		package body Execution is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "execution";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Execution /= Initial_Execution;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Execution_Mode'Image (Dummy_Killed_And_From_First),
+					Item.Village.Execution = Dummy_Killed_And_From_First,
+					"能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。",
+					False);
+				Process (
+					Execution_Mode'Image (From_First),
+					Item.Village.Execution = From_First,
+					"初日から無記名投票によって処刑を行います。",
+					False);
+				Process (
+					Execution_Mode'Image (From_Second),
+					Item.Village.Execution = From_Second,
+					"2日目から無記名投票によって処刑を行います。",
+					False);
+				Process (
+					Execution_Mode'Image (Provisional_Voting_From_Second),
+					Item.Village.Execution = Provisional_Voting_From_Second,
+					"2日目から仮投票と本投票によって処刑を行います。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Execution := Execution_Mode'Value (Value);
+			end Change;
+			
+		end Execution;
+		
+		package body Teaming is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "teaming";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Teaming /= Initial_Teaming;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Villages.Teaming'Image (Low_Density),
+					Item.Village.Teaming = Low_Density,
+					"能力者の密度を線形にします。",
+					False);
+				Process (
+					Villages.Teaming'Image (Shuffling_Headless),
+					Item.Village.Teaming = Shuffling_Headless,
+					"村側能力者を増やします(首無し騎士に似せます)。",
+					Unrecommended => True);
+				Process (
+					Villages.Teaming'Image (Shuffling_Euro),
+					Item.Village.Teaming = Shuffling_Euro,
+					"妖魔が早く出ます(欧州に似せます)。",
+					False);
+				Process (
+					Villages.Teaming'Image (Shuffling),
+					Item.Village.Teaming = Shuffling,
+					"基本的な編成です。",
+					False);
+				Process (
+					Villages.Teaming'Image (Shuffling_Gremlin),
+					Item.Village.Teaming = Shuffling_Gremlin,
+					"基本的な編成に加え、妖魔が早く出ます。",
+					False);
+				Process (
+					Villages.Teaming'Image (Hiding),
+					Item.Village.Teaming = Hiding,
+					"村側能力者の構成はわかりません。",
+					False);
+				Process (
+					Villages.Teaming'Image (Hiding_Gremlin),
+					Item.Village.Teaming = Hiding_Gremlin,
+					"村側能力者の構成はわからず、妖魔が早く出ます。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Teaming := Villages.Teaming'Value (Value);
+			end Change;
+			
+		end Teaming;
+		
+		package body Monster_Side is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "monster-side";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Monster_Side /= Initial_Monster_Side;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Villages.Monster_Side'Image (Fixed),
+					Item.Village.Monster_Side = Fixed,
+					"吸血鬼が襲ってきます。",
+					False);
+				Process (
+					Villages.Monster_Side'Image (Shuffling),
+					Item.Village.Monster_Side = Shuffling,
+					"吸血鬼の全貌はわかりません。",
+					Unrecommended => True);
+				Process (
+					Villages.Monster_Side'Image (Gremlin),
+					Item.Village.Monster_Side = Gremlin,
+					"使徒よりも妖魔が先に現れます。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Monster_Side := Villages.Monster_Side'Value (Value);
+			end Change;
+			
+		end Monster_Side;
+		
+		package body Attack is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "attack";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Attack /= Initial_Attack;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Attack_Mode'Image (Two),
+					Item.Village.Attack = Two,
+					"吸血鬼ふたり以上に襲われると死亡します。",
+					False);
+				Process (
+					Attack_Mode'Image (Mocturnal_Infecting),
+					Item.Village.Attack = Mocturnal_Infecting,
+					"天文家と猟師は感染したら襲撃を行います。",
+					False);
+				Process (
+					Attack_Mode'Image (Unanimity),
+					Item.Village.Attack = Unanimity,
+					"すべての吸血鬼に襲われると死亡します。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Attack := Attack_Mode'Value (Value);
+			end Change;
+			
+		end Attack;
+		
+		package body Servant_Knowing is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "servant-knowing";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Servant_Knowing /= Initial_Servant_Knowing;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Servant_Knowing_Mode'Image (None),
+					Item.Village.Servant_Knowing = None,
+					"使徒は吸血鬼の正体を知りません。",
+					False);
+				Process (
+					Servant_Knowing_Mode'Image (Vampire_K),
+					Item.Village.Servant_Knowing = Vampire_K,
+					"使徒は吸血鬼の王を知っています。",
+					False);
+				Process (
+					Servant_Knowing_Mode'Image (All_Vampires),
+					Item.Village.Servant_Knowing = All_Vampires,
+					"使徒は吸血鬼を知っています。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Servant_Knowing := Servant_Knowing_Mode'Value (Value);
+			end Change;
+			
+		end Servant_Knowing;
+		
+		package body Daytime_Preview is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "daytime-preview";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Daytime_Preview /= Initial_Daytime_Preview;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Daytime_Preview_Mode'Image (None),
+					Item.Village.Daytime_Preview = None,
+					"探偵と医者は翌日まで結果がわかりません。",
+					Unrecommended => True);
+				Process (
+					Daytime_Preview_Mode'Image (Role_Only),
+					Item.Village.Daytime_Preview = Role_Only,
+					"探偵は日中に正体を調べ翌日までに遺言を調べます。",
+					False);
+				Process (
+					Daytime_Preview_Mode'Image (Message_Only),
+					Item.Village.Daytime_Preview = Message_Only,
+					"探偵は日中に遺言を調べ翌日までに正体を調べます。",
+					False);
+				Process (
+					Daytime_Preview_Mode'Image (Role_And_Message),
+					Item.Village.Daytime_Preview = Role_And_Message,
+					"探偵は日中に正体と遺言を調べます。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Daytime_Preview := Daytime_Preview_Mode'Value (Value);
+			end Change;
+			
+		end Daytime_Preview;
+		
+		package body Doctor_Infected is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "doctor-infected";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Doctor_Infected /= Initial_Doctor_Infected;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Doctor_Infected_Mode'Image (Cure),
+					Item.Village.Doctor_Infected = Cure,
+					"医者自身の感染は治療に影響しません。",
+					False);
+				Process (
+					Doctor_Infected_Mode'Image (Find_Infection),
+					Item.Village.Doctor_Infected = Find_Infection,
+					"医者自身が感染していると治療の効果はありません。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Doctor_Infected := Doctor_Infected_Mode'Value (Value);
+			end Change;
+			
+		end Doctor_Infected;
+		
+		package body Hunter_Silver_Bullet is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "hunter-silver-bullet";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Hunter_Silver_Bullet /= Initial_Hunter_Silver_Bullet;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Hunter_Silver_Bullet_Mode'Image (Target),
+					Item.Village.Hunter_Silver_Bullet = Target,
+					"護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。",
+					False);
+				Process (
+					Hunter_Silver_Bullet_Mode'Image (Target_And_Self),
+					Item.Village.Hunter_Silver_Bullet = Target_And_Self,
+					"護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Hunter_Silver_Bullet := Hunter_Silver_Bullet_Mode'Value (Value);
+			end Change;
+			
+		end Hunter_Silver_Bullet;
+		
+		package body Unfortunate is
+			
+			function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			function Name (Item : Option_Item) return String is
+			begin
+				return "unfortunate";
+			end Name;
+			
+			function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Unfortunate /= Initial_Unfortunate;
+			end Changed;
+			
+			procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Unfortunate_Mode'Image (None),
+					Item.Village.Unfortunate = None,
+					"数奇な運命の村人はいません。",
+					False);
+				Process (
+					Unfortunate_Mode'Image (Appear),
+					Item.Village.Unfortunate = Appear,
+					"数奇な運命の村人がいるかもしれません。",
+					False);
+				Process (
+					Unfortunate_Mode'Image (Infected_Only),
+					Item.Village.Unfortunate = Infected_Only,
+					"数奇な運命の村人は襲撃では殺されません。",
+					False);
+			end Iterate;
+			
+			procedure Change (
+				Village : not null access Tabula.Villages.Village'Class;
+				Item : in Option_Item;
+				Value : in String) is
+			begin
+				pragma Assert (Village = Item.Village);
+				Village_Type (Village.all).Unfortunate := Unfortunate_Mode'Value (Value);
+			end Change;
+			
+		end Unfortunate;
+		
+	end Options;
 
 end Tabula.Vampires.Villages;
