@@ -20,7 +20,7 @@ package Tabula.Vampires.Villages is
 	subtype Hidings is Teaming range Hiding .. Hiding_Gremlin;
 	
 	-- オプションルール初期値
-	Initial_Execution            : constant Execution_Mode            := From_Second;
+	Initial_Execution            : constant Execution_Mode            := From_First;
 	Initial_Teaming              : constant Teaming                   := Shuffling;
 	Initial_Monster_Side         : constant Monster_Side              := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
@@ -180,7 +180,7 @@ package Tabula.Vampires.Villages is
 		Dawn : Ada.Calendar.Time;
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
-		Execution : Execution_Mode := From_Second;
+		Execution : Execution_Mode := From_First;
 		Teaming : Villages.Teaming := Shuffling_Headless;
 		Monster_Side : Villages.Monster_Side := Fixed;
 		Attack : Attack_Mode := Two;
