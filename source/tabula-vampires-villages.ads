@@ -8,21 +8,22 @@ with Tabula.Villages;
 package Tabula.Vampires.Villages is
 	
 	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second, Provisional_Voting_From_Second);
-	type Teaming is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Teaming_Mode is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
-	type Monster_Side is (Fixed, Shuffling, Gremlin);
+	type Monster_Side_Mode is (Fixed, Shuffling, Gremlin);
 	type Daytime_Preview_Mode is (None, Role_Only, Message_Only, Role_And_Message);
 	type Doctor_Infected_Mode is (Cure, Find_Infection);
 	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
-	subtype Hidings is Teaming range Hiding .. Hiding_Gremlin;
+	subtype From_Seconds is Execution_Mode range From_Second .. Provisional_Voting_From_Second;
+	subtype Hidings is Teaming_Mode range Hiding .. Hiding_Gremlin;
 	
 	-- オプションルール初期値
 	Initial_Execution            : constant Execution_Mode            := From_First;
-	Initial_Teaming              : constant Teaming                   := Shuffling;
-	Initial_Monster_Side         : constant Monster_Side              := Fixed;
+	Initial_Teaming              : constant Teaming_Mode              := Shuffling;
+	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
 	Initial_Servant_Knowing      : constant Servant_Knowing_Mode      := Vampire_K;
 	Initial_Daytime_Preview      : constant Daytime_Preview_Mode      := Message_Only;
@@ -33,7 +34,6 @@ package Tabula.Vampires.Villages is
 	type Requested_Role is (Random, Rest, 
 		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
 		Village_Side, Vampire_Side, Gremlin);
-	subtype Requested_Role_No_Random is Requested_Role range Inhabitant .. Vampire;
 	
 	type Person_Role is (Inhabitant, Gremlin,
 		Vampire_K, Vampire_Q, Vampire_J, Servant, 
@@ -181,8 +181,8 @@ package Tabula.Vampires.Villages is
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
 		Execution : Execution_Mode := From_First;
-		Teaming : Villages.Teaming := Shuffling_Headless;
-		Monster_Side : Villages.Monster_Side := Fixed;
+		Teaming : Teaming_Mode := Shuffling_Headless;
+		Monster_Side : Monster_Side_Mode := Fixed;
 		Attack : Attack_Mode := Two;
 		Servant_Knowing : Servant_Knowing_Mode := None;
 		Daytime_Preview : Daytime_Preview_Mode := Role_And_Message;
@@ -198,25 +198,25 @@ package Tabula.Vampires.Villages is
 	
 	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts;
 	function Count_Speech(Village : Village_Type; Day : Natural) return Natural;
-	function Last_Joined_Time(Village : Village_Type) return Ada.Calendar.Time;
 	
-	function Joined(Village : Village_Type; User_Id : String) return Integer;
-	function Rejoined(Village : Village_Type; Escaped_Subject : Natural) return Integer;
+	function Joined (Village : Village_Type; User_Id : String) return Integer;
+	function Rejoined (Village : Village_Type; Escaped_Subject : Natural) return Integer;
+	function Already_Joined_Another_Sex (Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean;
+	function Last_Joined_Time (Village : Village_Type) return Ada.Calendar.Time;
+	function Escape_Duration (Village : Village_Type) return Duration;
 	
 	function Be_Voting (Village : Village_Type) return Boolean;
-	function Provisional_Voted(Village : Village_Type) return Boolean;
-	function Vote_Finished(Village : Village_Type) return Boolean;
+	function Provisional_Voted (Village : Village_Type) return Boolean;
+	function Vote_Finished (Village : Village_Type) return Boolean;
 	function No_Commit (Village : Village_Type) return Boolean;
-	function Commit_Finished(Village : Village_Type) return Boolean;
-	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer;
-	function Unfortunate(Village : Village_Type) return Boolean;
+	function Commit_Finished (Village : Village_Type) return Boolean;
 	
-	procedure Escape(Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
-	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
+	function Find_Superman (Village : Village_Type; Role : Person_Role) return Integer;
+	function Unfortunate (Village : Village_Type) return Boolean;
+	function Male_And_Female (People : Villages.People.Vector) return Boolean;
 	
-	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean;
-	
-	function Escape_Duration(Village : Village_Type) return Duration;
+	procedure Escape (Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
+	procedure Vote (Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	

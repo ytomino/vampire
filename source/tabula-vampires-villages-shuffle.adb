@@ -3,9 +3,9 @@ with Ada.Containers;
 procedure Tabula.Vampires.Villages.Shuffle(
 	People : in out Villages.People.Vector;
 	Victim : access Villages.Person_Role;
-	Teaming : Villages.Teaming;
-	Monster_Side : Villages.Monster_Side;
-	Appearance : Villages.Role_Appearances;
+	Teaming : in Teaming_Mode;
+	Monster_Side : in Monster_Side_Mode;
+	Appearance : in Role_Appearances;
 	Generator : not null access Ada.Numerics.MT19937.Generator)
 is
 	use type Ada.Containers.Count_Type;
@@ -77,17 +77,6 @@ is
 			end loop;
 		end Random_Daytime_Role;
 		
-		function Male_And_Female return Boolean is
-			Male_Exists, Female_Exists : Boolean := False;
-		begin
-			for Position in People_Index loop
-				case People.Constant_Reference(Position).Element.Sex is
-					when Casts.Male => Male_Exists := True;
-					when Casts.Female => Female_Exists := True;
-				end case;
-			end loop;
-			return Male_Exists and Female_Exists;
-		end Male_And_Female;
 		Village_Side_Count : Village_Side_Count_Type;
 		Vampire_Count : Vampire_Count_Type;
 		Servant_Existing : Natural range 0 .. 1 := 0;
@@ -165,9 +154,6 @@ is
 				end if;
 				if People_Count >= 11 then
 					Gremlin_Existing := True;
-				end if;
-				if Teaming in Hidings then
-					Village_Side_Count := Village_Side_Count + 1;
 				end if;
 			when Shuffling | Hiding =>
 				if People_Count >= 15 then
@@ -258,7 +244,7 @@ is
 		-- Village Side
 		case Village_Side_Count is
 			when 6 =>
-				if Male_And_Female then
+				if Male_And_Female (People) then
 					if (R60.Random(Generator) >= 30 and then Appearance(Unfortunate_Inhabitant) /= Force)
 						or else Appearance(Unfortunate_Inhabitant) = None
 					then
@@ -276,7 +262,7 @@ is
 				Push(Doctor);
 				Push(Hunter);
 			when 5 =>
-				if Male_And_Female then
+				if Male_And_Female (People) then
 					if R60.Random(Generator) <= 42 then -- 5/7
 						if Vampire_Count = 3 and then R60.Random(Generator) <= 40 then -- 4/6
 							Push(Sweetheart_M);
@@ -308,7 +294,7 @@ is
 					Push(Random_Matrix_Role);
 				end loop;
 			when 4 =>
-				if Male_And_Female then
+				if Male_And_Female (People) then
 					if R60.Random(Generator) <= 34 then -- 4/7
 						if Vampire_Count = 3 and then R60.Random(Generator) <= 30 then -- 3/6
 							Push(Sweetheart_M);
@@ -339,7 +325,7 @@ is
 					Push(Random_Matrix_Role);
 				end loop;
 			when 3 => 
-				if Male_And_Female then
+				if Male_And_Female (People) then
 					if R60.Random(Generator) <= 30 * 3 / 6 then -- 3/6, "3/6"は出現率調整
 						Push(Lover);
 					end if;

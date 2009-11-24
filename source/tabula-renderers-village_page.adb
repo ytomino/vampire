@@ -6,6 +6,7 @@ with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts.Load;
 with Tabula.Users;
+with Tabula.Vampires.Villages.Teaming;
 procedure Tabula.Renderers.Village_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -23,7 +24,7 @@ is
 	use type Tabula.Vampires.Villages.Daytime_Preview_Mode;
 	use type Tabula.Vampires.Villages.Execution_Mode;
 	use type Tabula.Vampires.Villages.Message_Kind;
-	use type Tabula.Vampires.Villages.Monster_Side;
+	use type Tabula.Vampires.Villages.Monster_Side_Mode;
 	use type Tabula.Vampires.Villages.Person_Role;
 	use type Tabula.Vampires.Villages.Person_State;
 	use type Tabula.Villages.Village_State;
@@ -130,6 +131,24 @@ is
 			when Vampires.Villages.Gremlin => return "妖魔";
 		end case;
 	end Image;
+	
+	function Short_Image (Role : Vampires.Villages.Person_Role) return String is
+	begin
+		case Role is
+			when Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant => return "村";
+			when Vampires.Villages.Unfortunate_Inhabitant => return "奇";
+			when Vampires.Villages.Vampire_K | Vampires.Villages.Vampire_Q | Vampires.Villages.Vampire_J => return "鬼";
+			when Vampires.Villages.Servant => return "使";
+			when Vampires.Villages.Werewolf => return "狼";
+			when Vampires.Villages.Possessed => return "僕";
+			when Vampires.Villages.Detective => return "探";
+			when Vampires.Villages.Astronomer => return "天";
+			when Vampires.Villages.Doctor => return "医";
+			when Vampires.Villages.Hunter => return "猟";
+			when Vampires.Villages.Lover | Vampires.Villages.Sweetheart_M | Vampires.Villages.Sweetheart_F => return "恋";
+			when Vampires.Villages.Gremlin => return "妖";
+		end case;
+	end Short_Image;
 	
 	function Fatalities_List(Village : Vampires.Villages.Village_Type; Day : Natural; Executed : Integer) return String is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
@@ -668,6 +687,30 @@ is
 			or else Village.Option_Changed
 		then
 			Web.Producers.Produce (Output, Template, Extract (Changable).all, Handler => Handle'Access);
+		end if;
+		if Village.State <= Villages.Opened and then Village.People.Length >= 3 then
+			declare
+				Sets : constant Vampires.Villages.Teaming.Role_Set_Array :=
+					Vampires.Villages.Teaming.Possibilities (
+						People_Count => Village.People.Length,
+						Male_And_Female => Vampires.Villages.Male_And_Female (Village.People),
+						Execution => Village.Execution,
+						Teaming => Village.Teaming,
+						Monster_Side => Village.Monster_Side,
+						Appearance => Village.Appearance);
+			begin
+				Write (Output, "<ul>");
+				for I in Sets'Range loop
+					Write (Output, "<li>");
+					for J in Vampires.Villages.Person_Role loop
+						for K in 1 .. Sets (I)(J) loop
+							Write (Output, Short_Image (J));
+						end loop;
+					end loop;
+					Write (Output, "</li>");
+				end loop;
+				Write (Output, "</ul>");
+			end;
 		end if;
 	end Rule_Panel;
 	

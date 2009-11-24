@@ -208,6 +208,20 @@ package body Tabula.Vampires.Villages is
 		end if;
 	end Unfortunate;
 	
+	function Male_And_Female (People : Villages.People.Vector) return Boolean is
+		Male_Exists, Female_Exists : Boolean := False;
+	begin
+		for Position in People.First_Index .. People.Last_Index loop
+			case People.Constant_Reference (Position).Element.Sex is
+				when Casts.Male =>
+					Male_Exists := True;
+				when Casts.Female =>
+					Female_Exists := True;
+			end case;
+		end loop;
+		return Male_Exists and Female_Exists;
+	end Male_And_Female;
+	
 	procedure Escape(Village : in out Villages.Village_Type; Subject : Natural; Time : Ada.Calendar.Time) is
 		Escaped_Index : Natural;
 	begin
@@ -611,37 +625,37 @@ package body Tabula.Vampires.Villages is
 					Unrecommended : in Boolean)) is
 			begin
 				Process (
-					Villages.Teaming'Image (Low_Density),
+					Teaming_Mode'Image (Low_Density),
 					Item.Village.Teaming = Low_Density,
 					"能力者の密度を線形にします。",
 					False);
 				Process (
-					Villages.Teaming'Image (Shuffling_Headless),
+					Teaming_Mode'Image (Shuffling_Headless),
 					Item.Village.Teaming = Shuffling_Headless,
 					"村側能力者を増やします(首無し騎士に似せます)。",
 					Unrecommended => True);
 				Process (
-					Villages.Teaming'Image (Shuffling_Euro),
+					Teaming_Mode'Image (Shuffling_Euro),
 					Item.Village.Teaming = Shuffling_Euro,
 					"妖魔が早く出ます(欧州に似せます)。",
 					False);
 				Process (
-					Villages.Teaming'Image (Shuffling),
+					Teaming_Mode'Image (Shuffling),
 					Item.Village.Teaming = Shuffling,
 					"基本的な編成です。",
 					False);
 				Process (
-					Villages.Teaming'Image (Shuffling_Gremlin),
+					Teaming_Mode'Image (Shuffling_Gremlin),
 					Item.Village.Teaming = Shuffling_Gremlin,
 					"基本的な編成に加え、妖魔が早く出ます。",
 					False);
 				Process (
-					Villages.Teaming'Image (Hiding),
+					Teaming_Mode'Image (Hiding),
 					Item.Village.Teaming = Hiding,
 					"村側能力者の構成はわかりません。",
 					False);
 				Process (
-					Villages.Teaming'Image (Hiding_Gremlin),
+					Teaming_Mode'Image (Hiding_Gremlin),
 					Item.Village.Teaming = Hiding_Gremlin,
 					"村側能力者の構成はわからず、妖魔が早く出ます。",
 					False);
@@ -653,7 +667,7 @@ package body Tabula.Vampires.Villages is
 				Value : in String) is
 			begin
 				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Teaming := Villages.Teaming'Value (Value);
+				Village_Type (Village.all).Teaming := Teaming_Mode'Value (Value);
 			end Change;
 			
 		end Teaming;
@@ -684,17 +698,17 @@ package body Tabula.Vampires.Villages is
 					Unrecommended : in Boolean)) is
 			begin
 				Process (
-					Villages.Monster_Side'Image (Fixed),
+					Monster_Side_Mode'Image (Fixed),
 					Item.Village.Monster_Side = Fixed,
 					"吸血鬼が襲ってきます。",
 					False);
 				Process (
-					Villages.Monster_Side'Image (Shuffling),
+					Monster_Side_Mode'Image (Shuffling),
 					Item.Village.Monster_Side = Shuffling,
 					"吸血鬼の全貌はわかりません。",
 					Unrecommended => True);
 				Process (
-					Villages.Monster_Side'Image (Gremlin),
+					Monster_Side_Mode'Image (Gremlin),
 					Item.Village.Monster_Side = Gremlin,
 					"使徒よりも妖魔が先に現れます。",
 					False);
@@ -706,7 +720,7 @@ package body Tabula.Vampires.Villages is
 				Value : in String) is
 			begin
 				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Monster_Side := Villages.Monster_Side'Value (Value);
+				Village_Type (Village.all).Monster_Side := Monster_Side_Mode'Value (Value);
 			end Change;
 			
 		end Monster_Side;

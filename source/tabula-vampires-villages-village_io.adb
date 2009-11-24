@@ -86,7 +86,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 		use Tabula.Calendar.Time_IO;
 		use Tabula.Villages.Village_IO.Village_State_IO;
 		use Tabula.Villages.Village_IO.Village_Time_IO;
-		use Execution_Mode_IO;
+		use Execution_IO;
 		use Attack_IO;
 		use Servant_Knowing_IO;
 		use Person_Role_IO;
@@ -113,7 +113,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 			IO (Serializer, "dawn", Village.Dawn);
 			IO (Serializer, "day-duration", Village.Day_Duration);
 			IO (Serializer, "night-duration", Village.Night_Duration);
-			IO (Serializer, "execution", Village.Execution, Default => From_Second);
+			IO (Serializer, "execution", Village.Execution, Default => From_First);
 			IO (Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
 			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
 			IO (Serializer, "attack", Village.Attack, Default => Two);
