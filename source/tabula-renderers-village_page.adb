@@ -37,8 +37,6 @@ is
 	Role_Image_File_Name : constant array(Vampires.Villages.Person_Role) of not null access constant String := (
 		Vampires.Villages.Gremlin => new String'("gremlin.png"),
 		Vampires.Villages.Vampire_Role => new String'("Vampires.png"),
-		Vampires.Villages.Werewolf => new String'("werewolf.png"),
-		Vampires.Villages.Possessed => new String'("possessed.png"),
 		Vampires.Villages.Servant => new String'("servant.png"),
 		Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant => new String'("inhabitant.png"),
 		Vampires.Villages.Detective => new String'("detective.png"),
@@ -121,8 +119,6 @@ is
 			when Vampires.Villages.Unfortunate_Inhabitant => return "数奇な運命の村人";
 			when Vampires.Villages.Vampire_K | Vampires.Villages.Vampire_Q | Vampires.Villages.Vampire_J => return "吸血鬼";
 			when Vampires.Villages.Servant => return "吸血鬼の使徒";
-			when Vampires.Villages.Werewolf => return "人狼";
-			when Vampires.Villages.Possessed => return "人狼の下僕";
 			when Vampires.Villages.Detective => return "探偵";
 			when Vampires.Villages.Astronomer => return "天文家";
 			when Vampires.Villages.Doctor => return "医者";
@@ -139,8 +135,6 @@ is
 			when Vampires.Villages.Unfortunate_Inhabitant => return "奇";
 			when Vampires.Villages.Vampire_K | Vampires.Villages.Vampire_Q | Vampires.Villages.Vampire_J => return "鬼";
 			when Vampires.Villages.Servant => return "使";
-			when Vampires.Villages.Werewolf => return "狼";
-			when Vampires.Villages.Possessed => return "僕";
 			when Vampires.Villages.Detective => return "探";
 			when Vampires.Villages.Astronomer => return "天";
 			when Vampires.Villages.Doctor => return "医";
@@ -696,8 +690,8 @@ is
 						Male_And_Female => Vampires.Villages.Male_And_Female (Village.People),
 						Execution => Village.Execution,
 						Teaming => Village.Teaming,
-						Monster_Side => Village.Monster_Side,
-						Appearance => Village.Appearance);
+						Unfortunate => Village.Unfortunate,
+						Monster_Side => Village.Monster_Side);
 			begin
 				Write (Output, "<ul>");
 				for I in Sets'Range loop
@@ -884,8 +878,6 @@ is
 					end;
 				when Vampires.Villages.Gremlin =>
 					return "あなたは妖魔です。";
-				when Vampires.Villages.Werewolf | Vampires.Villages.Possessed =>
-					raise Program_Error;
 			end case;
 		end if;
 	end Role_Text;
@@ -1847,8 +1839,6 @@ is
 										when Vampires.Villages.Vampire_Role =>
 											Vote_Form (Output, Player_Index, Vampires.Villages.Vampire_K, False,
 												Person.Records.Constant_Reference(Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");
-										when Vampires.Villages.Werewolf | Vampires.Villages.Possessed =>
-											raise Program_Error;
 									end case;
 								end if;
 							elsif Tag = "action" then

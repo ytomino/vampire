@@ -35,11 +35,12 @@ package Tabula.Vampires.Villages is
 		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
 		Village_Side, Vampire_Side, Gremlin);
 	
-	type Person_Role is (Inhabitant, Gremlin,
-		Vampire_K, Vampire_Q, Vampire_J, Servant, 
-		Werewolf, Possessed,
-		Detective, Doctor, Astronomer, Hunter, 
+	type Person_Role is (
+		Gremlin,
+		Vampire_K, Vampire_Q, Vampire_J, Servant,
+		Inhabitant,
 		Unfortunate_Inhabitant,
+		Detective, Doctor, Astronomer, Hunter,
 		Lover, Loved_Inhabitant, Sweetheart_M, Sweetheart_F);
 	subtype Matrix_Role is Person_Role range Detective .. Hunter;
 	subtype Night_Role is Person_Role range Astronomer .. Hunter;
@@ -47,7 +48,7 @@ package Tabula.Vampires.Villages is
 	subtype Vampire_Role is Person_Role range Vampire_K .. Vampire_J;
 	
 	type Role_Appearance is (None, Random, Force);
-	type Role_Appearances is array(Detective .. Lover) of Role_Appearance;
+	type Role_Appearances is array(Unfortunate_Inhabitant .. Lover) of Role_Appearance;
 	
 	type Person_State is (Normal, Infected, Died);
 	

@@ -6,11 +6,10 @@
 		<title>説明 - The Village of Vampire</title>
 		<style id="option-styles" type="text/css">
 			.option {display:none; color:#ffffdd}
-			.Victim_Existing_all {display:inline}
-			.Victim_Existing_true {display:block}
-			.Victim_Existing_false {display:block}
-			.First_Execution_true {display:block}
-			.First_Execution_false {display:block}
+			.Execution_Dummy_Killed_And_From_First {display:block}
+			.Execution_From_First {display:block}
+			.Execution_From_Second {display:block}
+			.Execution_Provisional_Voting_From_Second {display:block}
 			.Teaming_all {display:inline}
 			.Teaming_Low_Density {display:block}
 			.Teaming_Shuffling_Headless {display:block}
@@ -128,8 +127,7 @@
 				<li>
 					オプションルール
 					<ul>
-						<li><a href="#victim-existing">初日犠牲者</a></li>
-						<li><a href="#first-execution">初日の処刑</a></li>
+						<li><a href="#execution">処刑</a></li>
 						<li><a href="#village-teaming">編成</a></li>
 						<li><a href="#monster-side">吸血鬼側の編成</a></li>
 						<li><a href="#attack">襲撃</a></li>
@@ -280,16 +278,6 @@
 				なお同数はランダムになります。<br/>
 				棄権することもでき、全員が棄権すれば処刑は行われませんが、誰かがこっそり一票でも入れたらそれが有効になりますので、あまり賢い選択ではありません。
 				そして、無記名投票のため、誰がその裏切り者なのかすらわからないのです。
-			</p>
-			<p>
-				投票時、開票申請を行うこともできます。
-				過半数が開票申請を行った場合、その場で一次開票が行われます。<br/>
-				一次開票の結果、票を集めた上位2名が、本投票の候補となり、その日はそれ以外の人に投票できなくなります。
-				同率2位が複数いる場合、ランダムではなく同率2位の全員が本投票の候補になります。<br/>
-				前日無発言だったため行動終了状態になっている人は、過半数の判定の母数から除かれます。
-				前日無発言でも、当日行動を再開している場合は、母数に含まれます。<br/>
-				過半数が開票申請を行っても、全員が同じ人に投票している等で、票がばらけておらず、候補が2人以上にならない場合は、開票は行われません。
-				また、短期村では、投票待ちのための延長時間中は、開票は行われません。
 			</p>
 			<h2 id="action">アクション</h2>
 			<p>
@@ -485,10 +473,6 @@
 			<p>
 				7～8人の時に天文家と猟師が同時に出ることはありません。
 			</p>
-			<p class="Victim_Existing_true option">
-				初日犠牲者を導入していると、天文家は必ず出現します。
-				ただし初日犠牲者が天文家になることも有り得ます。
-			</p>
 			<p class="Teaming_Hiding Teaming_Hiding_Gremlin option">
 				村側の編成を隠していると、天文家は必ず出現します。
 				また、標準編成と比較して、ただの村人がひとり減って、村側の能力者がひとり増えます。
@@ -503,6 +487,13 @@
 			</p>
 			<p class="Unfortunate_Mode_Appear Unfortunate_Mode_Infected_Only option">
 				数奇な運命の村人は、<span class="Unfortunate_Mode_all option">オプションで出現するようにしていれば、</span>8人から登場します。
+			</p>
+			<p class="Execution_From_Second Execution_Provisional_Voting_From_Second option">
+				処刑を2日目からにしていると、全ての登場順が一人分ずつ遅れます。
+				村人がひとり、表よりも多いことになります。
+			</p>
+			<p>
+				出現する可能性のある組み合わせは、プロローグの一番下、オプションルールのところに表示されますので、確認ください。
 			</p>
 			<h2 id="inhabitant">村人</h2>
 			<p>
@@ -753,21 +744,18 @@
 				ただし感染とオリジナル吸血鬼の区別がつかないため、両方の人数の合計がわかります。
 			</p>
 			<hr class="speech" />
-			<h2 id="victim-existing">オプションルール……<br />初日犠牲者</h2>
+			<h2 id="execution">オプションルール……<br />処刑</h2>
 			<form class="narration"><div>
-				<select id="Victim_Existing" onchange="sync('Victim_Existing')">
-					<option value="" selected="selected">≪初日犠牲者≫</option>
-					<option value="false">能力者が揃った状態で開始します。*</option>
-					<option value="true">能力者が死亡済みの可能性があります。</option>
+				<select id="Victim_Existing" onchange="sync('Execution')">
+					<option value="" selected="selected">≪処刑≫</option>
+					<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</option>
+					<option value="From_First">初日から無記名投票によって処刑を行います。*</option>
+					<option value="From_Second">2日目から無記名投票によって処刑を行います。</option>
+					<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票によって処刑を行います。</option>
 				</select>
 			</div></form>
-			<p class="Victim_Existing_false option">
-				<b>能力者が揃った状態で開始します。</b><br/>
-				全ての能力者はプレイヤーに割り振られ、1日目開始状態で編成通りの能力者が揃っています。
-				<em>現在の初期値です。</em>
-			</p>
-			<p class="Victim_Existing_true option">
-				<b>能力者が死亡済みの可能性があります。</b><br/>
+			<p class="Execution_Dummy_Killed_And_From_First option">
+				<b>能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</b><br/>
 				「地主さん」が能力者の可能性もあるオプションです。
 				主に1ゲーム数時間未満の短期人狼村で採用されているルールで、ひとりしか名乗りを上げていない能力者だからといって即座に本物であると言えなくなります。
 				初日犠牲者が占い師(天文家)も有り得ますので、バランスが安定せず、時間を費やしてプレイされる長期村では好まれない傾向にあるようです。
@@ -775,23 +763,28 @@
 				初日犠牲者が吸血鬼または妖魔の可能性はありません。
 				また探偵は、初日犠牲者の役を知ることができます。
 			</p>
-			<h2 id="first-execution">初日の処刑</h2>
-			<form class="narration"><div>
-				<select id="First_Execution" onchange="sync('First_Execution')">
-					<option value="" selected="selected">≪初日の処刑≫</option>
-					<option value="false">初日は処刑を行いません。*</option>
-					<option value="true">初日から処刑を行います。</option>
-				</select>
-			</div></form>
-			<p class="First_Execution_false option">
-				<b>初日は処刑を行いません。</b><br/>
-				1日目は、処刑投票を行いません。
-				吸血鬼の襲撃と、天文家、猟師の対象の設定は、通常どおりです。
-			</p>
-			<p class="First_Execution_true option">
-				<b>初日から処刑を行います。</b><br/>
+			<p class="Execution_From_First option">
+				<b>初日から無記名投票によって処刑を行います。</b><br/>
 				1日目から、処刑投票を行います。
+				初日犠牲者に相当するものはありません。
 				<em>現在の初期値です。</em>
+			</p>
+			<p class="Execution_From_Second option">
+				<b>2日目から無記名投票によって処刑を行います。</b><br/>
+				初日は、処刑投票を行いません。
+				吸血鬼の襲撃や、各能力者の能力は、通常どおり使用できます。
+				全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。
+				初日犠牲者をプレイヤーが担当するオプションです。
+			</p>
+			<p class="Execution_Provisional_Voting_From_Second option">
+				<b>2日目から仮投票と本投票によって処刑を行います。</b><br/>
+				初日は、処刑投票を行いません。
+				吸血鬼の襲撃や、各能力者の能力は、通常どおり使用できます。
+				全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。
+				また、2日目以降、強制更新時間の半分(長期村では24時間)が経過すると、仮投票が行われます。
+				仮投票の結果、票を集めた上位2名が、本投票の候補となり、その日はそれ以外の人に投票できなくなります。
+				同率2位が複数いる場合、同率2位の全員が本投票の候補になります。
+				いわゆる「まとめ役」を不要にするためのオプションです。
 			</p>
 			<h2 id="village-teaming">編成</h2>
 			<form class="narration"><div>

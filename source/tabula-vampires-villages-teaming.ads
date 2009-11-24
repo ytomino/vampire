@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Numerics.MT19937;
 package Tabula.Vampires.Villages.Teaming is
 	
 	type Role_Set is array (Person_Role) of Natural;
@@ -9,7 +10,19 @@ package Tabula.Vampires.Villages.Teaming is
 		Male_And_Female : Boolean;
 		Execution : Execution_Mode;
 		Teaming : Teaming_Mode;
-		Monster_Side : Monster_Side_Mode;
-		Appearance : Role_Appearances) return Role_Set_Array;
+		Unfortunate : Unfortunate_Mode;
+		Monster_Side : Monster_Side_Mode) return Role_Set_Array;
+	
+	function Select_Set (
+		Sets : Role_Set_Array;
+		Appearance : Role_Appearances;
+		Generator : not null access Ada.Numerics.MT19937.Generator)
+		return Role_Set;
+	
+	procedure Shuffle (
+		People : in out Villages.People.Vector;
+		Victim : access Villages.Person_Role;
+		Set : Role_Set;
+		Generator : not null access Ada.Numerics.MT19937.Generator);
 	
 end Tabula.Vampires.Villages.Teaming;

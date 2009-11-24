@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
-with Tabula.Vampires.Villages.Shuffle;
+with Tabula.Vampires.Villages.Teaming;
 procedure Tabula.Vampires.Villages.Advance(
 	Village : in out Village_Type;
 	Now : in Ada.Calendar.Time;
@@ -71,7 +71,6 @@ is
 		return -1;
 	end Get_Execution;
 	Gremlin_Kill_Astronomer, Gremlin_Kill_Doctor : Boolean := False;
-	Victim : access Person_Role;
 begin
 	case Village.State is
 		when Tabula.Villages.Prologue =>
@@ -108,19 +107,29 @@ begin
 				Village.State := Tabula.Villages.Opened;
 				Village.Time := Tabula.Villages.Daytime; -- 常に昼スタート
 				-- 能力決定
-				Victim := null;
-				if Village.Execution = Dummy_Killed_And_From_First then
-					Victim := Village.Dummy_Role'Access;
-				end if;
-				if Village.Unfortunate = None then
-					Village.Appearance(Unfortunate_Inhabitant) := None;
-				end if;
-				Shuffle(Village.People, 
-					Victim => Victim, 
-					Teaming => Village.Teaming,
-					Monster_Side => Village.Monster_Side, 
-					Appearance => Village.Appearance,
-					Generator => Generator);
+				declare
+					Sets : Teaming.Role_Set_Array renames Teaming.Possibilities (
+						People_Count => Village.People.Length,
+						Male_And_Female => Male_And_Female (Village.People),
+						Execution => Village.Execution,
+						Teaming => Village.Teaming,
+						Unfortunate => Village.Unfortunate,
+						Monster_Side => Village.Monster_Side);
+					Set : Teaming.Role_Set renames Teaming.Select_Set (
+						Sets => Sets,
+						Appearance => Village.Appearance,
+						Generator => Generator);
+					Victim : access Person_Role := null;
+				begin
+					if Village.Execution = Dummy_Killed_And_From_First then
+						Victim := Village.Dummy_Role'Access;
+					end if;
+					Teaming.Shuffle (
+						People => Village.People,
+						Victim => Victim,
+						Set => Set,
+						Generator => Generator);
+				end;
 				Append(Village.Messages, (
 					Kind => Breakdown,
 					Day => Village.Today,
