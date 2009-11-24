@@ -39,9 +39,10 @@ package Tabula.Vampires.Villages is
 		Gremlin,
 		Vampire_K, Vampire_Q, Vampire_J, Servant,
 		Inhabitant,
+		Loved_Inhabitant,
 		Unfortunate_Inhabitant,
 		Detective, Doctor, Astronomer, Hunter,
-		Lover, Loved_Inhabitant, Sweetheart_M, Sweetheart_F);
+		Lover, Sweetheart_M, Sweetheart_F);
 	subtype Matrix_Role is Person_Role range Detective .. Hunter;
 	subtype Night_Role is Person_Role range Astronomer .. Hunter;
 	subtype Daytime_Role is Person_Role range Detective .. Doctor;

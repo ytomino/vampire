@@ -116,8 +116,9 @@ package body Tabula.Vampires.Villages.Teaming is
 			then
 				Process_Doctor (Set, Village_Side_Superman_Count);
 			end if;
-			if Village_Side_Superman_Count > 0 and then
-				(Set (Servant) > 0 or else Set (Astronomer) = 0)
+			if Village_Side_Superman_Count > 0 and then (
+				Set (Astronomer) = 0 or else
+				Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) >= 3)
 			then
 				Set_2 (Hunter) := 1;
 				Process_Doctor (Set_2, Village_Side_Superman_Count - 1);
@@ -179,7 +180,7 @@ package body Tabula.Vampires.Villages.Teaming is
 					Vampire_Count_2 := Vampire_Count_2 - 1;
 					Set_2 (Servant) := 1;
 					Process_Vampires (
-						Set,
+						Set_2,
 						Village_Side_Superman_Count,
 						Vampire_Count_2);
 				end if;
