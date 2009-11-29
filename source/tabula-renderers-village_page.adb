@@ -1340,7 +1340,11 @@ is
 										Narration (Vote_Report (Village.all, Day => Message.Day, Provisional => True, Player_Index => -1));
 										Narration (Vote_Count (Village.all, Day => Message.Day, Provisional => True, Executed => -1));
 									when Vampires.Villages.Execution =>
-										Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
+										if Village.Execution = Vampires.Villages.Provisional_Voting_From_Second then
+											Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => -1));
+										else
+											Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
+										end if;
 										Narration (Vote_Count (Village.all, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
 										Executed := Message.Target;
 									when Vampires.Villages.Awareness =>
