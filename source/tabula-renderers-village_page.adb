@@ -270,13 +270,19 @@ is
 			begin
 				Ada.Strings.Unbounded.Append (Result, "仮投票の結果、");
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
-					if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.Candidate then
-						if not First then
-							Ada.Strings.Unbounded.Append(Result, "、");
+					declare
+						The_Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference (I).Element.all;
+					begin
+						if The_Person.Records.Constant_Reference (Day).Element.Candidate and then
+							The_Person.Records.Constant_Reference (Day).Element.State /= Vampires.Villages.Died
+						then
+							if not First then
+								Ada.Strings.Unbounded.Append (Result, "、");
+							end if;
+							Ada.Strings.Unbounded.Append (Result, Name (The_Person));
+							First := False;
 						end if;
-						Ada.Strings.Unbounded.Append(Result, Name(Village.People.Constant_Reference(I).Element.all));
-						First := False;
-					end if;
+					end;
 				end loop;
 				Ada.Strings.Unbounded.Append(Result, "が本投票の候補になります。");
 			end;
