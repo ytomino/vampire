@@ -143,13 +143,14 @@ package body Tabula.Vampires.Villages is
 			and then Commited_Count = Count;
 	end Commit_Finished;
 	
-	function Provisional_Voted(Village : Village_Type) return Boolean is
+	function Provisional_Voted (Village : Village_Type) return Boolean is
 	begin
-		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+		for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
 			declare
-				It : Message renames Village.Messages.Element(I);
+				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
 			begin
-				if It.Day = Village.Today and then It.Kind = Provisional_Vote then
+				exit when It.Day /= Village.Today;
+				if It.Kind = Provisional_Vote then
 					return True;
 				end if;
 			end;
@@ -279,7 +280,11 @@ package body Tabula.Vampires.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Escape;
 	
-	procedure Vote(Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time) is
+	procedure Vote (
+		Village : in out Village_Type;
+		Player : in Natural;
+		Target : in Integer)
+	is
 		Rec : Person_Record renames Village.People.Reference(Player).Element.Records.Reference(Village.Today).Element.all;
 	begin
 		pragma Assert(Target < 0 or else Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate);
@@ -288,88 +293,73 @@ package body Tabula.Vampires.Villages is
 			and then Village.Time = Tabula.Villages.Daytime -- 短期の投票延長期間は仮投票は発生させない
 		then
 			Rec.Provisional_Vote := Target;
-			Rec.Applied := Apply;
-			if Apply then
-				-- 開示申請の集計
+		end if;
+	end Vote;
+	
+	procedure Provisional_Vote (
+		Village : in out Village_Type;
+		Time : in Ada.Calendar.Time)
+	is
+		type Voted_Array is array (Natural range <>) of Natural;
+		procedure Sort is new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
+		Voted, Sort_Voted : Voted_Array (Village.People.First_Index .. Village.People.Last_Index) := (others => 0);
+		Candidates : Natural := 0;
+		Max : Natural := 0;
+		Limit : Natural := 0;
+	begin
+		-- 集計
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.State /= Died then
 				declare
-					type Voted_Array is array (Natural range <>) of Natural;
-					procedure Sort is new Ada.Containers.Generic_Array_Sort(Natural, Natural, Voted_Array);
-					Lives : array (Village.People.First_Index .. Village.People.Last_Index) of Boolean := (others => False);
-					Valid_Votes : Natural := 0;
-					Ayes : Natural := 0;
-					Voted, Sort_Voted : Voted_Array(Village.People.First_Index .. Village.People.Last_Index) := (others => 0);
-					Candidates : Natural := 0;
-					Max : Natural := 0;
-					Limit : Natural := 0;
+					Target : Integer := Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.Provisional_Vote;
 				begin
-					-- 前日からずっと無発言の人は集計から除く
-					for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
-						declare
-							It : Message renames Village.Messages.Element(I);
-						begin
-							if It.Day in Village.Today - 1 .. Village.Today and then It.Kind = Speech then
-								Lives(It.Subject) := True;
-							end if;
-						end;
-					end loop;
-					for I in Village.People.First_Index .. Village.People.Last_Index loop
-						if not Village.People.Constant_Reference(I).Element.Commited then
-							Lives(I) := True;
+					if Target in Village.People.First_Index .. Village.People.Last_Index then
+						if Voted (Target) = 0 then
+							Candidates := Candidates + 1;
 						end if;
-					end loop;
-					-- 集計
-					for I in Village.People.First_Index .. Village.People.Last_Index loop
-						if Lives(I) then
-							Valid_Votes := Valid_Votes + 1;
-							if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.Applied then
-								Ayes := Ayes + 1;
-							end if;
-							declare
-								Target : Integer := Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.Provisional_Vote;
-							begin
-								if Target in Village.People.First_Index .. Village.People.Last_Index then
-									if Voted(Target) = 0 then
-										Candidates := Candidates + 1;
-									end if;
-									Voted(Target) := Voted(Target) + 1;
-									if Voted(Target) > Max then
-										Max := Voted(Target);
-									end if;
-								end if;
-							end;
+						Voted (Target) := Voted (Target) + 1;
+						if Voted (Target) > Max then
+							Max := Voted (Target);
 						end if;
-					end loop;
-					-- 過半数が開票に賛成して、候補が2名以上いる場合に適用
-					if Ayes * 2 > Valid_Votes and then Candidates >= 2 then
-						-- 同率2位までを候補とする
-						Sort_Voted := Voted;
-						Sort(Sort_Voted);
-						Limit := Sort_Voted(Sort_Voted'Last - 1);
-						for I in Village.People.First_Index .. Village.People.Last_Index loop
-							Village.People.Reference(I).Element.Records.Reference(Village.Today).Element.Candidate := Voted(I) >= Limit;
-						end loop;
-						-- 選ばれた候補以外に投票していた人は棄権に戻す
-						for I in Village.People.First_Index .. Village.People.Last_Index loop
-							declare
-								V : Integer renames Village.People.Reference(I).Element.Records.Reference(Village.Today).Element.Vote;
-							begin
-								if V >= 0 and then not Village.People.Constant_Reference(V).Element.Records.Constant_Reference(Village.Today).Element.Candidate then
-									V := -1;
-								end if;
-							end;
-						end loop;
-						Messages.Append(Village.Messages, Message'(
-							Kind => Provisional_Vote,
-							Day => Village.Today,
-							Time => Time,
-							Subject => -1,
-							Target => -1,
-							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 					end if;
 				end;
 			end if;
+		end loop;
+		-- 候補が2名以上いる場合に適用
+		if Candidates >= 2 then
+			-- 同率2位までを候補とする
+			Sort_Voted := Voted;
+			Sort (Sort_Voted);
+			Limit := Sort_Voted (Sort_Voted'Last - 1);
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				declare
+					The_Person : Person_Type renames Village.People.Reference (I).Element.all;
+					The_Record : Person_Record renames The_Person.Records.Reference (Village.Today).Element.all;
+				begin
+					if The_Record.State /= Died then
+						The_Record.Candidate := Voted (I) >= Limit;
+					end if;
+				end;
+			end loop;
+			-- 選ばれた候補以外に投票していた人は棄権に戻す
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				declare
+					V : Integer renames Village.People.Reference (I).Element.Records.Reference (Village.Today).Element.Vote;
+				begin
+					if V >= 0 and then not Village.People.Constant_Reference (V).Element.Records.Constant_Reference (Village.Today).Element.Candidate then
+						V := -1;
+					end if;
+				end;
+			end loop;
+			Messages.Append (Village.Messages, Message'(
+				Kind => Provisional_Vote,
+				Day => Village.Today,
+				Time => Time,
+				Subject => -1,
+				Target => -1,
+				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 		end if;
-	end Vote;
+	end Provisional_Vote;
 	
 	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean is
 	begin
@@ -1019,7 +1009,7 @@ package body Tabula.Vampires.Villages is
 					Unfortunate_Mode'Image (Appear),
 					Item.Village.Unfortunate = Appear,
 					"数奇な運命の村人がいるかもしれません。",
-					False);
+					Unrecommended => True);
 				Process (
 					Unfortunate_Mode'Image (Infected_Only),
 					Item.Village.Unfortunate = Infected_Only,

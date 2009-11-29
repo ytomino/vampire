@@ -1016,7 +1016,6 @@ begin
 									else
 										declare
 											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
-											Apply : constant Boolean := Web.Checkbox_Value(Web.Element(Inputs, "apply"));
 										begin
 											if Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -1029,10 +1028,8 @@ begin
 												Web.Header_Break (Output);
 												Renderer.Message_Page(Output, Village_Id, Village'Access, "仮投票が行われました。選ばれた候補以外に投票はできなくなります。", User_Id, User_Password);
 											else
-												if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Vote
-													or else Apply /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Applied
-												then
-													Villages.Vote(Village, Player, Target, Apply, Now);
+												if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Vote then
+													Villages.Vote(Village, Player, Target);
 													Villages.Save(Village_Id, Village);
 												end if;
 												Render_Reload_Page;

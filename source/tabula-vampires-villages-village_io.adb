@@ -30,14 +30,13 @@ package body Tabula.Vampires.Villages.Village_IO is
 				procedure Person_Records_Callback(Item : in out Person_Record) is
 					procedure Person_Record_Callback is
 					begin
-						IO(Serializer, "state", Item.State);
-						IO(Serializer, "vote", Item.Vote, Default => Default_Person_Record.Vote);
-						IO(Serializer, "provisional-vote", Item.Provisional_Vote, Default => Default_Person_Record.Provisional_Vote);
-						IO(Serializer, "applied", Item.Applied, Default => Default_Person_Record.Applied);
-						IO(Serializer, "candidate", Item.Candidate, Default => Default_Person_Record.Candidate);
-						IO(Serializer, "target", Item.Target, Default => Default_Person_Record.Target);
-						IO(Serializer, "special", Item.Special, Default => Default_Person_Record.Special);
-						IO(Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
+						IO (Serializer, "state", Item.State);
+						IO (Serializer, "vote", Item.Vote, Default => Default_Person_Record.Vote);
+						IO (Serializer, "provisional-vote", Item.Provisional_Vote, Default => Default_Person_Record.Provisional_Vote);
+						IO (Serializer, "candidate", Item.Candidate, Default => Default_Person_Record.Candidate);
+						IO (Serializer, "target", Item.Target, Default => Default_Person_Record.Target);
+						IO (Serializer, "special", Item.Special, Default => Default_Person_Record.Special);
+						IO (Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
 					end Person_Record_Callback;
 				begin
 					DYAYaml.IO(Serializer, Person_Record_Callback'Access);

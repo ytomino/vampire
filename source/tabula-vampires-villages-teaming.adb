@@ -394,6 +394,10 @@ package body Tabula.Vampires.Villages.Teaming is
 		then
 			Index := Random.Random (Generator);
 		end if;
+		-- 天文家無しの出現率を少し下げる
+		if Sets (Index)(Astronomer) = 0 then
+			Index := Random.Random (Generator);
+		end if;
 		return Sets (Index);
 	end Select_Set;
 	

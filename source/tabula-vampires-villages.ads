@@ -57,7 +57,6 @@ package Tabula.Vampires.Villages is
 		State : Person_State;
 		Vote : Integer;
 		Provisional_Vote : Integer; -- 仮投票
-		Applied : Boolean; -- 開票申請
 		Candidate : Boolean; -- 投票の候補
 		Target : Integer;
 		Special : Boolean;
@@ -68,7 +67,6 @@ package Tabula.Vampires.Villages is
 		State => Normal,
 		Vote => -1,
 		Provisional_Vote => -1,
-		Applied => False,
 		Candidate => True,
 		Target => -1,
 		Special => False,
@@ -218,7 +216,13 @@ package Tabula.Vampires.Villages is
 	function Male_And_Female (People : Villages.People.Vector) return Boolean;
 	
 	procedure Escape (Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
-	procedure Vote (Village : in out Village_Type; Player : Natural; Target : Integer; Apply: Boolean; Time : Ada.Calendar.Time);
+	procedure Vote (
+		Village : in out Village_Type;
+		Player : in Natural;
+		Target : in Integer);
+	procedure Provisional_Vote (
+		Village : in out Village_Type;
+		Time : in Ada.Calendar.Time);
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	

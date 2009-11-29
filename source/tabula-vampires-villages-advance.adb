@@ -26,7 +26,6 @@ is
 			begin
 				New_Record.Vote := -1;
 				New_Record.Provisional_Vote := -1;
-				New_Record.Applied := False;
 				New_Record.Candidate := True;
 				New_Record.Target := -1;
 				New_Record.Special := False;
@@ -130,13 +129,40 @@ begin
 						Set => Set,
 						Generator => Generator);
 				end;
-				Append(Village.Messages, (
+				Append (Village.Messages, (
 					Kind => Breakdown,
 					Day => Village.Today,
 					Time => Now,
 					Subject => -1,
 					Target => -1,
 					Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+				-- 初日犠牲者有りの時はひとりを観測済み
+				if Village.Execution = Dummy_Killed_And_From_First then
+					declare
+						The_Astronomer : constant Integer := Village.Find_Superman (Astronomer);
+						Target : Integer;
+					begin
+						if The_Astronomer >= 0 then
+							loop
+								Target := People_Random.Random (Generator);
+								case Village.People.Constant_Reference (Target).Element.Role is
+									when Inhabitant | Loved_Inhabitant =>
+										exit;
+									when others =>
+										null;
+								end case;
+							end loop;
+							Append (Village.Messages, (
+								Kind => Astronomer_Observation, 
+								Day => Village.Today,
+								Time => Now,
+								Subject => The_Astronomer,
+								Target => Target,
+								Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+						end if;
+					end;
+				end if;
+				-- 使徒が吸血鬼を知る
 				if Village.Servant_Knowing /= None then
 					declare
 						The_Servant : constant Integer := Find_Superman(Village, Servant);
@@ -163,6 +189,7 @@ begin
 						end if;
 					end;
 				end if;
+				-- 探偵が初日犠牲者の役を知る
 				if Village.Execution = Dummy_Killed_And_From_First then
 					declare
 						The_Detective : constant Integer := Find_Superman(Village, Detective);
@@ -201,6 +228,7 @@ begin
 					return (Vampire_Count = 0) or (Inhabitant_Count <= Vampire_Count);
 				end Finished;
 				Daytime_To_Vote, Vote_To_Night, Night_To_Daytime : Boolean := False;
+				Provisional_Voting : Boolean := False;
 				Executed : Integer;
 			begin
 				case Village.Time is
@@ -222,10 +250,14 @@ begin
 									Night_To_Daytime := True;
 								end if;
 							end if;
+						elsif Now >= Village.Dawn + Village.Day_Duration / 2
+							and then not Village.Provisional_Voted
+						then
+							Provisional_Voting := True;
 						end if;
 					when Tabula.Villages.Vote =>
 						if Now >= Village.Dawn + (Village.Day_Duration + Village.Night_Duration + Vote_Duration) 
-							or else Vote_Finished(Village) 
+							or else Vote_Finished(Village)
 						then
 							Vote_To_Night := True;
 							if Village.Night_Duration = 0.0 then
@@ -233,8 +265,12 @@ begin
 							end if;
 						end if;
 				end case;
-				Changed := Daytime_To_Vote or Vote_To_Night or Night_To_Daytime;
+				Changed := Daytime_To_Vote or Vote_To_Night or Night_To_Daytime or Provisional_Voting;
 				List_Changed := Vote_To_Night;
+				-- 仮投票
+				if Provisional_Voting then
+					Provisional_Vote (Village, Now);
+				end if;
 				-- 昼から投票待ちへ
 				if Daytime_To_Vote then
 					Village.Time := Tabula.Villages.Vote;

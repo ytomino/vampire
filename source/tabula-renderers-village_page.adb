@@ -36,7 +36,7 @@ is
 	
 	Role_Image_File_Name : constant array(Vampires.Villages.Person_Role) of not null access constant String := (
 		Vampires.Villages.Gremlin => new String'("gremlin.png"),
-		Vampires.Villages.Vampire_Role => new String'("Vampires.png"),
+		Vampires.Villages.Vampire_Role => new String'("vampire.png"),
 		Vampires.Villages.Servant => new String'("servant.png"),
 		Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant => new String'("inhabitant.png"),
 		Vampires.Villages.Detective => new String'("detective.png"),
@@ -190,7 +190,12 @@ is
 		return +Result;
 	end Survivors_List;
 	
-	function Vote_Report(Village : Vampires.Villages.Village_Type; Day : Natural; Provisional : Boolean; Player_Index : Integer) return String is
+	function Vote_Report (
+		Village : Vampires.Villages.Village_Type;
+		Day : Natural;
+		Provisional : Boolean;
+		Player_Index : Integer) return String
+	is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
@@ -204,7 +209,10 @@ is
 					V := P.Records.Constant_Reference(Day).Element.Vote;
 				end if;
 				if V in Village.People.First_Index .. Village.People.Last_Index then
-					if Village.State >= Villages.Epilogue or Player_Index = I then
+					if Village.State >= Villages.Epilogue or else
+						Player_Index = I or else
+						Village.Execution = Vampires.Villages.Provisional_Voting_From_Second
+					then
 						declare
 							T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
 						begin
@@ -217,7 +225,12 @@ is
 		return +Result;
 	end Vote_Report;
 	
-	function Vote_Count(Village : Vampires.Villages.Village_Type; Day : Natural; Provisional : Boolean; Executed: Integer) return String is
+	function Vote_Count (
+		Village : Vampires.Villages.Village_Type;
+		Day : Natural;
+		Provisional : Boolean;
+		Executed: Integer) return String
+	is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 		Voted : array(Village.People.First_Index .. Village.People.Last_Index) of Natural := (others => 0);
 		Max_Voted : Natural := 0;
@@ -255,7 +268,7 @@ is
 			declare
 				First : Boolean := True;
 			begin
-				Ada.Strings.Unbounded.Append(Result, Line_Break & "仮投票の結果、");
+				Ada.Strings.Unbounded.Append (Result, "仮投票の結果、");
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
 					if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.Candidate then
 						if not First then
@@ -771,16 +784,6 @@ is
 		end if;
 		Write(Output, "</option>" & Line_Break & "</select>" & Line_Break);
 		case Kind is
-			when Vampires.Villages.Inhabitant =>
-				if Special then
-					Write(Output, " <input name=""apply"" type=""checkbox"" ");
-					if Current_Special then
-						Write(Output, "checked=""checked"" ");
-					end if;
-					Write(Output, "/>開示申請");
-				elsif Current_Special then
-					Write(Output, " <input name=""apply"" type=""hidden"" value=""on"" />");
-				end if;
 			when Vampires.Villages.Hunter =>
 				if Special then
 					Write(Output, " <input name=""special"" type=""checkbox"" ");
@@ -1328,7 +1331,7 @@ is
 											end if;
 										end if;
 									when Vampires.Villages.Provisional_Vote =>
-										Narration (Vote_Report (Village.all, Day => Message.Day, Provisional => True, Player_Index => Player_Index), "narrationi");
+										Narration (Vote_Report (Village.all, Day => Message.Day, Provisional => True, Player_Index => -1));
 										Narration (Vote_Count (Village.all, Day => Message.Day, Provisional => True, Executed => -1));
 									when Vampires.Villages.Execution =>
 										Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
@@ -1486,15 +1489,8 @@ is
 														Ada.Strings.Unbounded.Append(Log, "吸血鬼を退治しました。村人の勝利です！");
 													end if;
 												end;
+												Narration (+Log);
 											else
-												if Message.Day = 2 then
-													case Village.Execution is
-														when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
-															Narration (For_Execution_Message);
-														when others =>
-															null;
-													end case;
-												end if;
 												declare
 													S : String renames Fatalities_List (Village.all, Message.Day, Executed);
 												begin
@@ -1504,8 +1500,16 @@ is
 													end if;
 												end;
 												Ada.Strings.Unbounded.Append (Log, Survivors_List (Village.all, Message.Day));
+												Narration (+Log);
+												if Message.Day = 2 then
+													case Village.Execution is
+														when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
+															Narration (For_Execution_Message);
+														when others =>
+															null;
+													end case;
+												end if;
 											end if;
-											Narration(+Log);
 										end;
 									when Vampires.Villages.Introduction =>
 										Narration (Stages (Stage (Village.all)).Introduction.all);
@@ -1582,8 +1586,15 @@ is
 									when Villages.Opened =>
 										case Village.Time is
 											when Villages.Daytime =>
-												Write(Output, Ada.Calendar.Formatting.Image(Village.Dawn + Village.Day_Duration, Time_Zone => Calendar.Time_Offset));
-												Write(Output, "までに行動を終えてください。");
+												if Village.Today >= 2 and then
+													Village.Execution = Vampires.Villages.Provisional_Voting_From_Second and then
+													not Village.Provisional_Voted
+												then
+													Write (Output, Ada.Calendar.Formatting.Image (Village.Dawn + Village.Day_Duration / 2, Time_Zone => Calendar.Time_Offset));
+													Write (Output, "に一次開票します。");
+												end if;
+												Write (Output, Ada.Calendar.Formatting.Image (Village.Dawn + Village.Day_Duration, Time_Zone => Calendar.Time_Offset));
+												Write (Output, "までに行動を終えてください。");
 											when Villages.Vote =>
 												Write(Output, "全員の投票を待っています。");
 											when Villages.Night =>
@@ -1780,9 +1791,10 @@ is
 											end if;
 										end;
 									else
-										Vote_Form (Output, Player_Index, Vampires.Villages.Inhabitant, Village.Time /= Villages.Vote and then not Vampires.Villages.Provisional_Voted (Village.all),
+										Vote_Form (Output, Player_Index, Vampires.Villages.Inhabitant, 
+											Special => False,
 											Current => Person.Records.Constant_Reference(Village.Today).Element.Vote,
-											Current_Special => Person.Records.Constant_Reference(Village.Today).Element.Applied,
+											Current_Special => False,
 											Message => "誰を処刑に……",
 											Button => "投票");
 									end if;
