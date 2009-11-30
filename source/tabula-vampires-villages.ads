@@ -169,7 +169,13 @@ package Tabula.Vampires.Villages is
 		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
 		Last_Action_Time : Ada.Calendar.Time ;
 	end record;
-	type Message_Counts is array(Natural range <>) of Message_Count;
+	type Message_Counts is array (Natural range <>) of Message_Count;
+	
+	type Voted_Counts is array (Natural range <>) of Natural;
+	type Voted_Count_Info (Last : Integer) is record
+		Max : Natural;
+		Counts : Voted_Counts (0 .. Last);
+	end record;
 	
 	type Village_Type is new Tabula.Villages.Village with record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
@@ -208,6 +214,7 @@ package Tabula.Vampires.Villages is
 	function Be_Voting (Village : Village_Type) return Boolean;
 	function Provisional_Voted (Village : Village_Type) return Boolean;
 	function Vote_Finished (Village : Village_Type) return Boolean;
+	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
 	function No_Commit (Village : Village_Type) return Boolean;
 	function Commit_Finished (Village : Village_Type) return Boolean;
 	

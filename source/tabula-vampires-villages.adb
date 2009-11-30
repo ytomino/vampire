@@ -175,6 +175,34 @@ package body Tabula.Vampires.Villages is
 		return True;
 	end Vote_Finished;
 	
+	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info is
+	begin
+		return Result : Voted_Count_Info := (
+			Last => Village.People.Last_Index,
+			Max => 0,
+			Counts => (Village.People.First_Index .. Village.People.Last_Index => 0))
+		do
+			for I in Result.Counts'Range loop
+				declare
+					P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
+					V : Integer;
+				begin
+					if Provisional then
+						V := P.Records.Constant_Reference (Day).Element.Provisional_Vote;
+					else
+						V := P.Records.Constant_Reference (Day).Element.Vote;
+					end if;
+					if V in Result.Counts'Range then
+						Result.Counts (V) := Result.Counts (V) + 1;
+						if Result.Counts (V) > Result.Max then
+							Result.Max := Result.Counts (V);
+						end if;
+					end if;
+				end;
+			end loop;
+		end return;
+	end Voted_Count;
+	
 	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer is
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop

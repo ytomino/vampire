@@ -194,33 +194,41 @@ is
 		Village : Vampires.Villages.Village_Type;
 		Day : Natural;
 		Provisional : Boolean;
+		Voted : Vampires.Villages.Voted_Count_Info;
 		Player_Index : Integer) return String
 	is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			declare
-				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-				V : Integer;
-			begin
-				if Provisional then
-					V := P.Records.Constant_Reference(Day).Element.Provisional_Vote;
-				else
-					V := P.Records.Constant_Reference(Day).Element.Vote;
-				end if;
-				if V in Village.People.First_Index .. Village.People.Last_Index then
-					if Village.State >= Villages.Epilogue or else
-						Player_Index = I or else
-						Village.Execution = Vampires.Villages.Provisional_Voting_From_Second
-					then
-						declare
-							T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(V).Element.all;
-						begin
-							Ada.Strings.Unbounded.Append(Result, Name(P) & "は" & Name(T) & "に投票しました。" & Line_Break);
-						end;
+		for Count in reverse 1 .. Voted.Max loop
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				declare
+					P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference (I).Element.all;
+					V : Integer;
+				begin
+					if Provisional then
+						V := P.Records.Constant_Reference (Day).Element.Provisional_Vote;
+					else
+						V := P.Records.Constant_Reference (Day).Element.Vote;
 					end if;
-				end if;
-			end;
+					if V in Village.People.First_Index .. Village.People.Last_Index and then
+						Voted.Counts (V) = Count
+					then
+						if Village.State >= Villages.Epilogue or else
+							Player_Index = I or else
+							Village.Execution = Vampires.Villages.Provisional_Voting_From_Second
+						then
+							declare
+								T : Vampires.Villages.Person_Type renames
+									Village.People.Constant_Reference (V).Element.all;
+							begin
+								Ada.Strings.Unbounded.Append (
+									Result,
+									Name (P) & "は" & Name (T) & "に投票しました。" & Line_Break);
+							end;
+						end if;
+					end if;
+				end;
+			end loop;
 		end loop;
 		return +Result;
 	end Vote_Report;
@@ -229,65 +237,61 @@ is
 		Village : Vampires.Villages.Village_Type;
 		Day : Natural;
 		Provisional : Boolean;
+		Voted : Vampires.Villages.Voted_Count_Info;
 		Executed: Integer) return String
 	is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
-		Voted : array(Village.People.First_Index .. Village.People.Last_Index) of Natural := (others => 0);
-		Max_Voted : Natural := 0;
 	begin
-		for I in Voted'Range loop
-			declare
-				P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-				V : Integer;
-			begin
-				if Provisional then
-					V := P.Records.Constant_Reference(Day).Element.Provisional_Vote;
-				else
-					V := P.Records.Constant_Reference(Day).Element.Vote;
-				end if;
-				if V in Village.People.First_Index .. Village.People.Last_Index then
-					Voted(V) := Voted(V) + 1;
-					if Voted(V) > Max_Voted then
-						Max_Voted := Voted(V);
+		if Village.Execution = Vampires.Villages.Provisional_Voting_From_Second then
+			Ada.Strings.Unbounded.Append (
+				Result,
+				Vote_Report (Village, Day, Provisional, Voted, Player_Index => -1));
+		else
+			for Count in reverse 1 .. Voted.Max loop
+				for I in Voted.Counts'Range loop
+					if Voted.Counts (I) = Count then
+						declare
+							P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference (I).Element.all;
+						begin
+							Ada.Strings.Unbounded.Append (
+								Result,
+								To_String (Voted.Counts (I)) & "票が" & Name (P) & "に集まりました。" & Line_Break);
+						end;
 					end if;
-				end if;
-			end;
-		end loop;
-		for Count in reverse 1 .. Max_Voted loop
-			for I in Voted'Range loop
-				if Voted(I) = Count then
-					declare
-						P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-					begin
-						Ada.Strings.Unbounded.Append(Result, To_String(Voted(I)) & "票が" & Name(P) & "に集まりました。" & Line_Break);
-					end;
-				end if;
+				end loop;
 			end loop;
-		end loop;
+		end if;
 		if Provisional then
 			declare
 				First : Boolean := True;
 			begin
 				Ada.Strings.Unbounded.Append (Result, "仮投票の結果、");
-				for I in Village.People.First_Index .. Village.People.Last_Index loop
-					declare
-						The_Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference (I).Element.all;
-					begin
-						if The_Person.Records.Constant_Reference (Day).Element.Candidate and then
-							The_Person.Records.Constant_Reference (Day).Element.State /= Vampires.Villages.Died
-						then
-							if not First then
-								Ada.Strings.Unbounded.Append (Result, "、");
-							end if;
-							Ada.Strings.Unbounded.Append (Result, Name (The_Person));
-							First := False;
+				for Count in reverse 1 .. Voted.Max loop
+					for I in Village.People.First_Index .. Village.People.Last_Index loop
+						if Voted.Counts (I) = Count then
+							declare
+								The_Person : Vampires.Villages.Person_Type renames
+									Village.People.Constant_Reference (I).Element.all;
+							begin
+								if The_Person.Records.Constant_Reference (Day).Element.Candidate and then
+									The_Person.Records.Constant_Reference (Day).Element.State /= Vampires.Villages.Died
+								then
+									if not First then
+										Ada.Strings.Unbounded.Append (Result, "、");
+									end if;
+									Ada.Strings.Unbounded.Append (Result, Name (The_Person));
+									First := False;
+								end if;
+							end;
 						end if;
-					end;
+					end loop;
 				end loop;
-				Ada.Strings.Unbounded.Append(Result, "が本投票の候補になります。");
+				Ada.Strings.Unbounded.Append (Result, "が本投票の候補になります。");
 			end;
 		else
-			Ada.Strings.Unbounded.Append(Result, Name(Village.People.Constant_Reference(Executed).Element.all) & "は心臓に杭を打ち込まれました。");
+			Ada.Strings.Unbounded.Append (
+				Result,
+				Name (Village.People.Constant_Reference (Executed).Element.all) & "は心臓に杭を打ち込まれました。");
 		end if;
 		return +Result;
 	end Vote_Count;
@@ -1337,15 +1341,37 @@ is
 											end if;
 										end if;
 									when Vampires.Villages.Provisional_Vote =>
-										Narration (Vote_Report (Village.all, Day => Message.Day, Provisional => True, Player_Index => -1));
-										Narration (Vote_Count (Village.all, Day => Message.Day, Provisional => True, Executed => -1));
+										declare
+											Voted : Vampires.Villages.Voted_Count_Info renames
+												Village.Voted_Count (Message.Day, Provisional => True);
+										begin
+											Narration (Vote_Count (
+												Village.all,
+												Day => Message.Day,
+												Provisional => True,
+												Voted => Voted,
+												Executed => -1));
+										end;
 									when Vampires.Villages.Execution =>
-										if Village.Execution = Vampires.Villages.Provisional_Voting_From_Second then
-											Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => -1));
-										else
-											Narration (Vote_Report (Village.all, Day => Message.Day - 1, Provisional => False, Player_Index => Player_Index), "narrationi");
-										end if;
-										Narration (Vote_Count (Village.all, Day => Message.Day - 1, Provisional => False, Executed => Message.Target));
+										declare
+											Voted : Vampires.Villages.Voted_Count_Info renames
+												Village.Voted_Count (Message.Day - 1, Provisional => False);
+										begin
+											if Village.Execution /= Vampires.Villages.Provisional_Voting_From_Second then
+												Narration (Vote_Report (
+													Village.all,
+													Day => Message.Day - 1,
+													Provisional => False,
+													Voted => Voted,
+													Player_Index => Player_Index), "narrationi");
+											end if;
+											Narration (Vote_Count (
+												Village.all,
+												Day => Message.Day - 1,
+												Provisional => False,
+												Voted => Voted,
+												Executed => Message.Target));
+										end;
 										Executed := Message.Target;
 									when Vampires.Villages.Awareness =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
