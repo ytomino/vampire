@@ -146,9 +146,13 @@ begin
 							loop
 								Target := People_Random.Random (Generator);
 								case Village.People.Constant_Reference (Target).Element.Role is
-									when Inhabitant | Loved_Inhabitant =>
+									when Inhabitant | Loved_Inhabitant |
+										Unfortunate_Inhabitant |
+										Detective | Doctor | Astronomer | Hunter |
+										Lover | Sweetheart_M | Sweetheart_F |
+										Servant =>
 										exit;
-									when others =>
+									when Vampire_Role | Gremlin =>
 										null;
 								end case;
 							end loop;
