@@ -14,6 +14,8 @@ is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
+	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
+	
 	subtype People_Index is Natural range Village.People.First_Index .. Village.People.Last_Index;
 	package People_Random is new Ada.Numerics.MT19937.Discrete_Random(People_Index);
 	procedure Increment_Today is
@@ -374,14 +376,11 @@ begin
 									if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Died
 										and then Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today - 1).Element.Note /= Ada.Strings.Unbounded.Null_Unbounded_String
 									then
-										Append(Village.Messages, Message'(
-											Kind => Howling,
-											Day => Village.Today,
-											Time => Now,
-											Subject => I,
-											Target => -1,
-											Text => Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today - 1).Element.Note));
-										Village.People.Reference(I).Element.Records.Reference(Village.Today - 1).Element.Note := Ada.Strings.Unbounded.Null_Unbounded_String;
+										Night_Talk (
+											Village,
+											I,
+											+Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today - 1).Element.Note,
+											Now);
 									end if;
 									exit;
 								end if;
@@ -445,7 +444,7 @@ begin
 							end;
 						end if;
 					end;
-					-- 吸血鬼の会話
+					-- 吸血鬼の会話 (夜→昼の1発言は数奇な運命の村人に妨害されない)
 					Vampire_Meeting : for Rank in Vampire_Role loop
 						declare
 							Vampire : constant Integer := Find_Superman(Village, Rank);

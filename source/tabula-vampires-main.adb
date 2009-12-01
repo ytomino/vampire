@@ -971,34 +971,7 @@ begin
 													and then Village.People.Constant_Reference(Player).Element.Role in Villages.Vampire_Role
 													and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State /= Villages.Died
 												then
-													if Villages.Unfortunate(Village) then
-														for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
-															declare
-																Message : Villages.Message renames Element(Village.Messages, I);
-															begin
-																if Message.Day < Village.Today then
-																	Append(Village.Messages, Villages.Message'(
-																		Kind => Villages.Howling_Blocked,
-																		Day => Village.Today,
-																		Time => Now,
-																		Subject => -1,
-																		Target => -1,
-																		Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-																	exit;
-																end if;
-																exit when Message.Kind = Villages.Howling_Blocked;
-															end;
-														end loop;
-														Village.People.Reference(Player).Element.Records.Reference(Village.Today - 1).Element.Note := +Text;
-													else
-														Append(Village.Messages, Villages.Message'(
-															Kind => Villages.Howling,
-															Day => Village.Today,
-															Time => Now,
-															Subject => Player,
-															Target => -1,
-															Text => +Text));
-													end if;
+													Villages.Night_Talk (Village, Player, Text, Now);
 												else
 													Village.People.Reference(Player).Element.Records.Reference(Village.Today).Element.Note := +Text;
 												end if;

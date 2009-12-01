@@ -94,8 +94,8 @@ package Tabula.Vampires.Villages is
 		Escaped_Speech,                   -- 村を出た者の会話
 		Monologue,                        -- 独り言
 		Ghost,                            -- 墓場
-		Howling,                          -- 遠吠えまたは夜間の会話
-		Howling_Blocked,                  -- 遠吠えまたは夜間の会話が妨害された
+		Howling,                          -- 夜間の会話
+		Howling_Blocked,                  -- 夜間の会話が妨害された
 		Action_Wake,                      -- 起こす
 		Action_Encourage,                 -- 促し
 		Action_Vampire_Gaze,              -- 視線
@@ -130,7 +130,6 @@ package Tabula.Vampires.Villages is
 		Hunter_Failed,                    -- ガードしたが吸血鬼は来なかった
 		Hunter_Failed_With_Silver,        -- ガードしたが吸血鬼は来ず銀の弾丸を無駄遣いした
 		Gremlin_Sense,                    -- 妖魔が吸血鬼の残数を知る
-		Gremlin_Killed,                   -- 妖魔が死んだ
 		Sweetheart_Incongruity,           -- 違和感
 		Sweetheart_Suicide,               -- 後追い
 		Servant_Knew_Vampire_K,           -- Kを知る
@@ -222,13 +221,23 @@ package Tabula.Vampires.Villages is
 	function Unfortunate (Village : Village_Type) return Boolean;
 	function Male_And_Female (People : Villages.People.Vector) return Boolean;
 	
-	procedure Escape (Village : in out Village_Type; Subject : Natural; Time : Ada.Calendar.Time);
+	procedure Escape (
+		Village : in out Village_Type;
+		Subject : in Natural;
+		Time : in Ada.Calendar.Time);
+	
 	procedure Vote (
 		Village : in out Village_Type;
 		Player : in Natural;
 		Target : in Integer);
 	procedure Provisional_Vote (
 		Village : in out Village_Type;
+		Time : in Ada.Calendar.Time);
+	
+	procedure Night_Talk (
+		Village : in out Village_Type;
+		Player : in Natural;
+		Text : in String;
 		Time : in Ada.Calendar.Time);
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);

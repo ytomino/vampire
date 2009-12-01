@@ -7,6 +7,7 @@ package body Tabula.Vampires.Villages is
 	use type Tabula.Villages.Village_Time;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
+	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	function Be_Voting (Village : Village_Type) return Boolean is
 	begin
@@ -415,6 +416,44 @@ package body Tabula.Vampires.Villages is
 			return 7 * 24 * 60 * 60 * 1.0;
 		end if;
 	end Escape_Duration;
+	
+	procedure Night_Talk (
+		Village : in out Village_Type;
+		Player : in Natural;
+		Text : in String;
+		Time : in Ada.Calendar.Time) is
+	begin
+		if Unfortunate (Village) then
+			for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+				declare
+					Message : Villages.Message renames Village.Messages.Constant_Reference (I).Element.all;
+				begin
+					if Message.Day < Village.Today then
+						Messages.Append (Village.Messages, Villages.Message'(
+							Kind => Howling_Blocked,
+							Day => Village.Today,
+							Time => Time,
+							Subject => -1,
+							Target => -1,
+							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+						exit;
+					end if;
+					exit when Message.Kind = Howling_Blocked;
+				end;
+			end loop;
+			-- 夜明け時に1発言はできるので記録しておく
+			Village.People.Reference (Player).Element.Records.Reference (Village.Today - 1).Element.Note := +Text;
+		else
+			Messages.Append (Village.Messages, Message'(
+				Kind => Howling,
+				Day => Village.Today,
+				Time => Time,
+				Subject => Player,
+				Target => -1,
+				Text => +Text));
+			Village.People.Reference (Player).Element.Records.Reference (Village.Today - 1).Element.Note := Ada.Strings.Unbounded.Null_Unbounded_String;
+		end if;
+	end Night_Talk;
 	
 	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : Village_Type) is
 	begin
