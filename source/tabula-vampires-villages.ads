@@ -232,7 +232,8 @@ package Tabula.Vampires.Villages is
 		Target : in Integer);
 	procedure Provisional_Vote (
 		Village : in out Village_Type;
-		Time : in Ada.Calendar.Time);
+		Time : in Ada.Calendar.Time;
+		Changed : in out Boolean);
 	
 	procedure Night_Talk (
 		Village : in out Village_Type;

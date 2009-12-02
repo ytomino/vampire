@@ -1113,10 +1113,19 @@ is
 			Write(Output, "</a>");
 		elsif Tag = "message" then
 			declare
-				procedure Narration(Message : String; Class : String := "narration") is
+				procedure Narration (
+					Message : String;
+					Class : String := "narration";
+					Role : Vampires.Villages.Person_Role := Vampires.Villages.Inhabitant)
+				is
 					procedure Handle_Narration(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String; Template : in Web.Producers.Template) is
 					begin
+						if Role /= Vampires.Villages.Inhabitant and then Object.HTML_Version = Web.XHTML then
+							Write (Output, "<img width=""16"" height=""16"" src=");
+							Link_Image (Object, Output, Role_Image_File_Name (Role).all);
+							Write (Output, " />");
+						end if;
 						Web.Write_In_HTML (Output, Object.HTML_Version, Message);
 					end Handle_Narration;
 				begin
@@ -1295,7 +1304,10 @@ is
 													if Village.State >= Villages.Epilogue
 														or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 													then
-														Narration(Name(Subject) & "は" & Name(Target) & "をこっそりと見つめた。", "narrationi");
+														Narration (
+															Name (Subject) & "は" & Name (Target) & "をこっそりと見つめた。",
+															"narrationi",
+															Vampires.Villages.Vampire_K);
 													end if;
 												when Vampires.Villages.Action_Vampire_Gaze_Blocked =>
 													if Village.State >= Villages.Epilogue
@@ -1304,22 +1316,34 @@ is
 														declare
 															The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman (Village.all, Vampires.Villages.Unfortunate_Inhabitant);
 														begin
-															Narration(Name(Subject) & "の視線は" & Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "に遮られた。", "narrationi");
+															Narration(
+																Name (Subject) & "の視線は" & Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) & "に遮られた。",
+																"narrationi",
+																Vampires.Villages.Vampire_K);
 														end;
 													end if;
 											end case;
 										end;
 									when Vampires.Villages.Servant_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration (Servant_Knew_Message (Village.all, Message), "narrationi");
+											Narration (
+												Servant_Knew_Message (Village.all, Message),
+												"narrationi",
+												Vampires.Villages.Servant);
 										end if;
 									when Vampires.Villages.Doctor_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
-											Narration (Doctor_Cure_Message (Village.all, Message), "narrationi");
+											Narration (
+												Doctor_Cure_Message (Village.all, Message),
+												"narrationi",
+												Vampires.Villages.Doctor);
 										end if;
 									when Vampires.Villages.Detective_Message_Kind =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
-											Narration (Detective_Survey_Message (Village.all, Message), "narrationi");
+											Narration (
+												Detective_Survey_Message (Village.all, Message),
+												"narrationi",
+												Vampires.Villages.Detective);
 											if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String
 												and then (
 													Village.Daytime_Preview = Vampires.Villages.Role_And_Message
@@ -1365,16 +1389,25 @@ is
 											declare
 												Subject : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 											begin
-												Narration(Name(Subject) & "は無性に闇が恋しくなり……夜空へと飛び立ちました。", "narrationi");
+												Narration (
+													Name (Subject) & "は無性に闇が恋しくなり……夜空へと飛び立ちました。",
+													"narrationi",
+													Village.People.Constant_Reference (Message.Subject).Element.Role);
 											end;
 										end if;
 									when Vampires.Villages.Astronomer_Observation =>
 										if Village.State >= Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration (Astronomer_Observation_Message (Village.all, Message), "narrationi");
+											Narration (
+												Astronomer_Observation_Message (Village.all, Message),
+												"narrationi",
+												Vampires.Villages.Astronomer);
 										end if;
 									when Vampires.Villages.Hunter_Message_Kind =>
 										if Village.State >= Tabula.Villages.Epilogue or else Player_Index = Message.Subject then
-											Narration (Hunter_Guard_Message (Village.all, Message), "narrationi");
+											Narration (
+												Hunter_Guard_Message (Village.all, Message),
+												"narrationi",
+												Vampires.Villages.Hunter);
 										end if;
 									when Vampires.Villages.Meeting => null;
 										if Village.State >= Villages.Epilogue
@@ -1403,7 +1436,10 @@ is
 											Village.People.Constant_Reference(Message.Subject).Element.Role in Vampires.Villages.Vampire_Role
 											and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)))
 										then
-											Narration (Vampire_Murder_Message (Village.all, Message, Executed), "narrationi");
+											Narration (
+												Vampire_Murder_Message (Village.all, Message, Executed),
+												"narrationi",
+												Vampires.Villages.Vampire_K);
 										end if;
 									when Vampires.Villages.Gremlin_Sense =>
 										if Village.State >= Villages.Epilogue or else (Player_Index = Message.Subject) then
@@ -1422,7 +1458,10 @@ is
 														end if;
 													end;
 												end loop;
-												Narration("残り吸血鬼の数は" & To_String(Vampire_Count) & "匹……。", "narrationi");
+												Narration (
+													"残り吸血鬼の数は" & To_String (Vampire_Count) & "匹……。",
+													"narrationi",
+													Vampires.Villages.Gremlin);
 											end;
 										end if;
 									when Vampires.Villages.Sweetheart_Incongruity =>
@@ -1431,7 +1470,10 @@ is
 												S : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 												T : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
 											begin
-												Narration(Name(S) & "は" & Name(T) & "に違和感を感じました。", "narrationi");
+												Narration (
+													Name (S) & "は" & Name (T) & "に違和感を感じました。",
+													"narrationi",
+													Vampires.Villages.Lover);
 											end;
 										end if;
 									when Vampires.Villages.Sweetheart_Suicide =>
@@ -1439,7 +1481,10 @@ is
 											declare
 												S : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
 											begin
-												Narration(Name(S) & "は想い人の後を追いました。", "narrationi");
+												Narration(
+													Name (S) & "は想い人の後を追いました。",
+													"narrationi",
+													Vampires.Villages.Lover);
 											end;
 										end if;
 									when Vampires.Villages.List =>
@@ -1536,7 +1581,10 @@ is
 										if Village.State >= Villages.Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)
 										then
-											Narration (Vampires_List (Village.all), "narrationi");
+											Narration (
+												Vampires_List (Village.all),
+												"narrationi",
+												Vampires.Villages.Vampire_K);
 										end if;
 										case Village.Execution is
 											when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
@@ -1609,8 +1657,15 @@ is
 													Village.Execution = Vampires.Villages.Provisional_Voting_From_Second and then
 													not Village.Provisional_Voted
 												then
-													Write (Output, Ada.Calendar.Formatting.Image (Village.Dawn + Village.Day_Duration / 2, Time_Zone => Calendar.Time_Offset));
-													Write (Output, "に一次開票します。");
+													declare
+														Open_Time : constant Ada.Calendar.Time := Village.Dawn + Village.Day_Duration / 2;
+													begin
+														Write (Output, Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset));
+														Write (Output, "に一次開票します。");
+														if Ada.Calendar.Clock > Open_Time then
+															Write (Output, "開票時間を過ぎているため候補が出揃ったらすぐに開票します。");
+														end if;
+													end;
 												end if;
 												Write (Output, Ada.Calendar.Formatting.Image (Village.Dawn + Village.Day_Duration, Time_Zone => Calendar.Time_Offset));
 												Write (Output, "までに行動を終えてください。");

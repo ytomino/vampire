@@ -271,11 +271,11 @@ begin
 							end if;
 						end if;
 				end case;
-				Changed := Daytime_To_Vote or Vote_To_Night or Night_To_Daytime or Provisional_Voting;
+				Changed := Daytime_To_Vote or Vote_To_Night or Night_To_Daytime;
 				List_Changed := Vote_To_Night;
 				-- 仮投票
 				if Provisional_Voting then
-					Provisional_Vote (Village, Now);
+					Provisional_Vote (Village, Now, Changed);
 				end if;
 				-- 昼から投票待ちへ
 				if Daytime_To_Vote then

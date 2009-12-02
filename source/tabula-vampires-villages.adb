@@ -327,7 +327,8 @@ package body Tabula.Vampires.Villages is
 	
 	procedure Provisional_Vote (
 		Village : in out Village_Type;
-		Time : in Ada.Calendar.Time)
+		Time : in Ada.Calendar.Time;
+		Changed : in out Boolean)
 	is
 		type Voted_Array is array (Natural range <>) of Natural;
 		procedure Sort is new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
@@ -387,6 +388,7 @@ package body Tabula.Vampires.Villages is
 				Subject => -1,
 				Target => -1,
 				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+			Changed := True; -- 変更を保存
 		end if;
 	end Provisional_Vote;
 	
