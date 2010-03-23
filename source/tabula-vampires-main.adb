@@ -990,7 +990,12 @@ begin
 										declare
 											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
 										begin
-											if Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+											if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+												Web.Header_Content_Type (Output, Web.Text_HTML);
+												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Break (Output);
+												Renderer.Error_Page(Output, "あなたは死んでいます。");
+											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
