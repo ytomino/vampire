@@ -257,6 +257,7 @@ begin
 								end if;
 							end if;
 						elsif Now >= Village.Dawn + Village.Day_Duration / 2
+							and then Village.Execution = Provisional_Voting_From_Second
 							and then not Village.Provisional_Voted
 						then
 							Provisional_Voting := True;
