@@ -24,6 +24,8 @@ BUILD=debug
 BUILDDIR:=$(abspath build)
 endif
 
+TESTDIR=~/Sites/vampire
+
 ifeq ($(BUILD),release)
 CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaI
 BARGS=
@@ -62,9 +64,11 @@ site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
 
 export QUERY_STRING=
 
-test-vampire:
-	cp site/vampire$(CGISUFFIX) $(LOCAL_SITE)/vampire
-	cd $(LOCAL_SITE)/vampire && gdb .$(DIRSEP)vampire$(CGISUFFIX)
+install-test:
+	install site/vampire$(CGISUFFIX) $(TESTDIR)
+
+test-vampire: install-test
+	cd $(TESTDIR) && gdb .$(DIRSEP)vampire$(CGISUFFIX)
 
 $(BUILDDIR):
 	mkdir $@

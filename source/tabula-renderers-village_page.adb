@@ -14,6 +14,7 @@ procedure Tabula.Renderers.Village_Page (
 	Village : not null access constant Vampires.Villages.Village_Type; 
 	Day : in Natural;
 	First, Last : in Integer := -1;
+	Editing_Text : String := "";
 	User_Id : in String;
 	User_Password : in String)
 is
@@ -1816,6 +1817,8 @@ is
 								then
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
+							elsif Tag = "edit" then
+								Write(Output, Editing_Text);
 							elsif Tag = "note" then
 								Write(Output, +Person.Records.Constant_Reference(Target_Day).Element.Note);
 							elsif Tag = "rest" then

@@ -486,9 +486,29 @@ begin
 							Renderer.Error_Page(Output, "終了した村にコマンドが送られました。");
 						else
 							declare
-								Player : Integer;
+								Player : Integer := Villages.Joined(Village, User_Id);
+								function Speech_Check return Boolean is
+								begin
+									if Village.State = Tabula.Villages.Opened
+										and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died
+									then
+										Web.Header_Content_Type (Output, Web.Text_HTML);
+										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Break (Output);
+										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "あなたは死にました。", User_Id, User_Password);
+										return False;
+									elsif Village.Time /= Tabula.Villages.Daytime then
+										Web.Header_Content_Type (Output, Web.Text_HTML);
+										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Break (Output);
+										Renderers.Message_Page(Renderer, Output,
+											Village_Id, Village'Access, "今は喋れない時間帯です。", User_Id, User_Password);
+										return False;
+									else
+										return True;
+									end if;
+								end Speech_Check;
 							begin
-								Player := Villages.Joined(Village, User_Id);
 								if User_State /= Users.Lists.Valid then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -808,20 +828,7 @@ begin
 										end if;
 									end;
 								elsif Cmd = "speech" then
-									if Village.State = Tabula.Villages.Opened
-										and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died
-									then
-										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-										Web.Header_Break (Output);
-										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "あなたは死にました。", User_Id, User_Password);
-									elsif Village.Time /= Tabula.Villages.Daytime then
-										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-										Web.Header_Break (Output);
-										Renderers.Message_Page(Renderer, Output,
-											Village_Id, Village'Access, "今は喋れない時間帯です。", User_Id, User_Password);
-									else
+									if Speech_Check then
 										declare
 											Text : String renames Renderers.Get_Text(Renderer, Inputs);
 										begin
@@ -847,19 +854,7 @@ begin
 										end;
 									end if;
 								elsif Cmd = "speech2" then
-									if Village.State = Tabula.Villages.Opened
-										and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died
-									then
-										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-										Web.Header_Break (Output);
-										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "あなたは死にました。", User_Id, User_Password);
-									elsif Village.Time /= Tabula.Villages.Daytime then
-										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-										Web.Header_Break (Output);
-										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "今は喋れない時間帯です。", User_Id, User_Password);
-									else
+									if Speech_Check then
 										declare
 											Text : String renames Renderers.Get_Text(Renderer, Inputs);
 										begin
@@ -869,6 +864,31 @@ begin
 											end if;
 										end;
 										Render_Reload_Page;
+									end if;
+								elsif Cmd = "reedit" then
+									if Speech_Check then
+										declare
+											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Day : Natural;
+											First, Last : Integer;
+										begin
+											Web.Header_Content_Type (Output, Web.Text_HTML);
+											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Break (Output);
+											Renderer.Get_Day(Village, Query_Strings, Day);
+											Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
+											Renderers.Village_Page(
+												Renderer,
+												Output,
+												Village_Id,
+												Village'Access,
+												Day => Day,
+												First => First,
+												Last => Last,
+												Editing_Text => Text,
+												User_Id => User_Id,
+												User_Password => User_Password);
+										end;
 									end if;
 								elsif Cmd = "monologue" then
 									if Village.State = Tabula.Villages.Epilogue then
