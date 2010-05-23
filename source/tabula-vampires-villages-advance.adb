@@ -239,11 +239,11 @@ begin
 			begin
 				case Village.Time is
 					when Tabula.Villages.Night =>
-						if Now >= Village.Dawn + Village.Night_Duration then
+						if Now >= Village.Night_To_Daytime then
 							Night_To_Daytime := True;
 						end if;
 					when Tabula.Villages.Daytime =>
-						if Now >= Village.Dawn + (Village.Day_Duration + Village.Night_Duration) 
+						if Now >= Village.Daytime_To_Vote
 							or else Commit_Finished(Village)
 						then
 							Daytime_To_Vote := True;
@@ -256,14 +256,14 @@ begin
 									Night_To_Daytime := True;
 								end if;
 							end if;
-						elsif Now >= Village.Dawn + Village.Day_Duration / 2
-							and then Village.Execution = Provisional_Voting_From_Second
-							and then not Village.Provisional_Voted
+						elsif Villages.Provisional_Voting (Village.Execution) and then
+							Now >= Village.Provisional_Voting_Time and then
+							not Village.Provisional_Voted
 						then
 							Provisional_Voting := True;
 						end if;
 					when Tabula.Villages.Vote =>
-						if Now >= Village.Dawn + (Village.Day_Duration + Village.Night_Duration + Vote_Duration) 
+						if Now >= Village.Vote_To_Night
 							or else Vote_Finished(Village)
 						then
 							Vote_To_Night := True;
@@ -781,8 +781,9 @@ begin
 				end if;
 			end;
 		when Tabula.Villages.Epilogue =>
-			Changed := (Now - Village.Dawn >= Village.Day_Duration)
-				and then (Now - Village.Dawn >= Epilogue_Min_Duration); --  エピローグは最低でも1時間
+			Changed := Now - Village.Dawn >= Duration'Max (
+				Village.Day_Duration,
+				Epilogue_Min_Duration); --  エピローグは最低でも1時間
 			List_Changed := Changed;
 			if Changed then
 				Village.Dawn := Now;

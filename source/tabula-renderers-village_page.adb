@@ -210,8 +210,9 @@ is
 					V := P.Records.Constant_Reference (Day).Element.Vote;
 				end if;
 				if V in Village.People.First_Index .. Village.People.Last_Index and then (
-					Village.State >= Villages.Epilogue or else Player_Index = I or else
-					Village.Execution = Vampires.Villages.Provisional_Voting_From_Second)
+					Village.State >= Villages.Epilogue or else
+					Player_Index = I or else
+					Vampires.Villages.Provisional_Voting (Village.Execution))
 				then
 					declare
 						T : Vampires.Villages.Person_Type renames
@@ -1003,9 +1004,9 @@ is
 					T : Ada.Calendar.Formatting.Second_Duration;
 				begin
 					case Village.Time is
-						when Villages.Night => Next := Village.Dawn + Village.Night_Duration;
-						when Villages.Daytime => Next := Village.Dawn + (Village.Night_Duration + Village.Day_Duration);
-						when Villages.Vote => Next := Village.Dawn + (Village.Night_Duration + Village.Day_Duration + Vote_Duration);
+						when Villages.Night => Next := Village.Night_To_Daytime;
+						when Villages.Daytime => Next := Village.Daytime_To_Vote;
+						when Villages.Vote => Next := Village.Vote_To_Night;
 					end case;
 					Ada.Calendar.Formatting.Split(Next, Y, M, D, H, N, S, T, Time_Zone => Calendar.Time_Offset);
 					declare
@@ -1366,7 +1367,7 @@ is
 											Provisional => True,
 											Executed => -1));
 									when Vampires.Villages.Execution =>
-										if Village.Execution = Vampires.Villages.Provisional_Voting_From_Second then
+										if Vampires.Villages.Provisional_Voting (Village.Execution) then
 											Narration (Vote_Report (
 												Village.all,
 												Day => Message.Day - 1,
@@ -1566,13 +1567,10 @@ is
 												end;
 												Ada.Strings.Unbounded.Append (Log, Survivors_List (Village.all, Message.Day));
 												Narration (+Log);
-												if Message.Day = 2 then
-													case Village.Execution is
-														when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
-															Narration (For_Execution_Message);
-														when others =>
-															null;
-													end case;
+												if Message.Day = 2 and then
+													Village.Execution in Vampires.Villages.From_Seconds
+												then
+													Narration (For_Execution_Message);
 												end if;
 											end if;
 										end;
@@ -1587,12 +1585,12 @@ is
 												"narrationi",
 												Vampires.Villages.Vampire_K);
 										end if;
-										case Village.Execution is
-											when Vampires.Villages.From_Second | Vampires.Villages.Provisional_Voting_From_Second =>
-												Narration (Stages (Stage (Village.all)).Breakdown.all);
-											when Vampires.Villages.Dummy_Killed_And_From_First | Vampires.Villages.From_First =>
-												Narration (Stages (Stage (Village.all)).Breakdown.all & Line_Break & For_Execution_Message);
-										end case;
+										if Village.Execution in Vampires.Villages.From_Seconds then
+											Narration (Stages (Stage (Village.all)).Breakdown.all);
+										else
+											Narration (Stages (Stage (Village.all)).Breakdown.all & Line_Break &
+												For_Execution_Message);
+										end if;
 										Narration (Breakdown_List (Village.all));
 								end case;
 							end if;
@@ -1654,12 +1652,12 @@ is
 									when Villages.Opened =>
 										case Village.Time is
 											when Villages.Daytime =>
-												if Village.Today >= 2 and then
-													Village.Execution = Vampires.Villages.Provisional_Voting_From_Second and then
+												if Village.Be_Voting and then
+													Vampires.Villages.Provisional_Voting (Village.Execution) and then
 													not Village.Provisional_Voted
 												then
 													declare
-														Open_Time : constant Ada.Calendar.Time := Village.Dawn + Village.Day_Duration / 2;
+														Open_Time : constant Ada.Calendar.Time := Village.Provisional_Voting_Time;
 													begin
 														Write (Output, Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset));
 														Write (Output, "に一次開票します。");
@@ -1668,7 +1666,7 @@ is
 														end if;
 													end;
 												end if;
-												Write (Output, Ada.Calendar.Formatting.Image (Village.Dawn + Village.Day_Duration, Time_Zone => Calendar.Time_Offset));
+												Write (Output, Ada.Calendar.Formatting.Image (Village.Daytime_To_Vote, Time_Zone => Calendar.Time_Offset));
 												Write (Output, "までに行動を終えてください。");
 											when Villages.Vote =>
 												Write(Output, "全員の投票を待っています。");
@@ -1683,7 +1681,8 @@ is
 									when Villages.Epilogue =>
 										declare
 											Next_Duration : constant Duration := Duration'Max(
-												Village.Day_Duration, Epilogue_Min_Duration);
+												Village.Day_Duration,
+												Epilogue_Min_Duration);
 										begin
 											Write(Output, Ada.Calendar.Formatting.Image(Village.Dawn + Next_Duration, Time_Zone => Calendar.Time_Offset));
 										end;
@@ -1729,6 +1728,7 @@ is
 							elsif Tag = "speech" then
 								if Village.State = Villages.Epilogue or else (
 									(Village.State = Villages.Opened or else Village.State = Villages.Prologue)
+									and then Village.Time = Villages.Daytime
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 									and then not Person.Commited)
 								then
@@ -1849,7 +1849,7 @@ is
 							elsif Tag = "vote" then
 								if Village.State = Villages.Opened
 									and then Message_Counts(Player_Index).Speech > 0
-									and then (Village.Execution = Vampires.Villages.From_First or else Village.Execution = Vampires.Villages.Dummy_Killed_And_From_First or else Village.Today /= 1)
+									and then Village.Be_Voting
 								then
 									if Person.Commited then
 										declare

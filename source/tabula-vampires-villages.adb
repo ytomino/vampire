@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
 package body Tabula.Vampires.Villages is
+	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Sex_Kind;
 	use type Tabula.Villages.Village_State;
@@ -9,12 +10,28 @@ package body Tabula.Vampires.Villages is
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
+	function Provisional_Voting (Mode : Execution_Mode) return Boolean is
+	begin
+		case Mode is
+			when Provisional_Voting_From_First | Provisional_Voting_From_Second =>
+				return True;
+			when Dummy_Killed_And_From_First | From_First | From_Second =>
+				return False;
+		end case;
+	end Provisional_Voting;
+	
 	function Be_Voting (Village : Village_Type) return Boolean is
 	begin
-		return Village.State = Tabula.Villages.Opened and then (
-			Village.Today >= 2 or else
-			Village.Execution = Dummy_Killed_And_From_First or else
-			Village.Execution = From_First);
+		if Village.State = Tabula.Villages.Opened then
+			case Village.Execution is
+				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
+					return True;
+				when From_Second | Provisional_Voting_From_Second =>
+					return Village.Today >= 2;
+			end case;
+		else
+			return False;
+		end if;
 	end Be_Voting;
 	
 	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts is
@@ -203,6 +220,34 @@ package body Tabula.Vampires.Villages is
 			end loop;
 		end return;
 	end Voted_Count;
+	
+	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		return Village.Dawn + Village.Night_Duration;
+	end Night_To_Daytime;
+	
+	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
+		else
+			return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
+		end if;
+	end Provisional_Voting_Time;
+	
+	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+			return Village.Night_To_Daytime + Village.Day_Duration * 3 / 2; -- 72h
+		else
+			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
+		end if;
+	end Daytime_To_Vote;
+	
+	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		return Village.Daytime_To_Vote + Vote_Duration;
+	end Vote_To_Night;
 	
 	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer is
 	begin
@@ -634,6 +679,11 @@ package body Tabula.Vampires.Villages is
 					Execution_Mode'Image (From_First),
 					Item.Village.Execution = From_First,
 					"初日から無記名投票によって処刑を行います。",
+					False);
+				Process (
+					Execution_Mode'Image (Provisional_Voting_From_First),
+					Item.Village.Execution = Provisional_Voting_From_First,
+					"初日から仮投票と本投票によって処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (From_Second),

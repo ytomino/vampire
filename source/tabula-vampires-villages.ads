@@ -7,7 +7,13 @@ with Tabula.Casts;
 with Tabula.Villages;
 package Tabula.Vampires.Villages is
 	
-	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second, Provisional_Voting_From_Second);
+	type Execution_Mode is (
+		Dummy_Killed_And_From_First,
+		From_First,
+		Provisional_Voting_From_First,
+		From_Second,
+		Provisional_Voting_From_Second);
+	
 	type Teaming_Mode is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
@@ -18,6 +24,7 @@ package Tabula.Vampires.Villages is
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
 	subtype From_Seconds is Execution_Mode range From_Second .. Provisional_Voting_From_Second;
+	function Provisional_Voting (Mode : Execution_Mode) return Boolean;
 	subtype Hidings is Teaming_Mode range Hiding .. Hiding_Gremlin;
 	
 	-- オプションルール初期値
@@ -216,6 +223,11 @@ package Tabula.Vampires.Villages is
 	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
 	function No_Commit (Village : Village_Type) return Boolean;
 	function Commit_Finished (Village : Village_Type) return Boolean;
+	
+	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
+	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time;
+	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
+	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
 	
 	function Find_Superman (Village : Village_Type; Role : Person_Role) return Integer;
 	function Unfortunate (Village : Village_Type) return Boolean;
