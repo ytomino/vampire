@@ -298,10 +298,54 @@ package body Tabula.Renderers is
 		Village : in Vampires.Villages.Village_Type;
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings;
-		First, Last : out Integer) is
+		First, Last : out Integer)
+	is
+		function Escaped (
+			Village : Vampires.Villages.Village_Type;
+			Message : Vampires.Villages.Message) return Boolean is
+		begin
+			case Message.Kind is
+				when Vampires.Villages.Introduction
+					| Vampires.Villages.Narration =>
+					return True;
+				when Vampires.Villages.Escaped_Join
+					| Vampires.Villages.Escaped_Speech
+					| Vampires.Villages.Escape =>
+					return Vampires.Villages.Rejoined (
+						Village, Message.Subject) < 0;
+				when others =>
+					return False;
+			end case;
+		end Escaped;
 	begin
-		First := -1;
-		Last := -1;
+		if Village.State = Villages.Prologue and then
+			Day = 0 and then
+			Web.Element (Query_Strings, "range") = ""
+		then
+			declare
+				Index : Natural := 0;
+			begin
+				First := 0;
+				Last := -1;
+				while Index <= Village.Messages.Last_Index and then Escaped (
+					Village,
+					Village.Messages.Constant_Reference (Index).Element.all)
+				loop
+					case Village.Messages.Constant_Reference (Index).Element.Kind
+					is
+						when Vampires.Villages.Speech
+							| Vampires.Villages.Escaped_Speech =>
+							First := First + 1;
+						when others =>
+							null;
+					end case;
+					Index := Index + 1;
+				end loop;
+			end;
+		else
+			First := -1;
+			Last := -1;
+		end if;
 	end Get_Range;
 	
 	function Get_User_Id(
@@ -461,6 +505,9 @@ package body Tabula.Renderers is
 				if Day >= 0 then
 					Write(Output, "&day=");
 					Write(Output, To_String(Day));
+				end if;
+				if Day = 0 and then First = 0 then
+					Write (Output, "&range=all");
 				end if;
 			end if;
 		end if;

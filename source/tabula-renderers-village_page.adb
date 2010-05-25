@@ -1113,6 +1113,25 @@ is
 			Write(Output, '>');
 			Web.Producers.Produce(Output, Template);
 			Write(Output, "</a>");
+		elsif Tag = "all" then
+			if First > 0 then
+				declare
+					procedure Handle_Range_All (
+						Output : not null access Ada.Streams.Root_Stream_Type'Class;
+						Tag : in String;
+						Template : in Web.Producers.Template) is
+					begin
+						if Tag = "uri" then
+							Link (Object, Output, Village_Id, Day, First => 0,
+								User_Id => User_Id, User_Password => User_Password);
+						else
+							raise Program_Error;
+						end if;
+					end Handle_Range_All;
+				begin
+					Web.Producers.Produce (Output, Template, Handler => Handle_Range_All'Access);
+				end;
+			end if;
 		elsif Tag = "message" then
 			declare
 				procedure Narration (
