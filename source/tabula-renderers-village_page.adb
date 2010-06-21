@@ -1822,10 +1822,14 @@ is
 									end;
 								end if;
 							elsif Tag ="vampire" then
-								if Village.State = Villages.Opened
-									and then not Person.Commited
-									and then Person.Role in Vampires.Villages.Vampire_Role
-									and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
+								if Village.State = Villages.Opened and then
+									not Person.Commited and then
+									Person.Role in Vampires.Villages.Vampire_Role and then (
+										Message_Counts(Player_Index).Speech > 0 or else (
+											Village.Time = Villages.Night and then
+											Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
+										)
+									)
 								then
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
@@ -1896,9 +1900,13 @@ is
 									end if;
 								end if;
 							elsif Tag = "ability" then
-								if Village.State = Villages.Opened
-									and then not Person.Commited
-									and then (Message_Counts(Player_Index).Speech > 0 or else Village.Time = Villages.Night)
+								if Village.State = Villages.Opened and then
+									not Person.Commited and then (
+										Message_Counts(Player_Index).Speech > 0 or else (
+											Village.Time = Villages.Night and then
+											Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
+										)
+									)
 								then
 									case Person.Role is
 										when Vampires.Villages.Inhabitant | Vampires.Villages.Loved_Inhabitant | Vampires.Villages.Unfortunate_Inhabitant
