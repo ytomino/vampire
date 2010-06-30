@@ -596,7 +596,7 @@ package body Tabula.Vampires.Villages.Teaming is
 				Changing : constant People_Index := People_Random.Random(Generator);
 			begin
 				case Current.Assignment(Changing) is
-					when Vampire_Role | Gremlin | Sweetheart_M | Sweetheart_F =>
+					when Vampire_Role | Gremlin | Sweetheart_M | Sweetheart_F | Loved_Inhabitant =>
 						Victim.all := Inhabitant;
 					when others =>
 						Victim.all := Current.Assignment(Changing);

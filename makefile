@@ -7,10 +7,12 @@ export TARGET=$(HOST)
 ifeq ($(TARGET),i686-pc-mingw32)
 DIRSEP=\$(empty)
 PATHLISTSEP=;
+EXESUFFIX=.exe
 CGISUFFIX=.exe
 else
 DIRSEP=/
 PATHLISTSEP=:
+EXESUFFIX=
 CGISUFFIX=.cgi
 endif
 
@@ -47,9 +49,7 @@ LARGS:=$(LARGS) -lcrypto -liconv -ldyayaml
 
 .PHONY: all clean test-vampire test-shuffle test-users archive \
 	site/vampire$(CGISUFFIX) \
-	site/unlock$(CGISUFFIX) \
-	site/users$(CGISUFFIX) \
-	site/shuffle$(CGISUFFIX)
+	site/unlock$(CGISUFFIX)
 
 all: site/vampire$(CGISUFFIX)
 
@@ -60,6 +60,12 @@ site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
+
+analyze$(EXESUFFIX): source/analyze/analyze.adb $(BUILDDIR)
+	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
+
+exclude$(EXESUFFIX): source/analyze/exclude.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 export QUERY_STRING=
