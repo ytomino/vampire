@@ -482,7 +482,7 @@ begin
 									Result : Message_Kind := Vampire_Infection;
 									Hunter_Result : Message_Kind;
 								begin
-									if Role not in Vampire_Role and then (Target = 0 or else Executed = Target) then
+									if Role not in Vampire_Role and then (Target < 0 or else Executed = Target) then
 										-- 吸血鬼以外は意図的襲撃失敗はできない
 										-- 対象がセットされていない or 処刑対象を選んでいた場合、未感染者を優先で襲う
 										loop
