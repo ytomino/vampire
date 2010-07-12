@@ -72,6 +72,7 @@ export QUERY_STRING=
 
 install-test:
 	install site/vampire$(CGISUFFIX) $(TESTDIR)
+	install site/*.html $(TESTDIR)
 
 test-vampire: install-test
 	cd $(TESTDIR) && gdb .$(DIRSEP)vampire$(CGISUFFIX)
