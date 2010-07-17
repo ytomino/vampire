@@ -5,7 +5,7 @@ package body Tabula.Villages is
 		Result : Boolean := False;
 		procedure Process (Item : in Root_Option_Item'Class) is
 		begin
-			if Item.Changed then
+			if Item.Available and then Item.Changed then
 				Result := True;
 			end if;
 		end Process;

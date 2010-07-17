@@ -87,6 +87,35 @@
 						<tr><td colspan="2" class="checkall"><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
 					</table>
 				</td></tr>
+				<?rule>
+					<tr><td>
+						<?changable>
+							<form method="post">
+								<table class="rule">
+									<?items>
+										<tr><td>
+											<?select><select></select></?select>
+										</td></tr>
+									</?items>
+									<tr><td class="change">
+										<input class="change" type="submit" value="変更" />
+										<input name="cmd" type="hidden" value="rule" />
+									</tr></td>
+								</table>
+							</form>
+						</?changable>
+						<?static>
+							<table class="rule">
+								<?items>
+									<tr><td>
+										<?current>今のルール。</?current>
+									</td></tr>
+								</?items>
+							</table>
+						</?static>
+						<?roleset/>
+					</td></tr>
+				</?rule>
 				<tr><td>
 					<?back>戻る</?back>
 				</td></tr>
@@ -263,16 +292,6 @@
 					<div class="box"><div class="villagepanel" id="bottom">これ以上は参加できません。</div></div>
 				</?over>
 			</?villagepanel>
-			<?rule>
-				<?changable>
-					<form method="post" class="narration">
-						<?items> </?items>
-						<input type="submit" value="変更" />
-						<input name="cmd" type="hidden" value="rule" />
-					</form>
-				</?changable>
-				<?static><p class="narration"><?items/></p></?static>
-			</?rule>
 			<?next><p class="narration"><a href=?uri>こうして、その日は暮れてゆきました……。</a></p></?next>
 			<?scroll><script type="text/javascript">window.scroll(0, 999999); document.getElementById('bottom').focus();</script></?scroll>
 		</div>

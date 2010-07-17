@@ -597,18 +597,52 @@ is
 		User_Id : in String;
 		User_Password : in String)
 	is
-		Changable : constant Boolean := Player and then Village.Today = 0 and then Village.No_Commit;
+		Visible : constant Boolean :=
+			Player
+			or else Village.Day_Duration < 24 * 60 * 60.0
+			or else Village.Option_Changed;
+		Changable : constant Boolean :=
+			Player
+			and then Village.Today = 0
+			and then Village.No_Commit;
 		procedure Handle (
 			Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String;
 			Template : in Web.Producers.Template) is
 		begin
 			if Tag = "items" then
-				if Changable then
-					declare
-						procedure Process (Item : in Villages.Root_Option_Item'Class) is
+				declare
+					procedure Process (Item : in Villages.Root_Option_Item'Class) is
+						procedure Handle_Item (
+							Output : not null access Ada.Streams.Root_Stream_Type'Class;
+							Tag : in String;
+							Template : in Web.Producers.Template) is
 						begin
-							if Item.Available then
+							if Tag = "current" then
+								declare
+									procedure Process (
+										Value : in String;
+										Selected : in Boolean;
+										Message : in String;
+										Unrecommended : in Boolean) is
+									begin
+										if Selected then
+											if Item.Changed and then Village.State /= Villages.Closed then
+												Write (Output, "<em>");
+											end if;
+											Write (Output, Message);
+											if Village.State /= Villages.Closed and then Unrecommended then
+												Write (Output, " お薦めしません。");
+											end if;
+											if Item.Changed and then Village.State /= Villages.Closed then
+												Write (Output, "</em>");
+											end if;
+										end if;
+									end Process;
+								begin
+									Tabula.Villages.Iterate (Item, Process'Access);
+								end;
+							elsif Tag = "select" then
 								Write (Output, "<select name=""");
 								Write (Output, Item.Name);
 								Write (Output, """>");
@@ -639,45 +673,49 @@ is
 									Tabula.Villages.Iterate (Item, Process'Access);
 								end;
 								Write(Output, "</select>");
-								Web.Producers.Produce (Output, Template);
+							else
+								Handle (Output, Tag, Template);
 							end if;
-						end Process;
+						end Handle_Item;
 					begin
-						Vampires.Villages.Iterate (Village, Process'Access);
-					end;
-				else
+						if Item.Available and then (Changable or else Item.Changed) then
+							Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
+						end if;
+					end Process;
+				begin
+					Vampires.Villages.Iterate (Village, Process'Access);
+				end;
+			elsif Tag = "changable" then
+				if Visible and Changable then
+					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				end if;
+			elsif Tag = "static" then
+				if Visible and not Changable then
+					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				end if;
+			elsif Tag = "roleset" then
+				if Village.State <= Villages.Opened and then Village.People.Length >= 3 then
 					declare
-						procedure Process (Item : in Villages.Root_Option_Item'Class) is
-						begin
-							if Item.Available and then (Player or else Item.Changed) then
-								declare
-									procedure Process (
-										Value : in String;
-										Selected : in Boolean;
-										Message : in String;
-										Unrecommended : in Boolean) is
-									begin
-										if Selected then
-											if Item.Changed and then Village.State /= Villages.Closed then
-												Write (Output, "<em>");
-											end if;
-											Write (Output, Message);
-											if Village.State /= Villages.Closed and then Unrecommended then
-												Write (Output, " お薦めしません。");
-											end if;
-											if Item.Changed and then Village.State /= Villages.Closed then
-												Write (Output, "</em>");
-											end if;
-											Write (Output, ' ' & Ascii.LF);
-										end if;
-									end Process;
-								begin
-									Tabula.Villages.Iterate (Item, Process'Access);
-								end;
-							end if;
-						end Process;
+						Sets : constant Vampires.Villages.Teaming.Role_Set_Array :=
+							Vampires.Villages.Teaming.Possibilities (
+								People_Count => Village.People.Length,
+								Male_And_Female => Vampires.Villages.Male_And_Female (Village.People),
+								Execution => Village.Execution,
+								Teaming => Village.Teaming,
+								Unfortunate => Village.Unfortunate,
+								Monster_Side => Village.Monster_Side);
 					begin
-						Vampires.Villages.Iterate (Village, Process'Access);
+						Write (Output, "<ul>");
+						for I in Sets'Range loop
+							Write (Output, "<li>");
+							for J in Vampires.Villages.Person_Role loop
+								for K in 1 .. Sets (I)(J) loop
+									Write (Output, Short_Image (J));
+								end loop;
+							end loop;
+							Write (Output, "</li>");
+						end loop;
+						Write (Output, "</ul>");
 					end;
 				end if;
 			elsif Tag = "uri" then
@@ -687,39 +725,8 @@ is
 				raise Program_Error with "Invalid template """ & Tag & """";
 			end if;
 		end Handle;
-		Extract : constant array(Boolean) of access constant String := (
-			new String'("static"), new String'("changable"));
 	begin
-		if Player 
-			or else Village.Day_Duration < 24 * 60 * 60.0
-			or else Village.Option_Changed
-		then
-			Web.Producers.Produce (Output, Template, Extract (Changable).all, Handler => Handle'Access);
-		end if;
-		if Village.State <= Villages.Opened and then Village.People.Length >= 3 then
-			declare
-				Sets : constant Vampires.Villages.Teaming.Role_Set_Array :=
-					Vampires.Villages.Teaming.Possibilities (
-						People_Count => Village.People.Length,
-						Male_And_Female => Vampires.Villages.Male_And_Female (Village.People),
-						Execution => Village.Execution,
-						Teaming => Village.Teaming,
-						Unfortunate => Village.Unfortunate,
-						Monster_Side => Village.Monster_Side);
-			begin
-				Write (Output, "<ul>");
-				for I in Sets'Range loop
-					Write (Output, "<li>");
-					for J in Vampires.Villages.Person_Role loop
-						for K in 1 .. Sets (I)(J) loop
-							Write (Output, Short_Image (J));
-						end loop;
-					end loop;
-					Write (Output, "</li>");
-				end loop;
-				Write (Output, "</ul>");
-			end;
-		end if;
+		Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 	end Rule_Panel;
 	
 	Target_Day : Natural;
@@ -1107,6 +1114,17 @@ is
 					end if;
 				end;
 			end loop;
+		elsif Tag = "rule" then
+			if Day = 0 then
+				Rule_Panel (
+					Output => Output,
+					Template => Template,
+					Village_Id => Village_Id,
+					Village => Village,
+					Player => Player_Index >= 0,
+					User_Id => User_Id,
+					User_Password => User_Password);
+			end if;
 		elsif Tag = "back" then
 			Write(Output, "<a href=");
 			Link (Object, Output, User_Id => User_Id, User_Password => User_Password);
@@ -2140,17 +2158,6 @@ is
 						Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
 					end;
 				end if;
-			end if;
-		elsif Tag = "rule" then
-			if Day = 0 and then Tip_Showed then
-				Rule_Panel (
-					Output => Output,
-					Template => Template,
-					Village_Id => Village_Id,
-					Village => Village,
-					Player => Player_Index >= 0,
-					User_Id => User_Id,
-					User_Password => User_Password);
 			end if;
 		elsif Tag = "next" then
 			if Day < Village.Today and then Tip_Showed then

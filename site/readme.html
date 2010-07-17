@@ -6,6 +6,8 @@
 		<title>説明 - The Village of Vampire</title>
 		<style id="option-styles" type="text/css">
 			.option {display:none; color:#ffffdd}
+			.Duration_Long {display:block}
+			.Duration_Short {display:block}
 			.Execution_Dummy_Killed_And_From_First {display:block}
 			.Execution_From_First {display:block}
 			.Execution_Provisional_Voting_From_First {display:block}
@@ -48,6 +50,7 @@
 			.Unfortunate_Mode_Infected_Only {display:block}
 		</style>
 		<script type="text/javascript">
+		//<![CDATA[
 			function sync(name){
 				var style_element = document.getElementById("option-styles");
 				var sheet = style_element.sheet || style_element.styleSheet;
@@ -66,12 +69,100 @@
 					}
 				}
 			}
+		//]]>
 		</script>
 	</head>
 	<body background="./image/background.png">
 		<h1>The Village of Vampire</h1>
 		<div class="bar">
 			<table>
+				<tr><td>村の設定に合った説明文のみを表示できます。</td></tr>
+				<tr><td><table class="rule">
+					<tr><td>
+						<select id="Duration" onchange="sync('Duration')">
+							<option value="" selected="selected">≪長期/短期≫</option>
+							<option value="Long">長期村の説明のみを表示します。</option>
+							<option value="Short">短期村の説明のみを表示します。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Execution" onchange="sync('Execution')">
+							<option value="" selected="selected">≪処刑≫</option>
+							<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</option>
+							<option value="From_First">初日から無記名投票によって処刑を行います。*</option>
+							<option value="Provisional_Voting_From_First">初日から仮投票と本投票によって処刑を行います。</option>
+							<option value="From_Second">2日目から無記名投票によって処刑を行います。</option>
+							<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票によって処刑を行います。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Teaming" onchange="sync('Teaming')">
+							<option value="" selected="selected">≪編成≫</option>
+							<option value="Low_Density">能力者の密度を線形にします。</option>
+							<option value="Shuffling_Headless">村側能力者を増やします(首無し騎士に似せます)。</option>
+							<option value="Shuffling_Euro">妖魔が早く出ます(欧州に似せます)。</option>
+							<option value="Shuffling">基本的な編成です。*</option>
+							<option value="Shuffling_Gremlin">基本的な編成に加え、妖魔が早く出ます。</option>
+							<option value="Hiding">村側能力者の構成はわかりません。</option>
+							<option value="Hiding_Gremlin">村側能力者の構成はわからず、妖魔が早く出ます。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Monster_Side" onchange="sync('Monster_Side')">
+							<option value="" selected="selected">≪吸血鬼側の編成≫</option>
+							<option value="Fixed">吸血鬼が襲ってきます。*</option>
+							<option value="Shuffling">吸血鬼の全貌はわかりません。</option>
+							<option value="Gremlin">使徒よりも妖魔が先に現れます。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Attack_Mode" onchange="sync('Attack_Mode')">
+							<option value="" selected="selected">≪襲撃≫</option>
+							<option value="Two">吸血鬼ふたり以上に襲われると死亡します。</option>
+							<option value="Mocturnal_Infecting">天文家と猟師は感染したら襲撃を行います。*</option>
+							<option value="Unanimity">すべての吸血鬼に襲われると死亡します。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Servant_Knowing_Mode" onchange="sync('Servant_Knowing_Mode')">
+							<option value="" selected="selected">≪使徒が知っている吸血鬼≫</option>
+							<option value="None">使徒は吸血鬼の正体を知りません。</option>
+							<option value="Vampire_K">使徒は吸血鬼の王を知っています。*</option>
+							<option value="Vampires">使徒は吸血鬼を知っています。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Daytime_Preview_Mode" onchange="sync('Daytime_Preview_Mode')">
+							<option value="" selected="selected">≪日中の能力使用≫</option>
+							<option value="None">探偵と医者は翌日まで結果がわかりません。</option>
+							<option value="Role_Only">探偵は日中に正体を調べ翌日までに遺言を調べます。</option>
+							<option value="Message_Only">探偵は日中に遺言を調べ翌日までに正体を調べます。*</option>
+							<option value="Role_And_Message">探偵は日中に正体と遺言を調べます。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Doctor_Infected_Mode" onchange="sync('Doctor_Infected_Mode')">
+							<option value="" selected="selected">≪感染した医者≫</option>
+							<option value="Cure">医者自身の感染は治療に影響しません。</option>
+							<option value="Find_Infection">医者自身が感染していると治療の効果はありません。*</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Hunter_Silver_Bullet_Mode" onchange="sync('Hunter_Silver_Bullet_Mode')">
+							<option value="" selected="selected">≪銀の弾丸≫</option>
+							<option value="Target">護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</option>
+							<option value="Target_And_Self">護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。*</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Unfortunate_Mode" onchange="sync('Unfortunate_Mode')">
+							<option value="" selected="selected">≪数奇な運命の村人の出現≫</option>
+							<option value="None">数奇な運命の村人はいません。</option>
+							<option value="Appear">数奇な運命の村人がいるかもしれません。</option>
+							<option value="Infected_Only">数奇な運命の村人は襲撃では殺されません。*</option>
+						</select>
+					</td></tr>
+				</table></tr></td>
 				<tr><td><a href="./">戻る</a></td></tr>
 			</table>
 		</div>
@@ -81,7 +172,7 @@
 					概要
 					<ul>
 						<li><a href="#abstract">ゲームの概要</a></li>
-						<li><a href="#duration">必要な時間</a></li>
+						<li><a href="#duration">参加に要する時間</a></li>
 					</ul>
 				</li>
 				<li>
@@ -192,9 +283,21 @@
 				基本的に個人戦指向であり、潜伏指向です。
 				目標が達成できているかは別の話ですが……。
 			</p>
-			<h2 id="duration">必要な時間</h2>
+			<h2 id="duration">参加に要する時間</h2>
 			<p>
-				長期村では、1週間以上、短期村では、2時間程度を見込んでください。
+				ゲームは、ゲーム上の「1日」を区切りとして進みます。
+				この「1日」は、実時間に連動していますが、等しいわけではありません。
+			</p>
+			<p class="Duration_Long option">
+				長期村では、<em>48時間</em>がゲーム上の「1日」となります。
+				最低でも実時間の2日に1度アクセスできる方であれば、充分です。
+				実時間の目安として、1週間程度を見込んでください。
+			</p>
+			<p class="Duration_Short option">
+				短期村では、15分から30分がゲーム上の「1日」となります。
+				実時間の目安として、2時間程度を見込んでください。
+				開始から終了まで、ずっとブラウザの前に釘付けになります。
+				実際には人数が揃うのを待つ必要もありますので、余裕を見ていただくようお願いします。
 			</p>
 			<p class="narratione">
 				私のスタンスとしては寡黙歓迎です。
@@ -243,17 +346,17 @@
 			<p>
 				人数が揃うまでの待ち時間です。
 				挨拶や、参加できる時間帯の表明などをしておけばいいでしょう。
-			</p>
-			<p>
 				7人以上が集まり、全員が行動終了すればゲーム開始です。
+			</p>
+			<p class="Duration_Long option">
 				甲が来ないからといって、乙や丙が、行動を終了しないまま待っていると、入れ違いになっていつまでも始まらないといったことも起こり得ます。
 				意図的に～人揃うまで待つ、というのでなければ、ブラウザを閉じる際には常に行動終了にしておけばよいでしょう。
-				逆に、短期の場合は、自分がいないと意味がありませんので、PCの前でスタンバイできているときだけ行動終了し、離れる時は行動を再開しておくべきです。
-				行動の再開はいつでも可能です。
-			</p>
-			<p>
 				人数が揃うまで日数が空いた場合、忘れてしまっている人がいるのではといった余計な不安を払拭するため、数日に一度は何か書くようにした方がいいかもしれません。
 				プロローグには発言数の制限はありません。
+			</p>
+			<p class="Duration_Short option">
+				短期村の場合は、自分がいないと意味がありませんので、PCの前でスタンバイできているときだけ行動終了し、離れる時は行動を再開しておくべきです。
+				行動の再開はいつでも可能です。
 			</p>
 			<p>
 				なおこの間、全員が行動中であれば、オプションルールを変更できます。
@@ -262,7 +365,12 @@
 			<h2 id="escape">華やいだ都会へ</h2>
 			<p>
 				プロローグでは一定期間発言を行わないと、自動的に、都会へと旅立ってしまいますので注意してください。
-				長期では一週間、短期では12時間です。
+			</p>
+			<p class="Duration_Long option">
+				長期では1週間です。
+			</p>
+			<p class="Duration_Short option">
+				短期では12時間です。
 			</p>
 			<h2 id="short">短期村の作成</h2>
 			<p>
@@ -368,9 +476,12 @@
 				次に相手がそれを見たら、反論があれば粘ってくれるでしょうし、処刑を受け入れたなら黙って行動を終了して日を進めてくれるでしょう。
 			</p>
 			<p>
-				行動を終えなくても、強制更新時間(通常は<em>48時間</em>、短期では設定によります)が経過すれば日は進みます。
-				強制更新時間を経過しても、短期では、投票のための待ちが最大で5分間入ります。
-				また短期では、オプションによって夜と呼ばれる吸血鬼同士が会話するための時間が取られます。
+				行動を終えなくても、強制更新時間が経過すれば日は進みます。
+			</p>
+			<p class="Duration_Short option">
+				短期では強制更新時間を経過しても、まだ全員が投票を終えていない場合、投票のための待ちが最大で5分間入ります。
+				またオプションによって夜と呼ばれる吸血鬼同士が会話するための時間が取られます。
+				吸血鬼及び天文家と猟師は、夜の間も能力の対象を変更できます。
 			</p>
 			<p>
 				前日発言が無かった者は、<em>その日の勝利条件の計算から外され</em>、その翌日は行動終了状態から始まります。
@@ -812,6 +923,8 @@
 				吸血鬼は人狼のようには囁けず、仲間同士の会話は夜空の散歩中のみ行える……つまり、日が変わる際、ここで書いた文章が仲間の吸血鬼に伝わる、というわけです。
 				何度でも修正できますので、作戦を練っておきましょう。
 				やりとりを繰り返すことができませんので、そこは知恵のしぼりどころです。
+			</p>
+			<p class="Duration_Short option">
 				なお短期では、夜の時間を取っている場合のみ、夜の間は吸血鬼同士で自由に会話できます。
 			</p>
 			<p>
@@ -844,16 +957,6 @@
 			</p>
 			<hr class="speech" />
 			<h2 id="execution">オプションルール……<br />処刑</h2>
-			<form class="narration"><div>
-				<select id="Execution" onchange="sync('Execution')">
-					<option value="" selected="selected">≪処刑≫</option>
-					<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</option>
-					<option value="From_First">初日から無記名投票によって処刑を行います。*</option>
-					<option value="Provisional_Voting_From_First">初日から仮投票と本投票によって処刑を行います。</option>
-					<option value="From_Second">2日目から無記名投票によって処刑を行います。</option>
-					<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票によって処刑を行います。</option>
-				</select>
-			</div></form>
 			<div class="Execution_Dummy_Killed_And_From_First option">
 				<p>
 					<b>能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</b><br/>
@@ -919,18 +1022,6 @@
 				天文家は、1日目の段階では誰も観測していません。
 			</p>
 			<h2 id="village-teaming">編成</h2>
-			<form class="narration"><div>
-				<select id="Teaming" onchange="sync('Teaming')">
-					<option value="" selected="selected">≪編成≫</option>
-					<option value="Low_Density">能力者の密度を線形にします。</option>
-					<option value="Shuffling_Headless">村側能力者を増やします(首無し騎士に似せます)。</option>
-					<option value="Shuffling_Euro">妖魔が早く出ます(欧州に似せます)。</option>
-					<option value="Shuffling">基本的な編成です。*</option>
-					<option value="Shuffling_Gremlin">基本的な編成に加え、妖魔が早く出ます。</option>
-					<option value="Hiding">村側能力者の構成はわかりません。</option>
-					<option value="Hiding_Gremlin">村側能力者の構成はわからず、妖魔が早く出ます。</option>
-				</select>
-			</div></form>
 			<p class="Teaming_Low_Density option">
 				<b>能力者の密度を線形にします。</b><br/>
 				出現する能力者の数を、村側、吸血鬼側ともに減らすことができます。
@@ -979,14 +1070,6 @@
 				「基本的な編成に加え、妖魔が早く出ます。」を元に、ただの村人がひとり減って、村側の能力者がひとり増えます。
 			</p>
 			<h2 id="monster-side">吸血鬼側の編成</h2>
-			<form class="narration"><div>
-				<select id="Monster_Side" onchange="sync('Monster_Side')">
-					<option value="" selected="selected">≪吸血鬼側の編成≫</option>
-					<option value="Fixed">吸血鬼が襲ってきます。*</option>
-					<option value="Shuffling">吸血鬼の全貌はわかりません。</option>
-					<option value="Gremlin">使徒よりも妖魔が先に現れます。</option>
-				</select>
-			</div></form>
 			<p class="Monster_Side_Fixed option">
 				<b>吸血鬼が襲ってきます。</b><br/>
 				吸血鬼側の登場順は編成の表の通りに固定され、妖魔が一番最後です。
@@ -1006,14 +1089,6 @@
 				編成の表から、使徒と妖魔の登場順を入れ替えます。
 			</p>
 			<h2 id="attack">襲撃</h2>
-			<form class="narration"><div>
-				<select id="Attack_Mode" onchange="sync('Attack_Mode')">
-					<option value="" selected="selected">≪襲撃≫</option>
-					<option value="Two">吸血鬼ふたり以上に襲われると死亡します。</option>
-					<option value="Mocturnal_Infecting">天文家と猟師は感染したら襲撃を行います。*</option>
-					<option value="Unanimity">すべての吸血鬼に襲われると死亡します。</option>
-				</select>
-			</div></form>
 			<p class="Attack_Mode_Two option">
 				<b>吸血鬼ふたり以上に襲われると死亡します。</b><br/>
 				2人以上の吸血鬼が同じ相手を襲った場合、対象が死亡します。
@@ -1048,14 +1123,6 @@
 				少年漫画風逆境理論的モードといいますか。
 			</p>
 			<h2 id="servant-knowing">使徒が知っている吸血鬼</h2>
-			<form class="narration"><div>
-				<select id="Servant_Knowing_Mode" onchange="sync('Servant_Knowing_Mode')">
-					<option value="" selected="selected">≪使徒が知っている吸血鬼≫</option>
-					<option value="None">使徒は吸血鬼の正体を知りません。</option>
-					<option value="Vampire_K">使徒は吸血鬼の王を知っています。*</option>
-					<option value="Vampires">使徒は吸血鬼を知っています。</option>
-				</select>
-			</div></form>
 			<div class="Servant_Knowing_Mode_None option">
 				<p>
 					<b>使徒は吸血鬼の正体を知りません。</b><br/>
@@ -1076,15 +1143,6 @@
 				使徒は吸血鬼の全員を知っています。
 			</p>
 			<h2 id="daytime-preview">日中の能力使用</h2>
-			<form class="narration"><div>
-				<select id="Daytime_Preview_Mode" onchange="sync('Daytime_Preview_Mode')">
-					<option value="" selected="selected">≪日中の能力使用≫</option>
-					<option value="None">探偵と医者は翌日まで結果がわかりません。</option>
-					<option value="Role_Only">探偵は日中に正体を調べ翌日までに遺言を調べます。</option>
-					<option value="Message_Only">探偵は日中に遺言を調べ翌日までに正体を調べます。*</option>
-					<option value="Role_And_Message">探偵は日中に正体と遺言を調べます。</option>
-				</select>
-			</div></form>
 			<p class="Daytime_Preview_Mode_None option">
 				<b>探偵と医者は翌日まで結果がわかりません。</b><br/>
 				探偵と医者も、天文家や猟師と同様に、日付が変わるタイミングで能力の結果を知ることができます。
@@ -1111,17 +1169,10 @@
 				天文家が殺されても、結果を当日に知ることができるため、探偵と天文家のどちらが殺されても構わない状況なども発生します。
 			</p>
 			<h2 id="doctor-infected">感染した医者</h2>
-			<form class="narration"><div>
-				<select id="Doctor_Infected_Mode" onchange="sync('Doctor_Infected_Mode')">
-					<option value="" selected="selected">≪感染した医者≫</option>
-					<option value="Cure">医者自身の感染は治療に影響しません。</option>
-					<option value="Find_Infection">医者自身が感染していると治療の効果はありません。*</option>
-				</select>
-			</div></form>
 			<p class="Doctor_Infected_Mode_Cure option">
 				<b>医者自身の感染は治療に影響しません。</b><br/>
 				感染者を診察した場合、常に治療に成功します。
-				このオプションを選択する場合は、恋人と医者が生き残っている状態で、吸血鬼が残りひとりになりますと、吸血鬼は感染しかできない場合、どうしようもなくなりますので、襲撃オプションを「すべての吸血鬼に襲われると死亡します。」にすることをお薦めします。
+				<em>このオプションを選択する場合は、恋人と医者が生き残っている状態で吸血鬼が残りひとりになっても勝ちの目を残すために、襲撃オプションを「すべての吸血鬼に襲われると死亡します。」にすることをお薦めします。</em>
 			</p>
 			<p class="Doctor_Infected_Mode_Find_Infection option">
 				<b>感染した医者による治療は、効果を発揮しなくなります。</b><br/>
@@ -1130,13 +1181,6 @@
 				<em>現在の初期値です。</em>
 			</p>
 			<h2 id="hunter-silver-bullet">銀の弾丸</h2>
-			<form class="narration"><div>
-				<select id="Hunter_Silver_Bullet_Mode" onchange="sync('Hunter_Silver_Bullet_Mode')">
-					<option value="" selected="selected">≪銀の弾丸≫</option>
-					<option value="Target">護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</option>
-					<option value="Target_And_Self">護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。*</option>
-				</select>
-			</div></form>
 			<p class="Hunter_Silver_Bullet_Mode_Target option">
 				<b>護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</b><br/>
 				銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
@@ -1154,14 +1198,6 @@
 				<em>現在の初期値です。</em>
 			</p>
 			<h2 id="unfortunate">数奇な運命の村人の出現</h2>
-			<form class="narration"><div>
-				<select id="Unfortunate_Mode" onchange="sync('Unfortunate_Mode')">
-					<option value="" selected="selected">≪数奇な運命の村人の出現≫</option>
-					<option value="None">数奇な運命の村人はいません。</option>
-					<option value="Appear">数奇な運命の村人がいるかもしれません。</option>
-					<option value="Infected_Only">数奇な運命の村人は襲撃では殺されません。*</option>
-				</select>
-			</div></form>
 			<p class="Unfortunate_Mode_None option">
 				<b>数奇な運命の村人はいません。</b><br/>
 				数奇な運命の村人はかなり後に実装した能力者のため、初期の村には登場しません。

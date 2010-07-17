@@ -70,9 +70,14 @@ exclude$(EXESUFFIX): source/analyze/exclude.adb $(BUILDDIR)
 
 export QUERY_STRING=
 
-install-test:
-	install site/vampire$(CGISUFFIX) $(TESTDIR)
-	install site/*.html $(TESTDIR)
+$(TESTDIR)/%: site/%
+	install $< $(TESTDIR)
+
+install-test: \
+	$(TESTDIR)/vampire$(CGISUFFIX) \
+	$(TESTDIR)/cast \
+	$(TESTDIR)/style.css \
+	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html)))
 
 test-vampire: install-test
 	cd $(TESTDIR) && gdb .$(DIRSEP)vampire$(CGISUFFIX)

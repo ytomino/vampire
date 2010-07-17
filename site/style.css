@@ -1,17 +1,17 @@
 ﻿
 body {
-	/* background-image: url(./image/background.png); */
-	background-color: black;
-	font-family: "Arisaka", "IPA Pゴシック", sans-serif;
-	color: white;
+	/* background-image:url(./image/background.png); */
+	background-color:black;
+	font-family:"Arisaka", "IPA Pゴシック", sans-serif;
+	color:white;
 	padding-left:1em;
 	padding-right:2.5%;
 }
 
 h1 {
-	color: red;
-	text-align: center;
-	font-family: "Typewriter New Roman", "Love Letter Typewriter", "Love LetterTW", 
+	color:red;
+	text-align:center;
+	font-family:"Typewriter New Roman", "Love Letter Typewriter", "Love LetterTW", 
 		"The Quest", "Mom´sTypewriter", "Ghostwriter", "1942 report", "Y.OzOTW", Sylfaen, fantasy;
 }
 
@@ -105,7 +105,8 @@ em {
 	margin-right:4%;
 }
 
-form.narration input, form.narration select {
+form.narration input, form.narration select,
+table.rule input, table.rule select {
 	background-color:transparent;
 	color:white;
 }
@@ -121,7 +122,7 @@ form.narration input {
 
 .narratione {
 	color:silver;
-	font-size: smaller;
+	font-size:smaller;
 }
 
 .narrationi {
@@ -142,12 +143,12 @@ div.ghost,
 div.vampire,
 div.dying,
 div.monologue {
-	margin-left: 0%;
-	margin-right: 4%;
-	margin-bottom: 1em;
-	padding: 2px;
-	overflow: hidden;
-	position: relative;
+	margin-left:0%;
+	margin-right:4%;
+	margin-bottom:1em;
+	padding:2px;
+	overflow:hidden;
+	position:relative;
 }
 
 div.ghost,
@@ -202,9 +203,9 @@ div.ghost img,
 div.dying img,
 div.vampire img,
 div.monologue img {
-	filter: alpha(opacity=50);
-	-moz-opacity: 0.5;
-	opacity: 0.5;
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity:0.5;
 }
 
 td.name {
@@ -260,8 +261,8 @@ td.button {
 }
 
 textarea {
-	font-family : "IPAゴシック", monospace;
-	font-size : 12pt;
+	font-family:"IPAゴシック", monospace;
+	font-size:12pt;
 }
 
 textarea.speech {
@@ -316,6 +317,7 @@ table.daylist {
 
 table.summary {
 	margin-bottom:1em;
+	width:100%;
 }
 
 table.summary td {
@@ -334,9 +336,9 @@ table.summary td.name {
 }
 
 td.count {
-	padding-left: 0.5em;
-	padding-right: 0.5em;
-	text-align: right;
+	padding-left:0.5em;
+	padding-right:0.5em;
+	text-align:right;
 }
 
 table.summary td.count {
@@ -344,12 +346,23 @@ table.summary td.count {
 	border-right:1px solid white;
 }
 
-table.summary td.checkall {
+table.rule td {
+	padding:0px;
+}
+
+table.rule select {
+	margin:0px;
+	width:100%;
+}
+
+table.summary td.checkall,
+table.rule td.change {
 	padding-top:0.5em;
 	text-align:right;
 }
 
-input.checkall {
+input.checkall,
+input.change {
 	font-size:xx-small;
 	background-color:transparent;
 	color:white;
@@ -376,7 +389,7 @@ ul.readme li {
 }
 
 table.readmepersons td {
-	width: 4em;
+	width:4em;
 }
 
 table.readmepersons thead td {
@@ -412,7 +425,9 @@ table.readmepersons td a {
 
 table.villagelist td.people,
 table.villagelist td.day {
-	white-space: nowrap;
+	white-space:nowrap;
 }
 
-.say { width: 3.5em; }
+.say {
+	width:3.5em;
+}

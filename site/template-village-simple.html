@@ -105,15 +105,24 @@
 </?over>
 </?villagepanel>
 <?rule>
-<?changable>
-<hr><form action=?uri method="POST">
-<?items><br></?items>
-<input type="submit" value="変更">
-<input name="cmd" type="hidden" value="rule">
-</form>
-</?changable>
-<?static><hr><div><?items></?items></div></?static>
+	<?changable>
+	<hr><form action=?uri method="POST">
+	<?items>
+	<?select><select></select></?select>
+	</?items>
+	<input type="submit" value="変更">
+	<input name="cmd" type="hidden" value="rule">
+	</form>
+	</?changable>
+	<?static>
+	<hr>
+	<?items>
+	<?current>今のルール。</?current>
+	</?items>
+	</?static>
+	<?roleset/>
 </?rule>
+</?changable>
 <?next><hr><div><a href=?uri>こうして、その日は暮れてゆきました…。</a></div></?next>
 </body>
 </html>
