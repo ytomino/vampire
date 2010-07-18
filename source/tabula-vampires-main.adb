@@ -866,30 +866,40 @@ begin
 										Render_Reload_Page;
 									end if;
 								elsif Cmd = "reedit" then
-									if Speech_Check then
-										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
-											Day : Natural;
-											First, Last : Integer;
-										begin
-											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-											Web.Header_Break (Output);
-											Renderer.Get_Day(Village, Query_Strings, Day);
-											Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
-											Renderers.Village_Page(
-												Renderer,
-												Output,
-												Village_Id,
-												Village'Access,
-												Day => Day,
-												First => First,
-												Last => Last,
-												Editing_Text => Text,
-												User_Id => User_Id,
-												User_Password => User_Password);
-										end;
-									end if;
+									declare
+										Kind : Villages.Message_Kind renames Villages.Message_Kind'Value (Web.Element (Inputs, "kind"));
+									begin
+										case Kind is
+											when Villages.Speech =>
+												if Speech_Check then
+													declare
+														Text : String renames Renderers.Get_Text(Renderer, Inputs);
+														Day : Natural;
+														First, Last : Integer;
+													begin
+														Web.Header_Content_Type (Output, Web.Text_HTML);
+														Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+														Web.Header_Break (Output);
+														Renderer.Get_Day(Village, Query_Strings, Day);
+														Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
+														Renderers.Village_Page(
+															Renderer,
+															Output,
+															Village_Id,
+															Village'Access,
+															Day => Day,
+															First => First,
+															Last => Last,
+															Editing_Text => Text,
+															User_Id => User_Id,
+															User_Password => User_Password);
+													end;
+												end if;
+											when others =>
+												-- 通常発言以外の再編集は未実装……
+												Render_Reload_Page;
+										end case;
+									end;
 								elsif Cmd = "monologue" then
 									if Village.State = Tabula.Villages.Epilogue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);

@@ -15,14 +15,18 @@
 				var style = rules[0].style;
 				style.cssText = checkbox.checked ? "display:block" : "display:none";
 			}
+			function check(n, f){
+				var checkbox = document.getElementById('c' + n);
+				if(checkbox != null){
+					checkbox.checked = f;
+					sync(n);
+				}
+			}
 			function checkall(f){
 				for(var n = 0; n < 16; ++n){
-					var checkbox = document.getElementById('c' + n);
-					if(checkbox != null){
-						checkbox.checked = f;
-						sync(n);
-					}
+					check(n, f);
 				}
+				check('g', f);
 			}
 		</script>
 	</head>
@@ -84,7 +88,7 @@
 								</?administrator>
 							</tr>
 						</?person>
-						<tr><td colspan="2" class="checkall"><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
+						<tr><td colspan="2" class="checkall"><?ghost-filter/><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
 					</table>
 				</td></tr>
 				<?rule>
@@ -140,30 +144,36 @@
 					<p class="narratione"><?text>本文</?text></p>
 				</?narratione>
 				<?speech>
-					<div class="speech">
-						<table cellspacing="0">
-							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
-							<tr><td class="text"><?text>発言</?text></td></tr>
-						</table>
+					<div class=?filter>
+						<div class="speech">
+							<table cellspacing="0">
+								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td class="text"><?text>発言</?text></td></tr>
+							</table>
+						</div>
 					</div>
 				</?speech>
 				<?escaped>
 					<p class="escaped"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
 				</?escaped>
 				<?ghost>
-					<div class="ghost">
-						<table cellspacing="0">
-							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
-							<tr><td class="text"><?text>発言</?text></td></tr>
-						</table>
+					<div class=?filter>
+						<div class="ghost">
+							<table cellspacing="0">
+								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td class="text"><?text>発言</?text></td></tr>
+							</table>
+						</div>
 					</div>
 				</?ghost>
 				<?monologue>
-					<div class="monologue">
-						<table cellspacing="0">
-							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
-							<tr><td class="text"><?text>発言</?text></td></tr>
-						</table>
+					<div class=?filter>
+						<div class="monologue">
+							<table cellspacing="0">
+								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td class="text"><?text>発言</?text></td></tr>
+							</table>
+						</div>
 					</div>
 				</?monologue>
 				<?vampire>

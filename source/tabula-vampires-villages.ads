@@ -95,10 +95,10 @@ package Tabula.Vampires.Villages is
 	type Message_Kind is (
 		Narration,                        -- ト書き
 		Escape,                           -- 村を出る
-		Join,                             -- 参加
 		Escaped_Join,                     -- 村を出た者の参加
-		Speech,                           -- 通常会話
 		Escaped_Speech,                   -- 村を出た者の会話
+		Join,                             -- 参加
+		Speech,                           -- 通常会話
 		Monologue,                        -- 独り言
 		Ghost,                            -- 墓場
 		Howling,                          -- 夜間の会話

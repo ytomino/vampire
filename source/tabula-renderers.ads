@@ -10,7 +10,6 @@ package Tabula.Renderers is
 	type File_Name is not null access constant String;
 	
 	type Configuration is record
-		Output_Directory : File_Name;
 		Image_Directory : File_Name;
 		Log_Directory : File_Name;
 		Style_Sheet_File_Name : File_Name;

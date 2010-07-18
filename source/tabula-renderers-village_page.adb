@@ -990,10 +990,12 @@ is
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
 					Write(Output, ".p" & To_String(I) & "{display:none;} ");
 				end loop;
+				Write(Output, ".pg{display:none;} ");
 				Write(Output, "</style>");
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
 					Write(Output, "<style id=""s" & To_String(I) & """>.p" & To_String(I) & "{display:block;} </style>");
 				end loop;
+				Write(Output, "<style id=""sg"">.pg{display:block;} </style>");
 			end if;
 			-- ここでやるべきでもないがついでに
 			if Village.State = Villages.Opened
@@ -1114,6 +1116,26 @@ is
 					end if;
 				end;
 			end loop;
+		elsif Tag = "ghost-filter" then
+			declare
+				Ghost_Existing : Boolean := False;
+			begin
+				for I in Village.People.First_Index .. Village.People.Last_Index loop
+					Ghost_Existing := Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.State = Vampires.Villages.Died;
+					exit when Ghost_Existing;
+				end loop;
+				if Ghost_Existing and then
+					(Village.State < Villages.Epilogue or else Day < Village.Today) and then (
+						Village.State >= Villages.Epilogue or else
+						(Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died))
+				then
+					Write(Output,
+						"<label for=""cg"">" &
+						"<input id=""cg"" type=""checkbox"" checked=""checked"" onClick=""javascript:sync('g')"" />" &
+						"幽霊" &
+						"</label> ");
+				end if;
+			end;
 		elsif Tag = "rule" then
 			if Day = 0 then
 				Rule_Panel (
@@ -1170,12 +1192,28 @@ is
 				begin
 					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
 				end Narration;
-				procedure Speech(Message : Vampires.Villages.Message; Class : String; Time : Ada.Calendar.Time) is
+				procedure Speech(Message : Vampires.Villages.Message; Class : String; Time : Ada.Calendar.Time; X : Integer := -1) is
 					procedure Handle_Speech(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String; Template : in Web.Producers.Template) is
 					begin
-						Handle_Messages (Output, Tag, Template, Object,
-							Village_Id, Village.all, Day, Message, Time, User_Id => User_Id, User_Password => User_Password);
+						if Tag = "filter" then
+							Write (Output, """");
+							if X >= 0 then
+								Write (Output, "s");
+								Write (Output, To_String (X));
+								Write (Output, " ");
+							end if;
+							Write (Output, "p");
+							if Message.Kind = Vampires.Villages.Ghost then
+								Write (Output, "g");
+							else
+								Write (Output, To_String (Message.Subject));
+							end if;
+							Write (Output, """");
+						else
+							Handle_Messages (Output, Tag, Template, Object,
+								Village_Id, Village.all, Day, Message, Time, User_Id => User_Id, User_Password => User_Password);
+						end if;
 					end Handle_Speech;
 				begin
 					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Speech'Access);
@@ -1287,17 +1325,7 @@ is
 													Last_Speech_Time := Message.Time;
 												end if;
 											end;
-											if Object.HTML_Version = Web.XHTML then
-												Write(Output, "<div class=""s");
-												Write(Output, To_String(X));
-												Write(Output, " p");
-												Write(Output, To_String(Last_Speech));
-												Write(Output, """>");
-											end if;
-											Speech (Message, "speech", Last_Speech_Time);
-											if Object.HTML_Version = Web.XHTML then
-												Write(Output, "</div>");
-											end if;
+											Speech (Message, "speech", Last_Speech_Time, X => X);
 										else
 											Speech(Message, "escaped", Message.Time);
 										end if;

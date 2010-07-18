@@ -13,7 +13,11 @@ is
 	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String; Template : in Web.Producers.Template) is
 	begin
-		if Tag = "value" then
+		if Tag = "kind" then
+			Write(Output, '"');
+			Web.Write_In_Attribute (Output, Object.HTML_Version, Vampires.Villages.Message_Kind'Image (Message.Kind));
+			Write(Output, '"');
+		elsif Tag = "value" then
 			Write(Output, '"');
 			Web.Write_In_Attribute (Output, Object.HTML_Version, +Message.Text);
 			Write(Output, '"');

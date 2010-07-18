@@ -3,7 +3,6 @@ with Tabula.Renderers;
 package Tabula.Configurations.Templates is
 	
 	Configuration : constant Tabula.Renderers.Configuration_Access := new Tabula.Renderers.Configuration'(
-		Output_Directory => Base_Directory'Access,
 		Image_Directory => Image_Directory'Access,
 		Log_Directory => Villages_HTML_Directory'Access,
 		Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
@@ -20,7 +19,6 @@ package Tabula.Configurations.Templates is
 		Template_Error_File_Name => new String'("template-error.html"));
 	
 	Simple_Configuration : constant Tabula.Renderers.Configuration_Access := new Tabula.Renderers.Configuration'(
-		Output_Directory => Villages_HTML_Directory'Access,
 		Image_Directory => Image_Directory'Access,
 		Log_Directory => Villages_HTML_Directory'Access,
 		Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
