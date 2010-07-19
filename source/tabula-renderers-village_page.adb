@@ -686,11 +686,11 @@ is
 					Vampires.Villages.Iterate (Village, Process'Access);
 				end;
 			elsif Tag = "changable" then
-				if Visible and Changable then
+				if Changable then
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "static" then
-				if Visible and not Changable then
+				if not Changable then
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "roleset" then
@@ -726,7 +726,9 @@ is
 			end if;
 		end Handle;
 	begin
-		Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+		if Visible then
+			Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+		end if;
 	end Rule_Panel;
 	
 	Target_Day : Natural;
@@ -1069,71 +1071,86 @@ is
 					Web.Producers.Produce(Output, Template, Handler => Handle_Days'Access);
 				end;
 			end loop;
-		elsif Tag = "person" then
-			for I in Village.People.First_Index .. Village.People.Last_Index loop
-				declare
-					Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-					procedure Handle_Summary(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-						Tag : in String; Template : in Web.Producers.Template) is
-					begin
-						if Tag = "name" then
-							Write(Output,
-								"<label for=""c" & To_String(I) & """>" &
-								"<input id=""c" & To_String(I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & To_String(I) & ")"" />");
-							Web.Write_In_HTML (Output, Object.HTML_Version, Name (Person));
-							Write (Output, "</label>");
-						elsif Tag = "speech" then
-							Write(Output, To_String(Message_Counts(I).Speech));
-							if Message_Counts(I).Encouraged > 0 then
-								Write(Output, " <small>/");
-								Write(Output, To_String(Speech_Limit + Message_Counts(I).Encouraged * Encouraged_Speech_Limit));
-								Write(Output, "</small>");
-							end if;
-						elsif Tag = "administrator" then
-							if User_id = Tabula.Users.Administrator then
-								Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
-							end if;
-						elsif Tag = "id" then
-							Web.Write_In_HTML (Output, Object.HTML_Version, +Person.Id);
-						elsif Tag = "remove" then
-							if Village.State = Villages.Prologue then
-								Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
-							end if;
-						elsif Tag = "htarget" then
-							Write(Output, "<input type=""hidden"" name=""target"" value=""");
-							Write(Output, To_String(I));
-							Write(Output, """/>");
-						else
-							Handle_Villages (Output, Tag, Template, Object,
-								Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
-						end if;
-					end Handle_Summary;
-				begin
-					if (Village.State >= Villages.Epilogue and then Village.Today = Day)
-						or else Person.Records.Constant_Reference(Day).Element.State /= Vampires.Villages.Died
-					then
-						Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
-					end if;
-				end;
-			end loop;
-		elsif Tag = "ghost-filter" then
+		elsif Tag = "summary" then
 			declare
-				Ghost_Existing : Boolean := False;
+				procedure Handle_Summary (Output : not null access Ada.Streams.Root_Stream_Type'Class;
+						Tag : in String; Template : in Web.Producers.Template) is
+				begin
+					if Tag = "person" then
+						for I in Village.People.First_Index .. Village.People.Last_Index loop
+							declare
+								Person : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+								procedure Handle_Person (Output : not null access Ada.Streams.Root_Stream_Type'Class;
+									Tag : in String; Template : in Web.Producers.Template) is
+								begin
+									if Tag = "name" then
+										Write(Output,
+											"<label for=""c" & To_String(I) & """>" &
+											"<input id=""c" & To_String(I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & To_String(I) & ")"" />");
+										Web.Write_In_HTML (Output, Object.HTML_Version, Name (Person));
+										Write (Output, "</label>");
+									elsif Tag = "speech" then
+										Write(Output, To_String(Message_Counts(I).Speech));
+										if Message_Counts(I).Encouraged > 0 then
+											Write(Output, " <small>/");
+											Write(Output, To_String(Speech_Limit + Message_Counts(I).Encouraged * Encouraged_Speech_Limit));
+											Write(Output, "</small>");
+										end if;
+									elsif Tag = "administrator" then
+										if User_id = Tabula.Users.Administrator then
+											Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
+										end if;
+									elsif Tag = "id" then
+										Web.Write_In_HTML (Output, Object.HTML_Version, +Person.Id);
+									elsif Tag = "remove" then
+										if Village.State = Villages.Prologue then
+											Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
+										end if;
+									elsif Tag = "htarget" then
+										Write(Output, "<input type=""hidden"" name=""target"" value=""");
+										Write(Output, To_String(I));
+										Write(Output, """/>");
+									else
+										Handle_Villages (Output, Tag, Template, Object,
+											Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
+									end if;
+								end Handle_Person;
+							begin
+								if (Village.State >= Villages.Epilogue and then Village.Today = Day)
+									or else Person.Records.Constant_Reference(Day).Element.State /= Vampires.Villages.Died
+								then
+									Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
+								end if;
+							end;
+						end loop;
+					elsif Tag = "ghost-filter" then
+						declare
+							Ghost_Existing : Boolean := False;
+						begin
+							for I in Village.People.First_Index .. Village.People.Last_Index loop
+								Ghost_Existing := Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.State = Vampires.Villages.Died;
+								exit when Ghost_Existing;
+							end loop;
+							if Ghost_Existing and then
+								(Village.State < Villages.Epilogue or else Day < Village.Today) and then (
+									Village.State >= Villages.Epilogue or else
+									(Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died))
+							then
+								Write(Output,
+									"<label for=""cg"">" &
+									"<input id=""cg"" type=""checkbox"" checked=""checked"" onClick=""javascript:sync('g')"" />" &
+									"幽霊" &
+									"</label> ");
+							end if;
+						end;
+					else
+						Handle_Villages (Output, Tag, Template, Object,
+							Village_Id, Village.all, Day, User_Id => User_Id, User_Password => User_Password);
+					end if;
+				end Handle_Summary;
 			begin
-				for I in Village.People.First_Index .. Village.People.Last_Index loop
-					Ghost_Existing := Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.State = Vampires.Villages.Died;
-					exit when Ghost_Existing;
-				end loop;
-				if Ghost_Existing and then
-					(Village.State < Villages.Epilogue or else Day < Village.Today) and then (
-						Village.State >= Villages.Epilogue or else
-						(Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died))
-				then
-					Write(Output,
-						"<label for=""cg"">" &
-						"<input id=""cg"" type=""checkbox"" checked=""checked"" onClick=""javascript:sync('g')"" />" &
-						"幽霊" &
-						"</label> ");
+				if Village.People.Length > 0 then
+					Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
 				end if;
 			end;
 		elsif Tag = "rule" then

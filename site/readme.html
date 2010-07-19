@@ -88,11 +88,11 @@
 					<tr><td>
 						<select id="Execution" onchange="sync('Execution')">
 							<option value="" selected="selected">≪処刑≫</option>
-							<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</option>
-							<option value="From_First">初日から無記名投票によって処刑を行います。*</option>
-							<option value="Provisional_Voting_From_First">初日から仮投票と本投票によって処刑を行います。</option>
-							<option value="From_Second">2日目から無記名投票によって処刑を行います。</option>
-							<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票によって処刑を行います。</option>
+							<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、無記名投票で処刑を行います。</option>
+							<option value="From_First">初日から無記名投票で処刑を行います。*</option>
+							<option value="Provisional_Voting_From_First">初日から仮投票と本投票で処刑を行います。</option>
+							<option value="From_Second">2日目から無記名投票で処刑を行います。</option>
+							<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票で処刑を行います。</option>
 						</select>
 					</td></tr>
 					<tr><td>
@@ -150,8 +150,8 @@
 					<tr><td>
 						<select id="Hunter_Silver_Bullet_Mode" onchange="sync('Hunter_Silver_Bullet_Mode')">
 							<option value="" selected="selected">≪銀の弾丸≫</option>
-							<option value="Target">護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</option>
-							<option value="Target_And_Self">護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。*</option>
+							<option value="Target">護衛対象が襲われたときのみ銀の弾丸は吸血鬼を殺します。</option>
+							<option value="Target_And_Self">猟師自身が襲われたときも銀の弾丸は吸血鬼を殺します。*</option>
 						</select>
 					</td></tr>
 					<tr><td>
@@ -808,11 +808,11 @@
 				でてきた死体が吸血鬼のものなのか襲われた村人のものなのかは猟師以外にはわかりません。
 				成否に関らず銀の弾丸は一度のみです。<br/>
 				<span class="Hunter_Silver_Bullet_Mode_Target option">
-					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
+					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「護衛対象が襲われたときのみ銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
 					猟師自身が襲われた場合には無力ですので、猟師は吸血鬼に目をつけられないよう隠れている必要があります。
 				</span>
 				<span class="Hunter_Silver_Bullet_Mode_Target_And_Self option">
-					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象か猟師本人が襲われた場合、襲った吸血鬼を仕留められます。
+					<span class="Hunter_Silver_Bullet_Mode_all option">オプション「猟師自身が襲われたときも銀の弾丸は吸血鬼を殺します。」選択時、</span>銀の弾丸を用意した晩に、護衛対象か猟師本人が襲われた場合、襲った吸血鬼を仕留められます。
 					護衛対象と猟師本人のどちらが襲われたのかは区別できません。
 					猟師本人が襲われた場合は護衛は失敗し吸血鬼の襲撃が通りますが、銀の弾丸は有効です。
 					その場合、吸血鬼の襲撃が感染になる条件では、吸血鬼が死亡し、猟師は感染させられます。
@@ -959,7 +959,7 @@
 			<h2 id="execution">オプションルール……<br />処刑</h2>
 			<div class="Execution_Dummy_Killed_And_From_First option">
 				<p>
-					<b>能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。</b><br/>
+					<b>能力者が死亡済みの可能性があり、無記名投票で処刑を行います。</b><br/>
 					「地主さん」こと初日犠牲者が能力者の可能性もあるオプションです。
 					使徒の可能性もあります。
 					吸血鬼または妖魔の可能性はありません。<br />
@@ -975,7 +975,7 @@
 				</p>
 			</div>
 			<p class="Execution_From_First option">
-				<b>初日から無記名投票によって処刑を行います。</b><br/>
+				<b>初日から無記名投票で処刑を行います。</b><br/>
 				1日目から処刑投票を行います。
 				投票結果は、得票数のみ表示されます。<br />
 				初日犠牲者に相当するものはありません。
@@ -983,7 +983,7 @@
 				<em>現在の初期値です。</em>
 			</p>
 			<p class="Execution_Provisional_Voting_From_First option">
-				<b>初日から仮投票と本投票によって処刑を行います。</b><br/>
+				<b>初日から仮投票と本投票で処刑を行います。</b><br/>
 				1日目から処刑投票を行います。
 				また<em>1日目が72時間に延長されます。</em>
 				強制更新時間の半分(長期村では24時間、ただし1日目のみ48時間)が経過すると一次開票が行われます。
@@ -997,7 +997,7 @@
 			</p>
 			<div class="Execution_From_Second option">
 				<p>
-					<b>2日目から無記名投票によって処刑を行います。</b><br/>
+					<b>2日目から無記名投票で処刑を行います。</b><br/>
 					1日目は処刑投票を行いません。
 					投票結果は、得票数のみ表示されます。
 					また<em>全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。</em><br />
@@ -1009,7 +1009,7 @@
 				</p>
 			</div>
 			<p class="Execution_Provisional_Voting_From_Second option">
-				<b>2日目から仮投票と本投票によって処刑を行います。</b><br/>
+				<b>2日目から仮投票と本投票で処刑を行います。</b><br/>
 				1日目は処刑投票を行いません。
 				2日目以降、強制更新時間の半分(長期村では24時間)が経過すると一次開票が行われます。
 				一次開票の結果、票を集めた上位2名が本投票の候補となり、その日はそれ以外の人に投票できなくなります。
@@ -1182,13 +1182,13 @@
 			</p>
 			<h2 id="hunter-silver-bullet">銀の弾丸</h2>
 			<p class="Hunter_Silver_Bullet_Mode_Target option">
-				<b>護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。</b><br/>
+				<b>護衛対象が襲われたときのみ銀の弾丸は吸血鬼を殺します。</b><br/>
 				銀の弾丸を用意した晩に、護衛対象が襲われた場合、襲った吸血鬼を仕留められます。
 				複数の吸血鬼が襲ってきた場合は、ランクの高い吸血鬼だけを仕留めることになります。
 				猟師自身が襲われた場合には無力ですので、猟師は吸血鬼に目をつけられないよう隠れている必要があります。
 			</p>
 			<p class="Hunter_Silver_Bullet_Mode_Target_And_Self option">
-				<b>護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。</b><br/>
+				<b>猟師自身が襲われたときも銀の弾丸は吸血鬼を殺します。</b><br/>
 				銀の弾丸を用意した晩に、護衛対象か猟師本人が襲われた場合、襲った吸血鬼を仕留められます。
 				複数の吸血鬼が襲ってきた場合は、ランクの高い吸血鬼だけを仕留めることになります。
 				護衛対象と猟師本人のどちらが襲われたのかは区別できません。

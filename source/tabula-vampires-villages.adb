@@ -673,27 +673,27 @@ package body Tabula.Vampires.Villages is
 				Process (
 					Execution_Mode'Image (Dummy_Killed_And_From_First),
 					Item.Village.Execution = Dummy_Killed_And_From_First,
-					"能力者が死亡済みの可能性があり、初日から無記名投票によって処刑を行います。",
+					"能力者が死亡済みの可能性があり、無記名投票で処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (From_First),
 					Item.Village.Execution = From_First,
-					"初日から無記名投票によって処刑を行います。",
+					"初日から無記名投票で処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (Provisional_Voting_From_First),
 					Item.Village.Execution = Provisional_Voting_From_First,
-					"初日から仮投票と本投票によって処刑を行います。",
+					"初日から仮投票と本投票で処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (From_Second),
 					Item.Village.Execution = From_Second,
-					"2日目から無記名投票によって処刑を行います。",
+					"2日目から無記名投票で処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (Provisional_Voting_From_Second),
 					Item.Village.Execution = Provisional_Voting_From_Second,
-					"2日目から仮投票と本投票によって処刑を行います。",
+					"2日目から仮投票と本投票で処刑を行います。",
 					False);
 			end Iterate;
 			
@@ -1074,12 +1074,12 @@ package body Tabula.Vampires.Villages is
 				Process (
 					Hunter_Silver_Bullet_Mode'Image (Target),
 					Item.Village.Hunter_Silver_Bullet = Target,
-					"護衛対象が襲われたとき銀の弾丸は吸血鬼を殺します。",
+					"護衛対象が襲われたときのみ銀の弾丸は吸血鬼を殺します。",
 					False);
 				Process (
 					Hunter_Silver_Bullet_Mode'Image (Target_And_Self),
 					Item.Village.Hunter_Silver_Bullet = Target_And_Self,
-					"護衛対象または猟師が襲われたとき銀の弾丸は吸血鬼を殺します。",
+					"猟師自身が襲われたときも銀の弾丸は吸血鬼を殺します。",
 					False);
 			end Iterate;
 			

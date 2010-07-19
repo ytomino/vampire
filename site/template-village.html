@@ -68,29 +68,31 @@
 						<?days><tr><td><?day>今日はなんの日</?day></td></tr></?days>
 					</table>
 				</td></tr>
-				<tr><td>
-					<table class="summary" cellspacing="0" >
-						<?person>
-							<tr>
-								<td class="name"><?name>名前</?name></td>
-								<td class="count"><?speech>発言数</?speech></td>
-								<?administrator>
-									<td class="control">
-										<?id>ID</?id>
-										<?remove>
-											<form class="button" method="POST" >
-												<input type="submit" value="除名" />
-												<input type="hidden" name="cmd" value="remove" />
-												<?htarget/>
-											</form>
-										</?remove>
-									</td>
-								</?administrator>
-							</tr>
-						</?person>
-						<tr><td colspan="2" class="checkall"><?ghost-filter/><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
-					</table>
-				</td></tr>
+				<?summary>
+					<tr><td>
+						<table class="summary" cellspacing="0" >
+							<?person>
+								<tr>
+									<td class="name"><?name>名前</?name></td>
+									<td class="count"><?speech>発言数</?speech></td>
+									<?administrator>
+										<td class="control">
+											<?id>ID</?id>
+											<?remove>
+												<form class="button" method="POST" >
+													<input type="submit" value="除名" />
+													<input type="hidden" name="cmd" value="remove" />
+													<?htarget/>
+												</form>
+											</?remove>
+										</td>
+									</?administrator>
+								</tr>
+							</?person>
+							<tr><td colspan="2" class="checkall"><?ghost-filter/><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
+						</table>
+					</td></tr>
+				</?summary>
 				<?rule>
 					<tr><td>
 						<?changable>
