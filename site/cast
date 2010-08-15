@@ -265,6 +265,18 @@ people:
 		sex: female
 		group: 1
 	-
+		name: イニャス
+		work: 執政官
+		image: auther-consul.png
+		sex: male
+		group: 1
+	-
+		name: ゼノビア
+		work: 村長の妻
+		image: auther-mayorwife.png
+		sex: female
+		group: 1
+	-
 		name: ウォーレス
 		work: 長老
 		image: char01.png
@@ -531,7 +543,7 @@ works:
 		sex: female
 	-
 		name: 執事
-		sex: neutral
+		sex: male
 	-
 		name: 家庭教師
 		sex: neutral
@@ -546,6 +558,12 @@ works:
 		sex: neutral
 	-
 		name: 俳優
+		sex: neutral
+	-
+		name: 村長の妻
+		sex: female
+	-
+		name: 執政官
 		sex: neutral
 	-
 		name: 長老
@@ -635,7 +653,7 @@ works:
 		name: 船守
 		sex: neutral
 	-
-		name: 坑夫
+		name: 山男
 		sex: male
 	-
 		name: さすらいの賭博師
@@ -644,10 +662,7 @@ works:
 		name: ぬすっと
 		sex: neutral
 	-
-		name: 釣り馬鹿
-		sex: neutral
-	-
-		name: 漁夫
+		name: 海の男
 		sex: male
 	-
 		name: 養蚕家
@@ -669,9 +684,6 @@ works:
 		sex: neutral
 	-
 		name: 郵便屋
-		sex: neutral
-	-
-		name: 執政官
 		sex: neutral
 	-
 		name: 記憶を失った男
