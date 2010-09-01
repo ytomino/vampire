@@ -13,7 +13,7 @@ package body Tabula.Renderers.Simple is
 	function Ready_Encoding return not null access iconv.Encoding_Type is
 	begin
 		if not Encoding_Ready then
-			Encoding := iconv.Get(Decoded => "UTF-8", Encoded => "SJIS");
+			Encoding := iconv.Open(Encoded => "SJIS", Decoded => "UTF-8");
 			Encoding_Ready := True;
 		end if;
 		return Encoding'Access;
@@ -131,7 +131,7 @@ package body Tabula.Renderers.Simple is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		URI : in String) 
 	is
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Ready_Encoding);
+		Encoder_Stream : aliased iconv.Streams.Stream(Output, Ready_Encoding);
 	begin
 		Write(Encoder_Stream'Access, 
 			"<html>" & 
@@ -159,7 +159,7 @@ package body Tabula.Renderers.Simple is
 		Handler : not null access procedure(Output : not null access Ada.Streams.Root_Stream_Type'Class; Tag : in String; Contents : Web.Producers.Template)) 
 	is
 		Encoding : constant access iconv.Encoding_Type := Ready_Encoding;
-		Encoder_Stream : aliased iconv.Streams.Encoder_Stream(Output, Encoding);
+		Encoder_Stream : aliased iconv.Streams.Stream(Output, Encoding);
 	begin
 		Produce(Super(Object), Encoder_Stream'Access, File_Name, Handler);
 	end Produce;

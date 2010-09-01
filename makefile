@@ -20,13 +20,17 @@ ifneq ($(TARGET),$(HOST))
 GNATMAKE=$(TARGET)-gnatmake
 BUILD=release
 BUILDDIR:=$(abspath build-$(TARGET))
+IMPORTDIR:=$(abspath import-$(TARGET))
 else
 GNATMAKE=gnatmake
 BUILD=debug
 BUILDDIR:=$(abspath build)
+IMPORTDIR:=$(abspath import)
 endif
 
-TESTDIR=~/Sites/vampire
+# I'm using SandTrip :-)
+# http://kirika.la.coocan.jp/proj/sandtrip/
+TESTDIR=~/Sites/SandTrip/vampire
 
 ifeq ($(BUILD),release)
 CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaI
@@ -41,7 +45,7 @@ endif
 MARGS=-a -cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 
 export ADA_PROJECT_PATH=
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
 export ADA_OBJECTS_PATH=
 
 CARGS:=$(CARGS) -gnatwFK.R
@@ -55,8 +59,9 @@ all: site/vampire$(CGISUFFIX)
 
 clean:
 	-rm -rf build*
+	-rm -rf import*
 
-site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR)
+site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)/c.ads
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
@@ -84,6 +89,10 @@ test-vampire: install-test
 
 $(BUILDDIR):
 	mkdir $@
+
+$(IMPORTDIR)/c.ads: lib/import.h
+	-mkdir $(IMPORTDIR)
+	headmaster --gcc $(TARGET)-gcc --to ada -D $(IMPORTDIR) $<
 
 archive:
 	-rm site/vampire.7z
