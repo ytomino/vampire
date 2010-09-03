@@ -7,16 +7,15 @@ package body Tabula.Renderers.Simple is
 	-- function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
-	Encoding : aliased iconv.Encoding; -- may not be closed...
-	Encoding_Ready : Boolean := False;
+	Encoding : access iconv.Encoding; -- may not be deallocation...
 
 	function Ready_Encoding return not null access iconv.Encoding is
 	begin
-		if not Encoding_Ready then
-			Encoding := iconv.Open(Encoded => "SJIS", Decoded => "UTF-8");
-			Encoding_Ready := True;
+		if Encoding = null then
+			Encoding := new iconv.Encoding'(
+				iconv.Open (Encoded => "SJIS", Decoded => "UTF-8"));
 		end if;
-		return Encoding'Access;
+		return Encoding;
 	end Ready_Encoding;
 	
 	subtype Super is Renderers.Renderer;
