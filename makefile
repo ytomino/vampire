@@ -37,7 +37,7 @@ CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaI
 BARGS=
 LARGS=-s -Xlinker --gc-sections
 else
-CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaI
+CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaI -gnatwFK.R
 BARGS=-E
 LARGS=-g
 endif
@@ -47,9 +47,6 @@ MARGS=-a -cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 export ADA_PROJECT_PATH=
 export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
 export ADA_OBJECTS_PATH=
-
-CARGS:=$(CARGS) -gnatwFK.R
-LARGS:=$(LARGS) -lcrypto -liconv -ldyayaml
 
 .PHONY: all clean test-vampire test-shuffle test-users archive \
 	site/vampire$(CGISUFFIX) \

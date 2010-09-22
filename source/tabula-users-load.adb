@@ -1,19 +1,32 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
-with DYAYaml;
+with Ada.Streams.Stream_IO;
+with Serialization.YAML;
+with YAML.Streams;
 with Tabula.Configurations;
-with Tabula.File_IO;
 with Tabula.Users.User_Info_IO;
-procedure Tabula.Users.Load (Id : in String; User_Info : in out Users.User_Info) is
-	File_Name : String renames Ada.Directories.Compose (Tabula.Configurations.Users_Directory, Id);
-	S : String renames File_IO.Read_File (File_Name);
+procedure Tabula.Users.Load (
+	Id : in String;
+	User_Info : in out Users.User_Info)
+is
+	File_Name : String renames Ada.Directories.Compose (
+		Tabula.Configurations.Users_Directory,
+		Id);
+	File : Ada.Streams.Stream_IO.File_Type;
 begin
+	Ada.Streams.Stream_IO.Open (
+		File,
+		Ada.Streams.Stream_IO.In_File,
+		Name => File_Name);
 	declare
-		Reader : DYAYaml.Reader := DYAYaml.New_Reader (Users.User_Info_IO.Yaml_Type, S);
+		Parser : aliased YAML.Parser := YAML.Streams.Create (
+			Ada.Streams.Stream_IO.Stream (File));
 	begin
-		Users.User_Info_IO.IO(Reader, User_Info);
+		YAML.Parse_Stream_Start (Parser);
+		User_Info_IO.IO (
+			Serialization.YAML.Reading (Parser'Access, User_Info_IO.Yaml_Type).Serializer,
+			User_Info);
+		YAML.Parse_Stream_End (Parser);
 	end;
-exception
-	when DYAYaml.YAML_Error =>
-		raise DYAYaml.YAML_Error with File_Name;
+	Ada.Streams.Stream_IO.Close (File);
 end Tabula.Users.Load;

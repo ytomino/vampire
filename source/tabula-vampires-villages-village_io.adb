@@ -7,27 +7,28 @@ package body Tabula.Vampires.Villages.Village_IO is
 	use Person_Records;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
-	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; People : in out Villages.People.Vector) is
-		package Person_Records_IO is new DYAYaml.IO_List (
+	procedure IO (Serializer : not null access Serialization.Serializer; Name : in String; People : in out Villages.People.Vector) is
+		package Person_Records_IO is new Serialization.IO_List (
 			Container_Type => Villages.Person_Records.Vector,
 			Cursor => Villages.Person_Records.Cursor,
 			Element_Type => Person_Record,
 			Default => Default_Person_Record);
-		package People_IO is new DYAYaml.IO_List (
+		package People_IO is new Serialization.IO_List (
 			Container_Type => Villages.People.Vector,
 			Cursor => Villages.People.Cursor,
 			Element_Type => Person_Type,
 			Default => Default_Person);
-		use DYAYaml;
+		use Serialization;
 		use Person_Records_IO;
 		use Person_Role_IO;
 		use Person_State_IO;
 		use Requested_Role_IO;
 		use People_IO;
-		use Tabula.Calendar.Time_IO;
-		procedure People_Callback(Item : in out Person_Type) is
+		use Calendar.Time_IO;
+		use Casts.Cast_IO;
+		procedure People_Callback (Item : in out Person_Type) is
 			procedure Person_Callback is
-				procedure Person_Records_Callback(Item : in out Person_Record) is
+				procedure Person_Records_Callback (Item : in out Person_Record) is
 					procedure Person_Record_Callback is
 					begin
 						IO (Serializer, "state", Item.State);
@@ -39,50 +40,51 @@ package body Tabula.Vampires.Villages.Village_IO is
 						IO (Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
 					end Person_Record_Callback;
 				begin
-					DYAYaml.IO(Serializer, Person_Record_Callback'Access);
+					IO (Serializer, Person_Record_Callback'Access);
 				end Person_Records_Callback;
 			begin
-				IO(Serializer, "id", Item.Id);
-				Casts.Cast_IO.IO (Serializer, Item);
-				IO(Serializer, "request", Item.Request);
-				IO(Serializer, "role", Item.Role);
-				IO(Serializer, "ignore-request", Item.Ignore_Request, Default => Default_Person.Ignore_Request);
-				IO(Serializer, "records", Item.Records, Person_Records_Callback'Access);
-				IO(Serializer, "commited", Item.Commited);
+				IO (Serializer, "id", Item.Id);
+				IO (Serializer, Item);
+				IO (Serializer, "request", Item.Request);
+				IO (Serializer, "role", Item.Role);
+				IO (Serializer, "ignore-request", Item.Ignore_Request, Default => Default_Person.Ignore_Request);
+				IO (Serializer, "records", Item.Records, Person_Records_Callback'Access);
+				IO (Serializer, "commited", Item.Commited);
 			end Person_Callback;
 		begin
-			IO(Serializer, Person_Callback'Access);
+			IO (Serializer, Person_Callback'Access);
 		end People_Callback;
 	begin
-		IO(Serializer, Name, People, People_Callback'Access);
+		IO (Serializer, Name, People, People_Callback'Access);
 	end IO;
 	
-	procedure IO(Serializer : in out DYAYaml.Serializer; Name : String; Messages : in out Villages.Messages.Vector) is
-		use DYAYaml;
-		use Tabula.Calendar.Time_IO;
+	procedure IO (Serializer : not null access Serialization.Serializer; Name : String; Messages : in out Villages.Messages.Vector) is
+		use Serialization;
 		use Message_Kind_IO;
-		procedure Messages_Callback(Item : in out Message) is
+		use Calendar.Time_IO;
+		procedure Messages_Callback (Item : in out Message) is
 			procedure Message_Callback is
 			begin
-				IO(Serializer, "day", Item.Day);
-				IO(Serializer, "time", Item.Time);
-				IO(Serializer, "kind", Item.Kind);
-				IO(Serializer, "subject", Item.Subject, Default => Default_Message.Subject);
-				IO(Serializer, "target", Item.Target, Default => Default_Message.Target);
-				IO(Serializer, "text", Item.Text, Default => Default_Message.Text);
+				IO (Serializer, "day", Item.Day);
+				IO (Serializer, "time", Item.Time);
+				IO (Serializer, "kind", Item.Kind);
+				IO (Serializer, "subject", Item.Subject, Default => Default_Message.Subject);
+				IO (Serializer, "target", Item.Target, Default => Default_Message.Target);
+				IO (Serializer, "text", Item.Text, Default => Default_Message.Text);
 			end Message_Callback;
 		begin
-			DYAYaml.IO(Serializer, Message_Callback'Access);
+			IO (Serializer, Message_Callback'Access);
 		end Messages_Callback;
 		use Villages.Messages;
-		package Messages_IO is new DYAYaml.IO_List(Villages.Messages.Vector, Villages.Messages.Cursor, Message, Default_Message);
+		package Messages_IO is new Serialization.IO_List (Villages.Messages.Vector, Villages.Messages.Cursor, Message, Default_Message);
+		use Messages_IO;
 	begin
-		Messages_IO.IO(Serializer, Name, Messages, Messages_Callback'Access);
+		IO (Serializer, Name, Messages, Messages_Callback'Access);
 	end IO;
 	
-	procedure IO(Serializer: in out DYAYaml.Serializer; Village: in out Village_Type; Info_Only : Boolean := False) is
-		use DYAYaml;
-		use Tabula.Calendar.Time_IO;
+	procedure IO (Serializer: not null access Serialization.Serializer; Village: in out Village_Type; Info_Only : in Boolean := False) is
+		use Serialization;
+		use Calendar.Time_IO;
 		use Tabula.Villages.Village_IO.Village_State_IO;
 		use Tabula.Villages.Village_IO.Village_Time_IO;
 		use Execution_IO;
@@ -100,7 +102,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 			procedure Appearance_Callback is
 			begin
 				for I in Village.Appearance'Range loop
-					IO(Serializer, Person_Role'Image(I), Village.Appearance(I));
+					IO (Serializer, Person_Role'Image (I), Village.Appearance (I));
 				end loop;
 			end Appearance_Callback;
 		begin
@@ -121,14 +123,14 @@ package body Tabula.Vampires.Villages.Village_IO is
 			IO (Serializer, "doctor-infected", Village.Doctor_Infected, Default => Cure);
 			IO (Serializer, "hunter-silver-bullet", Village.Hunter_Silver_Bullet, Default => Target_And_Self);
 			IO (Serializer, "unfortunate", Village.Unfortunate, Default => None);
-			if Serializer in DYAYaml.Reader or else Village.Appearance /= Role_Appearances'(others => Random) then
+			if Serializer.Direction = Reading or else Village.Appearance /= Role_Appearances'(others => Random) then
 				IO (Serializer, "appearance", Appearance_Callback'Access);
 			end if;
-			if Serializer in DYAYaml.Reader or else Village.Execution = Dummy_Killed_And_From_First then
+			if Serializer.Direction = Reading or else Village.Execution = Dummy_Killed_And_From_First then
 				IO (Serializer, "dummy-role", Village.Dummy_Role);
 			end if;
 			IO (Serializer, "people", Village.People);
-			if Serializer in DYAYaml.Reader or else not Village.Escaped_People.Is_Empty then
+			if Serializer.Direction = Reading or else not Village.Escaped_People.Is_Empty then
 				IO (Serializer, "escaped-people", Village.Escaped_People);
 			end if;
 			if not Info_Only then

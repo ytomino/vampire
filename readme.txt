@@ -1,6 +1,6 @@
 The Village of Vampire by YT
 
-*設置
+* 設置
 
 root/
 	vampire.exe or vampire.cgi (実行可能属性)
@@ -23,23 +23,25 @@ root/
 それでログオンすると新しい村を作ることができます。
 また、進行中の村に地の文を書き込めます。"administrator"での参加はできません。
 
-*ビルドに必要なもの
+* ビルドに必要なもの
 
 gcc 4.4.4を使わせていただいています。
 http://gcc.gnu.org/
 
 乱数アルゴリズムにMT19937を使わせていただいています。
 http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/mt.html
-BSDLです。ライセンス文書はこのファイルの後ろの方に。
 
 パスワードを保存するときのハッシュ関数にOpenSSLを使わせていただいています。
 http://www.openssl.org/
-BSDLです。ライセンス文書はこのファイルの後ろの方に。
 
-dyayamlを使っています。
-http://panathenaia.halfmoon.jp/alang/dyayaml.html
-YAMLはhttp://yaml.org/を参照してくださいと言いたいのですがdyayamlはサブセットかつ幾つか独自仕様があります。まあ適当に。
-(いずれlibyamlに移行したい)
+データの保存のためにlibyamlを使わせていただいています。
+http://pyyaml.org/wiki/LibYAML
+
+C言語のヘッダーをAdaに変換するために"headmaster"(拙作)を使用しています。
+http://panathenaia.halfmoon.jp/alang/headmaster/
+
+	"headmaster"のコンパイルのためにはObjective-Caml(3.12.0以降)が必要です。
+	http://caml.inria.fr/
 
 それ以外で私が書いたコードはNYSL 0.9982 ということにしてください。
 
@@ -51,8 +53,8 @@ The Village of Vampire本体のソースコードのライセンス
   http://panathenaia.halfmoon.jp/NYSL.TXT
   NYSLについてはhttp://www.kmonos.net/nysl/を参照してください。
 
-MT19937のライセンス文書
------------------------
+license of MT19937
+------------------
 
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
@@ -95,8 +97,8 @@ MT19937のライセンス文書
    http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 
-OpenSSLのライセンス文書
------------------------
+license of OpenSSL
+------------------
 
 /* ====================================================================
  * Copyright (c) 1998-2008 The OpenSSL Project.  All rights reserved.
@@ -151,3 +153,26 @@ OpenSSLのライセンス文書
  * Hudson (tjh@cryptsoft.com).
  *
  */
+
+license of libyaml
+------------------
+
+Copyright (c) 2006 Kirill Simonov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
