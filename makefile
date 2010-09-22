@@ -33,11 +33,11 @@ endif
 TESTDIR=~/Sites/SandTrip/vampire
 
 ifeq ($(BUILD),release)
-CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaI
+CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaIFK.R
 BARGS=
 LARGS=-s -Xlinker --gc-sections
 else
-CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaI -gnatwFK.R
+CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaIFK.R
 BARGS=-E
 LARGS=-g
 endif

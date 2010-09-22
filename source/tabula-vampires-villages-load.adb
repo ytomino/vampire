@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
+with Ada.Exceptions;
 with Ada.Streams.Stream_IO;
 with Serialization.YAML;
 with YAML.Streams;
@@ -31,4 +32,9 @@ begin
 		YAML.Parse_Stream_End (Parser);
 	end;
 	Ada.Streams.Stream_IO.Close (File);
+exception
+	when E : others =>
+		Ada.Exceptions.Raise_Exception (
+			Ada.Exceptions.Exception_Identity (E),
+			File_Name & ": " & Ada.Exceptions.Exception_Message (E));
 end Tabula.Vampires.Villages.Load;
