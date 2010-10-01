@@ -1967,7 +1967,7 @@ is
 									not Person.Commited and then (
 										Message_Counts(Player_Index).Speech > 0 or else (
 											Village.Time = Villages.Night and then
-											Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
+											Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 										)
 									)
 								then
