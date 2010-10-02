@@ -520,17 +520,25 @@ is
 				Ada.Strings.Unbounded.Append (Result, "です。");
 			when Vampires.Villages.Servant_Knew_Vampires =>
 				Ada.Strings.Unbounded.Append (Result, "吸血鬼は");
-				for Role in Vampires.Villages.Vampire_Role loop
-					for Position in Village.People.First_Index .. Village.People.Last_Index loop
-						declare
-							P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
-						begin
-							if P.Role = Role then
-								Ada.Strings.Unbounded.Append (Result, Name(P));
-							end if;
-						end;
+				declare
+					First : Boolean := True;
+				begin
+					for Role in Vampires.Villages.Vampire_Role loop
+						for Position in Village.People.First_Index .. Village.People.Last_Index loop
+							declare
+								P : Vampires.Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
+							begin
+								if P.Role = Role then
+									if not First then
+										Ada.Strings.Unbounded.Append (Result, "、");
+									end if;
+									Ada.Strings.Unbounded.Append (Result, Name(P));
+									First := False;
+								end if;
+							end;
+						end loop;
 					end loop;
-				end loop;
+				end;
 				Ada.Strings.Unbounded.Append (Result, "です。");
 		end case;
 		return +Result;
