@@ -811,6 +811,11 @@ begin
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output, "見つめられるのは一日一度です。");
+											elsif Village.Time = Tabula.Villages.Night then
+												Web.Header_Content_Type (Output, Web.Text_HTML);
+												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Break (Output);
+												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "夜は直接会話できます。", User_Id, User_Password);
 											elsif Villages.Unfortunate(Village) then
 												Add(Village, Villages.Action_Vampire_Gaze_Blocked, Subject => Player, Target => Target);
 												Villages.Save(Village_Id, Village);
