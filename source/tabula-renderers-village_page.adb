@@ -686,7 +686,7 @@ is
 							end if;
 						end Handle_Item;
 					begin
-						if Item.Available and then (Changable or else Item.Changed) then
+						if Item.Available and then (Changable or else Item.Changed or else Player_Index >= 0) then
 							Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
 						end if;
 					end Process;
