@@ -90,7 +90,7 @@ begin
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	Ada.Numerics.MT19937.Reset(Generator);
 	declare
-		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name'Access, Force => 60.0);
+		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
 		-- HTTP Info
 		Remote_Addr : String renames Web.Remote_Addr;
 		Remote_Host : String renames Web.Remote_Host;
