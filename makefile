@@ -33,7 +33,7 @@ endif
 TESTDIR=~/Sites/SandTrip/vampire
 
 ifeq ($(BUILD),release)
-CARGS=-O2 -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaIFK.R
+CARGS=-Os -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaIFK.R
 BARGS=
 LARGS=-s -Xlinker --gc-sections
 else
@@ -44,8 +44,22 @@ endif
 
 MARGS=-a -cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 
-export ADA_PROJECT_PATH=
+H:=lib/import.h
+
+ifneq ($(DRAKE),)
+H:=$(DRAKE)/import.h $(H)
+ifneq ($(TARGET),$(HOST))
+RTSDIR=rts-$(TARGET)
+else
+RTSDIR=rts
+endif
+MARGS:=--RTS=$(abspath $(RTSDIR)) $(MARGS) -lc-gnat
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(abspath lib/iconv lib/openssl lib/web lib/yaml))
+else
 export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
+endif
+
+export ADA_PROJECT_PATH=
 export ADA_OBJECTS_PATH=
 
 .PHONY: all clean test-vampire test-shuffle test-users archive \
@@ -57,8 +71,9 @@ all: site/vampire$(CGISUFFIX)
 clean:
 	-rm -rf build*
 	-rm -rf import*
+	-rm -rf rts*
 
-site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)/c.ads
+site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)/c.ads $(RTSDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
@@ -87,9 +102,15 @@ test-vampire: install-test
 $(BUILDDIR):
 	mkdir $@
 
-$(IMPORTDIR)/c.ads: lib/import.h
-	-mkdir $(IMPORTDIR)
-	headmaster --gcc $(TARGET)-gcc --to ada -D $(IMPORTDIR) $<
+$(IMPORTDIR)/c.ads: $(H)
+	headmaster --gcc $(TARGET)-gcc --to ada -p -D $(IMPORTDIR) $+
+
+ifneq ($(DRAKE),)
+
+$(RTSDIR):
+	make -C $(DRAKE) RTSDIR=$(abspath $(RTSDIR)) IMPORTDIR=$(abspath $(IMPORTDIR))
+
+endif
 
 archive:
 	-rm site/vampire.7z

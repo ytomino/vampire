@@ -349,10 +349,10 @@ is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		if Village.Execution = Vampires.Villages.Dummy_Killed_And_From_First then
-			Result := "地主さんを含む" & (+To_String(1 + Integer(Village.People.Length)));
+			Ada.Strings.Unbounded.Append (Result, "地主さんを含む" & To_String(1 + Integer(Village.People.Length)));
 			Countup (Village.Dummy_Role);
 		else
-			Result := +To_String(Integer(Village.People.Length));
+			Ada.Strings.Unbounded.Append (Result, To_String(Integer(Village.People.Length)));
 		end if;
 		Ada.Strings.Unbounded.Append(Result, "人の村人の中には");
 		for Position in Village.People.First_Index .. Village.People.Last_Index loop

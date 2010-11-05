@@ -82,9 +82,9 @@ procedure Tabula.Vampires.Main is
 	end Get_Renderer;
 	
 	Input : Ada.Text_IO.Text_Streams.Stream_Access
-		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Input);
+		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Input.all);
 	Output : Ada.Text_IO.Text_Streams.Stream_Access
-		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Output);
+		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Output.all);
 	
 begin
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
