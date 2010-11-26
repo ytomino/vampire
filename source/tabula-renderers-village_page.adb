@@ -1379,7 +1379,10 @@ is
 											declare
 												The_Unfortunate : constant Integer := Vampires.Villages.Find_Superman (Village.all, Vampires.Villages.Unfortunate_Inhabitant);
 											begin
-												Narration(Name(Village.People.Constant_Reference(The_Unfortunate).Element.all) & "のせいで用事ができてしまい、今夜は相談ができません。", "narrationi");
+												Narration (
+													Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) & "のせいで用事ができてしまい、今夜は相談ができません。",
+													"narrationi",
+													Vampires.Villages.Vampire_K);
 											end;
 										end if;
 									when Vampires.Villages.Action_Message_Kind =>
@@ -1985,7 +1988,9 @@ is
 											| Vampires.Villages.Servant | Vampires.Villages.Gremlin => null;
 										when Vampires.Villages.Doctor =>
 											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
-												if Village.Today >= 2 then
+												if (Village.Today = 2 and then Village.Time /= Villages.Night) -- 2日目の昼以降
+													or else Village.Today > 2
+												then
 													Vote_Form (Output, Player_Index, Vampires.Villages.Doctor, False,
 														Person.Records.Constant_Reference(Village.Today).Element.Target, False, "貴重な薬を誰に……", "診察");
 												else
