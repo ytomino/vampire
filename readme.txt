@@ -25,7 +25,7 @@ root/
 
 * ビルドに必要なもの
 
-gcc 4.4.4を使わせていただいています。
+gcc 4.5.1を使わせていただいています。
 http://gcc.gnu.org/
 
 乱数アルゴリズムにMT19937を使わせていただいています。
@@ -42,6 +42,9 @@ http://panathenaia.halfmoon.jp/alang/headmaster/
 
 	"headmaster"のコンパイルのためにはObjective-Caml(3.12.0以降)が必要です。
 	http://caml.inria.fr/
+
+Adaの標準ライブラリには、gcc標準のものではなくdrake(拙作)を使用しています。
+https://github.com/ytomino/drake
 
 それ以外で私が書いたコードはNYSL 0.9982 ということにしてください。
 
