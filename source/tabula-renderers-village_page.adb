@@ -31,7 +31,6 @@ is
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Time;
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	Line_Break : constant Character := Ascii.LF;
 	
@@ -1276,9 +1275,9 @@ is
 				X : X_Type := 2;
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
-				X_Generator : aliased Ada.Numerics.MT19937.Generator;
+				X_Generator : aliased Ada.Numerics.MT19937.Generator :=
+				   Ada.Numerics.MT19937.Create (12);
 			begin
-				Ada.Numerics.MT19937.Reset(X_Generator, 12);
 				if Object.HTML_Version = Web.HTML then
 					Paging (Output, Top);
 				end if;

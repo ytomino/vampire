@@ -10,7 +10,6 @@ package body Tabula.Villages.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	package Sorting is new Village_Lists.Generic_Sorting;
 	

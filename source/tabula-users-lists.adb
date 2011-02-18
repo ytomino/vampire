@@ -10,9 +10,6 @@ package body Tabula.Users.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Ada.Calendar.Time;
 	
-	-- function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
-	
 	procedure Check(Id, Password : String; 
 		Remote_Addr, Remote_Host : in String;
 		Now : in Ada.Calendar.Time;

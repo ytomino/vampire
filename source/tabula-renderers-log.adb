@@ -9,7 +9,6 @@ with Tabula.Vampires.Villages.Load;
 package body Tabula.Renderers.Log is
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	function Load_Info (Id : in Villages.Village_Id) return Villages.Lists.Village_List_Item is
 		Village : Vampires.Villages.Village_Type;

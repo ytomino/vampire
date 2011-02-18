@@ -8,7 +8,6 @@ package body Tabula.Vampires.Villages is
 	use type Tabula.Villages.Village_Time;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	function Provisional_Voting (Mode : Execution_Mode) return Boolean is
 	begin

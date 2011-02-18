@@ -19,12 +19,12 @@ endif
 ifneq ($(TARGET),$(HOST))
 GNATMAKE=$(TARGET)-gnatmake
 BUILD=release
-BUILDDIR:=$(abspath build-$(TARGET))
+BUILDDIR=$(abspath build-$(TARGET))
 IMPORTDIR:=$(abspath import-$(TARGET))
 else
 GNATMAKE=gnatmake
 BUILD=debug
-BUILDDIR:=$(abspath build)
+BUILDDIR=$(abspath build)
 IMPORTDIR:=$(abspath import)
 endif
 
@@ -42,38 +42,27 @@ BARGS=-E
 LARGS=-g
 endif
 
-MARGS=-a -cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
+MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 
-H:=lib/import.h
-
-ifneq ($(DRAKE),)
-H:=$(DRAKE)/import.h $(H)
-ifneq ($(TARGET),$(HOST))
-RTSDIR=rts-$(TARGET)
-else
-RTSDIR=rts
+ifneq ($(DRAKE_RTSROOT),)
+DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)
 endif
-MARGS:=--RTS=$(abspath $(RTSDIR)) $(MARGS) -lc-gnat
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(abspath lib/iconv lib/openssl lib/web lib/yaml))
-else
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
+ifneq ($(DRAKE_RTSDIR),)
+IMPORTDIR:=
+MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS) -lc-gnat
 endif
 
 export ADA_PROJECT_PATH=
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
 export ADA_OBJECTS_PATH=
 
-.PHONY: all clean test-vampire test-shuffle test-users archive \
+.PHONY: all clean test-vampire archive \
 	site/vampire$(CGISUFFIX) \
 	site/unlock$(CGISUFFIX)
 
 all: site/vampire$(CGISUFFIX)
 
-clean:
-	-rm -rf build*
-	-rm -rf import*
-	-rm -rf rts*
-
-site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)/c.ads $(RTSDIR)
+site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
@@ -102,15 +91,14 @@ test-vampire: install-test
 $(BUILDDIR):
 	mkdir $@
 
-$(IMPORTDIR)/c.ads: $(H)
+ifneq ($(IMPORTDIR),)
+$(IMPORTDIR): lib/import.h
 	headmaster --gcc $(TARGET)-gcc --to ada -p -D $(IMPORTDIR) $+
-
-ifneq ($(DRAKE),)
-
-$(RTSDIR):
-	make -C $(DRAKE) RTSDIR=$(abspath $(RTSDIR)) IMPORTDIR=$(abspath $(IMPORTDIR))
-
 endif
+
+clean:
+	-rm -rf build*
+	-rm -rf import*
 
 archive:
 	-rm site/vampire.7z

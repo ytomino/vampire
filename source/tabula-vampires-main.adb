@@ -46,7 +46,6 @@ procedure Tabula.Vampires.Main is
 	use Villages.People;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
 	
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
 	

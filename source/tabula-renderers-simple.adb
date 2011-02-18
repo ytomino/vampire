@@ -4,9 +4,6 @@ with iconv.Streams;
 package body Tabula.Renderers.Simple is
 	use type Villages.Village_State;
 	
-	-- function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	-- function "+" (S : String) return Ada.Strings.Unbounded.Unbounded_String renames Ada.Strings.Unbounded.To_Unbounded_String;
-	
 	Encoding : access iconv.Encoding; -- may not be deallocation...
 
 	function Ready_Encoding return not null access iconv.Encoding is
