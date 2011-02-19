@@ -1276,7 +1276,7 @@ is
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
 				X_Generator : aliased Ada.Numerics.MT19937.Generator :=
-				   Ada.Numerics.MT19937.Create (12);
+				   Ada.Numerics.MT19937.Initialize (12);
 			begin
 				if Object.HTML_Version = Web.HTML then
 					Paging (Output, Top);
@@ -2099,7 +2099,6 @@ is
 									declare
 										subtype Arg is Integer range 1000 .. 4999;
 										package Random_Arg is new Ada.Numerics.MT19937.Discrete_Random(Arg);
-										Seed : aliased Ada.Numerics.MT19937.Generator;
 										X : Arg;
 										Y : Arg;
 										procedure Handle_Escape(Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -2117,8 +2116,9 @@ is
 												Handle_Player(Output, Tag, Template);
 											end if;
 										end Handle_Escape;
+										Seed : aliased Ada.Numerics.MT19937.Generator :=
+											Ada.Numerics.MT19937.Initialize;
 									begin
-										Ada.Numerics.MT19937.Reset(Seed);
 										X := Random_Arg.Random(Seed'Access);
 										Y := Random_Arg.Random(Seed'Access);
 										Web.Producers.Produce(Output, Template, Handler => Handle_Escape'Access);

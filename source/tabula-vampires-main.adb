@@ -49,7 +49,7 @@ procedure Tabula.Vampires.Main is
 	
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
 	
-	Generator : aliased Ada.Numerics.MT19937.Generator;
+	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
 	
 	procedure Add(
 		Village : in out Villages.Village_Type;
@@ -87,7 +87,6 @@ procedure Tabula.Vampires.Main is
 	
 begin
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
-	Ada.Numerics.MT19937.Reset(Generator);
 	declare
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
 		-- HTTP Info
