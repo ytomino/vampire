@@ -49,7 +49,7 @@ DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)
 endif
 ifneq ($(DRAKE_RTSDIR),)
 IMPORTDIR:=
-MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS) -lc-gnat -lm
+MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS) -lm
 endif
 
 export ADA_PROJECT_PATH=
