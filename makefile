@@ -32,14 +32,23 @@ endif
 # http://kirika.la.coocan.jp/proj/sandtrip/
 TESTDIR=~/Sites/SandTrip/vampire
 
+CARGS:=-Os -momit-leaf-frame-pointer -gnatn -gnatwaIFK.R
+BARGS:=
+LARGS:=-lm
 ifeq ($(BUILD),release)
-CARGS=-Os -momit-leaf-frame-pointer -fdata-sections -gnatn -gnatwaIFK.R
-BARGS=
-LARGS=-s -Xlinker --gc-sections
+ifneq ($(findstring apple-darwin,$(TARGET)),)
+LARGS:=$(LARGS) -dead_strip
+ifneq ($(WHYLIVE),)
+LARGS:=$(LARGS) -Xlinker -why_live -Xlinker $(WHYLIVE)
+endif
 else
-CARGS=-Os -momit-leaf-frame-pointer -g -gnata -gnatn -gnatwaIFK.R
-BARGS=-E
-LARGS=-g
+CARGS:=$(CARGS) -fdata-sections
+LARGS:=$(LARGS) -Xlinker --gc-sections -s
+endif
+else
+CARGS:=$(CARGS) -g -gnata
+BARGS:=-E
+LARGS:=-g
 endif
 
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)

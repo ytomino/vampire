@@ -602,7 +602,7 @@ begin
 																	Id => +User_Id,
 																	Commited => False,
 																	Records => To_Vector (Villages.Default_Person_Record, Length => 1)));
-																Add(Village, Villages.Join, Subject => Village.People.Last);
+																Add (Village, Villages.Join, Subject => Village.People.Last_Index);
 																Villages.Save(Village_Id, Village);
 																Tabula.Villages.Lists.Update_Village_List (
 																	Remake_All => False,
