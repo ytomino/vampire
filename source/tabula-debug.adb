@@ -16,7 +16,7 @@ package body Tabula.Debug is
 		if Name = null then
 			raise Program_Error with "debug log handler is not installed.";
 		end if;
-		Ada.Text_IO.Open (File, Ada.Text_IO.Append_File, Name.all);
+		Ada.Text_IO.Create (File, Ada.Text_IO.Append_File, Name.all);
 		Ada.Text_IO.Put (File, "---- " & Time_Image & " (" & Offset_Image & ") ----");
 		Ada.Text_IO.New_Line (File);
 	end Start;
@@ -35,9 +35,10 @@ package body Tabula.Debug is
 		return True;
 	end Put;
 	
-	procedure Hook (Name : not null Static_String_Access) is
+	procedure Hook (Name : not null Static_String_Access; Time : Ada.Calendar.Time) is
 	begin
 		Debug.Name := Name;
+		Debug.Time := Time;
 		System.Debug.Put_Hook := Put'Access;
 	end Hook;
 	

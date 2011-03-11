@@ -94,7 +94,7 @@ procedure Tabula.Vampires.Main is
 		Log_File_Name => Configurations.Users_Log_File_Name'Access);
 	
 begin
-	Debug.Hook (Configurations.Debug_Log_File_Name'Access);
+	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	declare
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);

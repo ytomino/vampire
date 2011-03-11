@@ -88,6 +88,7 @@ $(TESTDIR)/%: site/%
 
 install-test: \
 	$(TESTDIR)/vampire$(CGISUFFIX) \
+	$(TESTDIR)/unlock$(CGISUFFIX) \
 	$(TESTDIR)/cast \
 	$(TESTDIR)/style.css \
 	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html)))
