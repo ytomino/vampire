@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package body Tabula.Vampires.Villages.Teaming is
 	use type Ada.Containers.Count_Type;
-	use type Casts.Sex_Kind;
+	use type Casts.Person_Sex;
 	
 	function Possibilities (
 		People_Count : Ada.Containers.Count_Type;

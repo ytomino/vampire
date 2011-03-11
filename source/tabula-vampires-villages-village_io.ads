@@ -1,16 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Serialization;
-with Tabula.Casts.Cast_IO;
 package Tabula.Vampires.Villages.Village_IO is
-	
-	Default_Person : constant Person_Type := (
-		Casts.Cast_IO.Default_Person with
-		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
-		Request => Random,
-		Ignore_Request => False,
-		Role => Inhabitant,
-		Records => Person_Records.Empty_Vector,
-		Commited => False);
 	
 	Yaml_Type : constant String := "vampire-village";
 	

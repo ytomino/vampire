@@ -6,12 +6,12 @@ package Tabula.Configurations is
 	
 	Lock_Name : aliased constant String := "temp/lock-vampire";
 	Village_List_Cache_File_Name : constant String := "temp/cache-villages";
-	Users_Log_File_Name : constant String := "temp/users-log";
+	Users_Log_File_Name : aliased constant String := "temp/users-log";
 	Short_Term_Village_Blocking_File_Name : constant String := "temp/disabled-short";
 	
 	Base_Directory : aliased constant String := "";
 	
-	Users_Directory : constant String := "users";
+	Users_Directory : aliased constant String := "users";
 	Cast_File_Name : constant String := "cast";
 	Villages_Data_Directory : aliased constant String := "villages/data";
 	Villages_HTML_Directory : aliased constant String := "villages";
@@ -22,5 +22,7 @@ package Tabula.Configurations is
 	
 	List_HTML_File_Name : constant String := "villages/index.html";
 	List_RSS_File_Name : constant String := "villages/wanted.rdf";
+	
+	Debug_Log_File_Name : aliased constant String := "temp/debug-log.txt";
 	
 end Tabula.Configurations;

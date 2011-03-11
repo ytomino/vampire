@@ -9,6 +9,7 @@ with Ada.Text_IO.Text_Streams;
 with Web.Lock_Files;
 with Tabula.Calendar;
 with Tabula.Configurations.Templates;
+with Tabula.Debug;
 with Tabula.Renderers.Error_Page;
 with Tabula.Renderers.Index_Page;
 with Tabula.Renderers.Message_Page;
@@ -29,9 +30,9 @@ with Tabula.Villages.Lists;
 procedure Tabula.Vampires.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	use type Tabula.Casts.Person_Sex;
-	use type Tabula.Casts.Work;
-	use type Tabula.Users.Lists.Check_Result;
+	use type Casts.Person_Sex;
+	use type Casts.Work;
+	use type Users.Lists.User_State;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -48,8 +49,6 @@ procedure Tabula.Vampires.Main is
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
-	
-	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
 	
 	procedure Add(
 		Village : in out Villages.Village_Type;
@@ -80,12 +79,22 @@ procedure Tabula.Vampires.Main is
 		end if;
 	end Get_Renderer;
 	
-	Input : Ada.Text_IO.Text_Streams.Stream_Access
-		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Input.all);
-	Output : Ada.Text_IO.Text_Streams.Stream_Access
-		renames Ada.Text_IO.Text_Streams.Stream(Ada.Text_IO.Standard_Output.all);
+	-- 標準入出力
+	Input : not null Ada.Text_IO.Text_Streams.Stream_Access :=
+		Ada.Text_IO.Text_Streams.Stream (Ada.Text_IO.Standard_Input.all);
+	Output : not null Ada.Text_IO.Text_Streams.Stream_Access :=
+		Ada.Text_IO.Text_Streams.Stream (Ada.Text_IO.Standard_Output.all);
+	
+	-- 乱数シード
+	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
+	
+	-- ユーザー情報
+	Users_List : Users.Lists.Users_List := Users.Lists.Create (
+		Directory => Configurations.Users_Directory'Access,
+		Log_File_Name => Configurations.Users_Log_File_Name'Access);
 	
 begin
+	Debug.Hook (Configurations.Debug_Log_File_Name'Access);
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	declare
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
@@ -122,12 +131,14 @@ begin
 			declare
 				New_User_Id : String renames Web.Element (Inputs, "id");
 				New_User_Password : String renames Web.Element (Inputs, "password");
-				User_State : Users.Lists.Check_Result;
+				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 			begin
-				Users.Lists.Check(Id => New_User_Id, Password => New_User_Password,
-					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-					Result => User_State, User_Info => User_Info);
+				Users.Lists.Query (Users_List,
+					Id => New_User_Id, Password => New_User_Password,
+					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+					Now => Now,
+					Info => User_Info, State => User_State);
 				case User_State is
 					when Users.Lists.Log_Off =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -168,24 +179,33 @@ begin
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "ログオンしました。",
 							User_Id => New_User_Id, User_Password => New_User_Password);
-						Users.Lists.Update(Id => New_User_Id,
-							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
-							User_Info => User_Info);
+						Users.Lists.Update (Users_List,
+							Id => New_User_Id,
+							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+							Now => Now,
+							Info => User_Info);
 				end case;
 			end;
 		elsif Cmd = "logoff" then
 			declare
-				User_State : Users.Lists.Check_Result;
+				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 			begin
-				Users.Lists.Check(Id => User_Id, Password => User_Password,
-					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Lists.Valid then
-					Users.Lists.Update(Id => User_Id,
-						Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
-						User_Info => User_Info);
-				end if;
+				Users.Lists.Query (Users_List,
+					Id => User_Id, Password => User_Password,
+					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+					Now => Now,
+					Info => User_Info, State => User_State);
+				case User_State is
+					when Users.Lists.Valid =>
+						Users.Lists.Update (Users_List,
+							Id => User_Id,
+							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+							Now => Now,
+							Info => User_Info);
+					when others =>
+						null;
+				end case;
 			end;
 			Renderer.Set_User(Cookie,
 				New_User_Id => "", New_User_Password => "");
@@ -210,8 +230,10 @@ begin
 						Village_Id => Village_Id, Message => "再入力されたパスワードが異なります。",
 						User_Id => "", User_Password => "");
 				else
-					Users.Lists.New_User(Id => New_User_Id, Password => New_User_Password,
-						Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
+					Users.Lists.New_User (Users_List,
+						Id => New_User_Id, Password => New_User_Password,
+						Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+						Now => Now,
 						Result => Registered);
 					if Registered then
 						Renderer.Set_User(Cookie,
@@ -234,118 +256,125 @@ begin
 			end;
 		elsif Cmd = "newl" or else Cmd = "news" then -- 村作成
 			declare
-				User_State : Users.Lists.Check_Result;
+				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 				Day_Duration : Duration;
 			begin
-				Users.Lists.Check(Id => User_Id, Password => User_Password,
-					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-					Result => User_State, User_Info => User_Info);
-				if User_State = Users.Lists.Valid then
-					if User_Id /= Users.Administrator
-						and then Tabula.Villages.Lists.Created(
-							User_Id,
-							Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
-							Tabula.Villages.Invalid_Village_Id)
-					then
-						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-						Web.Header_Break (Output);
-						Renderer.Message_Page(Output, Message => "同時に村をふたつ作成することはできません。",
-							User_Id => User_Id, User_Password => User_Password);
-					elsif Cmd = "news" and then (User_Info.Disallow_New_Village or else (
-						Tabula.Villages.Lists.Short_Term_Village_Blocking
-						and then User_Id /= Users.Administrator
-						and then User_ID /= "she")) -- ハードコーディングですよ酷いコードですね
-					then
-						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-						Web.Header_Break (Output);
-						Renderer.Message_Page(Output, Message => "えーと、しばらく短期は延期で。",
-							User_Id => User_Id, User_Password => User_Password);
-					else
-						if Cmd = "news" then
-							Day_Duration := Tabula.Default_Short_Day_Duration;
+				Users.Lists.Query (Users_List,
+					Id => User_Id, Password => User_Password,
+					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+					Now => Now,
+					Info => User_Info, State => User_State);
+				case User_State is
+					when Users.Lists.Valid =>
+						if User_Id /= Users.Administrator
+							and then Tabula.Villages.Lists.Created(
+								User_Id,
+								Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
+								Tabula.Villages.Invalid_Village_Id)
+						then
+							Web.Header_Content_Type (Output, Web.Text_HTML);
+							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Break (Output);
+							Renderer.Message_Page(Output, Message => "同時に村をふたつ作成することはできません。",
+								User_Id => User_Id, User_Password => User_Password);
+						elsif Cmd = "news" and then (User_Info.Disallow_New_Village or else (
+							Tabula.Villages.Lists.Short_Term_Village_Blocking
+							and then User_Id /= Users.Administrator
+							and then User_ID /= "she")) -- ハードコーディングですよ酷いコードですね
+						then
+							Web.Header_Content_Type (Output, Web.Text_HTML);
+							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Break (Output);
+							Renderer.Message_Page(Output, Message => "えーと、しばらく短期は延期で。",
+								User_Id => User_Id, User_Password => User_Password);
 						else
-							Day_Duration := Tabula.Default_Long_Day_Duration;
-						end if;
-						declare
-							New_Village_Id : String renames Tabula.Villages.Lists.New_Village_Id;
-							Village_Name : String renames Web.Element (Inputs, "name");
-							Village : Villages.Village_Type := (
-								Name => +Village_Name,
-								By => +User_Id,
-								State => Tabula.Villages.Prologue,
-								Today => 0,
-								Time => Tabula.Villages.Daytime,
-								Dawn => Now,
-								Day_Duration => Day_Duration,
-								Night_Duration => Default_Night_Duration,
-								Execution            => Villages.Initial_Execution,
-								Teaming              => Villages.Initial_Teaming,
-								Monster_Side         => Villages.Initial_Monster_Side,
-								Attack               => Villages.Initial_Attack,
-								Servant_Knowing      => Villages.Initial_Servant_Knowing,
-								Daytime_Preview      => Villages.Initial_Daytime_Preview,
-								Doctor_Infected      => Villages.Initial_Doctor_Infected,
-								Hunter_Silver_Bullet => Villages.Initial_Hunter_Silver_Bullet,
-								Unfortunate          => Villages.Initial_Unfortunate,
-								Appearance => (others => Villages.Random),
-								Dummy_Role => Villages.Inhabitant,
-								People => Empty_Vector,
-								Escaped_People => Empty_Vector,
-								Messages => Villages.Messages.Empty_Vector);
-						begin
-							if Village.Name = "" then
-								Web.Header_Content_Type (Output, Web.Text_HTML);
-								Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-								Web.Header_Break (Output);
-								Renderer.Message_Page(Output,
-									Message => "村名を入力してください。",
-									User_Id => User_Id, User_Password => User_Password);
+							if Cmd = "news" then
+								Day_Duration := Tabula.Default_Short_Day_Duration;
 							else
-								begin
-									Villages.Save(New_Village_Id, Village);
+								Day_Duration := Tabula.Default_Long_Day_Duration;
+							end if;
+							declare
+								New_Village_Id : String renames Tabula.Villages.Lists.New_Village_Id;
+								Village_Name : String renames Web.Element (Inputs, "name");
+								Village : Villages.Village_Type := (
+									Name => +Village_Name,
+									By => +User_Id,
+									State => Tabula.Villages.Prologue,
+									Today => 0,
+									Time => Tabula.Villages.Daytime,
+									Dawn => Now,
+									Day_Duration => Day_Duration,
+									Night_Duration => Default_Night_Duration,
+									Execution            => Villages.Initial_Execution,
+									Teaming              => Villages.Initial_Teaming,
+									Monster_Side         => Villages.Initial_Monster_Side,
+									Attack               => Villages.Initial_Attack,
+									Servant_Knowing      => Villages.Initial_Servant_Knowing,
+									Daytime_Preview      => Villages.Initial_Daytime_Preview,
+									Doctor_Infected      => Villages.Initial_Doctor_Infected,
+									Hunter_Silver_Bullet => Villages.Initial_Hunter_Silver_Bullet,
+									Unfortunate          => Villages.Initial_Unfortunate,
+									Appearance => (others => Villages.Random),
+									Dummy_Role => Villages.Inhabitant,
+									People => Empty_Vector,
+									Escaped_People => Empty_Vector,
+									Messages => Villages.Messages.Empty_Vector);
+							begin
+								if Village.Name = "" then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 									Web.Header_Break (Output);
 									Renderer.Message_Page(Output,
-										Message => "新たな村「" & Village_Name & "」を作成しました。",
+										Message => "村名を入力してください。",
 										User_Id => User_Id, User_Password => User_Password);
-									Tabula.Villages.Lists.Update_Village_List (
-										Remake_All => False,
-										Load_Info => Renderers.Log.Load_Info'Access,
-										Create_Log => Renderers.Log.Create_Log'Access);
-									Users.Lists.Update(Id => User_Id,
-										Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Time => Now,
-										User_Info => User_Info);
-								exception
-									when Ada.IO_Exceptions.Name_Error =>
+								else
+									begin
+										Villages.Save(New_Village_Id, Village);
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output,
-											Message => "作成に失敗しました。",
+											Message => "新たな村「" & Village_Name & "」を作成しました。",
 											User_Id => User_Id, User_Password => User_Password);
-								end;
-							end if;
-						end;
-					end if;
-				else
-					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-					Web.Header_Break (Output);
-					Renderer.Error_Page(Output, "正常にログオンしてください。");
-				end if;
+										Tabula.Villages.Lists.Update_Village_List (
+											Remake_All => False,
+											Load_Info => Renderers.Log.Load_Info'Access,
+											Create_Log => Renderers.Log.Create_Log'Access);
+										Users.Lists.Update (Users_List,
+											Id => User_Id,
+											Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+											Now => Now,
+											Info => User_Info);
+									exception
+										when Ada.IO_Exceptions.Name_Error =>
+											Web.Header_Content_Type (Output, Web.Text_HTML);
+											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Break (Output);
+											Renderer.Message_Page(Output,
+												Message => "作成に失敗しました。",
+												User_Id => User_Id, User_Password => User_Password);
+									end;
+								end if;
+							end;
+						end if;
+					when others =>
+						Web.Header_Content_Type (Output, Web.Text_HTML);
+						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Break (Output);
+						Renderer.Error_Page(Output, "正常にログオンしてください。");
+				end case;
 			end;
 		elsif Cmd = "remakelog" then
 			declare
-				User_State : Users.Lists.Check_Result;
+				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 			begin
-				Users.Lists.Check(Id => User_Id, Password => User_Password,
-					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-					Result => User_State, User_Info => User_Info);
+				Users.Lists.Query (Users_List,
+					Id => User_Id, Password => User_Password,
+					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+					Now => Now,
+					Info => User_Info, State => User_State);
 				if User_State = Users.Lists.Valid and then User_Id = Tabula.Users.Administrator then
 					Tabula.Villages.Lists.Update_Village_List (
 						Remake_All => True,
@@ -365,12 +394,14 @@ begin
 					Render_Reload_Page;
 				elsif Renderer.Is_User_Page(Query_Strings => Query_Strings, Cookie => Cookie) then
 					declare
-						User_State : Users.Lists.Check_Result;
+						User_State : Users.Lists.User_State;
 						User_Info : Users.User_Info;
 					begin
-						Users.Lists.Check(Id => User_Id, Password => User_Password,
-							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-							Result => User_State, User_Info => User_Info);
+						Users.Lists.Query (Users_List,
+							Id => User_Id, Password => User_Password,
+							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+							Now => Now,
+							Info => User_Info, State => User_State);
 						if User_State = Users.Lists.Valid and then User_Id /= Users.Administrator then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -393,7 +424,7 @@ begin
 					Web.Header_Break (Output);
 					Renderers.Users_Page (Renderer, Output,
 						Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
-						User_List => Users.Lists.User_List,
+						User_List => Users.Lists.All_Users (Users_List),
 						User_Id => User_Id,
 						User_Password => User_Password);
 				else
@@ -402,7 +433,7 @@ begin
 					Web.Header_Break (Output);
 					Renderer.Index_Page(Output,
 						Tabula.Villages.Lists.Village_List (Renderers.Log.Load_Info'Access),
-						Users.Lists.Muramura_Count(Now),
+						Users.Lists.Muramura_Count (Users_List, Now),
 						User_Id => User_Id,
 						User_Password => User_Password);
 				end if;
@@ -414,12 +445,14 @@ begin
 			end if;
 		else
 			declare
-				User_State : Users.Lists.Check_Result;
+				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 			begin
-				Users.Lists.Check(Id => User_Id, Password => User_Password,
-					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host, Now => Now,
-					Result => User_State, User_Info => User_Info);
+				Users.Lists.Query (Users_List,
+					Id => User_Id, Password => User_Password,
+					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+					Now => Now,
+					Info => User_Info, State => User_State);
 				if User_State = Users.Lists.Invalid then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -544,7 +577,7 @@ begin
 												Work_Num : Integer := Natural'Value(Web.Element(Inputs, "work"));
 												Name_Num : constant Natural := Natural'Value(Web.Element(Inputs, "name"));
 												Request : constant Villages.Requested_Role := Villages.Requested_Role'Value(Web.Element(Inputs, "request"));
-												Cast : Casts.Cast_Collection := Casts.Load;
+												Cast : Casts.Cast_Collection := Casts.Load (Configurations.Cast_File_Name);
 											begin
 												Villages.Exclude_Taken (Cast, Village);
 												declare

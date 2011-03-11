@@ -13,14 +13,14 @@ package body Tabula.Casts.Cast_IO is
 	end IO;
 	
 	use People;
-	package People_IO is new Serialization.IO_List (People.Vector, People.Cursor, Person, Default_Person);
+	package People_IO is new Serialization.IO_List (People.Vector, People.Cursor, Person, Empty_Person);
 	
 	use Works;
-	package Works_IO is new Serialization.IO_List (Works.Vector, Works.Cursor, Work, Default_Work);
+	package Works_IO is new Serialization.IO_List (Works.Vector, Works.Cursor, Work, Empty_Work);
 	
 	procedure IO (Serializer: not null access Serialization.Serializer; Item : in out Cast_Collection) is
 		use Serialization;
-		use Sex_Kind_IO;
+		use Neutralable_Sex_IO;
 		use People_IO;
 		use Works_IO;
 		procedure Root_Callback is

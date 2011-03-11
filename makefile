@@ -65,16 +65,14 @@ export ADA_PROJECT_PATH=
 export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
 export ADA_OBJECTS_PATH=
 
-.PHONY: all clean test-vampire archive \
-	site/vampire$(CGISUFFIX) \
-	site/unlock$(CGISUFFIX)
+.PHONY: all clean test-vampire archive
 
 all: site/vampire$(CGISUFFIX)
 
-site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(BUILDDIR) $(IMPORTDIR)
+site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(wildcard source/*.ad?) $(BUILDDIR) $(IMPORTDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(BUILDDIR)
+site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 analyze$(EXESUFFIX): source/analyze/analyze.adb $(BUILDDIR)

@@ -3,8 +3,8 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 package Tabula.Casts is
 	
-	type Sex_Kind is (Neutral, Male, Female);
-	subtype Person_Sex is Sex_Kind range Male .. Female;
+	type Neutralable_Sex is (Neutral, Male, Female);
+	subtype Person_Sex is Neutralable_Sex range Male .. Female;
 	
 	type Person is tagged record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
@@ -16,15 +16,27 @@ package Tabula.Casts is
 	
 	function Is_Empty (Item : Person) return Boolean;
 	
+	Empty_Person : constant Person := (
+		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Work => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Image => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Sex => Male,
+		Group => 0);
+	
 	package People is new Ada.Containers.Vectors (Natural, Person);
 	
 	type Work is record
 		Name : Ada.Strings.Unbounded.Unbounded_String;
-		Sex : Sex_Kind;
+		Sex : Neutralable_Sex;
 		Nominated : Boolean;
 	end record;
 	
 	function Is_Empty (Item : Work) return Boolean;
+	
+	Empty_Work : constant Work := (
+		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Sex => Neutral,
+		Nominated => False);
 	
 	package Works is new Ada.Containers.Vectors (Natural, Work);
 	

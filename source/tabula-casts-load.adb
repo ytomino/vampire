@@ -2,18 +2,14 @@
 with Ada.Streams.Stream_IO;
 with Serialization.YAML;
 with YAML.Streams;
-with Tabula.Configurations;
 with Tabula.Casts.Cast_IO;
-function Tabula.Casts.Load return Cast_Collection is
+function Tabula.Casts.Load (Name : String) return Cast_Collection is
 begin
 	return Result : Cast_Collection do
 		declare
-			File : Ada.Streams.Stream_IO.File_Type;
+			File : Ada.Streams.Stream_IO.File_Type :=
+				Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Name => Name);
 		begin
-			Ada.Streams.Stream_IO.Open (
-				File,
-				Ada.Streams.Stream_IO.In_File,
-				Name => Tabula.Configurations.Cast_File_Name);
 			declare
 				Parser : aliased YAML.Parser := YAML.Streams.Create (
 					Ada.Streams.Stream_IO.Stream (File));

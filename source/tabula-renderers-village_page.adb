@@ -5,6 +5,7 @@ with Ada.Numerics.MT19937;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts.Load;
+with Tabula.Configurations;
 with Tabula.Users;
 with Tabula.Vampires.Villages.Teaming;
 procedure Tabula.Renderers.Village_Page (
@@ -2144,7 +2145,7 @@ is
 					Web.Producers.Produce(Output, Template, "over");
 				else
 					declare
-						Cast : Casts.Cast_Collection := Casts.Load;
+						Cast : Casts.Cast_Collection := Casts.Load (Configurations.Cast_File_Name);
 						procedure Handle_Entry(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String; Template : in Web.Producers.Template) is
 						begin

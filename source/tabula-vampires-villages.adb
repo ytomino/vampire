@@ -3,7 +3,7 @@ with Ada.Containers.Generic_Array_Sort;
 package body Tabula.Vampires.Villages is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	use type Casts.Sex_Kind;
+	use type Casts.Person_Sex;
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Time;
 	
@@ -436,7 +436,7 @@ package body Tabula.Vampires.Villages is
 		end if;
 	end Provisional_Vote;
 	
-	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean is
+	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Person_Sex) return Boolean is
 	begin
 		Search_Pre : for I in reverse Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index loop
 			declare

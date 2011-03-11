@@ -1,4 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 procedure Tabula.Users.Load (
-	Id : in String;
-	User_Info : in out Users.User_Info);
+	Name : in String;
+	Info : in out User_Info);

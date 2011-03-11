@@ -90,6 +90,14 @@ package Tabula.Vampires.Villages is
 		Commited : Boolean;
 	end record;
 	
+	Empty_Person : constant Person_Type := (Casts.Empty_Person with
+		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
+		Request => Random,
+		Ignore_Request => False,
+		Role => Inhabitant,
+		Records => Person_Records.Empty_Vector,
+		Commited => False);
+	
 	package People is new Ada.Containers.Vectors (Natural, Person_Type);
 	
 	type Message_Kind is (
@@ -213,7 +221,7 @@ package Tabula.Vampires.Villages is
 	
 	function Joined (Village : Village_Type; User_Id : String) return Integer;
 	function Rejoined (Village : Village_Type; Escaped_Subject : Natural) return Integer;
-	function Already_Joined_Another_Sex (Village : Village_Type; User_Id : String; Sex : Casts.Sex_Kind) return Boolean;
+	function Already_Joined_Another_Sex (Village : Village_Type; User_Id : String; Sex : Casts.Person_Sex) return Boolean;
 	function Last_Joined_Time (Village : Village_Type) return Ada.Calendar.Time;
 	function Escape_Duration (Village : Village_Type) return Duration;
 	

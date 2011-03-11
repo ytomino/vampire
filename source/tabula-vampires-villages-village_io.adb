@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
+with Tabula.Casts.Cast_IO;
 with Tabula.Villages.Village_IO;
 package body Tabula.Vampires.Villages.Village_IO is
 	use People;
@@ -17,7 +18,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 			Container_Type => Villages.People.Vector,
 			Cursor => Villages.People.Cursor,
 			Element_Type => Person_Type,
-			Default => Default_Person);
+			Default => Empty_Person);
 		use Serialization;
 		use Person_Records_IO;
 		use Person_Role_IO;
@@ -47,7 +48,7 @@ package body Tabula.Vampires.Villages.Village_IO is
 				IO (Serializer, Item);
 				IO (Serializer, "request", Item.Request);
 				IO (Serializer, "role", Item.Role);
-				IO (Serializer, "ignore-request", Item.Ignore_Request, Default => Default_Person.Ignore_Request);
+				IO (Serializer, "ignore-request", Item.Ignore_Request, Default => Empty_Person.Ignore_Request);
 				IO (Serializer, "records", Item.Records, Person_Records_Callback'Access);
 				IO (Serializer, "commited", Item.Commited);
 			end Person_Callback;

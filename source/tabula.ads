@@ -21,4 +21,7 @@ package Tabula is
 	
 	Max_Length_Of_Message : constant := 1024;
 	
+	type Static_String_Access is access constant String;
+	for Static_String_Access'Storage_Size use 0;
+	
 end Tabula;

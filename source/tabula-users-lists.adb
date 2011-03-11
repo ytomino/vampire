@@ -3,91 +3,13 @@ with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
-with Tabula.Configurations;
 with Tabula.Users.Load;
 with Tabula.Users.Save;
 package body Tabula.Users.Lists is
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Ada.Calendar.Time;
+	use type Ada.Strings.Unbounded.Unbounded_String;
 	
-	procedure Check(Id, Password : String; 
-		Remote_Addr, Remote_Host : in String;
-		Now : in Ada.Calendar.Time;
-		Result : out Check_Result; 
-		User_Info : out Users.User_Info) is
-	begin
-		if Id = "" then
-			Result := Log_Off;
-		elsif not Ada.Directories.Exists(Ada.Directories.Compose(Configurations.Users_Directory, Id)) then
-			Result := Unknown;
-		else
-			Users.Load(Id, User_Info);
-			if User_Info.Password /= Digest(Password) 
-				or else User_Info.Renamed /= Ada.Strings.Unbounded.Null_Unbounded_String
-			then
-				Result := Invalid;
-			else
-				Result := Valid;
-				if Id /= Tabula.Users.Administrator then
-					if not User_Info.No_Log then
-						Add_To_Users_Log(
-							User_Id => Id, 
-							Remote_Addr => Remote_Addr, 
-							Remote_Host => Remote_Host,
-							Time => Now);
-					else
-						Add_To_Users_Log(User_Id => Id, Remote_Addr => "", Remote_Host => "", Time => Now);
-					end if;
-				end if;
-			end if;
-		end if;
-	end Check;
-	
-	procedure New_User(Id, Password : in String;
-		Remote_Addr, Remote_Host : in String;
-		Now : in Ada.Calendar.Time;
-		Result : out Boolean) is
-	begin
-		if Exists (Id) then
-			Result := False;
-		else
-			declare
-				User_Info : Users.User_Info := (
-					Password => +Users.Digest(Password),
-					Remote_Addr => +Remote_Addr,
-					Remote_Host => +Remote_Host,
-					Creation_Time => Now,
-					Last_Remote_Addr => +Remote_Addr,
-					Last_Remote_Host => +Remote_Host,
-					Last_Time => Now,
-					Ignore_Request => False,
-					Disallow_New_Village => False,
-					No_Log => False,
-					Renamed => Ada.Strings.Unbounded.Null_Unbounded_String);
-			begin
-				Save(Id, User_Info);
-				Result := True;
-			end;
-		end if;
-	exception
-		when Ada.IO_Exceptions.Name_Error => Result := False;
-	end New_User;
-	
-	procedure Update(Id : String;
-		Remote_Addr, Remote_Host : in String;
-		Time : in Ada.Calendar.Time;
-		User_Info : in out Users.User_Info) is
-	begin
-		User_Info.Last_Remote_Addr := +Remote_Addr;
-		User_Info.Last_Remote_Host := +Remote_Host;
-		User_Info.Last_Time := Time;
-		Save(Id, User_Info);
-	end Update;
-	
-	function Exists(Id : String) return Boolean is
-	begin
-		return Ada.Directories.Exists(Ada.Directories.Compose(Configurations.Users_Directory, Id));
-	end Exists;
+	-- local
 	
 	type User_Log_Item is record
 		Id : Ada.Strings.Unbounded.Unbounded_String;
@@ -111,99 +33,202 @@ package body Tabula.Users.Lists is
 		end if;
 	end "<";
 	
-	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps(User_Log_Item, Ada.Calendar.Time);
-	Log : Users_Log.Map;
-	Log_Loaded : Boolean := False;
-
-	procedure Load is
+	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
+	
+	function Load_Users_Log (List : not null access Users_List) return Users_Log.Map is
 	begin
-		if not Log_Loaded then
-			declare
-				File : Ada.Streams.Stream_IO.File_Type;
+		return Result : Users_Log.Map do
+			List.Log_Read_Count := List.Log_Read_Count + 1;
+			if List.Log_Read_Count > 1 then
+				Ada.Debug.Put ("load " & List.Log_File_Name.all & " at" & Natural'Image (List.Log_Read_Count) & " times.");
+			end if;
 			begin
-				Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, Configurations.Users_Log_File_Name);
+				declare
+					File : Ada.Streams.Stream_IO.File_Type :=
+						Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, List.Log_File_Name.all);
 				begin
-					Users_Log.Map'Read(Ada.Streams.Stream_IO.Stream(File), Log);
-					Ada.Streams.Stream_IO.Close(File);
-					Log_Loaded := True;
-				exception
-					when others =>
-						Ada.Streams.Stream_IO.Close(File);
-						raise;
+					Users_Log.Map'Read (Ada.Streams.Stream_IO.Stream (File), Result);
+					Ada.Streams.Stream_IO.Close (File);
 				end;
 			exception
 				when Ada.IO_Exceptions.Name_Error => null;
 			end;
-		end if;
-	end Load;
-
-	procedure Add_To_Users_Log(User_Id, Remote_Addr, Remote_Host : String; Time : Ada.Calendar.Time) is
-		Item : User_Log_Item := (+User_Id, +Remote_Addr, +Remote_Host);
+		end return;
+	end Load_Users_Log;
+	
+	procedure Add_To_Users_Log (
+		List : in Users_List;
+		Id : in String;
+		Remote_Addr : in String;
+		Remote_Host : in String;
+		Now : in Ada.Calendar.Time)
+	is
+		Log : Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
+		Item : User_Log_Item := (+Id, +Remote_Addr, +Remote_Host);
 	begin
-		Load;
-		Users_Log.Include(Log, Item, Time);
+		Users_Log.Include (Log, Item, Now);
 		declare
-			File : Ada.Streams.Stream_IO.File_Type;
+			File : Ada.Streams.Stream_IO.File_Type :=
+				Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Log_File_Name.all);
 		begin
-			Ada.Streams.Stream_IO.Create(File, Ada.Streams.Stream_IO.Out_File, Configurations.Users_Log_File_Name);
-			begin
-				Users_Log.Map'Write(Ada.Streams.Stream_IO.Stream(File), Log);
-				Ada.Streams.Stream_IO.Close(File);
-			exception
-				when others =>
-					Ada.Streams.Stream_IO.Close(File);
-					raise;
-			end;
+			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), Log);
+			Ada.Streams.Stream_IO.Close (File);
 		end;
 	end Add_To_Users_Log;
-
-	function Muramura_Count(Time : Ada.Calendar.Time) return Natural is
-		Muramura_Set : Users_Log.Map;
-		procedure Process(Position : Users_Log.Cursor) is
-		begin
-			if Time - Users_Log.Element(Position) <= Muramura_Duration then
-				declare
-					Item : User_Log_Item := (Users_Log.Key(Position).Id, 
-						Ada.Strings.Unbounded.Null_Unbounded_String,
-						Ada.Strings.Unbounded.Null_Unbounded_String);
-				begin
-					Users_Log.Include(Muramura_Set, Item, Time);
-				end;
-			end if;
-		end Process;
-	begin
-		Load;
-		Users_Log.Iterate(Log, Process'Access);
-		return Natural(Muramura_Set.Length);
-	end Muramura_Count;
 	
-	function User_List return User_Info_Maps.Map is
+	-- bodies
+	
+	function Create (
+		Directory : not null Static_String_Access;
+		Log_File_Name : not null Static_String_Access)
+		return Users_List is
+	begin
+		return (Directory => Directory, Log_File_Name => Log_File_Name, Log_Read_Count => 0);
+	end Create;
+	
+	function Exists (List : Users_List; Id : String) return Boolean is
+	begin
+		return Ada.Directories.Exists (Ada.Directories.Compose (List.Directory.all, Id));
+	end Exists;
+	
+	procedure Query (
+		List : in Users_List;
+		Id : in String;
+		Password : in String; 
+		Remote_Addr : in String;
+		Remote_Host : in String;
+		Now : in Ada.Calendar.Time;
+		Info : out User_Info;
+		State : out User_State) is
+	begin
+		if Id = "" then
+			State := Log_Off;
+		elsif not Exists (List, Id) then
+			State := Unknown;
+		else
+			Load (Ada.Directories.Compose (List.Directory.all, Id), Info);
+			if Info.Password /= Digest (Password)
+				or else Info.Renamed /= Ada.Strings.Unbounded.Null_Unbounded_String
+			then
+				State := Invalid;
+			else
+				State := Valid;
+				if Id /= Administrator then
+					if not Info.No_Log then
+						Add_To_Users_Log (
+							List,
+							Id => Id, 
+							Remote_Addr => Remote_Addr, 
+							Remote_Host => Remote_Host,
+							Now => Now);
+					else
+						Add_To_Users_Log (
+							List,
+							Id => Id,
+							Remote_Addr => "",
+							Remote_Host => "",
+							Now => Now); -- log only time
+					end if;
+				end if;
+			end if;
+		end if;
+	end Query;
+	
+	procedure New_User (
+		List : in out Users_List;
+		Id : in String;
+		Password : in String;
+		Remote_Addr : in String;
+		Remote_Host : in String;
+		Now : in Ada.Calendar.Time;
+		Result : out Boolean) is
+	begin
+		if Exists (List, Id) then
+			Result := False;
+		else
+			declare
+				Info : User_Info := (
+					Password => Digest (Password),
+					Creation_Remote_Addr => +Remote_Addr,
+					Creation_Remote_Host => +Remote_Host,
+					Creation_Time => Now,
+					Last_Remote_Addr => +Remote_Addr,
+					Last_Remote_Host => +Remote_Host,
+					Last_Time => Now,
+					Ignore_Request => False,
+					Disallow_New_Village => False,
+					No_Log => False,
+					Renamed => Ada.Strings.Unbounded.Null_Unbounded_String);
+			begin
+				Save (Ada.Directories.Compose (List.Directory.all, Id), Info);
+				Result := True;
+			end;
+		end if;
+	exception
+		when Ada.IO_Exceptions.Name_Error => Result := False;
+	end New_User;
+	
+	procedure Update (
+		List : in out Users_List;
+		Id : in String;
+		Remote_Addr : in String;
+		Remote_Host : in String;
+		Now : in Ada.Calendar.Time;
+		Info : in out User_Info) is
+	begin
+		Info.Last_Remote_Addr := +Remote_Addr;
+		Info.Last_Remote_Host := +Remote_Host;
+		Info.Last_Time := Now;
+		Save (Ada.Directories.Compose (List.Directory.all, Id), Info);
+	end Update;
+	
+	function All_Users (List : Users_List) return User_Info_Maps.Map is
 		Search : Ada.Directories.Search_Type;
 		File : Ada.Directories.Directory_Entry_Type;
 	begin
 		return Result : User_Info_Maps.Map do
 			Ada.Directories.Start_Search (
 				Search,
-				Configurations.Users_Directory,
+				List.Directory.all,
 				"*",
 				Filter => (Ada.Directories.Ordinary_File => True, others => False));
 			while Ada.Directories.More_Entries(Search) loop
 				Ada.Directories.Get_Next_Entry(Search, File);
 				declare
-					User_Id : String := Ada.Directories.Simple_Name (File);
+					Id : String := Ada.Directories.Simple_Name (File);
 				begin
-					if User_Id (User_Id'First) /= '.' then
+					if Id (Id'First) /= '.' then -- excluding dot file
 						declare
-							User_Info : Tabula.Users.User_Info;
+							Info : User_Info;
 						begin
-							Tabula.Users.Load (User_Id, User_Info);
-							User_Info_Maps.Include (Result, User_Id, User_Info);
+							Load (Ada.Directories.Compose (List.Directory.all, Id), Info);
+							User_Info_Maps.Include (Result, Id, Info);
 						end;
 					end if;
 				end;
 			end loop;
 			Ada.Directories.End_Search(Search);
 		end return;
-	end User_List;
+	end All_Users;
+	
+	function Muramura_Count (List : Users_List; Now : Ada.Calendar.Time) return Natural is
+		Log : Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
+		Muramura_Set : Users_Log.Map;
+		procedure Process (Position : Users_Log.Cursor) is
+		begin
+			if Now - Users_Log.Element(Position) <= Muramura_Duration then
+				declare
+					Item : User_Log_Item := (Users_Log.Key(Position).Id, 
+						Ada.Strings.Unbounded.Null_Unbounded_String,
+						Ada.Strings.Unbounded.Null_Unbounded_String);
+				begin
+					Users_Log.Include (Muramura_Set, Item, Now);
+				end;
+			end if;
+		end Process;
+	begin
+		Users_Log.Iterate (Log, Process'Access);
+		return Muramura_Set.Length;
+	end Muramura_Count;
 	
 end Tabula.Users.Lists;

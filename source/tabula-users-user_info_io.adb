@@ -2,14 +2,18 @@
 with Tabula.Calendar.Time_IO;
 package body Tabula.Users.User_Info_IO is
 	
-	procedure IO (Serializer: not null access Serialization.Serializer; Value: in out User_Info) is
+	procedure IO (
+		Serializer: not null access Serialization.Serializer;
+		Value: in out User_Info)
+	is
 		use Serialization;
 		use Tabula.Calendar.Time_IO;
+		use Password_Digest_IO;
 		procedure Callback is
 		begin
 			IO (Serializer, "password", Value.Password);
-			IO (Serializer, "remote-addr", Value.Remote_Addr);
-			IO (Serializer, "remote-host", Value.Remote_Host);
+			IO (Serializer, "remote-addr", Value.Creation_Remote_Addr);
+			IO (Serializer, "remote-host", Value.Creation_Remote_Host);
 			IO (Serializer, "creation-time", Value.Creation_Time);
 			IO (Serializer, "last-remote-addr", Value.Last_Remote_Addr);
 			IO (Serializer, "last-remote-host", Value.Last_Remote_Host);
