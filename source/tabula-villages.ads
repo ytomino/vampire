@@ -9,6 +9,7 @@ package Tabula.Villages is
 	type Village_Time is (Daytime, Vote, Night);
 	
 	type Village is tagged;
+	
 	type Root_Option_Item is abstract tagged limited null record;
 	
 	function Available (Item : Root_Option_Item) return Boolean is abstract;

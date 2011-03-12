@@ -11,13 +11,13 @@ package body Tabula.Debug is
 	
 	procedure Start is
 		Time_Image : constant String := Ada.Calendar.Formatting.Image (Time, Time_Zone => Tabula.Calendar.Time_Offset);
-		Offset_Image : constant String := Tabula.Calendar.Image (Tabula.Calendar.Time_Offset);
+		Offset_Image : constant String := Ada.Calendar.Formatting.Image (Tabula.Calendar.Time_Offset);
 	begin
 		if Name = null then
 			raise Program_Error with "debug log handler is not installed.";
 		end if;
 		Ada.Text_IO.Create (File, Ada.Text_IO.Append_File, Name.all);
-		Ada.Text_IO.Put (File, "---- " & Time_Image & " (" & Offset_Image & ") ----");
+		Ada.Text_IO.Put (File, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----");
 		Ada.Text_IO.New_Line (File);
 	end Start;
 	

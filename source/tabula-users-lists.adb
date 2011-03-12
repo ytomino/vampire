@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers.Ordered_Maps;
 with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
@@ -12,12 +13,11 @@ package body Tabula.Users.Lists is
 	-- local
 	
 	type User_Log_Item is record
-		Id : Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Addr : Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Host : Ada.Strings.Unbounded.Unbounded_String;
+		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Addr : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Host : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
-	function "<" (Left, Right : User_Log_Item) return Boolean;
 	function "<" (Left, Right : User_Log_Item) return Boolean is
 	begin
 		if Left.Id < Right.Id then
@@ -33,7 +33,7 @@ package body Tabula.Users.Lists is
 		end if;
 	end "<";
 	
-	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
+	package Users_Log is new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
 	
 	function Load_Users_Log (List : not null access Users_List) return Users_Log.Map is
 	begin
@@ -230,5 +230,30 @@ package body Tabula.Users.Lists is
 		Users_Log.Iterate (Log, Process'Access);
 		return Muramura_Set.Length;
 	end Muramura_Count;
+	
+	procedure Iterate_Log (
+		List : in Users_List;
+		Process : not null access procedure (
+			Id : in String;
+			Remote_Addr : in String;
+			Remote_Host : in String;
+			Time : in Ada.Calendar.Time))
+	is
+		Log : aliased Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
+		procedure Thunk (Position : in Users_Log.Cursor) is
+			pragma Warnings (Off); -- compiler's bug "warning: constant "Ref" is not referenced"
+			Ref : constant Users_Log.Constant_Reference_Type :=
+				Log.Constant_Reference (Position);
+			pragma Warnings (On);
+		begin
+			Process (
+				Id => Ref.Key.Id.Constant_Reference.Element.all,
+				Remote_Addr => Ref.Key.Remote_Addr.Constant_Reference.Element.all,
+				Remote_Host => Ref.Key.Remote_Host.Constant_Reference.Element.all,
+				Time => Ref.Element.all);
+		end Thunk;
+	begin
+		Users_Log.Iterate (Log, Thunk'Access);
+	end Iterate_Log;
 	
 end Tabula.Users.Lists;

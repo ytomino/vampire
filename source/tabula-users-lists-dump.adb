@@ -1,90 +1,101 @@
+-- The Village of Vampire by YT, このソースコードはNYSLです
+-- ユーザーログ表示ツールです、CGIとして公開しないでください
+with Ada.Containers.Doubly_Linked_Lists;
 with Ada.Calendar.Formatting;
 with Ada.Command_Line;
-with Ada.Containers.Indefinite_Ordered_Maps;
-with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
-procedure Analyze is
+with Tabula.Configurations;
+procedure Tabula.Users.Lists.Dump is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Ada.Calendar.Time;
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	type User_Log_Item is record
-		Id : Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Addr : Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Host : Ada.Strings.Unbounded.Unbounded_String;
+	Users_Log_File_Name : aliased Ada.Strings.Unbounded.Unbounded_String :=
+		+Tabula.Configurations.Users_Log_File_Name;
+	type Item_Type is record
+		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Addr : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Host : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Time : Ada.Calendar.Time;
 	end record;
-	function "<" (Left, Right : User_Log_Item) return Boolean is
-	begin
-		if Left.Id < Right.Id then
-			return True;
-		elsif Left.Id > Right.Id then
-			return False;
-		elsif Left.Remote_Addr < Right.Remote_Addr then
-			return True;
-		elsif Left.Remote_Addr > Right.Remote_Addr then
-			return False;
-		else
-			return Left.Remote_Host < Right.Remote_Host;
-		end if;
-	end "<";
-	package Users_Log is new Ada.Containers.Indefinite_Ordered_Maps(User_Log_Item, Ada.Calendar.Time);
-	use Users_Log;
-	Users_Log_File_Name : constant String := Ada.Command_Line.Argument(1);
-	File : Ada.Streams.Stream_IO.File_Type;
-	Log : Users_Log.Map;
-	use Ada.Text_IO;
+	package Item_Lists is new Ada.Containers.Doubly_Linked_Lists (Item_Type);
+	Items : aliased Item_Lists.List;
 begin
-	Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, Users_Log_File_Name);
-	Users_Log.Map'Read(Ada.Streams.Stream_IO.Stream(File), Log);
-	Ada.Streams.Stream_IO.Close(File);
+	if Ada.Command_Line.Argument_Count > 0 then
+		Users_Log_File_Name := +Ada.Command_Line.Argument (1);
+	end if;
 	declare
-		I : Users_Log.Cursor := First(Log);
-	begin
-		while Has_Element(I) loop
-			Put(+Key(I).Id);
-			Put(',');
-			Put(+Key(I).Remote_Addr);
-			Put(',');
-			Put(+Key(I).Remote_Host);
-			Put(',');
-			Put(Ada.Calendar.Formatting.Image(Element(I)));
+		use Ada.Text_IO;
+		procedure Process (
+			Id : in String;
+			Remote_Addr : in String;
+			Remote_Host : in String;
+			Time : in Ada.Calendar.Time) is
+		begin
+			Put (Id);
+			Put (',');
+			Put (Remote_Addr);
+			Put (',');
+			Put (Remote_Host);
+			Put (',');
+			Put (Ada.Calendar.Formatting.Image (Time));
 			New_Line;
-			Next(I);
-		end loop;
-	end;
-	New_Line;
-	declare
-		I : Users_Log.Cursor := First(Log);
+			Item_Lists.Append (Items, (
+				Id => +Id,
+				Remote_Addr => +Remote_Addr,
+				Remote_Host => +Remote_Host,
+				Time => Time));
+		end Process;
+		List : Users_List := Create (
+			Directory => Tabula.Configurations.Users_Directory'Access,
+			Log_File_Name => Static_String_Access (Users_Log_File_Name.Constant_Reference.Element));
 	begin
-		while Has_Element(I) loop
+		Iterate_Log (List, Process'Access);
+		New_Line;
+	end;
+	declare
+		I : Item_Lists.Cursor := Items.First;
+	begin
+		while Item_Lists.Has_Element (I) loop
 			declare
-				J : Users_Log.Cursor := Next(I);
+				pragma Warnings (Off);
+				I_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (I);
+				pragma Warnings (On);
+				J : Item_Lists.Cursor := Item_Lists.Next (I);
 			begin
-				while Has_Element(J) loop
-					if Key(I).Remote_Addr = Key(J).Remote_Addr 
-						or else (Key(I).Remote_Host = Key(J).Remote_Host and then Key(J).Remote_Host /= "")
-					then
-						Put(+Key(I).Id);
-						Put(',');
-						Put(+Key(I).Remote_Addr);
-						Put(',');
-						Put(+Key(I).Remote_Host);
-						Put(',');
-						Put(Ada.Calendar.Formatting.Image(Element(I)));
-						New_Line;
-						Put(+Key(J).Id);
-						Put(',');
-						Put(+Key(J).Remote_Addr);
-						Put(',');
-						Put(+Key(J).Remote_Host);
-						Put(',');
-						Put(Ada.Calendar.Formatting.Image(Element(J)));
-						New_Line;
-					end if;
-					Next(J);
+				while Item_Lists.Has_Element(J) loop
+					declare
+						use Ada.Text_IO;
+						pragma Warnings (Off);
+						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
+						pragma Warnings (On);
+					begin
+						if I_Ref.Element.Remote_Addr = J_Ref.Element.Remote_Addr 
+							or else (
+								I_Ref.Element.Remote_Host = J_Ref.Element.Remote_Host
+								and then J_Ref.Element.Remote_Host /= "")
+						then
+							Put(I_Ref.Element.Id.Constant_Reference.Element.all);
+							Put(',');
+							Put(I_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put(',');
+							Put(I_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put(',');
+							Put(Ada.Calendar.Formatting.Image (I_Ref.Element.Time));
+							New_Line;
+							Put(J_Ref.Element.Id.Constant_Reference.Element.all);
+							Put(',');
+							Put(J_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put(',');
+							Put(J_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put(',');
+							Put(Ada.Calendar.Formatting.Image (J_Ref.Element.Time));
+							New_Line;
+						end if;
+					end;
+					Item_Lists.Next (J);
 				end loop;
 			end;
-			Next(I);
+			Item_Lists.Next (I);
 		end loop;
 	end;
-end Analyze;
+end Tabula.Users.Lists.Dump;

@@ -8,8 +8,6 @@ package Tabula.Calendar is
 	
 	Time_Offset : constant Ada.Calendar.Time_Zones.Time_Offset := 9 * 60; -- GMT+9 日本
 	
-	function Image (Time_Zone : Ada.Calendar.Time_Zones.Time_Offset) return String; -- like "GMT+00:00"
-	
 private
 	
 	Null_Time : constant Ada.Calendar.Time := Ada.Calendar.Formatting.Time_Of(

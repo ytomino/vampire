@@ -75,7 +75,7 @@ site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(wildcard source/*.ad
 site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-analyze$(EXESUFFIX): source/analyze/analyze.adb $(BUILDDIR)
+site/dump-users-log$(EXESUFFIX): source/tabula-users-lists-dump.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 exclude$(EXESUFFIX): source/analyze/exclude.adb $(BUILDDIR)

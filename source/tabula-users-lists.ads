@@ -62,4 +62,14 @@ private
 		Log_Read_Count : Natural := 0; -- for performance check
 	end record;
 	
+	-- log
+	
+	procedure Iterate_Log (
+		List : in Users_List;
+		Process : not null access procedure (
+			Id : in String;
+			Remote_Addr : in String;
+			Remote_Host : in String;
+			Time : in Ada.Calendar.Time));
+	
 end Tabula.Users.Lists;
