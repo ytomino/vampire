@@ -1,14 +1,28 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Strings.Unbounded;
+with Tabula.Casts;
 package Tabula.Villages is
+	
+	-- 村のID
 	
 	subtype Village_Id is String (1 .. 4);
 	
 	Invalid_Village_Id : constant Village_Id := "****";
 	
-	type Village_State is (Prologue, Opened, Epilogue, Closed);
+	-- 村の状態
+	
+	type Village_State is (Prologue, Playing, Epilogue, Closed);
 	type Village_Time is (Daytime, Vote, Night);
 	
-	type Village is tagged;
+	-- 参加者
+	
+	type Person_Type is new Casts.Person with record
+		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
+	end record;
+	
+	-- オプション
+	
+	type Village_Type is tagged;
 	
 	type Root_Option_Item is abstract tagged limited null record;
 	
@@ -23,16 +37,22 @@ package Tabula.Villages is
 			Message : in String;
 			Unrecommended : in Boolean)) is abstract;
 	procedure Change (
-		Village : not null access Villages.Village'Class;
+		Village : in out Village_Type'Class;
 		Item : in Root_Option_Item;
 		Value : in String) is abstract;
 	
-	type Village is abstract tagged limited null record;
+	-- 村データ
 	
-	procedure Iterate (
-		Village : not null access constant Villages.Village;
-		Process : not null access procedure (Item : in Root_Option_Item'Class))
-		is abstract;
-	function Option_Changed (Object : not null access constant Village) return Boolean;
+	type Village_Type is abstract tagged limited record
+		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
+		By : aliased Ada.Strings.Unbounded.Unbounded_String; -- 作成者
+	end record;
+	
+	procedure Iterate_Options (
+		Village : in Village_Type;
+		Process : not null access procedure (Item : in Root_Option_Item'Class)) is
+		abstract;
+	
+	function Option_Changed (Village : Village_Type) return Boolean;
 	
 end Tabula.Villages;

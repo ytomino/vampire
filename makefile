@@ -78,9 +78,6 @@ site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(wildcard source/*.ad?) $(BUI
 site/dump-users-log$(EXESUFFIX): source/tabula-users-lists-dump.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-exclude$(EXESUFFIX): source/analyze/exclude.adb $(BUILDDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
-
 export QUERY_STRING=
 
 $(TESTDIR)/%: site/%

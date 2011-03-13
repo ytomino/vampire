@@ -2,7 +2,7 @@
 procedure Tabula.Renderers.Index_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Village_List : in Villages.Lists.Village_Lists.Vector; 
+	Summaries : in out Villages.Lists.Summary_Maps.Map;
 	Muramura : in Natural;
 	User_Id: in String;
 	User_Password : in String)
@@ -17,7 +17,7 @@ is
 				Web.Producers.Produce(Output, Template);
 			end loop;
 		else
-			Handle_List(Output, Tag, Template, Object, Village_List, 10,
+			Handle_List (Output, Tag, Template, Object, Summaries, 10,
 				User_Id => User_Id, User_Password => User_Password);
 		end if;
 	end Handle;

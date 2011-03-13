@@ -105,7 +105,7 @@ begin
 				-- 日付を更新
 				Village.Dawn := Now - Village.Night_Duration;
 				Increment_Today;
-				Village.State := Tabula.Villages.Opened;
+				Village.State := Tabula.Villages.Playing;
 				Village.Time := Tabula.Villages.Daytime; -- 常に昼スタート
 				-- 能力決定
 				declare
@@ -215,7 +215,7 @@ begin
 				Changed := True;
 				List_Changed := True;
 			end if;
-		when Tabula.Villages.Opened =>
+		when Tabula.Villages.Playing =>
 			declare
 				function Finished return Boolean is
 					Inhabitant_Count, Vampire_Count : Integer := 0;

@@ -1,10 +1,22 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Tabula.Vampires.Villages;
 package Tabula.Renderers.Log is
 	
 	type Renderer is new Renderers.Renderer with null record;
 	
-	function Load_Info (Id : in Villages.Village_Id) return Villages.Lists.Village_List_Item;
-	procedure Create_Log (Id : Villages.Village_Id);
+	function Summary (
+		Village : Vampires.Villages.Village_Type)
+		return Villages.Lists.Village_Summary;
+	function Load_Summary (
+		List : Villages.Lists.Villages_List;
+		Id : Villages.Village_Id)
+		return Villages.Lists.Village_Summary;
+	procedure Create_Log (
+		List : Villages.Lists.Villages_List;
+		Id : in Villages.Village_Id);
+	procedure Create_Index (
+		Summaries : in Villages.Lists.Summary_Maps.Map;
+		Update : in Boolean);
 	
 private
 	

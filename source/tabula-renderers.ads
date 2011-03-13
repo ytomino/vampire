@@ -100,7 +100,7 @@ private
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_List : in Villages.Lists.Village_Lists.Vector;
+		Summaries : in Villages.Lists.Summary_Maps.Map;
 		Log_Limits : in Natural;
 		User_Id, User_Password : in String);
 	

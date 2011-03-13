@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package body Tabula.Villages is
 	
-	function Option_Changed (Object : not null access constant Village) return Boolean is
+	function Option_Changed (Village : Village_Type) return Boolean is
 		Result : Boolean := False;
 		procedure Process (Item : in Root_Option_Item'Class) is
 		begin
@@ -10,7 +10,7 @@ package body Tabula.Villages is
 			end if;
 		end Process;
 	begin
-		Iterate (Village'Class (Object.all)'Access, Process'Access);
+		Iterate_Options (Village_Type'Class (Village), Process'Access); -- dyamic dispatch
 		return Result;
 	end Option_Changed;
 	

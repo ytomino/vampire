@@ -6,6 +6,7 @@ with Tabula.Calendar;
 with Tabula.Casts;
 with Tabula.Villages;
 package Tabula.Vampires.Villages is
+	package Derived renames Tabula.Villages;
 	
 	type Execution_Mode is (
 		Dummy_Killed_And_From_First,
@@ -81,8 +82,7 @@ package Tabula.Vampires.Villages is
 	
 	package Person_Records is new Ada.Containers.Vectors (Natural, Person_Record);
 	
-	type Person_Type is new Casts.Person with record
-		Id : Ada.Strings.Unbounded.Unbounded_String;
+	type Person_Type is new Derived.Person_Type with record
 		Request : Requested_Role;
 		Ignore_Request : Boolean;
 		Role : Person_Role;
@@ -191,15 +191,13 @@ package Tabula.Vampires.Villages is
 		Counts : Voted_Counts (0 .. Last);
 	end record;
 	
-	type Village_Type is new Tabula.Villages.Village with record
-		Name : Ada.Strings.Unbounded.Unbounded_String;
-		By : Ada.Strings.Unbounded.Unbounded_String;
-		State : Tabula.Villages.Village_State;
-		Today : Integer;
-		Time : Tabula.Villages.Village_Time := Tabula.Villages.Daytime;
-		Dawn : Ada.Calendar.Time;
+	type Village_Type is new Derived.Village_Type with record
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
+		State : Derived.Village_State := Derived.Prologue;
+		Today : Integer := 0;
+		Time : Derived.Village_Time := Derived.Daytime;
+		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新日時(夜→昼の時点)
 		Execution : Execution_Mode := From_First;
 		Teaming : Teaming_Mode := Shuffling_Headless;
 		Monster_Side : Monster_Side_Mode := Fixed;
@@ -263,217 +261,217 @@ package Tabula.Vampires.Villages is
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
-	overriding procedure Iterate (
-		Village : not null access constant Village_Type;
-		Process : not null access procedure (Item : in Tabula.Villages.Root_Option_Item'Class));
+	overriding procedure Iterate_Options (
+		Village : in Village_Type;
+		Process : not null access procedure (Item : in Derived.Root_Option_Item'Class));
 	
 	package Options is
 		
 		package Day_Duration is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Day_Duration;
 		
 		package Night_Duration is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Night_Duration;
 		
 		package Execution is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Execution;
 		
 		package Teaming is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Teaming;
 		
 		package Monster_Side is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Monster_Side;
 		
 		package Attack is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Attack;
 		
 		package Servant_Knowing is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Servant_Knowing;
 		
 		package Daytime_Preview is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Daytime_Preview;
 		
 		package Doctor_Infected is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Doctor_Infected;
 		
 		package Hunter_Silver_Bullet is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Hunter_Silver_Bullet;
 		
 		package Unfortunate is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Tabula.Villages.Root_Option_Item with null record;
-			function Available (Item : Option_Item) return Boolean;
-			function Name (Item : Option_Item) return String;
-			function Changed (Item : Option_Item) return Boolean;
-			procedure Iterate (
+				new Derived.Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
 					Selected : in Boolean;
 					Message : in String;
 					Unrecommended : in Boolean));
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Unfortunate;

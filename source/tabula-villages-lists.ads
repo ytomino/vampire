@@ -1,57 +1,98 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Containers.Vectors;
+with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Unbounded;
 with Tabula.String_Lists;
 package Tabula.Villages.Lists is
 	
-	-- managing
+	package User_Lists renames String_Lists;
 	
-	function Exists (Id : Village_Id) return Boolean;
-	function New_Village_Id return Village_Id;
-	
-	-- list
-	
-	type Village_List_Item is record
-		Id : Village_Id;
-		Name : Ada.Strings.Unbounded.Unbounded_String;
-		By : Ada.Strings.Unbounded.Unbounded_String;
+	type Village_Summary is record
+		Type_Code : aliased Ada.Strings.Unbounded.Unbounded_String; -- YAML type
+		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
+		By : aliased Ada.Strings.Unbounded.Unbounded_String;
 		Day_Duration : Duration;
 		Today : Natural;
 		State : Village_State;
-		People : String_Lists.List;
+		People : User_Lists.List;
 	end record;
-	function "<" (L, R : Village_List_Item) return Boolean;
 	
-	package Village_Lists is new Ada.Containers.Vectors(Natural, Village_List_Item);
+	package Summary_Maps is new Ada.Containers.Ordered_Maps (Village_Id, Village_Summary);
 	
-	function Joined(
+	type Villages_List (<>) is limited private;
+	
+	type Load_Summary_Function is access function (
+		List : Villages_List;
+		Id : Village_Id)
+		return Village_Summary;
+	type Create_Log_Procedure is access procedure (
+		List : Villages_List;
+		Id : in Villages.Village_Id);
+	type Create_Index_Procedure is access procedure (
+		Summaries : in Summary_Maps.Map;
+		Update : in Boolean);
+	
+	function Create (
+		Data_Directory : not null Static_String_Access;
+		HTML_Directory : not null Static_String_Access;
+		Blocking_Short_Term_File_Name : not null Static_String_Access;
+		Cache_File_Name : not null Static_String_Access;
+		Load_Summary : not null Load_Summary_Function;
+		Create_Log : not null Create_Log_Procedure;
+		Create_Index : not null Create_Index_Procedure)
+		return Villages_List;
+	
+	-- 村ID
+	
+	function File_Name (List : Villages_List; Id : Village_Id) return String;
+	function HTML_File_Name (List : Villages_List; Id : Village_Id; Day : Natural) return String;
+	
+	function Exists (List : Villages_List; Id : Village_Id) return Boolean;
+	function New_Village_Id (List : Villages_List) return Village_Id;
+	
+	-- 問い合わせ
+	
+	procedure Get_Summaries (List : in out Villages_List; Result : out Summary_Maps.Map);
+	
+	-- あるユーザーが村を作っているか
+	function Exists_Opened_By (
+		Summaries : Summary_Maps.Map;
 		User_Id : String;
-		List : Village_Lists.Vector;
-		Long_Only : Boolean) return Boolean;
-	function Created(
+		Excluding : Village_Id := Invalid_Village_Id)
+		return Boolean;
+	-- 参加数
+	type Village_State_Set is array (Village_State) of Boolean;
+	function Count_Joined_By (
+		Summaries : Summary_Maps.Map;
 		User_Id : String;
-		List : Village_Lists.Vector;
-		Excluding : Village_Id) return Boolean;
+		Filter : Village_State_Set;
+		Long_Only : Boolean := False;
+		Including_Escaped : Boolean := False)
+		return Natural;
 	
-	function Closed_Only_Joined_Count (
-		User_Id : String;
-		List : Village_Lists.Vector;
-		Escaped : Boolean) return Natural;
+	-- 更新
 	
-	-- I/O
-	procedure Make_Log_Index (List : not null access constant Village_Lists.Vector);
-	procedure Make_RSS (List : not null access constant Village_Lists.Vector);
+	procedure Update (
+		List : in out Villages_List;
+		Id : Village_Id;
+		Summary : Village_Summary);
 	
-	function Village_List (
-		Load_Info : not null access function (Id : in Village_Id) return Village_List_Item)
-		return Village_Lists.Vector;
-	
-	procedure Update_Village_List (
-		Remake_All : Boolean := False;
-		Load_Info : not null access function (Id : in Village_Id) return Village_List_Item;
-		Create_Log : not null access procedure (Id : in Village_Id));
+	procedure Refresh (List : in out Villages_List); -- 全部を再作成
 	
 	-- 短期村作成禁止
-	function Short_Term_Village_Blocking return Boolean;
+	function Blocking_Short_Term (List : Villages_List) return Boolean;
+	
+private
+	
+	type Villages_List is limited record
+		Data_Directory : not null Static_String_Access;
+		HTML_Directory : not null Static_String_Access;
+		Blocking_Short_Term_File_Name : not null Static_String_Access;
+		Cache_File_Name : not null Static_String_Access;
+		Load_Summary : not null Load_Summary_Function;
+		Create_Log : not null Create_Log_Procedure;
+		Create_Index : not null Create_Index_Procedure;
+		Map : aliased Summary_Maps.Map;
+		Map_Read : Boolean;
+	end record;
 	
 end Tabula.Villages.Lists;

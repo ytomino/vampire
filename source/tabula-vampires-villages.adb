@@ -21,7 +21,7 @@ package body Tabula.Vampires.Villages is
 	
 	function Be_Voting (Village : Village_Type) return Boolean is
 	begin
-		if Village.State = Tabula.Villages.Opened then
+		if Village.State = Tabula.Villages.Playing then
 			case Village.Execution is
 				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
 					return True;
@@ -515,43 +515,43 @@ package body Tabula.Vampires.Villages is
 		end loop;
 	end Exclude_Taken;
 	
-	overriding procedure Iterate (
-		Village : not null access constant Village_Type;
+	overriding procedure Iterate_Options (
+		Village : in Village_Type;
 		Process : not null access procedure (Item : in Tabula.Villages.Root_Option_Item'Class)) is
 	begin
-		Process (Options.Day_Duration.Option_Item'(Village => Village));
-		Process (Options.Night_Duration.Option_Item'(Village => Village));
-		Process (Options.Execution.Option_Item'(Village => Village));
-		Process (Options.Teaming.Option_Item'(Village => Village));
-		Process (Options.Monster_Side.Option_Item'(Village => Village));
-		Process (Options.Attack.Option_Item'(Village => Village));
-		Process (Options.Servant_Knowing.Option_Item'(Village => Village));
-		Process (Options.Daytime_Preview.Option_Item'(Village => Village));
-		Process (Options.Doctor_Infected.Option_Item'(Village => Village));
-		Process (Options.Hunter_Silver_Bullet.Option_Item'(Village => Village));
-		Process (Options.Unfortunate.Option_Item'(Village => Village));
-	end Iterate;
+		Process (Options.Day_Duration.Option_Item'(Village => Village'Access));
+		Process (Options.Night_Duration.Option_Item'(Village => Village'Access));
+		Process (Options.Execution.Option_Item'(Village => Village'Access));
+		Process (Options.Teaming.Option_Item'(Village => Village'Access));
+		Process (Options.Monster_Side.Option_Item'(Village => Village'Access));
+		Process (Options.Attack.Option_Item'(Village => Village'Access));
+		Process (Options.Servant_Knowing.Option_Item'(Village => Village'Access));
+		Process (Options.Daytime_Preview.Option_Item'(Village => Village'Access));
+		Process (Options.Doctor_Infected.Option_Item'(Village => Village'Access));
+		Process (Options.Hunter_Silver_Bullet.Option_Item'(Village => Village'Access));
+		Process (Options.Unfortunate.Option_Item'(Village => Village'Access));
+	end Iterate_Options;
 	
 	package body Options is
 		
 		package body Day_Duration is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Day_Duration < 24 * 60 * 60.0;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "day-duration";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -581,14 +581,16 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
+				pragma Assert (V'Access = Item.Village);
 				if Value /= "" and then Available (Item) then
-					Village_Type (Village.all).Day_Duration := Duration'Value (Value);
+					V.Day_Duration := Duration'Value (Value);
 				end if;
 			end Change;
 			
@@ -596,22 +598,22 @@ package body Tabula.Vampires.Villages is
 		
 		package body Night_Duration is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Day_Duration < 24 * 60 * 60.0;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "night-duration";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -631,14 +633,16 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
+				pragma Assert (V'Access = Item.Village);
 				if Value /= "" and then Available (Item) then
-					Village_Type (Village.all).Night_Duration := Duration'Value (Value);
+					V.Night_Duration := Duration'Value (Value);
 				end if;
 			end Change;
 			
@@ -646,22 +650,22 @@ package body Tabula.Vampires.Villages is
 		
 		package body Execution is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "execution";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Execution /= Initial_Execution;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -696,35 +700,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Execution := Execution_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Execution := Execution_Mode'Value (Value);
 			end Change;
 			
 		end Execution;
 		
 		package body Teaming is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "teaming";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Teaming /= Initial_Teaming;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -769,35 +775,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Teaming := Teaming_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Teaming := Teaming_Mode'Value (Value);
 			end Change;
 			
 		end Teaming;
 		
 		package body Monster_Side is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "monster-side";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Monster_Side /= Initial_Monster_Side;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -822,35 +830,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Monster_Side := Monster_Side_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Monster_Side := Monster_Side_Mode'Value (Value);
 			end Change;
 			
 		end Monster_Side;
 		
 		package body Attack is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "attack";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Attack /= Initial_Attack;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -875,35 +885,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Attack := Attack_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Attack := Attack_Mode'Value (Value);
 			end Change;
 			
 		end Attack;
 		
 		package body Servant_Knowing is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "servant-knowing";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Servant_Knowing /= Initial_Servant_Knowing;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -928,35 +940,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Servant_Knowing := Servant_Knowing_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Servant_Knowing := Servant_Knowing_Mode'Value (Value);
 			end Change;
 			
 		end Servant_Knowing;
 		
 		package body Daytime_Preview is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "daytime-preview";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Daytime_Preview /= Initial_Daytime_Preview;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -986,35 +1000,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Daytime_Preview := Daytime_Preview_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Daytime_Preview := Daytime_Preview_Mode'Value (Value);
 			end Change;
 			
 		end Daytime_Preview;
 		
 		package body Doctor_Infected is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "doctor-infected";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Doctor_Infected /= Initial_Doctor_Infected;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -1034,35 +1050,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Doctor_Infected := Doctor_Infected_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Doctor_Infected := Doctor_Infected_Mode'Value (Value);
 			end Change;
 			
 		end Doctor_Infected;
 		
 		package body Hunter_Silver_Bullet is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "hunter-silver-bullet";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Hunter_Silver_Bullet /= Initial_Hunter_Silver_Bullet;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -1082,35 +1100,37 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Hunter_Silver_Bullet := Hunter_Silver_Bullet_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Hunter_Silver_Bullet := Hunter_Silver_Bullet_Mode'Value (Value);
 			end Change;
 			
 		end Hunter_Silver_Bullet;
 		
 		package body Unfortunate is
 			
-			function Available (Item : Option_Item) return Boolean is
+			overriding function Available (Item : Option_Item) return Boolean is
 			begin
 				return True;
 			end Available;
 			
-			function Name (Item : Option_Item) return String is
+			overriding function Name (Item : Option_Item) return String is
 			begin
 				return "unfortunate";
 			end Name;
 			
-			function Changed (Item : Option_Item) return Boolean is
+			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
 				return Item.Village.Unfortunate /= Initial_Unfortunate;
 			end Changed;
 			
-			procedure Iterate (
+			overriding procedure Iterate (
 				Item : in Option_Item;
 				Process : not null access procedure (
 					Value : in String;
@@ -1135,13 +1155,15 @@ package body Tabula.Vampires.Villages is
 					False);
 			end Iterate;
 			
-			procedure Change (
-				Village : not null access Tabula.Villages.Village'Class;
+			overriding procedure Change (
+				Village : in out Derived.Village_Type'Class;
 				Item : in Option_Item;
-				Value : in String) is
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
 			begin
-				pragma Assert (Village = Item.Village);
-				Village_Type (Village.all).Unfortunate := Unfortunate_Mode'Value (Value);
+				pragma Assert (V'Access = Item.Village);
+				V.Unfortunate := Unfortunate_Mode'Value (Value);
 			end Change;
 			
 		end Unfortunate;

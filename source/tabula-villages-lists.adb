@@ -1,39 +1,113 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
+with Ada.Formatting;
 with Ada.Streams.Stream_IO;
-with Web.RSS;
-with Tabula.Configurations;
-with Tabula.Configurations.Templates;
-with Tabula.Renderers.List_Page;
-with Tabula.Renderers.Log;
 package body Tabula.Villages.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	
-	package Sorting is new Village_Lists.Generic_Sorting;
-	
-	-- bodies
-	
-	function Exists (Id : Village_Id) return Boolean is
-		File_Name : String renames Ada.Directories.Compose (Configurations.Villages_Data_Directory, Id);
+	procedure Read_Summaries (List : in out Villages_List) is
 	begin
-		return Ada.Directories.Exists (File_Name);
+		if not List.Map_Read then
+			if Ada.Directories.Exists (List.Cache_File_Name.all) then
+				declare
+					Cache_File : Ada.Streams.Stream_IO.File_Type :=
+						Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, List.Cache_File_Name.all);
+				begin
+					Summary_Maps.Map'Read (Ada.Streams.Stream_IO.Stream (Cache_File), List.Map);
+					Ada.Streams.Stream_IO.Close (Cache_File);
+				end;
+			else
+				declare
+					Search : Ada.Directories.Search_Type;
+					File : Ada.Directories.Directory_Entry_Type;
+				begin
+					Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
+					while Ada.Directories.More_Entries (Search) loop
+						Ada.Directories.Get_Next_Entry (Search, File);
+						declare
+							Id : String renames Ada.Directories.Simple_Name (File);
+						begin
+							if Id (Id'First) in '0' .. '9' then
+								declare
+									Summary : Village_Summary renames List.Load_Summary (List, Id);
+								begin
+									Summary_Maps.Insert (List.Map, Id, Summary);
+								end;
+							end if;
+						end;
+					end loop;
+					Ada.Directories.End_Search (Search);
+					-- cache
+					declare
+						File: Ada.Streams.Stream_IO.File_Type :=
+							Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Cache_File_Name.all);
+					begin
+						Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
+						Ada.Streams.Stream_IO.Close (File);
+					end;
+				end;
+			end if;
+			List.Map_Read := True;
+		end if;
+	end Read_Summaries;
+	
+	function Create (
+		Data_Directory : not null Static_String_Access;
+		HTML_Directory : not null Static_String_Access;
+		Blocking_Short_Term_File_Name : not null Static_String_Access;
+		Cache_File_Name : not null Static_String_Access;
+		Load_Summary : not null Load_Summary_Function;
+		Create_Log : not null Create_Log_Procedure;
+		Create_Index : not null Create_Index_Procedure)
+		return Villages_List is
+	begin
+		return (
+			Data_Directory => Data_Directory,
+			HTML_Directory => HTML_Directory,
+			Blocking_Short_Term_File_Name => Blocking_Short_Term_File_Name,
+			Cache_File_Name => Cache_File_Name,
+			Load_Summary => Load_Summary,
+			Create_Log => Create_Log,
+			Create_Index => Create_Index,
+			Map => Summary_Maps.Empty_Map,
+			Map_Read => False);
+	end Create;
+	
+	function File_Name (List : Villages_List; Id : Village_Id) return String is
+	begin
+		return Ada.Directories.Compose (List.Data_Directory.all, Id);
+	end File_Name;
+	
+	function HTML_File_Name (List : Villages_List; Id : Village_Id; Day : Natural) return String is
+		function To_String is new Ada.Formatting.Integer_Image (
+			Natural,
+			Zero_Sign => Ada.Formatting.None,
+			Plus_Sign => Ada.Formatting.None);
+	begin
+		return Ada.Directories.Compose (
+			Containing_Directory => List.HTML_Directory.all,
+			Name => Id & "-" & To_String (Day),
+			Extension => "html");
+	end HTML_File_Name;
+	
+	function Exists (List : Villages_List; Id : Village_Id) return Boolean is
+	begin
+		return Ada.Directories.Exists (File_Name (List, Id));
 	end Exists;
 	
-	function New_Village_Id return Village_Id is
+	function New_Village_Id (List : Villages_List) return Village_Id is
 		Search : Ada.Directories.Search_Type;
 		File : Ada.Directories.Directory_Entry_Type;
 		Result : Integer := 0;
 	begin
-		Ada.Directories.Start_Search(Search, Configurations.Villages_Data_Directory, "????");
-		while Ada.Directories.More_Entries(Search) loop
-			Ada.Directories.Get_Next_Entry(Search, File);
+		Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
+		while Ada.Directories.More_Entries (Search) loop
+			Ada.Directories.Get_Next_Entry (Search, File);
 			declare
-				File_Name : String renames Ada.Directories.Simple_Name(File);
+				File_Name : String renames Ada.Directories.Simple_Name (File);
 			begin
 				declare
-					Num : constant Integer := Integer'Value(File_Name);
+					Num : constant Integer := Integer'Value (File_Name);
 				begin
 					if Num >= Result then
 						Result := Num + 1;
@@ -43,9 +117,9 @@ package body Tabula.Villages.Lists is
 				when Constraint_Error => null;
 			end;
 		end loop;
-		Ada.Directories.End_Search(Search);
+		Ada.Directories.End_Search (Search);
 		declare
-			Image : String := Integer'Image(Result);
+			Image : String := Integer'Image (Result);
 		begin
 			if Image (Image'First) = ' ' then
 				Image (Image'First) := '0';
@@ -54,245 +128,117 @@ package body Tabula.Villages.Lists is
 		end;
 	end New_Village_Id;
 	
-	function "<" (L, R : Village_List_Item) return Boolean is
+	procedure Get_Summaries (List : in out Villages_List; Result : out Summary_Maps.Map) is
 	begin
-		return L.Id < R.Id;
-	end "<";
+		Read_Summaries (List);
+		List.Create_Index (List.Map, Update => False);
+		Result := List.Map;
+	end Get_Summaries;
 	
-	function Joined (
+	function Exists_Opened_By (
+		Summaries : Summary_Maps.Map;
 		User_Id : String;
-		List : Village_Lists.Vector;
-		Long_Only : Boolean) return Boolean is
+		Excluding : Village_Id := Invalid_Village_Id)
+		return Boolean
+	is
+		I : Summary_Maps.Cursor := Summaries.First;
 	begin
-		for I in List.First_Index .. List.Last_Index loop
+		while Summary_Maps.Has_Element (I) loop
 			declare
-				V : Village_List_Item renames List.Constant_Reference(I).Element.all;
+				V : Village_Summary renames Summaries.Constant_Reference (I).Element.all;
 			begin
-				if not Long_Only or else V.Day_Duration >= 24 * 60 * 60.0 then
-					if V.State <= Opened then
-						if V.People.Contains (User_Id) then
-							return True;
-						end if;
-					end if;
-				end if;
-			end;
-		end loop;
-		return False;
-	end Joined;
-	
-	function Created (
-		User_Id : String;
-		List : Village_Lists.Vector;
-		Excluding : Village_Id) return Boolean is
-	begin
-		for I in List.First_Index .. List.Last_Index loop
-			declare
-				V : Village_List_Item renames List.Constant_Reference (I).Element.all;
-			begin
-				if V.State <= Opened and then V.By = User_Id
-					and then V.Id /= Excluding
+				if V.State <= Playing and then V.By = User_Id
+					and then Summaries.Constant_Reference (I).Key.all /= Excluding
 				then
 					return True;
 				end if;
 			end;
+			Summary_Maps.Next (I);
 		end loop;
 		return False;
-	end Created;
-	
-	function Closed_Only_Joined_Count (
+	end Exists_Opened_By;
+
+	function Count_Joined_By (
+		Summaries : Summary_Maps.Map;
 		User_Id : String;
-		List : Village_Lists.Vector;
-		Escaped : Boolean) return Natural
+		Filter : Village_State_Set;
+		Long_Only : Boolean := False;
+		Including_Escaped : Boolean := False) -- unimplemented
+		return Natural
 	is
 		Result : Natural := 0;
+		I : Summary_Maps.Cursor := Summaries.First;
 	begin
-		for I in List.First_Index .. List.Last_Index loop
+		while Summary_Maps.Has_Element (I) loop
 			declare
-				V : Village_List_Item renames List.Constant_Reference(I).Element.all;
+				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
 			begin
-				case V.State is
-					when Prologue | Opened =>
-						null;
-					when Epilogue | Closed =>
+				if not Long_Only or else V.Day_Duration >= 24 * 60 * 60.0 then
+					if V.State <= Playing then
 						if V.People.Contains (User_Id) then
 							Result := Result + 1;
 						end if;
-				end case;
+					end if;
+				end if;
 			end;
+			Summary_Maps.Next (I);
 		end loop;
 		return Result;
-	end Closed_Only_Joined_Count;
-	
-	procedure Make_Log_Index (List : not null access constant Lists.Village_Lists.Vector) is
-		Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Templates.Configuration);
-		File: Ada.Streams.Stream_IO.File_Type;
+	end Count_Joined_By;
+
+	procedure Update (
+		List : in out Villages_List;
+		Id : Village_Id;
+		Summary : Village_Summary) is
 	begin
-		Ada.Streams.Stream_IO.Create (File, Name => Configurations.List_HTML_File_Name);
-		begin
-			Renderers.List_Page (Renderer, Ada.Streams.Stream_IO.Stream (File), List.all);
-		exception
-			when others =>
-				Ada.Streams.Stream_IO.Close (File);
-				raise;
-		end;
-		Ada.Streams.Stream_IO.Close (File);
-	end Make_Log_Index;
-	
-	procedure Make_RSS (List : not null access constant Lists.Village_Lists.Vector) is
-		File: Ada.Streams.Stream_IO.File_Type;
-	begin
-		Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Out_File, Configurations.List_RSS_File_Name);
-		declare
-			Stream : not null access Ada.Streams.Root_Stream_Type'Class := Ada.Streams.Stream_IO.Stream (File);
-		begin
-			Web.RSS.RSS_Start (Stream,
-				Title => "参加募集中の村 - The Village of Vampire",
-				Description => "",
-				Link => "../");
-			for I in reverse List.First_Index .. List.Last_Index loop
-				declare
-					Item : Village_List_Item renames List.Constant_Reference (I).Element.all;
-				begin
-					if Item.State = Prologue then
-						Web.RSS.RSS_Item (Stream,
-							Title => +Item.Name,
-							Description => "",
-							Link => "../?village=" & Item.Id);
-					end if;
-				end;
-			end loop;
-			Web.RSS.RSS_End (Stream);
-		exception
-			when others =>
-				Ada.Streams.Stream_IO.Close (File);
-				raise;
-		end;
-		Ada.Streams.Stream_IO.Close (File);
-	end Make_RSS;
-	
-	function Village_List (
-		Load_Info : not null access function (Id : in Village_Id) return Village_List_Item)
-		return Village_Lists.Vector is
-	begin
-		return Result : aliased Village_Lists.Vector do
-			if Ada.Directories.Exists(Configurations.Village_List_Cache_File_Name) then
-				declare
-					Cache_File : Ada.Streams.Stream_IO.File_Type;
-				begin
-					Ada.Streams.Stream_IO.Open(Cache_File, Ada.Streams.Stream_IO.In_File, Configurations.Village_List_Cache_File_Name);
-					begin
-						Village_Lists.Vector'Read(Ada.Streams.Stream_IO.Stream(Cache_File), Result);
-						Ada.Streams.Stream_IO.Close(Cache_File);
-					exception
-						when others =>
-							Ada.Streams.Stream_IO.Close(Cache_File);
-							raise;
-					end;
-				end;
-			else
-				declare
-					Search : Ada.Directories.Search_Type;
-					File : Ada.Directories.Directory_Entry_Type;
-				begin
-					Ada.Directories.Start_Search(Search, Configurations.Villages_Data_Directory, "????");
-					while Ada.Directories.More_Entries(Search) loop
-						Ada.Directories.Get_Next_Entry(Search, File);
-						declare
-							Id : String renames Ada.Directories.Simple_Name(File);
-						begin
-							if Id (Id'First) in '0' .. '9' then
-								declare
-									Info : Village_List_Item renames Load_Info (Id);
-								begin
-									Village_Lists.Append(Result, Info);
-								end;
-							end if;
-						end;
-					end loop;
-					Ada.Directories.End_Search(Search);
-					Sorting.Sort(Result);
-					if not Ada.Directories.Exists (Configurations.List_HTML_File_Name) then
-						Make_Log_Index (Result'Access);
-					end if;
-					if not Ada.Directories.Exists (Configurations.List_RSS_File_Name) then
-						Make_RSS (Result'Access);
-					end if;
-					-- cache
-					declare
-						File: Ada.Streams.Stream_IO.File_Type;
-					begin
-						Ada.Streams.Stream_IO.Create(File, Ada.Streams.Stream_IO.Out_File, Configurations.Village_List_Cache_File_Name);
-						Village_Lists.Vector'Write(Ada.Streams.Stream_IO.Stream(File), Result);
-						Ada.Streams.Stream_IO.Close(File);
-					exception
-						when others =>
-							Ada.Streams.Stream_IO.Close(File);
-							raise;
-					end;
-				end;
-			end if;
-		end return;
-	end Village_List;
-	
-	procedure Update_Village_List (
-		Remake_All : Boolean := False;
-		Load_Info : not null access function (Id : in Village_Id) return Village_List_Item;
-		Create_Log : not null access procedure (Id : in Village_Id)) is
-	begin
-		if Remake_All then
-			declare
-				Search : Ada.Directories.Search_Type;
-				File : Ada.Directories.Directory_Entry_Type;
-			begin
-				Ada.Directories.Start_Search(Search, Configurations.Villages_HTML_Directory, "*.html");
-				while Ada.Directories.More_Entries(Search) loop
-					Ada.Directories.Get_Next_Entry(Search, File);
-					declare
-						File_Name : String renames Ada.Directories.Full_Name(File);
-					begin
-						Ada.Directories.Delete_File(File_Name);
-					end;
-				end loop;
-				Ada.Directories.End_Search(Search);
-			end;
+		Read_Summaries (List);
+		Summary_Maps.Include (List.Map, Id, Summary);
+		if Summary.State = Closed
+			and then not Ada.Directories.Exists (HTML_File_Name (List, Id, 0))
+		then
+			List.Create_Log (List, Id);
+			List.Create_Index (List.Map, Update => True);
 		end if;
-		begin
-			Ada.Directories.Delete_File(Configurations.Village_List_Cache_File_Name);
-		exception
-			when Ada.Directories.Name_Error => null;
-		end;
-		declare
-			Result : aliased constant Village_Lists.Vector := Village_List (Load_Info);
-			Log_Created : Boolean := False;
-		begin
-			for I in Result.First_Index .. Result.Last_Index loop
-				declare
-					Item : Village_List_Item renames Result.Constant_Reference (I).Element.all;
-				begin
-					if Item.State = Closed then
-						declare
-							Log : String renames Ada.Directories.Compose (
-								Configurations.Villages_HTML_Directory,
-								Item.Id & "-0.html");
-						begin
-							if not Ada.Directories.Exists(Log) then
-								Create_Log (Item.Id);
-								Log_Created := True;
-							end if;
-						end;
-					end if;
-				end;
-			end loop;
-			if Remake_All or else Log_Created then
-				Make_Log_Index (Result'Access);
-			end if;
-			Make_RSS (Result'Access);
-		end;
-	end Update_Village_List;
+	end Update;
 	
-	function Short_Term_Village_Blocking return Boolean is
+	procedure Refresh (List : in out Villages_List) is
+		Search : Ada.Directories.Search_Type;
+		File : Ada.Directories.Directory_Entry_Type;
 	begin
-		return Ada.Directories.Exists (Configurations.Short_Term_Village_Blocking_File_Name);
-	end Short_Term_Village_Blocking;
+		-- delete cache
+		if Ada.Directories.Exists (List.Cache_File_Name.all) then
+			Ada.Directories.Delete_File (List.Cache_File_Name.all);
+		end if;
+		List.Map_Read := False;
+		-- delete html
+		Ada.Directories.Start_Search (Search, List.HTML_Directory.all, "*.html");
+		while Ada.Directories.More_Entries (Search) loop
+			Ada.Directories.Get_Next_Entry (Search, File);
+			declare
+				File_Name : constant String := Ada.Directories.Full_Name (File);
+			begin
+				Ada.Directories.Delete_File (File_Name);
+			end;
+		end loop;
+		Ada.Directories.End_Search (Search);
+		-- remake cache
+		Read_Summaries (List);
+		-- remake html
+		declare
+			I : Summary_Maps.Cursor := List.Map.First;
+		begin
+			while Summary_Maps.Has_Element (I) loop
+				List.Create_Log (List, List.Map.Constant_Reference (I).Key.all);
+				Summary_Maps.Next (I);
+			end loop;
+		end;
+		-- remake index
+		List.Create_Index (List.Map, Update => True);
+	end Refresh;
+	
+	function Blocking_Short_Term (List : Villages_List) return Boolean is
+	begin
+		return Ada.Directories.Exists (List.Blocking_Short_Term_File_Name.all);
+	end Blocking_Short_Term;
 	
 end Tabula.Villages.Lists;

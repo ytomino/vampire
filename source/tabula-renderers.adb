@@ -30,7 +30,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_List : in Villages.Lists.Village_Lists.Vector;
+		Summaries : in Villages.Lists.Summary_Maps.Map;
 		Log_Limits : in Natural;
 		User_Id, User_Password : in String)
 	is
@@ -38,81 +38,109 @@ package body Tabula.Renderers is
 		procedure Handle_Villages(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String; Template : in Web.Producers.Template)
 		is
-			First : Natural := Village_List.First_Index;
+			I : Villages.Lists.Summary_Maps.Cursor;
 		begin
+			I := Summaries.First;
 			if Log then
 				declare
 					C : Natural := Log_Limits;
+					J : Villages.Lists.Summary_Maps.Cursor := Summaries.Last;
 				begin
-					for I in reverse First .. Village_List.Last_Index loop
-						if Village_List.Element (I).State = Villages.Closed then
+					while Villages.Lists.Summary_Maps.Has_Element (J) loop
+						if Summaries.Constant_Reference (J).Element.State = Villages.Closed then
 							C := C - 1;
 							if C = 0 then
-								First := I;
+								I := J;
 								exit;
 							end if;
 						end if;
+						Villages.Lists.Summary_Maps.Previous (J);
 					end loop;
 				end;
 			end if;
-			for I in First .. Village_List.Last_Index loop
+			while Villages.Lists.Summary_Maps.Has_Element (I) loop
 				declare
-					Item : Villages.Lists.Village_List_Item renames Village_List.Element (I);
+					pragma Warnings (Off);
+					Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+						Summaries.Constant_Reference (I);
+					pragma Warnings (On);
 					procedure Handle_Village(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String; Template : in Web.Producers.Template) is
 					begin
 						if Tag = "id" then
-							Write(Output, Item.Id);
+							Write (Output, Ref.Key.all);
 						elsif Tag = "name" then
-							Write(Output, "<a href=");
-							Link(Renderer'Class(Object), Output, Item.Id, Log => Log,
+							Write (Output, "<a href=");
+							Link (Renderer'Class (Object), Output, Ref.Key.all, Log => Log,
 								User_Id => User_Id, User_Password => User_Password);
 							Write(Output, ">");
-							if Item.Day_Duration < 24 * 60 * 60.0 then
+							if Ref.Element.Day_Duration < 24 * 60 * 60.0 then
 								Write(Output, "短期 ");
 							end if;
-							Web.Write_In_HTML (Output, Renderer'Class(Object).HTML_Version, +Item.Name);
+							Web.Write_In_HTML (
+								Output,
+								Renderer'Class(Object).HTML_Version,
+								Ref.Element.Name.Constant_Reference.Element.all);
 							Write(Output, "</a>");
 						elsif Tag = "people" then
-							Write(Output, To_String(Natural(Item.People.Length)) & "人");
+							Write(Output, To_String(Natural(Ref.Element.People.Length)) & "人");
 						elsif Tag = "day" then
-							Day_Name(Renderer'Class(Object), Output, Item.Today, Item.Today, Item.State);
+							Day_Name(Renderer'Class(Object), Output, Ref.Element.Today, Ref.Element.Today, Ref.Element.State);
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
 					end Handle_Village;
 				begin
-					if (Item.State = Villages.Closed) = Log then
+					if (Ref.Element.State = Villages.Closed) = Log then
 						Web.Producers.Produce(Output, Template, Handler => Handle_Village'Access);
 					end if;
 				end;
+				Villages.Lists.Summary_Maps.Next (I);
 			end loop;
 		end Handle_Villages;
 	begin
 		if Tag = "villages" then
-			for I in Village_List.First_Index .. Village_List.Last_Index loop
-				declare
-					Item : Villages.Lists.Village_List_Item renames Village_List.Element (I);
-				begin
-					if Item.State /= Villages.Closed then
-						Log := False;
-						Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
-						exit;
-					end if;
-				end;
-			end loop;
+			declare
+				I : Villages.Lists.Summary_Maps.Cursor;
+			begin
+				I := Summaries.First;
+				while Villages.Lists.Summary_Maps.Has_Element (I) loop
+					declare
+						pragma Warnings (Off);
+						Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+							Summaries.Constant_Reference (I);
+						pragma Warnings (On);
+					begin
+						if Ref.Element.State /= Villages.Closed then
+							Log := False;
+							Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
+							exit;
+						end if;
+					end;
+				end loop;
+				Villages.Lists.Summary_Maps.Next (I);
+			end;
 		elsif Tag = "log" then
-			for I in Village_List.First_Index .. Village_List.Last_Index loop
-				declare
-					Item : Villages.Lists.Village_List_Item renames Village_List.Element (I);
-				begin
-					if Item.State = Villages.Closed then
-						Log := True;
-						Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
-						exit;
-					end if;
-				end;
-			end loop;
+			declare
+				I : Villages.Lists.Summary_Maps.Cursor;
+			begin
+				I := Summaries.First;
+				while Villages.Lists.Summary_Maps.Has_Element (I) loop
+					declare
+						pragma Warnings (Off);
+						Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+							Summaries.Constant_Reference (I);
+						pragma Warnings (On);
+					begin
+						if Ref.Element.State = Villages.Closed then
+							Log := True;
+							Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
+							exit;
+						end if;
+					end;
+				end loop;
+				Villages.Lists.Summary_Maps.Next (I);
+			end;
 		elsif Tag = "stylesheet" then
 			Write(Output, "<link rel=""stylesheet"" type=""text/css"" href=");
 			Link_Style_Sheet(Renderer'Class(Object), Output);
@@ -416,15 +444,9 @@ package body Tabula.Renderers is
 		File: Ada.Streams.Stream_IO.File_Type;
 	begin
 		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, File_Name);
-		begin
-			Web.Producers.Produce(Output,
-				Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
-				Handler => Handler);
-		exception
-			when others =>
-				Ada.Streams.Stream_IO.Close(File);
-				raise;
-		end;
+		Web.Producers.Produce(Output,
+			Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
+			Handler => Handler);
 		Ada.Streams.Stream_IO.Close(File);
 	end Produce;
 	

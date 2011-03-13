@@ -2,8 +2,6 @@
 with Ada.Containers.Indefinite_Ordered_Maps;
 package Tabula.Users.Lists is
 	
-	-- データベース
-	
 	type Users_List (<>) is limited private;
 	
 	function Create (

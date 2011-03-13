@@ -691,7 +691,7 @@ is
 						end if;
 					end Process;
 				begin
-					Vampires.Villages.Iterate (Village, Process'Access);
+					Vampires.Villages.Iterate_Options (Village.all, Process'Access);
 				end;
 			elsif Tag = "changable" then
 				if Changable then
@@ -702,7 +702,7 @@ is
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "roleset" then
-				if Village.State <= Villages.Opened and then Village.People.Length >= 3 then
+				if Village.State <= Villages.Playing and then Village.People.Length >= 3 then
 					declare
 						Sets : constant Vampires.Villages.Teaming.Role_Set_Array :=
 							Vampires.Villages.Teaming.Possibilities (
@@ -1008,7 +1008,7 @@ is
 				Write(Output, "<style id=""sg"">.pg{display:block;} </style>");
 			end if;
 			-- ここでやるべきでもないがついでに
-			if Village.State = Villages.Opened
+			if Village.State = Villages.Playing
 				and then Village.Day_Duration < 24 * 60 * 60.0
 				and then Object.HTML_Version = Web.XHTML
 			then
@@ -1712,7 +1712,7 @@ is
 							procedure Handle_Guidance(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String; Template : in Web.Producers.Template) is
 							begin
-								if Village.State <= Villages.Opened then
+								if Village.State <= Villages.Playing then
 									declare
 										Second : Boolean := False;
 									begin
@@ -1742,7 +1742,7 @@ is
 										else
 											Write(Output, "全員が行動を終えると夜が明けます。");
 										end if;
-									when Villages.Opened =>
+									when Villages.Playing =>
 										case Village.Time is
 											when Villages.Daytime =>
 												if Village.Be_Voting and then
@@ -1820,12 +1820,12 @@ is
 								Write(Output, Name(Person));
 							elsif Tag = "speech" then
 								if Village.State = Villages.Epilogue or else (
-									(Village.State = Villages.Opened or else Village.State = Villages.Prologue)
+									(Village.State = Villages.Playing or else Village.State = Villages.Prologue)
 									and then Village.Time = Villages.Daytime
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 									and then not Person.Commited)
 								then
-									if Village.State = Villages.Opened then
+									if Village.State = Villages.Playing then
 										declare
 											Rest : constant Integer := Speech_Limit + Message_Counts(Player_Index).Encouraged * Encouraged_Speech_Limit - Message_Counts(Player_Index).Speech;
 											procedure Handle_Speech(Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -1849,7 +1849,7 @@ is
 									end if;
 								end if;
 							elsif Tag = "monologue" then
-								if Village.State = Villages.Opened
+								if Village.State = Villages.Playing
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
 									and then not Person.Commited
 								then
@@ -1873,7 +1873,7 @@ is
 									end;
 								end if;
 							elsif Tag ="ghost" then
-								if Village.State = Villages.Opened
+								if Village.State = Villages.Playing
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
 								then
 									declare
@@ -1896,7 +1896,7 @@ is
 									end;
 								end if;
 							elsif Tag ="vampire" then
-								if Village.State = Villages.Opened and then
+								if Village.State = Villages.Playing and then
 									not Person.Commited and then
 									Person.Role in Vampires.Villages.Vampire_Role and then (
 										Message_Counts(Player_Index).Speech > 0 or else (
@@ -1908,7 +1908,7 @@ is
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
 							elsif Tag ="dying" then
-								if Village.State = Villages.Opened
+								if Village.State = Villages.Playing
 									and then not Person.Commited
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampires.Villages.Died
 								then
@@ -1921,7 +1921,7 @@ is
 							elsif Tag = "rest" then
 								null;
 							elsif Tag = "zero" then
-								if Village.State = Villages.Opened
+								if Village.State = Villages.Playing
 									and then Village.Time /= Villages.Night
 									and then not Village.People.Constant_Reference(Player_Index).Element.Commited
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died
@@ -1930,7 +1930,7 @@ is
 									Web.Producers.Produce(Output, Template);
 								end if;
 							elsif Tag = "role" then
-								if Village.State = Villages.Opened then
+								if Village.State = Villages.Playing then
 									if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampires.Villages.Died then
 										Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 									else
@@ -1944,7 +1944,7 @@ is
 									Link_Image (Object, Output, Role_Image_File_Name(Person.Role).all);
 								end if;
 							elsif Tag = "vote" then
-								if Village.State = Villages.Opened
+								if Village.State = Villages.Playing
 									and then Message_Counts(Player_Index).Speech > 0
 									and then Village.Be_Voting
 								then
@@ -1974,7 +1974,7 @@ is
 									end if;
 								end if;
 							elsif Tag = "ability" then
-								if Village.State = Villages.Opened and then
+								if Village.State = Villages.Playing and then
 									not Person.Commited and then (
 										Message_Counts(Player_Index).Speech > 0 or else (
 											Village.Time = Villages.Night and then
@@ -2034,7 +2034,7 @@ is
 									end case;
 								end if;
 							elsif Tag = "action" then
-								if Village.State = Villages.Opened and then (
+								if Village.State = Villages.Playing and then (
 									Message_Counts(Player_Index).Wake = 0
 									or else Message_Counts(Player_Index).Encourage = 0
 									or else ((Village.People.Constant_Reference(Player_Index).Element.Role in Vampires.Villages.Vampire_Role)

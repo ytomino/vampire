@@ -3,7 +3,7 @@ with Ada.Strings.Unbounded;
 procedure Tabula.Renderers.Users_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Village_List : in Villages.Lists.Village_Lists.Vector;
+	Summaries : in Villages.Lists.Summary_Maps.Map;
 	User_List : in Users.Lists.User_Info_Maps.Map;
 	User_Id : in String;
 	User_Password : in String)
@@ -38,7 +38,14 @@ is
 						Web.Write_In_HTML (
 							Output,
 							Object.HTML_Version,
-							Natural'Image (Villages.Lists.Closed_Only_Joined_Count (Users.Lists.User_Info_Maps.Key (I), Village_List, Escaped => False)));
+							Natural'Image (
+								Villages.Lists.Count_Joined_By (
+									Summaries,
+									Users.Lists.User_Info_Maps.Key (I),
+									Filter => (
+										Villages.Prologue | Villages.Playing => False,
+										Villages.Epilogue | Villages.Closed => True),
+									Including_Escaped => False)));
 					elsif Tag = "renamed" then
 						Web.Write_In_HTML (
 							Output,
@@ -50,7 +57,14 @@ is
 				end Handle_User;
 			begin
 				while Users.Lists.User_Info_Maps.Has_Element (I) loop
-					if Villages.Lists.Closed_Only_Joined_Count (Users.Lists.User_Info_Maps.Key (I), Village_List, Escaped => True) > 0 then
+					if Villages.Lists.Count_Joined_By (
+						Summaries,
+						User_List.Constant_Reference (I).Key.all,
+						Filter => (
+							Villages.Prologue | Villages.Playing => False,
+							Villages.Epilogue | Villages.Closed => True),
+						Including_Escaped => True) > 0
+					then
 						Web.Producers.Produce (Output, Template, Handler => Handle_User'Access);
 					end if;
 					Users.Lists.User_Info_Maps.Next (I);
