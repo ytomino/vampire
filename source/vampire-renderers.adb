@@ -5,8 +5,10 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Users;
-package body Tabula.Renderers is
-	use type Villages.Village_State;
+package body Vampire.Renderers is
+	use Tabula.Villages;
+	use Tabula.Villages.Lists.Summary_Maps;
+	use Villages;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
@@ -20,7 +22,7 @@ package body Tabula.Renderers is
 		end if;
 	end To_String;
 	
-	function Name(Person : Vampires.Villages.Person_Type) return String is
+	function Name(Person : Vampire.Villages.Person_Type) return String is
 	begin
 		return (+Person.Work) & (+Person.Name);
 	end Name;
@@ -30,7 +32,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Summaries : in Villages.Lists.Summary_Maps.Map;
+		Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 		Log_Limits : in Natural;
 		User_Id, User_Password : in String)
 	is
@@ -38,30 +40,29 @@ package body Tabula.Renderers is
 		procedure Handle_Villages(Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String; Template : in Web.Producers.Template)
 		is
-			I : Villages.Lists.Summary_Maps.Cursor;
+			I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 		begin
-			I := Summaries.First;
 			if Log then
 				declare
 					C : Natural := Log_Limits;
-					J : Villages.Lists.Summary_Maps.Cursor := Summaries.Last;
+					J : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.Last;
 				begin
-					while Villages.Lists.Summary_Maps.Has_Element (J) loop
-						if Summaries.Constant_Reference (J).Element.State = Villages.Closed then
+					while Has_Element (J) loop
+						if Summaries.Constant_Reference (J).Element.State = Tabula.Villages.Closed then
 							C := C - 1;
 							if C = 0 then
 								I := J;
 								exit;
 							end if;
 						end if;
-						Villages.Lists.Summary_Maps.Previous (J);
+						Previous (J);
 					end loop;
 				end;
 			end if;
-			while Villages.Lists.Summary_Maps.Has_Element (I) loop
+			while Has_Element (I) loop
 				declare
 					pragma Warnings (Off);
-					Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+					Ref : constant Tabula.Villages.Lists.Summary_Maps.Constant_Reference_Type :=
 						Summaries.Constant_Reference (I);
 					pragma Warnings (On);
 					procedure Handle_Village(Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -91,55 +92,53 @@ package body Tabula.Renderers is
 						end if;
 					end Handle_Village;
 				begin
-					if (Ref.Element.State = Villages.Closed) = Log then
+					if (Ref.Element.State = Closed) = Log then
 						Web.Producers.Produce(Output, Template, Handler => Handle_Village'Access);
 					end if;
 				end;
-				Villages.Lists.Summary_Maps.Next (I);
+				Next (I);
 			end loop;
 		end Handle_Villages;
 	begin
 		if Tag = "villages" then
 			declare
-				I : Villages.Lists.Summary_Maps.Cursor;
+				I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 			begin
-				I := Summaries.First;
-				while Villages.Lists.Summary_Maps.Has_Element (I) loop
+				while Has_Element (I) loop
 					declare
 						pragma Warnings (Off);
-						Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+						Ref : constant Tabula.Villages.Lists.Summary_Maps.Constant_Reference_Type :=
 							Summaries.Constant_Reference (I);
 						pragma Warnings (On);
 					begin
-						if Ref.Element.State /= Villages.Closed then
+						if Ref.Element.State /= Closed then
 							Log := False;
 							Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
 							exit;
 						end if;
 					end;
+					Next (I);
 				end loop;
-				Villages.Lists.Summary_Maps.Next (I);
 			end;
 		elsif Tag = "log" then
 			declare
-				I : Villages.Lists.Summary_Maps.Cursor;
+				I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 			begin
-				I := Summaries.First;
-				while Villages.Lists.Summary_Maps.Has_Element (I) loop
+				while Has_Element (I) loop
 					declare
 						pragma Warnings (Off);
-						Ref : constant Villages.Lists.Summary_Maps.Constant_Reference_Type :=
+						Ref : constant Tabula.Villages.Lists.Summary_Maps.Constant_Reference_Type :=
 							Summaries.Constant_Reference (I);
 						pragma Warnings (On);
 					begin
-						if Ref.Element.State = Villages.Closed then
+						if Ref.Element.State = Closed then
 							Log := True;
 							Web.Producers.Produce(Output, Template, Handler => Handle_Villages'Access);
 							exit;
 						end if;
 					end;
+					Next (I);
 				end loop;
-				Villages.Lists.Summary_Maps.Next (I);
 			end;
 		elsif Tag = "stylesheet" then
 			Write(Output, "<link rel=""stylesheet"" type=""text/css"" href=");
@@ -163,7 +162,7 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : in Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		User_Id : in String;
 		User_Password : in String) is
 	begin
@@ -179,7 +178,7 @@ package body Tabula.Renderers is
 			Link(Renderer'Class(Object), Output, Village_Id => Village_Id,
 				User_Id => User_Id, User_Password => User_Password);
 		elsif Tag = "villageid" then
-			if Village_Id = Villages.Invalid_Village_Id then
+			if Village_Id = Invalid_Village_Id then
 				Write(Output, """""");
 			else
 				Write(Output, '"');
@@ -194,7 +193,7 @@ package body Tabula.Renderers is
 					Handle_Users(Output, Tag, Template, Object, Village_Id, User_Id, User_Password);
 				end Handle;
 			begin
-				if Village_Id /= Villages.Invalid_Village_Id then
+				if Village_Id /= Invalid_Village_Id then
 					Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 				end if;
 			end;
@@ -208,8 +207,8 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id;
-		Village : in Vampires.Villages.Village_Type;
+		Village_Id : in Tabula.Villages.Village_Id;
+		Village : in Vampire.Villages.Village_Type;
 		Day : in Natural;
 		User_Id : in String;
 		User_Password : in String) is
@@ -232,22 +231,22 @@ package body Tabula.Renderers is
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id;
-		Village : in Vampires.Villages.Village_Type;
+		Village_Id : in Tabula.Villages.Village_Id;
+		Village : in Vampire.Villages.Village_Type;
 		Day : in Natural;
-		Message : in Vampires.Villages.Message;
+		Message : in Vampire.Villages.Message;
 		Time : in Ada.Calendar.Time;
 		User_Id : in String;
 		User_Password : in String)
 	is
-		People : access constant Vampires.Villages.People.Vector;
+		People : access constant Vampire.Villages.People.Vector;
 		Subject : Natural;
 	begin
 		case Message.Kind is
-			when Vampires.Villages.Escaped_Speech =>
+			when Vampire.Villages.Escaped_Speech =>
 				People := Village.Escaped_People'Access;
 				Subject := Message.Subject;
-			when Vampires.Villages.Detective_Message_Kind =>
+			when Vampire.Villages.Detective_Message_Kind =>
 				People := Village.People'Access;
 				Subject := Message.Target;
 			when others =>
@@ -255,7 +254,7 @@ package body Tabula.Renderers is
 				Subject := Message.Subject;
 		end case;
 		declare
-			Person : Vampires.Villages.Person_Type renames People.Constant_Reference(Subject).Element.all;
+			Person : Vampire.Villages.Person_Type renames People.Constant_Reference(Subject).Element.all;
 		begin
 			if Tag = "image" then
 				Link_Image(Renderer'Class(Object), Output, +Person.Image);
@@ -292,20 +291,20 @@ package body Tabula.Renderers is
 	
 	function Get_Village_Id(
 		Object : Renderer;
-		Query_Strings : Web.Query_Strings) return Villages.Village_Id
+		Query_Strings : Web.Query_Strings) return Village_Id
 	is
 		S : String renames Web.Element(Query_Strings, "village");
 	begin
-		if S'Length = Villages.Village_Id'Length then
+		if S'Length = Village_Id'Length then
 			return S;
 		else
-			return Villages.Invalid_Village_Id;
+			return Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 	
 	procedure Get_Day(
 		Object : in Renderer;
-		Village : in Vampires.Villages.Village_Type;
+		Village : in Vampire.Villages.Village_Type;
 		Query_Strings : in Web.Query_Strings;
 		Day : out Natural)
 	is
@@ -314,7 +313,7 @@ package body Tabula.Renderers is
 		Day := Natural'Value(S);
 	exception
 		when Constraint_Error =>
-			if Village.State /= Villages.Closed then
+			if Village.State /= Closed then
 				Day := Village.Today;
 			else
 				Day := 0;
@@ -323,30 +322,30 @@ package body Tabula.Renderers is
 	
 	procedure Get_Range(
 		Object : in Renderer;
-		Village : in Vampires.Villages.Village_Type;
+		Village : in Vampire.Villages.Village_Type;
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings;
 		First, Last : out Integer)
 	is
 		function Escaped (
-			Village : Vampires.Villages.Village_Type;
-			Message : Vampires.Villages.Message) return Boolean is
+			Village : Vampire.Villages.Village_Type;
+			Message : Vampire.Villages.Message) return Boolean is
 		begin
 			case Message.Kind is
-				when Vampires.Villages.Introduction
-					| Vampires.Villages.Narration =>
+				when Vampire.Villages.Introduction
+					| Vampire.Villages.Narration =>
 					return True;
-				when Vampires.Villages.Escaped_Join
-					| Vampires.Villages.Escaped_Speech
-					| Vampires.Villages.Escape =>
-					return Vampires.Villages.Rejoined (
+				when Vampire.Villages.Escaped_Join
+					| Vampire.Villages.Escaped_Speech
+					| Vampire.Villages.Escape =>
+					return Vampire.Villages.Rejoined (
 						Village, Message.Subject) < 0;
 				when others =>
 					return False;
 			end case;
 		end Escaped;
 	begin
-		if Village.State = Villages.Prologue and then
+		if Village.State = Prologue and then
 			Day = 0 and then
 			Web.Element (Query_Strings, "range") = ""
 		then
@@ -361,8 +360,8 @@ package body Tabula.Renderers is
 				loop
 					case Village.Messages.Constant_Reference (Index).Element.Kind
 					is
-						when Vampires.Villages.Speech
-							| Vampires.Villages.Escaped_Speech =>
+						when Vampire.Villages.Speech
+							| Vampire.Villages.Escaped_Speech =>
 							First := First + 1;
 						when others =>
 							null;
@@ -499,7 +498,7 @@ package body Tabula.Renderers is
 	procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -521,7 +520,7 @@ package body Tabula.Renderers is
 			Write(Output, "-0.html");
 		else
 			Write(Output, '?');
-			if Village_Id /= Villages.Invalid_Village_Id then
+			if Village_Id /= Invalid_Village_Id then
 				Write(Output, "village=");
 				Write(Output, Village_Id);
 				if Day >= 0 then
@@ -553,11 +552,11 @@ package body Tabula.Renderers is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Day : Natural;
 		Today : Natural;
-		State : Villages.Village_State) is
+		State : Tabula.Villages.Village_State) is
 	begin
 		if Day = 0 then
 			Write(Output, "プロローグ");
-		elsif (State >= Villages.Epilogue) and (Today = Day) then
+		elsif (State >= Epilogue) and (Today = Day) then
 			Write(Output, "エピローグ");
 		else
 			Write(Output, Natural'Image(Day) & "日目");
@@ -569,4 +568,4 @@ package body Tabula.Renderers is
 		return Web.XHTML;
 	end HTML_Version;
 	
-end Tabula.Renderers;
+end Vampire.Renderers;

@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Numerics.MT19937;
-package Tabula.Vampires.Villages.Teaming is
+package Vampire.Villages.Teaming is
 	
 	type Role_Set is array (Person_Role) of Natural;
 	type Role_Set_Array is array (Positive range <>) of Role_Set;
@@ -25,4 +25,4 @@ package Tabula.Vampires.Villages.Teaming is
 		Set : Role_Set;
 		Generator : not null access Ada.Numerics.MT19937.Generator);
 	
-end Tabula.Vampires.Villages.Teaming;
+end Vampire.Villages.Teaming;

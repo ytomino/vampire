@@ -1,13 +1,9 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
-package body Tabula.Vampires.Villages is
+package body Vampire.Villages is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
-	use type Tabula.Villages.Village_State;
-	use type Tabula.Villages.Village_Time;
-	
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	function Provisional_Voting (Mode : Execution_Mode) return Boolean is
 	begin
@@ -21,7 +17,7 @@ package body Tabula.Vampires.Villages is
 	
 	function Be_Voting (Village : Village_Type) return Boolean is
 	begin
-		if Village.State = Tabula.Villages.Playing then
+		if Village.State = Playing then
 			case Village.Execution is
 				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
 					return True;
@@ -156,7 +152,7 @@ package body Tabula.Vampires.Villages is
 				end if;
 			end if;
 		end loop;
-		return (Count >= Minimum_Number_Of_Persons or else Village.State /= Tabula.Villages.Prologue)
+		return (Count >= Minimum_Number_Of_Persons or else Village.State /= Prologue)
 			and then Commited_Count = Count;
 	end Commit_Finished;
 	
@@ -304,7 +300,7 @@ package body Tabula.Vampires.Villages is
 		Escaped_Index := Village.Escaped_People.Last_Index;
 		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 			declare
-				Kind : Villages.Message_Kind renames Village.Messages.Element (I).Kind;
+				Kind : Villages.Message_Kind renames Village.Messages.Constant_Reference (I).Element.Kind;
 			begin
 				if Kind = Villages.Escaped_Join then
 					null;
@@ -312,7 +308,7 @@ package body Tabula.Vampires.Villages is
 					null;
 				elsif Kind = Villages.Escape then
 					null;
-				elsif Kind = Villages.Speech and then Village.Messages.Element (I).Subject = Subject then
+				elsif Kind = Villages.Speech and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
@@ -322,7 +318,7 @@ package body Tabula.Vampires.Villages is
 					begin
 						Messages.Update_Element(Village.Messages, I, Update'Access);
 					end;
-				elsif Kind = Villages.Join and then Village.Messages.Element (I).Subject = Subject then
+				elsif Kind = Villages.Join and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
@@ -332,7 +328,7 @@ package body Tabula.Vampires.Villages is
 					begin
 						Messages.Update_Element(Village.Messages, I, Update'Access);
 					end;
-				elsif Village.Messages.Element (I).Subject > Subject then
+				elsif Village.Messages.Constant_Reference (I).Element.Subject > Subject then
 					declare
 						procedure Update(Message : in out Villages.Message) is
 						begin
@@ -363,7 +359,7 @@ package body Tabula.Vampires.Villages is
 		pragma Assert(Target < 0 or else Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate);
 		Rec.Vote := Target;
 		if not Provisional_Voted(Village)
-			and then Village.Time = Tabula.Villages.Daytime -- 短期の投票延長期間は仮投票は発生させない
+			and then Village.Time = Daytime -- 短期の投票延長期間は仮投票は発生させない
 		then
 			Rec.Provisional_Vote := Target;
 		end if;
@@ -508,16 +504,16 @@ package body Tabula.Vampires.Villages is
 				P : Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
 			begin
 				-- remove all duplicated characters
-				Casts.Exclude_Person (Cast, +P.Name, P.Group);
+				Casts.Exclude_Person (Cast, P.Name.Constant_Reference.Element.all, P.Group);
 				-- remove one duplicated work
-				Casts.Exclude_Work (Cast, +P.Work);
+				Casts.Exclude_Work (Cast, P.Work.Constant_Reference.Element.all);
 			end;
 		end loop;
 	end Exclude_Taken;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Tabula.Villages.Root_Option_Item'Class)) is
+		Process : not null access procedure (Item : in Root_Option_Item'Class)) is
 	begin
 		Process (Options.Day_Duration.Option_Item'(Village => Village'Access));
 		Process (Options.Night_Duration.Option_Item'(Village => Village'Access));
@@ -582,7 +578,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -634,7 +630,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -701,7 +697,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -776,7 +772,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -831,7 +827,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -886,7 +882,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -941,7 +937,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -1001,7 +997,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -1051,7 +1047,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -1101,7 +1097,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -1156,7 +1152,7 @@ package body Tabula.Vampires.Villages is
 			end Iterate;
 			
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String)
 			is
@@ -1170,4 +1166,4 @@ package body Tabula.Vampires.Villages is
 		
 	end Options;
 
-end Tabula.Vampires.Villages;
+end Vampire.Villages;

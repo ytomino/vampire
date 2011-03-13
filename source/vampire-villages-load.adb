@@ -3,8 +3,8 @@ with Ada.Exceptions;
 with Ada.Streams.Stream_IO;
 with Serialization.YAML;
 with YAML.Streams;
-with Tabula.Vampires.Villages.Village_IO;
-procedure Tabula.Vampires.Villages.Load (
+with Vampire.Villages.Village_IO;
+procedure Vampire.Villages.Load (
 	Name : in String;
 	Village : in out Village_Type;
 	Info_Only : in Boolean := False)
@@ -37,4 +37,4 @@ exception
 				Ada.Exceptions.Exception_Identity (E),
 				Message);
 		end;
-end Tabula.Vampires.Villages.Load;
+end Vampire.Villages.Load;

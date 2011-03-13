@@ -2,10 +2,10 @@
 with Ada.Calendar;
 with Ada.Streams;
 with Web;
-with Tabula.Vampires.Villages;
 with Tabula.Villages.Lists;
+with Vampire.Villages;
 private with Web.Producers;
-package Tabula.Renderers is
+package Vampire.Renderers is
 	
 	type File_Name is not null access constant String;
 	
@@ -36,17 +36,17 @@ package Tabula.Renderers is
 	
 	function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Villages.Village_Id;
+		Query_Strings : Web.Query_Strings) return Tabula.Villages.Village_Id;
 	
 	procedure Get_Day(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural);
 	
 	procedure Get_Range(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer);
@@ -100,7 +100,7 @@ private
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Summaries : in Villages.Lists.Summary_Maps.Map;
+		Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 		Log_Limits : in Natural;
 		User_Id, User_Password : in String);
 	
@@ -115,7 +115,7 @@ private
 	procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -135,18 +135,18 @@ private
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Day : Natural;
 		Today : Natural;
-		State : Villages.Village_State);
+		State : Tabula.Villages.Village_State);
 	
 	function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 	
-	function Name (Person : Vampires.Villages.Person_Type) return String;
+	function Name (Person : Vampire.Villages.Person_Type) return String;
 	
 	procedure Handle_Users(
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : in Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		User_Id : in String;
 		User_Password : in String);
 	
@@ -155,8 +155,8 @@ private
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id;
-		Village : in Vampires.Villages.Village_Type;
+		Village_Id : in Tabula.Villages.Village_Id;
+		Village : in Vampire.Villages.Village_Type;
 		Day : in Natural;
 		User_Id : in String;
 		User_Password : in String);
@@ -166,10 +166,10 @@ private
 		Tag : in String;
 		Template : in Web.Producers.Template;
 		Object : in Renderer;
-		Village_Id : in Villages.Village_Id;
-		Village : in Vampires.Villages.Village_Type;
+		Village_Id : in Tabula.Villages.Village_Id;
+		Village : in Vampire.Villages.Village_Type;
 		Day : in Natural;
-		Message : in Vampires.Villages.Message;
+		Message : in Vampire.Villages.Message;
 		Time : in Ada.Calendar.Time;
 		User_Id : in String;
 		User_Password : in String);
@@ -181,4 +181,4 @@ private
 	
 	function To_String(X : Integer) return String;
 	
-end Tabula.Renderers;
+end Vampire.Renderers;

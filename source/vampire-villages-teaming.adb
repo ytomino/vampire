@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-package body Tabula.Vampires.Villages.Teaming is
+package body Vampire.Villages.Teaming is
 	use type Ada.Containers.Count_Type;
 	use type Casts.Person_Sex;
 	
@@ -610,4 +610,4 @@ package body Tabula.Vampires.Villages.Teaming is
 		end loop;
 	end Shuffle;
 	
-end Tabula.Vampires.Villages.Teaming;
+end Vampire.Villages.Teaming;

@@ -1,8 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-procedure Tabula.Renderers.Index_Page (
+procedure Vampire.Renderers.Index_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Summaries : in out Villages.Lists.Summary_Maps.Map;
+	Summaries : in out Tabula.Villages.Lists.Summary_Maps.Map;
 	Muramura : in Natural;
 	User_Id: in String;
 	User_Password : in String)
@@ -23,4 +23,4 @@ is
 	end Handle;
 begin
 	Produce (Object, Output, Object.Configuration.Template_Index_File_Name.all, Handle'Access);
-end Tabula.Renderers.Index_Page;
+end Vampire.Renderers.Index_Page;

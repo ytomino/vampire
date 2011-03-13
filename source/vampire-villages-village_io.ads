@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Serialization;
-package Tabula.Vampires.Villages.Village_IO is
+package Vampire.Villages.Village_IO is
 	
 	Yaml_Type : constant String := "vampire-village";
 	
@@ -22,4 +22,4 @@ package Tabula.Vampires.Villages.Village_IO is
 	package Doctor_Infected_IO is new Serialization.IO_Enumeration (Doctor_Infected_Mode);
 	package Unfortunate_IO is new Serialization.IO_Enumeration (Unfortunate_Mode);
 	
-end Tabula.Vampires.Villages.Village_IO;
+end Vampire.Villages.Village_IO;

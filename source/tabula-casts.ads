@@ -7,9 +7,9 @@ package Tabula.Casts is
 	subtype Person_Sex is Neutralable_Sex range Male .. Female;
 	
 	type Person is tagged record
-		Name : Ada.Strings.Unbounded.Unbounded_String;
-		Work : Ada.Strings.Unbounded.Unbounded_String;
-		Image : Ada.Strings.Unbounded.Unbounded_String;
+		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Work : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Image : aliased Ada.Strings.Unbounded.Unbounded_String;
 		Sex : Person_Sex;
 		Group : Integer;
 	end record;

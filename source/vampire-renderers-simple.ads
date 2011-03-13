@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-package Tabula.Renderers.Simple is
+package Vampire.Renderers.Simple is
 	
 	type Renderer is new Renderers.Renderer with null record;
 	
@@ -7,17 +7,17 @@ package Tabula.Renderers.Simple is
 	
 	overriding function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Villages.Village_Id;
+		Query_Strings : Web.Query_Strings) return Tabula.Villages.Village_Id;
 	
 	overriding procedure Get_Day(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural);
 	
 	overriding procedure Get_Range(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer);
@@ -65,7 +65,7 @@ private
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -77,4 +77,4 @@ private
 	
 	overriding function HTML_Version(Object : in Renderer) return Web.HTML_Version;
 
-end Tabula.Renderers.Simple;
+end Vampire.Renderers.Simple;

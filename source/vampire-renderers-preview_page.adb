@@ -1,11 +1,11 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
-procedure Tabula.Renderers.Preview_Page (
+procedure Vampire.Renderers.Preview_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Village_Id : in Villages.Village_Id;
-	Village : in Vampires.Villages.Village_Type; 
-	Message : in Vampires.Villages.Message;
+	Village_Id : in Tabula.Villages.Village_Id;
+	Village : in Vampire.Villages.Village_Type; 
+	Message : in Vampire.Villages.Message;
 	User_Id : in String;
 	User_Password : in String)
 is
@@ -15,7 +15,7 @@ is
 	begin
 		if Tag = "kind" then
 			Write(Output, '"');
-			Web.Write_In_Attribute (Output, Object.HTML_Version, Vampires.Villages.Message_Kind'Image (Message.Kind));
+			Web.Write_In_Attribute (Output, Object.HTML_Version, Vampire.Villages.Message_Kind'Image (Message.Kind));
 			Write(Output, '"');
 		elsif Tag = "value" then
 			Write(Output, '"');
@@ -36,4 +36,4 @@ is
 	end Handle;
 begin
 	Produce (Object, Output, Object.Configuration.Template_Preview_File_Name.all, Handle'Access);
-end Tabula.Renderers.Preview_Page;
+end Vampire.Renderers.Preview_Page;

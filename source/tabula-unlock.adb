@@ -3,16 +3,18 @@ with Ada.Calendar;
 with Ada.Text_IO;
 with Ada.Directories;
 with Ada.IO_Exceptions;
-with Tabula.Configurations;
 with Tabula.Debug;
-procedure Tabula.Unlock is
+procedure Tabula.Unlock (
+	Lock_Name : in not null Static_String_Access;
+	Debug_Log_File_Name : in not null Static_String_Access)
+is
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
 	Count : Natural := 0;
 begin
-	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
+	Debug.Hook (Debug_Log_File_Name, Now);
 	Deleting: loop
 		begin
-			Ada.Directories.Delete_Tree (Tabula.Configurations.Lock_Name);
+			Ada.Directories.Delete_Tree (Lock_Name.all);
 			delay 0.1;
 			Count := Count + 1;
 		exception

@@ -69,13 +69,13 @@ export ADA_OBJECTS_PATH=
 
 all: site/vampire$(CGISUFFIX)
 
-site/vampire$(CGISUFFIX): source/tabula-vampires-main.adb $(wildcard source/*.ad?) $(BUILDDIR) $(IMPORTDIR)
+site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR) $(IMPORTDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/unlock$(CGISUFFIX): source/tabula-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
+site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
-site/dump-users-log$(EXESUFFIX): source/tabula-users-lists-dump.adb $(BUILDDIR)
+site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
 export QUERY_STRING=

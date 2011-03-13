@@ -3,28 +3,31 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
 with Web.RSS;
-with Tabula.Configurations.Templates;
-with Tabula.Renderers.List_Page;
-with Tabula.Renderers.Village_Page;
-with Tabula.Vampires.Villages.Load;
-with Tabula.Vampires.Villages.Village_IO;
-package body Tabula.Renderers.Log is
+with Vampire.Configurations.Templates;
+with Vampire.Renderers.List_Page;
+with Vampire.Renderers.Village_Page;
+with Vampire.Villages.Load;
+with Vampire.Villages.Village_IO;
+package body Vampire.Renderers.Log is
+	use Tabula.Villages;
+	use Tabula.Villages.Lists.Summary_Maps;
+	use Tabula.Villages.Lists.User_Lists;
+	use Villages;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	use type Villages.Village_State;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	function Summary (
-		Village : Vampires.Villages.Village_Type)
-		return Villages.Lists.Village_Summary
+		Village : Vampire.Villages.Village_Type)
+		return Tabula.Villages.Lists.Village_Summary
 	is
-		Id_List : Villages.Lists.User_Lists.List;
+		Id_List : Tabula.Villages.Lists.User_Lists.List;
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			Villages.Lists.User_Lists.Append (Id_List, +Village.People.Constant_Reference(I).Element.Id);
+			Append (Id_List, +Village.People.Constant_Reference(I).Element.Id);
 		end loop;
 		return (
-			Type_Code => +Vampires.Villages.Village_IO.YAML_Type,
+			Type_Code => +Vampire.Villages.Village_IO.YAML_Type,
 			Name => Village.Name, 
 			By => Village.By,
 			Day_Duration => Village.Day_Duration,
@@ -34,23 +37,23 @@ package body Tabula.Renderers.Log is
 	end Summary;
 	
 	function Load_Summary (
-		List : Villages.Lists.Villages_List;
-		Id : Villages.Village_Id)
-		return Villages.Lists.Village_Summary
+		List : Tabula.Villages.Lists.Villages_List;
+		Id : Tabula.Villages.Village_Id)
+		return Tabula.Villages.Lists.Village_Summary
 	is
-		Village : Vampires.Villages.Village_Type;
+		Village : Vampire.Villages.Village_Type;
 	begin
-		Vampires.Villages.Load (Villages.Lists.File_Name (List, Id), Village, Info_Only => True);
+		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => True);
 		return Summary (Village);
 	end Load_Summary;
 	
 	procedure Create_Log (
-		List : Villages.Lists.Villages_List;
-		Id : in Villages.Village_Id)
+		List : Tabula.Villages.Lists.Villages_List;
+		Id : in Tabula.Villages.Village_Id)
 	is
-		Village : aliased Vampires.Villages.Village_Type;
+		Village : aliased Vampire.Villages.Village_Type;
 	begin
-		Vampires.Villages.Load (Villages.Lists.File_Name (List, Id), Village, Info_Only => False);
+		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => False);
 		for Day in 0 .. Village.Today loop
 			declare
 				Renderer : Log.Renderer(Configurations.Templates.Configuration);
@@ -59,7 +62,7 @@ package body Tabula.Renderers.Log is
 				Ada.Streams.Stream_IO.Create (
 					Output,
 					Ada.Streams.Stream_IO.Out_File,
-					Villages.Lists.HTML_File_Name (List, Id, Day));
+					Lists.HTML_File_Name (List, Id, Day));
 				Village_Page (
 					Renderer,
 					Ada.Streams.Stream_IO.Stream(Output),
@@ -74,10 +77,10 @@ package body Tabula.Renderers.Log is
 	end Create_Log;
 	
 	procedure Create_Index (
-		Summaries : in Villages.Lists.Summary_Maps.Map;
+		Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 		Update : in Boolean)
 	is
-		procedure Make_Log_Index (Summaries : in Villages.Lists.Summary_Maps.Map) is
+		procedure Make_Log_Index (Summaries : in Lists.Summary_Maps.Map) is
 			Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Templates.Configuration);
 			File: Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (Name => Configurations.Villages_Index_HTML_File_Name);
@@ -85,7 +88,7 @@ package body Tabula.Renderers.Log is
 			Renderers.List_Page (Renderer, Ada.Streams.Stream_IO.Stream (File), Summaries);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_Log_Index;
-		procedure Make_RSS (Summaries : in Villages.Lists.Summary_Maps.Map) is
+		procedure Make_RSS (Summaries : in Lists.Summary_Maps.Map) is
 			File: Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (
 					Ada.Streams.Stream_IO.Out_File,
@@ -99,16 +102,16 @@ package body Tabula.Renderers.Log is
 				Description => "",
 				Link => "../");
 			declare
-				I : Villages.Lists.Summary_Maps.Cursor := Summaries.Last;
+				I : Lists.Summary_Maps.Cursor := Summaries.Last;
 			begin
-				while Villages.Lists.Summary_Maps.Has_Element (I) loop
+				while Has_Element (I) loop
 					declare
-						Key : Villages.Village_Id
+						Key : Village_Id
 							renames Summaries.Constant_Reference (I).Key.all;
-						Element : Villages.Lists.Village_Summary
+						Element : Lists.Village_Summary
 							renames Summaries.Constant_Reference (I).Element.all;
 					begin
-						if Element.State = Villages.Prologue then
+						if Element.State = Prologue then
 							Web.RSS.RSS_Item (
 								Stream,
 								Title => Element.Name.Constant_Reference.Element.all,
@@ -116,7 +119,7 @@ package body Tabula.Renderers.Log is
 								Link => "../?village=" & Key);
 						end if;
 					end;
-					Villages.Lists.Summary_Maps.Previous (I);
+					Previous (I);
 				end loop;
 			end;
 			Web.RSS.RSS_End (Stream);
@@ -154,7 +157,7 @@ package body Tabula.Renderers.Log is
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -166,7 +169,7 @@ package body Tabula.Renderers.Log is
 	begin
 		if User_Page then
 			raise Program_Error;
-		elsif Village_Id = Villages.Invalid_Village_Id then
+		elsif Village_Id = Invalid_Village_Id then
 			Write(Output, """../""");
 		else
 			Write(Output, """./");
@@ -189,4 +192,4 @@ package body Tabula.Renderers.Log is
 		Write(Output, '"');
 	end Link_Image;
 
-end Tabula.Renderers.Log;
+end Vampire.Renderers.Log;

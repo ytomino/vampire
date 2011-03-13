@@ -5,8 +5,8 @@ with Ada.Strings.Unbounded;
 with Tabula.Calendar;
 with Tabula.Casts;
 with Tabula.Villages;
-package Tabula.Vampires.Villages is
-	package Derived renames Tabula.Villages;
+package Vampire.Villages is
+	use Tabula.Villages;
 	
 	type Execution_Mode is (
 		Dummy_Killed_And_From_First,
@@ -68,7 +68,7 @@ package Tabula.Vampires.Villages is
 		Candidate : Boolean; -- 投票の候補
 		Target : Integer;
 		Special : Boolean;
-		Note : Ada.Strings.Unbounded.Unbounded_String;
+		Note : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
 	Default_Person_Record : constant Person_Record := (
@@ -82,7 +82,7 @@ package Tabula.Vampires.Villages is
 	
 	package Person_Records is new Ada.Containers.Vectors (Natural, Person_Record);
 	
-	type Person_Type is new Derived.Person_Type with record
+	type Person_Type is new Tabula.Villages.Person_Type with record
 		Request : Requested_Role;
 		Ignore_Request : Boolean;
 		Role : Person_Role;
@@ -191,12 +191,12 @@ package Tabula.Vampires.Villages is
 		Counts : Voted_Counts (0 .. Last);
 	end record;
 	
-	type Village_Type is new Derived.Village_Type with record
+	type Village_Type is new Tabula.Villages.Village_Type with record
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
-		State : Derived.Village_State := Derived.Prologue;
+		State : Village_State := Prologue;
 		Today : Integer := 0;
-		Time : Derived.Village_Time := Derived.Daytime;
+		Time : Village_Time := Daytime;
 		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新日時(夜→昼の時点)
 		Execution : Execution_Mode := From_First;
 		Teaming : Teaming_Mode := Shuffling_Headless;
@@ -263,13 +263,13 @@ package Tabula.Vampires.Villages is
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Derived.Root_Option_Item'Class));
+		Process : not null access procedure (Item : in Root_Option_Item'Class));
 	
 	package Options is
 		
 		package Day_Duration is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -281,14 +281,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Day_Duration;
 		
 		package Night_Duration is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -300,14 +300,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Night_Duration;
 		
 		package Execution is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -319,14 +319,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Execution;
 		
 		package Teaming is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -338,14 +338,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Teaming;
 		
 		package Monster_Side is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -357,14 +357,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Monster_Side;
 		
 		package Attack is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -376,14 +376,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Attack;
 		
 		package Servant_Knowing is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -395,14 +395,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Servant_Knowing;
 		
 		package Daytime_Preview is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -414,14 +414,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Daytime_Preview;
 		
 		package Doctor_Infected is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -433,14 +433,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Doctor_Infected;
 		
 		package Hunter_Silver_Bullet is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -452,14 +452,14 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Hunter_Silver_Bullet;
 		
 		package Unfortunate is
 			type Option_Item (Village : not null access constant Village_Type) is
-				new Derived.Root_Option_Item with null record;
+				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
 			overriding function Name (Item : Option_Item) return String;
 			overriding function Changed (Item : Option_Item) return Boolean;
@@ -471,11 +471,11 @@ package Tabula.Vampires.Villages is
 					Message : in String;
 					Unrecommended : in Boolean));
 			overriding procedure Change (
-				Village : in out Derived.Village_Type'Class;
+				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
 		end Unfortunate;
 		
 	end Options;
 	
-end Tabula.Vampires.Villages;
+end Vampire.Villages;

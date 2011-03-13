@@ -3,8 +3,8 @@ with Ada.Exceptions;
 with Ada.Streams.Stream_IO;
 with Serialization.YAML;
 with YAML.Streams;
-with Tabula.Vampires.Villages.Village_IO;
-procedure Tabula.Vampires.Villages.Save (
+with Vampire.Villages.Village_IO;
+procedure Vampire.Villages.Save (
 	Name : in String;
 	Village : in out Villages.Village_Type)
 is
@@ -36,4 +36,4 @@ exception
 				Ada.Exceptions.Exception_Identity (E),
 				Message);
 		end;
-end Tabula.Vampires.Villages.Save;
+end Vampire.Villages.Save;

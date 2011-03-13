@@ -1,21 +1,21 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Tabula.Vampires.Villages;
-package Tabula.Renderers.Log is
+with Vampire.Villages;
+package Vampire.Renderers.Log is
 	
 	type Renderer is new Renderers.Renderer with null record;
 	
 	function Summary (
-		Village : Vampires.Villages.Village_Type)
-		return Villages.Lists.Village_Summary;
+		Village : Vampire.Villages.Village_Type)
+		return Tabula.Villages.Lists.Village_Summary;
 	function Load_Summary (
-		List : Villages.Lists.Villages_List;
-		Id : Villages.Village_Id)
-		return Villages.Lists.Village_Summary;
+		List : Tabula.Villages.Lists.Villages_List;
+		Id : Tabula.Villages.Village_Id)
+		return Tabula.Villages.Lists.Village_Summary;
 	procedure Create_Log (
-		List : Villages.Lists.Villages_List;
-		Id : in Villages.Village_Id);
+		List : Tabula.Villages.Lists.Villages_List;
+		Id : in Tabula.Villages.Village_Id);
 	procedure Create_Index (
-		Summaries : in Villages.Lists.Summary_Maps.Map;
+		Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 		Update : in Boolean);
 	
 private
@@ -35,7 +35,7 @@ private
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -50,4 +50,4 @@ private
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		File_Name : in String);
 	
-end Tabula.Renderers.Log;
+end Vampire.Renderers.Log;

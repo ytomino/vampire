@@ -3,7 +3,7 @@ with Ada.Strings.Unbounded;
 with Tabula.Calendar.Time_IO;
 with Tabula.Casts.Cast_IO;
 with Tabula.Villages.Village_IO;
-package body Tabula.Vampires.Villages.Village_IO is
+package body Vampire.Villages.Village_IO is
 	use People;
 	use Person_Records;
 	use type Ada.Strings.Unbounded.Unbounded_String;
@@ -142,4 +142,4 @@ package body Tabula.Vampires.Villages.Village_IO is
 		IO (Serializer, Root_Callback'Access);
 	end IO;
 	
-end Tabula.Vampires.Villages.Village_IO;
+end Vampire.Villages.Village_IO;

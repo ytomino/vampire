@@ -8,31 +8,37 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO.Text_Streams;
 with Web.Lock_Files;
 with Tabula.Calendar;
-with Tabula.Configurations.Templates;
 with Tabula.Debug;
-with Tabula.Renderers.Error_Page;
-with Tabula.Renderers.Index_Page;
-with Tabula.Renderers.Message_Page;
-with Tabula.Renderers.Preview_Page;
-with Tabula.Renderers.Register_Page;
-with Tabula.Renderers.Target_Page;
-with Tabula.Renderers.User_Page;
-with Tabula.Renderers.Users_Page;
-with Tabula.Renderers.Village_Page;
-with Tabula.Renderers.Simple;
-with Tabula.Renderers.Log;
 with Tabula.Users.Lists;
 with Tabula.Casts.Load;
-with Tabula.Vampires.Villages.Advance;
-with Tabula.Vampires.Villages.Load;
-with Tabula.Vampires.Villages.Save;
 with Tabula.Villages.Lists;
-procedure Tabula.Vampires.Main is
+with Vampire.Configurations;
+with Vampire.Configurations.Templates;
+with Vampire.Renderers.Error_Page;
+with Vampire.Renderers.Index_Page;
+with Vampire.Renderers.Message_Page;
+with Vampire.Renderers.Preview_Page;
+with Vampire.Renderers.Register_Page;
+with Vampire.Renderers.Target_Page;
+with Vampire.Renderers.User_Page;
+with Vampire.Renderers.Users_Page;
+with Vampire.Renderers.Village_Page;
+with Vampire.Renderers.Simple;
+with Vampire.Renderers.Log;
+with Vampire.Villages.Advance;
+with Vampire.Villages.Load;
+with Vampire.Villages.Save;
+procedure Vampire.Main is
+	use Villages.Messages;
+	use Villages.Person_Records;
+	use Villages.People;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
 	use type Casts.Work;
 	use type Users.Lists.User_State;
+	use type Tabula.Villages.Village_State;
+	use type Tabula.Villages.Village_Time;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -40,11 +46,6 @@ procedure Tabula.Vampires.Main is
 	use type Villages.Person_State;
 	use type Villages.Message_Kind;
 	use type Villages.Message;
-	use type Tabula.Villages.Village_State;
-	use type Tabula.Villages.Village_Time;
-	use Villages.Messages;
-	use Villages.Person_Records;
-	use Villages.People;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
@@ -299,9 +300,9 @@ begin
 								User_Id => User_Id, User_Password => User_Password);
 						else
 							if Cmd = "news" then
-								Day_Duration := Tabula.Default_Short_Day_Duration;
+								Day_Duration := Default_Short_Day_Duration;
 							else
-								Day_Duration := Tabula.Default_Long_Day_Duration;
+								Day_Duration := Default_Long_Day_Duration;
 							end if;
 							declare
 								New_Village_Id : String renames Tabula.Villages.Lists.New_Village_Id (Villages_List);
@@ -454,7 +455,7 @@ begin
 						Renderer.Index_Page (
 							Output,
 							Summaries,
-							Users.Lists.Muramura_Count (Users_List, Now),
+							Users.Lists.Muramura_Count (Users_List, Now, Muramura_Duration),
 							User_Id => User_Id,
 							User_Password => User_Password);
 					end;
@@ -1223,7 +1224,7 @@ begin
 												Tabula.Villages.Change (Village, Item, Web.Element (Inputs, Item.Name));
 											end Process;
 										begin
-											Vampires.Villages.Iterate_Options (Village, Process'Access);
+											Vampire.Villages.Iterate_Options (Village, Process'Access);
 										end;
 										Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 										Render_Reload_Page;
@@ -1244,10 +1245,21 @@ exception
 	when Web.Lock_Files.Lock_Error =>
 		Web.Header_Content_Type (Output, Web.Text_Plain);
 		Web.Header_Break(Output);
-		String'Write(Output, "White fog. Wait 1 minute!" & Ascii.LF);
+		declare
+			Message : constant String := "White fog. Wait 1 minute!";
+		begin
+			Ada.Debug.Put (Message);
+			String'Write(Output, Message);
+			Character'Write (Output, ASCII.LF);
+		end;
 	when E : others =>
 		Web.Header_Content_Type (Output, Web.Text_Plain);
 		Web.Header_Break(Output);
-		String'Write(Output, Ada.Exceptions.Exception_Information(E));
-		Character'Write(Output, Ascii.LF);
-end Tabula.Vampires.Main;
+		declare
+			Message : constant String := Ada.Exceptions.Exception_Information (E);
+		begin
+			Ada.Debug.Put (Message);
+			String'Write (Output, Message);
+			Character'Write (Output, ASCII.LF);
+		end;
+end Vampire.Main;

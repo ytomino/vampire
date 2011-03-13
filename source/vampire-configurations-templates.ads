@@ -1,8 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Tabula.Renderers;
-package Tabula.Configurations.Templates is
+with Vampire.Renderers;
+package Vampire.Configurations.Templates is
 	
-	Configuration : constant Tabula.Renderers.Configuration_Access := new Tabula.Renderers.Configuration'(
+	Configuration : constant Renderers.Configuration_Access := new Renderers.Configuration'(
 		Image_Directory => Image_Directory'Access,
 		Log_Directory => Villages_HTML_Directory'Access,
 		Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
@@ -18,7 +18,7 @@ package Tabula.Configurations.Templates is
 		Template_Message_File_Name => new String'("template-message.html"),
 		Template_Error_File_Name => new String'("template-error.html"));
 	
-	Simple_Configuration : constant Tabula.Renderers.Configuration_Access := new Tabula.Renderers.Configuration'(
+	Simple_Configuration : constant Renderers.Configuration_Access := new Renderers.Configuration'(
 		Image_Directory => Image_Directory'Access,
 		Log_Directory => Villages_HTML_Directory'Access,
 		Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
@@ -34,4 +34,4 @@ package Tabula.Configurations.Templates is
 		Template_Message_File_Name => new String'("template-message-simple.html"),
 		Template_Error_File_Name => new String'("template-error-simple.html"));
 	
-end Tabula.Configurations.Templates;
+end Vampire.Configurations.Templates;

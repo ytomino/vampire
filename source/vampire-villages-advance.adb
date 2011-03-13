@@ -1,8 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Strings.Unbounded;
-with Tabula.Vampires.Villages.Teaming;
-procedure Tabula.Vampires.Villages.Advance(
+with Vampire.Villages.Teaming;
+procedure Vampire.Villages.Advance(
 	Village : in out Village_Type;
 	Now : in Ada.Calendar.Time;
 	Generator : not null access Ada.Numerics.MT19937.Generator;
@@ -13,8 +13,6 @@ is
 	use Messages;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	subtype People_Index is Natural range Village.People.First_Index .. Village.People.Last_Index;
 	package People_Random is new Ada.Numerics.MT19937.Discrete_Random(People_Index);
@@ -74,7 +72,7 @@ is
 	Gremlin_Kill_Astronomer, Gremlin_Kill_Doctor : Boolean := False;
 begin
 	case Village.State is
-		when Tabula.Villages.Prologue =>
+		when Prologue =>
 			Changed := False;
 			List_Changed := False;
 			-- 直接弄ってのリセット補助
@@ -105,8 +103,8 @@ begin
 				-- 日付を更新
 				Village.Dawn := Now - Village.Night_Duration;
 				Increment_Today;
-				Village.State := Tabula.Villages.Playing;
-				Village.Time := Tabula.Villages.Daytime; -- 常に昼スタート
+				Village.State := Playing;
+				Village.Time := Daytime; -- 常に昼スタート
 				-- 能力決定
 				declare
 					Sets : Teaming.Role_Set_Array renames Teaming.Possibilities (
@@ -215,7 +213,7 @@ begin
 				Changed := True;
 				List_Changed := True;
 			end if;
-		when Tabula.Villages.Playing =>
+		when Playing =>
 			declare
 				function Finished return Boolean is
 					Inhabitant_Count, Vampire_Count : Integer := 0;
@@ -238,11 +236,11 @@ begin
 				Executed : Integer;
 			begin
 				case Village.Time is
-					when Tabula.Villages.Night =>
+					when Night =>
 						if Now >= Village.Night_To_Daytime then
 							Night_To_Daytime := True;
 						end if;
-					when Tabula.Villages.Daytime =>
+					when Daytime =>
 						if Now >= Village.Daytime_To_Vote
 							or else Commit_Finished(Village)
 						then
@@ -262,7 +260,7 @@ begin
 						then
 							Provisional_Voting := True;
 						end if;
-					when Tabula.Villages.Vote =>
+					when Vote =>
 						if Now >= Village.Vote_To_Night
 							or else Vote_Finished(Village)
 						then
@@ -280,11 +278,11 @@ begin
 				end if;
 				-- 昼から投票待ちへ
 				if Daytime_To_Vote then
-					Village.Time := Tabula.Villages.Vote;
+					Village.Time := Vote;
 				end if;
 				-- 投票待ちから夜へ
 				if Vote_To_Night then
-					Village.Time := Tabula.Villages.Night;
+					Village.Time := Night;
 					-- 日付を更新
 					Village.Dawn := Now;
 					Increment_Today;
@@ -377,11 +375,14 @@ begin
 									if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Died
 										and then Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today - 1).Element.Note /= Ada.Strings.Unbounded.Null_Unbounded_String
 									then
-										Night_Talk (
-											Village,
-											I,
-											+Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today - 1).Element.Note,
-											Now);
+										declare
+											Message : constant String :=
+												Village.People.Constant_Reference (I).Element.
+													Records.Constant_Reference (Village.Today - 1).Element.
+														Note.Constant_Reference.Element.all;
+										begin
+											Night_Talk (Village, I, Message, Now);
+										end;
 									end if;
 									exit;
 								end if;
@@ -391,7 +392,7 @@ begin
 				end if;
 				-- 夜から昼へ
 				if Night_To_Daytime then
-					Village.Time := Tabula.Villages.Daytime;
+					Village.Time := Daytime;
 					-- 誰が処刑されたかを拾っておく
 					Executed := -1;
 					for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
@@ -772,7 +773,7 @@ begin
 					end;
 					-- 終了条件チェック
 					if Finished then
-						Village.State := Tabula.Villages.Epilogue;
+						Village.State := Epilogue;
 						-- 全員コミット解除
 						for I in People_Index loop
 							Village.People.Reference(I).Element.Commited := False;
@@ -780,17 +781,17 @@ begin
 					end if;
 				end if;
 			end;
-		when Tabula.Villages.Epilogue =>
+		when Epilogue =>
 			Changed := Now - Village.Dawn >= Duration'Max (
 				Village.Day_Duration,
 				Epilogue_Min_Duration); --  エピローグは最低でも1時間
 			List_Changed := Changed;
 			if Changed then
 				Village.Dawn := Now;
-				Village.State := Tabula.Villages.Closed;
+				Village.State := Closed;
 			end if;
-		when Tabula.Villages.Closed =>
+		when Closed =>
 			Changed := False;
 			List_Changed := False;
 	end case;
-end Tabula.Vampires.Villages.Advance;
+end Vampire.Villages.Advance;

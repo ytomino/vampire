@@ -1,16 +1,17 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
--- ユーザーログ表示ツールです、CGIとして公開しないでください
 with Ada.Containers.Doubly_Linked_Lists;
 with Ada.Calendar.Formatting;
 with Ada.Command_Line;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
-with Tabula.Configurations;
-procedure Tabula.Users.Lists.Dump is
+procedure Tabula.Users.Lists.Dump (
+	Users_Directory : in not null Static_String_Access;
+	Users_Log_File_Name : in not null Static_String_Access)
+is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Ada.Calendar.Time;
-	Users_Log_File_Name : aliased Ada.Strings.Unbounded.Unbounded_String :=
-		+Tabula.Configurations.Users_Log_File_Name;
+	Input_File_Name : aliased Ada.Strings.Unbounded.Unbounded_String :=
+		+Users_Log_File_Name.all;
 	type Item_Type is record
 		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
 		Remote_Addr : aliased Ada.Strings.Unbounded.Unbounded_String;
@@ -18,10 +19,11 @@ procedure Tabula.Users.Lists.Dump is
 		Time : Ada.Calendar.Time;
 	end record;
 	package Item_Lists is new Ada.Containers.Doubly_Linked_Lists (Item_Type);
+	use Item_Lists;
 	Items : aliased Item_Lists.List;
 begin
 	if Ada.Command_Line.Argument_Count > 0 then
-		Users_Log_File_Name := +Ada.Command_Line.Argument (1);
+		Input_File_Name := +Ada.Command_Line.Argument (1);
 	end if;
 	declare
 		use Ada.Text_IO;
@@ -39,15 +41,15 @@ begin
 			Put (',');
 			Put (Ada.Calendar.Formatting.Image (Time));
 			New_Line;
-			Item_Lists.Append (Items, (
+			Append (Items, (
 				Id => +Id,
 				Remote_Addr => +Remote_Addr,
 				Remote_Host => +Remote_Host,
 				Time => Time));
 		end Process;
 		List : Users_List := Create (
-			Directory => Tabula.Configurations.Users_Directory'Access,
-			Log_File_Name => Static_String_Access (Users_Log_File_Name.Constant_Reference.Element));
+			Directory => Users_Directory,
+			Log_File_Name => Static_String_Access (Input_File_Name.Constant_Reference.Element));
 	begin
 		Iterate_Log (List, Process'Access);
 		New_Line;
@@ -55,14 +57,14 @@ begin
 	declare
 		I : Item_Lists.Cursor := Items.First;
 	begin
-		while Item_Lists.Has_Element (I) loop
+		while Has_Element (I) loop
 			declare
 				pragma Warnings (Off);
 				I_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (I);
 				pragma Warnings (On);
-				J : Item_Lists.Cursor := Item_Lists.Next (I);
+				J : Item_Lists.Cursor := Next (I);
 			begin
-				while Item_Lists.Has_Element(J) loop
+				while Has_Element(J) loop
 					declare
 						use Ada.Text_IO;
 						pragma Warnings (Off);
@@ -92,10 +94,10 @@ begin
 							New_Line;
 						end if;
 					end;
-					Item_Lists.Next (J);
+					Next (J);
 				end loop;
 			end;
-			Item_Lists.Next (I);
+			Next (I);
 		end loop;
 	end;
 end Tabula.Users.Lists.Dump;

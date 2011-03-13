@@ -3,6 +3,7 @@ with Ada.Directories;
 with Ada.Formatting;
 with Ada.Streams.Stream_IO;
 package body Tabula.Villages.Lists is
+	use Summary_Maps;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	procedure Read_Summaries (List : in out Villages_List) is
@@ -31,7 +32,7 @@ package body Tabula.Villages.Lists is
 								declare
 									Summary : Village_Summary renames List.Load_Summary (List, Id);
 								begin
-									Summary_Maps.Insert (List.Map, Id, Summary);
+									Insert (List.Map, Id, Summary);
 								end;
 							end if;
 						end;
@@ -69,7 +70,7 @@ package body Tabula.Villages.Lists is
 			Load_Summary => Load_Summary,
 			Create_Log => Create_Log,
 			Create_Index => Create_Index,
-			Map => Summary_Maps.Empty_Map,
+			Map => Empty_Map,
 			Map_Read => False);
 	end Create;
 	
@@ -143,7 +144,7 @@ package body Tabula.Villages.Lists is
 	is
 		I : Summary_Maps.Cursor := Summaries.First;
 	begin
-		while Summary_Maps.Has_Element (I) loop
+		while Has_Element (I) loop
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference (I).Element.all;
 			begin
@@ -153,7 +154,7 @@ package body Tabula.Villages.Lists is
 					return True;
 				end if;
 			end;
-			Summary_Maps.Next (I);
+			Next (I);
 		end loop;
 		return False;
 	end Exists_Opened_By;
@@ -169,7 +170,7 @@ package body Tabula.Villages.Lists is
 		Result : Natural := 0;
 		I : Summary_Maps.Cursor := Summaries.First;
 	begin
-		while Summary_Maps.Has_Element (I) loop
+		while Has_Element (I) loop
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
 			begin
@@ -181,7 +182,7 @@ package body Tabula.Villages.Lists is
 					end if;
 				end if;
 			end;
-			Summary_Maps.Next (I);
+			Next (I);
 		end loop;
 		return Result;
 	end Count_Joined_By;
@@ -192,7 +193,7 @@ package body Tabula.Villages.Lists is
 		Summary : Village_Summary) is
 	begin
 		Read_Summaries (List);
-		Summary_Maps.Include (List.Map, Id, Summary);
+		Include (List.Map, Id, Summary);
 		if Summary.State = Closed
 			and then not Ada.Directories.Exists (HTML_File_Name (List, Id, 0))
 		then
@@ -227,9 +228,9 @@ package body Tabula.Villages.Lists is
 		declare
 			I : Summary_Maps.Cursor := List.Map.First;
 		begin
-			while Summary_Maps.Has_Element (I) loop
+			while Has_Element (I) loop
 				List.Create_Log (List, List.Map.Constant_Reference (I).Key.all);
-				Summary_Maps.Next (I);
+				Next (I);
 			end loop;
 		end;
 		-- remake index

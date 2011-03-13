@@ -1,8 +1,9 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
 with iconv.Streams;
-package body Tabula.Renderers.Simple is
-	use type Villages.Village_State;
+package body Vampire.Renderers.Simple is
+	use Tabula.Villages;
+	use Villages;
 	
 	Encoding : access iconv.Encoding; -- may not be deallocation...
 
@@ -19,20 +20,20 @@ package body Tabula.Renderers.Simple is
 	
 	overriding function Get_Village_Id(
 		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Villages.Village_Id
+		Query_Strings : Web.Query_Strings) return Tabula.Villages.Village_Id
 	is
 		S : String renames Web.Element(Query_Strings, "v");
 	begin
-		if S'Length = Villages.Village_Id'Length then
+		if S'Length = Village_Id'Length then
 			return S;
 		else
-			return Villages.Invalid_Village_Id;
+			return Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 
 	overriding procedure Get_Day(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Query_Strings : in Web.Query_Strings; 
 		Day : out Natural)
 	is
@@ -41,7 +42,7 @@ package body Tabula.Renderers.Simple is
 		Day := Natural'Value(S);
 	exception
 		when Constraint_Error => 
-			if Village.State /= Villages.Closed then
+			if Village.State /= Closed then
 				Day := Village.Today;
 			else
 				Day := 0;
@@ -50,7 +51,7 @@ package body Tabula.Renderers.Simple is
 	
 	overriding procedure Get_Range(
 		Object : in Renderer; 
-		Village : in Vampires.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type; 
 		Day : in Natural;
 		Query_Strings : in Web.Query_Strings; 
 		First, Last : out Integer)
@@ -59,7 +60,7 @@ package body Tabula.Renderers.Simple is
 		P : constant Natural := Ada.Strings.Fixed.Index(Range_Arg, "-");
 	begin
 		if P < Range_Arg'First then
-			Last := Vampires.Villages.Count_Speech(Village, Day);
+			Last := Vampire.Villages.Count_Speech(Village, Day);
 			First := Last - (Natural'Value(Range_Arg));
 		else
 			First := Natural'Value(Range_Arg(Range_Arg'First .. P - 1));
@@ -67,8 +68,8 @@ package body Tabula.Renderers.Simple is
 		end if;
 	exception
 		when Constraint_Error => 
-			if (Village.State /= Villages.Closed) and then (Day = Village.Today) then
-				Last := Vampires.Villages.Count_Speech(Village, Day);
+			if (Village.State /= Closed) and then (Day = Village.Today) then
+				Last := Vampire.Villages.Count_Speech(Village, Day);
 				First := Last - Speeches_By_Page;
 			else
 				First := 0;
@@ -162,7 +163,7 @@ package body Tabula.Renderers.Simple is
 	overriding procedure Link(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Villages.Village_Id := Villages.Invalid_Village_Id;
+		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -205,7 +206,7 @@ package body Tabula.Renderers.Simple is
 		if User_Page then
 			Write(Output, "&u=");
 			Write(Output, User_Id);
-		elsif Village_Id /= Villages.Invalid_Village_Id then
+		elsif Village_Id /= Invalid_Village_Id then
 			Write(Output, "&v=");
 			Write(Output, Village_Id);
 			if Day >= 0 then
@@ -230,4 +231,4 @@ package body Tabula.Renderers.Simple is
 		return Web.HTML;
 	end HTML_Version;
 
-end Tabula.Renderers.Simple;
+end Vampire.Renderers.Simple;

@@ -1,10 +1,11 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Containers.Indefinite_Doubly_Linked_Lists;
 with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Unbounded;
-with Tabula.String_Lists;
 package Tabula.Villages.Lists is
 	
-	package User_Lists renames String_Lists;
+	package User_Lists is
+		new Ada.Containers.Indefinite_Doubly_Linked_Lists (String);
 	
 	type Village_Summary is record
 		Type_Code : aliased Ada.Strings.Unbounded.Unbounded_String; -- YAML type

@@ -50,7 +50,11 @@ package Tabula.Users.Lists is
 	
 	-- ムラムラスカウター(仮)
 	
-	function Muramura_Count (List : Users_List; Now : Ada.Calendar.Time) return Natural;
+	function Muramura_Count (
+		List : Users_List;
+		Now : Ada.Calendar.Time;
+		Muramura_Duration : Duration)
+		return Natural;
 	
 private
 	

@@ -1,13 +1,14 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
-procedure Tabula.Renderers.Users_Page (
+procedure Vampire.Renderers.Users_Page (
 	Object : in Renderer'Class;
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
-	Summaries : in Villages.Lists.Summary_Maps.Map;
+	Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 	User_List : in Users.Lists.User_Info_Maps.Map;
 	User_Id : in String;
 	User_Password : in String)
 is
+	use Tabula.Villages;
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	procedure Handle (
@@ -39,12 +40,12 @@ is
 							Output,
 							Object.HTML_Version,
 							Natural'Image (
-								Villages.Lists.Count_Joined_By (
+								Lists.Count_Joined_By (
 									Summaries,
 									Users.Lists.User_Info_Maps.Key (I),
 									Filter => (
-										Villages.Prologue | Villages.Playing => False,
-										Villages.Epilogue | Villages.Closed => True),
+										Prologue | Playing => False,
+										Epilogue | Closed => True),
 									Including_Escaped => False)));
 					elsif Tag = "renamed" then
 						Web.Write_In_HTML (
@@ -57,12 +58,12 @@ is
 				end Handle_User;
 			begin
 				while Users.Lists.User_Info_Maps.Has_Element (I) loop
-					if Villages.Lists.Count_Joined_By (
+					if Lists.Count_Joined_By (
 						Summaries,
 						User_List.Constant_Reference (I).Key.all,
 						Filter => (
-							Villages.Prologue | Villages.Playing => False,
-							Villages.Epilogue | Villages.Closed => True),
+							Prologue | Playing => False,
+							Epilogue | Closed => True),
 						Including_Escaped => True) > 0
 					then
 						Web.Producers.Produce (Output, Template, Handler => Handle_User'Access);
@@ -76,4 +77,4 @@ is
 	end Handle;
 begin
 	Produce (Object, Output, Object.Configuration.Template_Users_File_Name.all, Handle'Access);
-end Tabula.Renderers.Users_Page;
+end Vampire.Renderers.Users_Page;

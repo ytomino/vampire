@@ -211,7 +211,12 @@ package body Tabula.Users.Lists is
 		end return;
 	end All_Users;
 	
-	function Muramura_Count (List : Users_List; Now : Ada.Calendar.Time) return Natural is
+	function Muramura_Count (
+		List : Users_List;
+		Now : Ada.Calendar.Time;
+		Muramura_Duration : Duration)
+		return Natural
+	is
 		Log : Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
 		Muramura_Set : Users_Log.Map;
 		procedure Process (Position : Users_Log.Cursor) is
