@@ -50,6 +50,9 @@ CARGS:=$(CARGS) -g -gnata
 BARGS:=-E
 LARGS:=-g
 endif
+ifneq ($(TARGET),$(HOST))
+LARGS:=$(LARGS) -lgcc_eh
+endif
 
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 
