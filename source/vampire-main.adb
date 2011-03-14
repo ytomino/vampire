@@ -131,6 +131,9 @@ begin
 			Renderer.Refresh_Page (Output, URI => Web.Request_URI);
 		end Render_Reload_Page;
 	begin
+		if Web.Lock_Files.Forced (Lock) then
+			Ada.Debug.Put ("forced to remove lock-file.");
+		end if;
 		if Post and then (Remote_Host = "" or else Remote_Host = Remote_Addr)
 			and then Remote_Addr /= "127.0.0.1" -- localhost
 			and then Remote_Addr /= "::1" -- IPv6 localhost
