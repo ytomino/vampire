@@ -40,12 +40,14 @@ package Tabula.Casts is
 	
 	package Works is new Ada.Containers.Vectors (Natural, Work);
 	
+	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor;
+	
 	type Cast_Collection is limited record
 		People : aliased Casts.People.Vector;
 		Works : aliased Casts.Works.Vector;
 	end record;
 	
-	procedure Exclude_Person (Cast : in out Casts.Cast_Collection; Name : String; Group : Integer);
-	procedure Exclude_Work (Cast : in out Casts.Cast_Collection; Name : String);
+	procedure Exclude_Person (Cast : in out Cast_Collection; Name : String; Group : Integer);
+	procedure Exclude_Work (Cast : in out Cast_Collection; Name : String);
 	
 end Tabula.Casts;

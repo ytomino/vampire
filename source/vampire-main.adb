@@ -29,9 +29,6 @@ with Vampire.Villages.Advance;
 with Vampire.Villages.Load;
 with Vampire.Villages.Save;
 procedure Vampire.Main is
-	use Villages.Messages;
-	use Villages.Person_Records;
-	use Villages.People;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
@@ -47,38 +44,8 @@ procedure Vampire.Main is
 	use type Villages.Message;
 	use type Villages.Village_Time;
 	
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	
+	-- 現在時刻
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
-	
-	procedure Add(
-		Village : in out Villages.Village_Type;
-		Kind : Villages.Message_Kind;
-		Subject : Integer := -1;
-		Target : Integer := -1;
-		Text : String := "")
-	is
-		New_Item : Villages.Message := (
-			Day => Village.Today,
-			Time => Now,
-			Kind => Kind,
-			Subject => Subject,
-			Target => Target,
-			Text => +Text);
-	begin
-		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
-			Append(Village.Messages, New_Item);
-		end if;
-	end Add;
-	
-	function Get_Renderer(Query_Strings : in Web.Query_Strings) return Renderers.Renderer'Class is
-	begin
-		if Web.Element (Query_Strings, "b") = "k" then
-			return Renderers.Simple.Renderer'(Configuration => Configurations.Templates.Simple_Configuration);
-		else
-			return Renderers.Renderer'(Configuration => Configurations.Templates.Configuration);
-		end if;
-	end Get_Renderer;
 	
 	-- 標準入出力
 	Input : not null Ada.Text_IO.Text_Streams.Stream_Access :=
@@ -111,6 +78,14 @@ begin
 	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	declare
+		function Get_Renderer(Query_Strings : in Web.Query_Strings) return Renderers.Renderer'Class is
+		begin
+			if Web.Element (Query_Strings, "b") = "k" then
+				return Renderers.Simple.Renderer'(Configuration => Configurations.Templates.Simple_Configuration);
+			else
+				return Renderers.Renderer'(Configuration => Configurations.Templates.Configuration);
+			end if;
+		end Get_Renderer;
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
 		-- HTTP Info
 		Remote_Addr : String renames Web.Remote_Addr;
@@ -297,7 +272,7 @@ begin
 						elsif Cmd = "news" and then (User_Info.Disallow_New_Village or else (
 							Tabula.Villages.Lists.Blocking_Short_Term (Villages_List)
 							and then User_Id /= Users.Administrator
-							and then User_ID /= "she")) -- ハードコーディングですよ酷いコードですね
+							and then User_Id /= "she")) -- ハードコーディングですよ酷いコードですね
 						then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -333,8 +308,8 @@ begin
 									Unfortunate          => Villages.Initial_Unfortunate,
 									Appearance => (others => Villages.Random),
 									Dummy_Role => Villages.Inhabitant,
-									People => Empty_Vector,
-									Escaped_People => Empty_Vector,
+									People => Villages.People.Empty_Vector,
+									Escaped_People => Villages.People.Empty_Vector,
 									Messages => Villages.Messages.Empty_Vector);
 							begin
 								if Village.Name = "" then
@@ -621,19 +596,14 @@ begin
 												Person_Template : Casts.Person renames Cast.People.Constant_Reference (Name_Num).Element.all;
 											begin
 												if Work_Num < 0 then
-													Searching_Established_Work : for I in Cast.Works.First_Index .. Cast.Works.Last_Index loop
-														if Person_Template.Work = Cast.Works.Constant_Reference(I).Element.Name then
-															Work_Num := I;
-															exit Searching_Established_Work;
-														end if;
-													end loop Searching_Established_Work;
+													Work_Num := Casts.Find (Cast.Works, Person_Template.Work.Constant_Reference.Element.all);
 												end if;
 												if Work_Num < 0 then
 													Web.Header_Content_Type (Output, Web.Text_HTML);
 													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 													Web.Header_Break (Output);
 													Renderer.Message_Page(Output, Village_Id, Village'Access,
-														"申し訳ありませんが既定の肩書き(" & (+Person_Template.Work) & ")は既に取られています。",
+														"申し訳ありませんが既定の肩書き(" & Person_Template.Work.Constant_Reference.Element.all & ")は既に取られています。",
 														User_Id, User_Password);
 												else
 													declare
@@ -660,19 +630,14 @@ begin
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "以前にエントリされたときと性別が異なります。", User_Id, User_Password);
 														else
-															Append(Village.People, Villages.Person_Type'(
-																Name => Person_Template.Name,
-																Image => Person_Template.Image,
-																Sex => Person_Template.Sex,
-																Group => Person_Template.Group,
-																Work => Selected_Work.Name,
-																Request => Request,
-																Ignore_Request => User_Info.Ignore_Request,
-																Role => Villages.Inhabitant,
-																Id => +User_Id,
-																Commited => False,
-																Records => To_Vector (Villages.Default_Person_Record, Length => 1)));
-															Add (Village, Villages.Join, Subject => Village.People.Last_Index);
+															Villages.Join (
+																Village,
+																User_Id,
+																Person_Template,
+																Selected_Work.all,
+																Request,
+																User_Info.Ignore_Request,
+																Now);
 															Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 															Tabula.Villages.Lists.Update (
 																Villages_List,
@@ -700,7 +665,7 @@ begin
 										declare
 											Text : String renames Renderers.Get_Text(Renderer, Inputs);
 										begin
-											Add(Village, Villages.Narration, Text => Text);
+											Villages.Narration (Village, Text, Now);
 											Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 										end;
 										Render_Reload_Page;
@@ -719,7 +684,7 @@ begin
 									else
 										declare
 											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
-											Removed_Id : constant String := +Village.People.Constant_Reference(Target).Element.Id;
+											Removed_Id : constant String := Village.People.Constant_Reference(Target).Element.Id.Constant_Reference.Element.all;
 										begin
 											Villages.Escape(Village, Target, Now);
 											Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
@@ -853,8 +818,7 @@ begin
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "相手はまだ行動を終えていません。", User_Id, User_Password);
 											else
-												Village.People.Reference(Target).Element.Commited := False;
-												Add(Village, Villages.Action_Wake, Subject => Player, Target => Target);
+												Villages.Wake (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												Render_Reload_Page;
 											end if;
@@ -866,7 +830,7 @@ begin
 												Renderers.Error_Page(Renderer, Output,
 													"話の続きを促せるのは一日一度です。");
 											else
-												Add(Village, Villages.Action_Encourage, Subject => Player, Target => Target);
+												Villages.Encourage (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												Render_Reload_Page;
 											end if;
@@ -891,12 +855,8 @@ begin
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "夜は直接会話できます。", User_Id, User_Password);
-											elsif Villages.Unfortunate(Village) then
-												Add(Village, Villages.Action_Vampire_Gaze_Blocked, Subject => Player, Target => Target);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-												Render_Reload_Page;
 											else
-												Add(Village, Villages.Action_Vampire_Gaze, Subject => Player, Target => Target);
+												Villages.Gaze (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												Render_Reload_Page;
 											end if;
@@ -939,7 +899,7 @@ begin
 											Text : String renames Renderers.Get_Text(Renderer, Inputs);
 										begin
 											if Text'Length > 0 then
-												Add(Village, Villages.Speech, Subject => Player, Text => Text);
+												Villages.Speech (Village, Player, Text, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 											end if;
 										end;
@@ -1008,7 +968,7 @@ begin
 													User_Password => User_Password);
 											else
 												if Text /= "" then
-													Add(Village, Villages.Monologue, Subject => Player, Text => Text);
+													Villages.Monologue (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												end if;
 												Render_Reload_Page;
@@ -1048,7 +1008,7 @@ begin
 													User_Password => User_Password);
 											else
 												if Text /= "" then
-													Add(Village, Villages.Ghost, Subject => Player, Text => Text);
+													Villages.Ghost (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												end if;
 												Render_Reload_Page;
@@ -1128,25 +1088,16 @@ begin
 									declare
 										Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
 										Special : constant Boolean := Web.Checkbox_Value(Web.Element(Inputs, "special"));
-										Target_Day : Natural := Village.Today;
-										Special_Used : Boolean := False;
+										Target_Day : constant Natural := Village.Target_Day;
+										Special_Used : constant Boolean := Village.Already_Used_Special (Player);
 									begin
-										if Village.Time = Villages.Night then
-											Target_Day := Target_Day - 1;
-										end if;
-										for I in 0 .. Target_Day - 1 loop
-											if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(I).Element.Special then
-												Special_Used := True;
-											end if;
-										end loop;
 										if Special_Used and Special then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
 											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderer.Error_Page(Output, "銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
-											and then (Village.People.Constant_Reference(Player).Element.Role = Villages.Detective
-											or else Village.People.Constant_Reference(Player).Element.Role = Villages.Doctor)
+											and then Village.People.Constant_Reference(Player).Element.Role in Villages.Daytime_Role
 										then
 											if Village.Time = Villages.Night then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -1176,8 +1127,7 @@ begin
 											if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target
 												or else Special /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Special
 											then
-												Village.People.Reference(Player).Element.Records.Reference(Target_Day).Element.Target := Target;
-												Village.People.Reference(Player).Element.Records.Reference(Target_Day).Element.Special := Special;
+												Villages.Select_Target (Village, Player, Target, Special, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 											end if;
 											Render_Reload_Page;
@@ -1194,31 +1144,8 @@ begin
 											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
 										begin
 											case Village.People.Constant_Reference (Player).Element.Role is
-												when Villages.Doctor =>
-													if Village.People.Constant_Reference(Target).Element.Role = Villages.Gremlin then
-														Add(Village, Villages.Doctor_Found_Gremlin_Preview, Subject => Player, Target => Target);
-													elsif Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Infected then
-														declare
-															Result : Villages.Message_Kind := Villages.Doctor_Cure_Preview;
-														begin
-															if Village.Doctor_Infected = Villages.Find_Infection
-																and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Infected
-															then
-																Result := Villages.Doctor_Found_Infection_Preview;
-															end if;
-															Add(Village, Result, Subject => Player, Target => Target);
-														end;
-													else
-														Add(Village, Villages.Doctor_Failed_Preview, Subject => Player, Target => Target);
-													end if;
-													Village.People.Reference(Player).Element.Records.Reference(Village.Today).Element.Target := Target;
-													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-													Render_Reload_Page;
-												when Villages.Detective =>
-													Add (Village, Villages.Detective_Survey_Preview,
-														Subject => Player, Target => Target,
-														Text => +Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.Note);
-													Village.People.Reference (Player).Element.Records.Reference (Village.Today).Element.Target := Target;
+												when Villages.Doctor | Villages.Detective =>
+													Villages.Select_Target (Village, Player, Target, False, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 													Render_Reload_Page;
 												when others =>

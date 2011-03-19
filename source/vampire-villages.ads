@@ -79,10 +79,10 @@ package Vampire.Villages is
 	
 	Default_Person_Record : constant Person_Record := (
 		State => Normal,
-		Vote => -1,
-		Provisional_Vote => -1,
+		Vote => No_Person,
+		Provisional_Vote => No_Person,
 		Candidate => True,
-		Target => -1,
+		Target => No_Person,
 		Special => False,
 		Note => Ada.Strings.Unbounded.Null_Unbounded_String);
 	
@@ -181,8 +181,8 @@ package Vampire.Villages is
 		Day => -1,
 		Time => Calendar.Null_Time,
 		Kind => Narration,
-		Subject => -1,
-		Target => -1,
+		Subject => No_Person,
+		Target => No_Person,
 		Text => Ada.Strings.Unbounded.Null_Unbounded_String);
 	
 	package Messages is new Ada.Containers.Vectors (Natural, Message);
@@ -191,12 +191,12 @@ package Vampire.Villages is
 		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
 		Last_Action_Time : Ada.Calendar.Time ;
 	end record;
-	type Message_Counts is array (Natural range <>) of Message_Count;
+	type Message_Counts is array (Person_Index range <>) of Message_Count;
 	
-	type Voted_Counts is array (Natural range <>) of Natural;
-	type Voted_Count_Info (Last : Integer) is record
+	type Voted_Counts is array (Person_Index range <>) of Natural;
+	type Voted_Count_Info (Last : Person_Index'Base) is record
 		Max : Natural;
-		Counts : Voted_Counts (0 .. Last);
+		Counts : Voted_Counts (Person_Index'First .. Last);
 	end record;
 	
 	-- 村
@@ -236,11 +236,24 @@ package Vampire.Villages is
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
 	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
 	
+	function No_Commit (Village : Village_Type) return Boolean;
+	function Commit_Finished (Village : Village_Type) return Boolean;
+	
+	-- 参加
+	procedure Join (
+		Village : in out Village_Type;
+		Id : in String;
+		Figure : in Casts.Person;
+		Work : in Casts.Work;
+		Request : in Requested_Role;
+		Ignore_Request : in Boolean;
+		Time : in Ada.Calendar.Time);
+	
 	-- 村抜け
 	function Escape_Duration (Village : Village_Type) return Duration;
 	procedure Escape (
 		Village : in out Village_Type;
-		Subject : in Natural;
+		Subject : in Person_Index;
 		Time : in Ada.Calendar.Time);
 	
 	-- 投票
@@ -248,25 +261,72 @@ package Vampire.Villages is
 	function Provisional_Voted (Village : Village_Type) return Boolean;
 	function Vote_Finished (Village : Village_Type) return Boolean;
 	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
-	function No_Commit (Village : Village_Type) return Boolean;
-	function Commit_Finished (Village : Village_Type) return Boolean;
 	procedure Vote (
 		Village : in out Village_Type;
-		Player : in Natural;
-		Target : in Integer);
+		Subject : in Person_Index;
+		Target : in Person_Index'Base);
 	-- 一次開票の実行
 	procedure Provisional_Vote (
 		Village : in out Village_Type;
 		Time : in Ada.Calendar.Time;
 		Changed : in out Boolean);
 	
+	-- アクション
+	procedure Wake (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time);
+	procedure Encourage (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time);
+	procedure Gaze (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time);
+	
 	-- 能力者
-	function Find_Superman (Village : Village_Type; Role : Person_Role) return Integer;
+	function Find_Superman (Village : Village_Type; Role : Person_Role) return Person_Index'Base;
 	function Unfortunate (Village : Village_Type) return Boolean;
+	function Target_Day (Village : Village_Type) return Integer;
+	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean;
+	
+	procedure Select_Target (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index'Base;
+		Special : in Boolean := False;
+		Time : in Ada.Calendar.Time);
 	
 	procedure Night_Talk (
 		Village : in out Village_Type;
-		Player : in Natural;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time);
+	
+	-- 会話
+	procedure Speech (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time);
+	procedure Monologue (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time);
+	procedure Ghost (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time);
+	
+	-- Administrator操作
+	procedure Narration (
+		Village : in out Village_Type;
 		Text : in String;
 		Time : in Ada.Calendar.Time);
 	

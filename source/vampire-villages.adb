@@ -1,6 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
 package body Vampire.Villages is
+	use Messages;
+	use Person_Records;
 	use People;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
@@ -16,21 +18,7 @@ package body Vampire.Villages is
 		end case;
 	end Provisional_Voting;
 	
-	function Be_Voting (Village : Village_Type) return Boolean is
-	begin
-		if Village.State = Playing then
-			case Village.Execution is
-				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
-					return True;
-				when From_Second | Provisional_Voting_From_Second =>
-					return Village.Today >= 2;
-			end case;
-		else
-			return False;
-		end if;
-	end Be_Voting;
-	
-	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts is
+	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
 			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0, 
 			Last_Action_Time => Calendar.Null_Time));
@@ -95,6 +83,34 @@ package body Vampire.Villages is
 		return Result;
 	end Count_Total_Speech;
 	
+	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		return Village.Dawn + Village.Night_Duration;
+	end Night_To_Daytime;
+	
+	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
+		else
+			return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
+		end if;
+	end Provisional_Voting_Time;
+	
+	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+			return Village.Night_To_Daytime + Village.Day_Duration * 3 / 2; -- 72h
+		else
+			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
+		end if;
+	end Daytime_To_Vote;
+	
+	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		return Village.Daytime_To_Vote + Vote_Duration;
+	end Vote_To_Night;
+	
 	function No_Commit (Village : Village_Type) return Boolean is
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
@@ -122,6 +138,102 @@ package body Vampire.Villages is
 		return (Count >= Minimum_Number_Of_Persons or else Village.State /= Prologue)
 			and then Commited_Count = Count;
 	end Commit_Finished;
+	
+	procedure Join (
+		Village : in out Village_Type;
+		Id : in String;
+		Figure : in Casts.Person;
+		Work : in Casts.Work;
+		Request : in Requested_Role;
+		Ignore_Request : in Boolean;
+		Time : in Ada.Calendar.Time) is
+	begin
+		Append (
+			Village.People,
+			Villages.Person_Type'(
+				Name => Figure.Name,
+				Image => Figure.Image,
+				Sex => Figure.Sex,
+				Group => Figure.Group,
+				Work => Work.Name,
+				Request => Request,
+				Ignore_Request => Ignore_Request,
+				Role => Inhabitant,
+				Id => +Id,
+				Commited => False,
+				Records => To_Vector (Default_Person_Record, Length => 1)));
+		Append (Village.Messages, Message'(
+			Kind => Join,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Village.People.Last_Index,
+			Target => People.No_Index,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+	end Join;
+	
+	function Escape_Duration(Village : Village_Type) return Duration is
+	begin
+		case Village.Term is
+			when Short => return 12 * 60 * 60 * 1.0;
+			when Long => return 7 * 24 * 60 * 60 * 1.0;
+		end case;
+	end Escape_Duration;
+	
+	procedure Escape (
+		Village : in out Village_Type;
+		Subject : Natural;
+		Time : Ada.Calendar.Time)
+	is
+		Escaped_Index : Natural;
+	begin
+		Append (Village.Escaped_People, Village.People.Constant_Reference (Subject).Element.all);
+		Delete (Village.People, Subject);
+		Escaped_Index := Village.Escaped_People.Last_Index;
+		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				Kind : constant Villages.Message_Kind :=
+					Village.Messages.Constant_Reference (I).Element.Kind;
+			begin
+				if Kind = Escaped_Join then
+					null;
+				elsif Kind = Escaped_Speech then
+					null;
+				elsif Kind = Escape then
+					null;
+				elsif Kind = Speech and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
+					Village.Messages.Reference (I).Element.Kind := Escaped_Speech;
+					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
+				elsif Kind = Join and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
+					Village.Messages.Reference (I).Element.Kind := Escaped_Join;
+					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
+				elsif Village.Messages.Constant_Reference (I).Element.Subject > Subject then
+					Village.Messages.Reference (I).Element.Subject :=
+						Village.Messages.Constant_Reference (I).Element.Subject - 1;
+				end if;
+			end;
+		end loop;
+		Append (Village.Messages, Message'(
+			Kind => Escape,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Escaped_Index,
+			Target => People.No_Index,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+	end Escape;
+	
+	function Be_Voting (Village : Village_Type) return Boolean is
+	begin
+		if Village.State = Playing then
+			case Village.Execution is
+				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
+					return True;
+				when From_Second | Provisional_Voting_From_Second =>
+					return Village.Today >= 2;
+			end case;
+		else
+			return False;
+		end if;
+	end Be_Voting;
 	
 	function Provisional_Voted (Village : Village_Type) return Boolean is
 	begin
@@ -183,116 +295,12 @@ package body Vampire.Villages is
 		end return;
 	end Voted_Count;
 	
-	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time is
-	begin
-		return Village.Dawn + Village.Night_Duration;
-	end Night_To_Daytime;
-	
-	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
-	begin
-		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
-			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
-		else
-			return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
-		end if;
-	end Provisional_Voting_Time;
-	
-	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time is
-	begin
-		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
-			return Village.Night_To_Daytime + Village.Day_Duration * 3 / 2; -- 72h
-		else
-			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
-		end if;
-	end Daytime_To_Vote;
-	
-	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time is
-	begin
-		return Village.Daytime_To_Vote + Vote_Duration;
-	end Vote_To_Night;
-	
-	function Find_Superman(Village : Village_Type; Role : Person_Role) return Integer is
-	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			if Village.People.Constant_Reference(I).Element.Role = Role then
-				return I;
-			end if;
-		end loop;
-		return -1;
-	end Find_Superman;
-	
-	function Unfortunate(Village : Village_Type) return Boolean is
-		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
-	begin
-		if The_Unfortunate_Inhabitant < 0 then
-			return False;
-		else
-			for I in 1 .. Village.Today loop
-				if Village.People.Constant_Reference(The_Unfortunate_Inhabitant).Element.Records.Constant_Reference(I).Element.State /= Normal then
-					return False;
-				end if;
-			end loop;
-			if Village.Today > 1 then
-				declare
-					Counts : Message_Counts renames Count_Messages(Village, Village.Today - 1);
-				begin
-					if Counts(The_Unfortunate_Inhabitant).Speech = 0 then
-						return False;
-					end if;
-				end;
-			end if;
-			return True;
-		end if;
-	end Unfortunate;
-	
-	procedure Escape (
-		Village : in out Village_Type;
-		Subject : Natural;
-		Time : Ada.Calendar.Time)
-	is
-		Escaped_Index : Natural;
-	begin
-		People.Append (Village.Escaped_People, Village.People.Constant_Reference (Subject).Element.all);
-		People.Delete (Village.People, Subject);
-		Escaped_Index := Village.Escaped_People.Last_Index;
-		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
-			declare
-				Kind : constant Villages.Message_Kind :=
-					Village.Messages.Constant_Reference (I).Element.Kind;
-			begin
-				if Kind = Escaped_Join then
-					null;
-				elsif Kind = Escaped_Speech then
-					null;
-				elsif Kind = Escape then
-					null;
-				elsif Kind = Speech and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
-					Village.Messages.Reference (I).Element.Kind := Escaped_Speech;
-					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
-				elsif Kind = Join and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
-					Village.Messages.Reference (I).Element.Kind := Escaped_Join;
-					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
-				elsif Village.Messages.Constant_Reference (I).Element.Subject > Subject then
-					Village.Messages.Reference (I).Element.Subject :=
-						Village.Messages.Constant_Reference (I).Element.Subject - 1;
-				end if;
-			end;
-		end loop;
-		Messages.Append (Village.Messages, Message'(
-			Kind => Escape,
-			Day => Village.Today,
-			Time => Time,
-			Subject => Escaped_Index,
-			Target => No_Index,
-			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-	end Escape;
-	
 	procedure Vote (
 		Village : in out Village_Type;
-		Player : in Natural;
-		Target : in Integer)
+		Subject : in Natural;
+		Target : in Person_Index'Base)
 	is
-		Rec : Person_Record renames Village.People.Reference(Player).Element.Records.Reference(Village.Today).Element.all;
+		Rec : Person_Record renames Village.People.Reference(Subject).Element.Records.Reference(Village.Today).Element.all;
 	begin
 		pragma Assert(Target < 0 or else Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate);
 		Rec.Vote := Target;
@@ -359,28 +367,186 @@ package body Vampire.Villages is
 					end if;
 				end;
 			end loop;
-			Messages.Append (Village.Messages, Message'(
+			Append (Village.Messages, Message'(
 				Kind => Provisional_Vote,
 				Day => Village.Today,
 				Time => Time,
-				Subject => -1,
-				Target => -1,
+				Subject => No_Person,
+				Target => No_Person,
 				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 			Changed := True; -- 変更を保存
 		end if;
 	end Provisional_Vote;
 	
-	function Escape_Duration(Village : Village_Type) return Duration is
+	procedure Wake (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time) is
 	begin
-		case Village.Term is
-			when Short => return 12 * 60 * 60 * 1.0;
-			when Long => return 7 * 24 * 60 * 60 * 1.0;
+		Village.People.Reference (Target).Element.Commited := False;
+		Append (Village.Messages, Message'(
+			Kind => Action_Wake,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => Target,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+	end Wake;
+	
+	procedure Encourage (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time) is
+	begin
+		Append (Village.Messages, Message'(
+			Kind => Action_Encourage,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => Target,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+	end Encourage;
+	
+	procedure Gaze (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time)
+	is
+		Kind : Message_Kind;
+	begin
+		if Unfortunate (Village) then
+			Kind := Action_Vampire_Gaze_Blocked;
+		else
+			Kind := Action_Vampire_Gaze;
+		end if;
+		Append (Village.Messages, Message'(
+			Kind => Kind,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => Target,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+	end Gaze;
+	
+	function Find_Superman(Village : Village_Type; Role : Person_Role) return Person_Index'Base is
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference(I).Element.Role = Role then
+				return I;
+			end if;
+		end loop;
+		return No_Person;
+	end Find_Superman;
+	
+	function Unfortunate (Village : Village_Type) return Boolean is
+		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
+	begin
+		if The_Unfortunate_Inhabitant < 0 then
+			return False;
+		else
+			for I in 1 .. Village.Today loop
+				if Village.People.Constant_Reference(The_Unfortunate_Inhabitant).Element.Records.Constant_Reference(I).Element.State /= Normal then
+					return False;
+				end if;
+			end loop;
+			if Village.Today > 1 then
+				declare
+					Counts : Message_Counts renames Count_Messages(Village, Village.Today - 1);
+				begin
+					if Counts(The_Unfortunate_Inhabitant).Speech = 0 then
+						return False;
+					end if;
+				end;
+			end if;
+			return True;
+		end if;
+	end Unfortunate;
+	
+	function Target_Day (Village : Village_Type) return Integer is
+	begin
+		if Village.Time = Night then
+			return Village.Today - 1; -- 夜の能力は前日分を使用する
+		else
+			return Village.Today;
+		end if;
+	end Target_Day;
+	
+	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean is
+	begin
+		for I in 1 .. Village.Target_Day - 1 loop -- 今日の設定は変えられるので昨日の分まで
+			if Village.People.Constant_Reference (Subject).Element.Records.Constant_Reference (I).Element.Special then
+				return True;
+			end if;
+		end loop;
+		return False;
+	end Already_Used_Special;
+	
+	procedure Select_Target (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index'Base;
+		Special : in Boolean := False;
+		Time : in Ada.Calendar.Time)
+	is
+		Target_Day : Natural := Village.Target_Day;
+	begin
+		case Village.People.Constant_Reference (Subject).Element.Role is
+			when Villages.Doctor =>
+				if Village.Daytime_Preview /= None then
+					declare
+						Result : Message_Kind;
+					begin
+						if Village.People.Constant_Reference (Target).Element.Role = Gremlin then
+							-- 妖魔発見
+							Result := Doctor_Found_Gremlin_Preview;
+						elsif Village.People.Constant_Reference (Target).Element.
+							Records.Constant_Reference (Target_Day).Element.State = Infected
+						then
+							-- 感染者発見
+							if Village.Doctor_Infected = Find_Infection
+								and then Village.People.Constant_Reference (Subject).Element.
+									Records.Constant_Reference (Target_Day).Element.State = Infected
+							then
+								Result := Doctor_Found_Infection_Preview;
+							else
+								Result := Doctor_Cure_Preview;
+							end if;
+						else
+							Result := Doctor_Failed_Preview;
+						end if;
+						Append (Village.Messages, Message'(
+							Kind => Result,
+							Day => Village.Today,
+							Time => Time,
+							Subject => Subject,
+							Target => Target,
+							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+					end;
+				end if;
+				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
+			when Villages.Detective =>
+				if Village.Daytime_Preview /= None then
+					Append (Village.Messages, Message'(
+						Kind => Detective_Survey_Preview,
+						Day => Village.Today,
+						Time => Time,
+						Subject => Subject,
+						Target => Target,
+						Text => Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.Note));
+				end if;
+				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
+			when others =>
+				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
+				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Special := Special;
 		end case;
-	end Escape_Duration;
+	end Select_Target;
 	
 	procedure Night_Talk (
 		Village : in out Village_Type;
-		Player : in Natural;
+		Subject : in Natural;
 		Text : in String;
 		Time : in Ada.Calendar.Time) is
 	begin
@@ -390,7 +556,7 @@ package body Vampire.Villages is
 					Message : Villages.Message renames Village.Messages.Constant_Reference (I).Element.all;
 				begin
 					if Message.Day < Village.Today then
-						Messages.Append (Village.Messages, Villages.Message'(
+						Append (Village.Messages, Villages.Message'(
 							Kind => Howling_Blocked,
 							Day => Village.Today,
 							Time => Time,
@@ -403,18 +569,93 @@ package body Vampire.Villages is
 				end;
 			end loop;
 			-- 夜明け時に1発言はできるので記録しておく
-			Village.People.Reference (Player).Element.Records.Reference (Village.Today - 1).Element.Note := +Text;
+			Village.People.Reference (Subject).Element.Records.Reference (Village.Today - 1).Element.Note := +Text;
 		else
-			Messages.Append (Village.Messages, Message'(
+			Append (Village.Messages, Message'(
 				Kind => Howling,
 				Day => Village.Today,
 				Time => Time,
-				Subject => Player,
-				Target => -1,
+				Subject => Subject,
+				Target => No_Person,
 				Text => +Text));
-			Village.People.Reference (Player).Element.Records.Reference (Village.Today - 1).Element.Note := Ada.Strings.Unbounded.Null_Unbounded_String;
+			Village.People.Reference (Subject).Element.Records.Reference (Village.Today - 1).Element.Note := Ada.Strings.Unbounded.Null_Unbounded_String;
 		end if;
 	end Night_Talk;
+	
+	procedure Speech (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time)
+	is
+		New_Item : constant Message := (
+			Kind => Speech,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => No_Person,
+			Text => +Text);
+	begin
+		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+			Append (Village.Messages, New_Item);
+		end if;
+	end Speech;
+	
+	procedure Monologue (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time)
+	is
+		New_Item : constant Message := (
+			Kind => Monologue,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => No_Person,
+			Text => +Text);
+	begin
+		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+			Append (Village.Messages, New_Item);
+		end if;
+	end Monologue;
+	
+	procedure Ghost (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Text : in String;
+		Time : in Ada.Calendar.Time)
+	is
+		New_Item : constant Message := (
+			Kind => Ghost,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => No_Person,
+			Text => +Text);
+	begin
+		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+			Append (Village.Messages, New_Item);
+		end if;
+	end Ghost;
+	
+	procedure Narration (
+		Village : in out Village_Type;
+		Text : in String;
+		Time : in Ada.Calendar.Time)
+	is
+		New_Item : constant Message := (
+			Kind => Narration,
+			Day => Village.Today,
+			Time => Time,
+			Subject => No_Person,
+			Target => No_Person,
+			Text => +Text);
+	begin
+		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+			Append (Village.Messages, New_Item);
+		end if;
+	end Narration;
 	
 	overriding function Term (Village : Village_Type) return Village_Term is
 	begin

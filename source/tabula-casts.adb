@@ -13,6 +13,16 @@ package body Tabula.Casts is
 		return Item.Name = Ada.Strings.Unbounded.Null_Unbounded_String;
 	end Is_Empty;
 	
+	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor is
+	begin
+		for I in Works.First_Index .. Works.Last_Index loop
+			if Works.Constant_Reference (I).Element.Name = Name then
+				return I;
+			end if;
+		end loop;
+		return Casts.Works.No_Element;
+	end Find;
+	
 	procedure Exclude_Person (Cast : in out Casts.Cast_Collection; Name : String; Group : Integer) is
 	begin
 		for IP in Cast.People.First_Index .. Cast.People.Last_Index loop
