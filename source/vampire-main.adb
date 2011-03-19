@@ -654,7 +654,7 @@ begin
 															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "その肩書きは特定の組み合わせでしか使えません。", User_Id, User_Password);
-														elsif Villages.Already_Joined_Another_Sex(Village, User_Id, Person_Template.Sex) then
+														elsif Villages.Already_Joined_As_Another_Sex(Village, User_Id, Person_Template.Sex) then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
 															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 															Web.Header_Break (Output);

@@ -60,7 +60,7 @@ package body Vampire.Renderers.Simple is
 		P : constant Natural := Ada.Strings.Fixed.Index(Range_Arg, "-");
 	begin
 		if P < Range_Arg'First then
-			Last := Vampire.Villages.Count_Speech(Village, Day);
+			Last := Vampire.Villages.Count_Total_Speech(Village, Day);
 			First := Last - (Natural'Value(Range_Arg));
 		else
 			First := Natural'Value(Range_Arg(Range_Arg'First .. P - 1));
@@ -69,7 +69,7 @@ package body Vampire.Renderers.Simple is
 	exception
 		when Constraint_Error => 
 			if (Village.State /= Closed) and then (Day = Village.Today) then
-				Last := Vampire.Villages.Count_Speech(Village, Day);
+				Last := Vampire.Villages.Count_Total_Speech(Village, Day);
 				First := Last - Speeches_By_Page;
 			else
 				First := 0;

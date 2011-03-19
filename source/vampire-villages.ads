@@ -8,6 +8,8 @@ with Tabula.Villages;
 package Vampire.Villages is
 	use Tabula.Villages;
 	
+	-- オプションルール
+	
 	type Execution_Mode is (
 		Dummy_Killed_And_From_First,
 		From_First,
@@ -28,7 +30,6 @@ package Vampire.Villages is
 	function Provisional_Voting (Mode : Execution_Mode) return Boolean;
 	subtype Hidings is Teaming_Mode range Hiding .. Hiding_Gremlin;
 	
-	-- オプションルール初期値
 	Initial_Execution            : constant Execution_Mode            := From_First;
 	Initial_Teaming              : constant Teaming_Mode              := Shuffling;
 	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
@@ -38,10 +39,8 @@ package Vampire.Villages is
 	Initial_Doctor_Infected      : constant Doctor_Infected_Mode      := Find_Infection;
 	Initial_Hunter_Silver_Bullet : constant Hunter_Silver_Bullet_Mode := Target_And_Self;
 	Initial_Unfortunate          : constant Unfortunate_Mode          := Infected_Only;
-
-	type Requested_Role is (Random, Rest, 
-		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
-		Village_Side, Vampire_Side, Gremlin);
+	
+	-- 配役
 	
 	type Person_Role is (
 		Gremlin,
@@ -51,6 +50,7 @@ package Vampire.Villages is
 		Unfortunate_Inhabitant,
 		Detective, Doctor, Astronomer, Hunter,
 		Lover, Sweetheart_M, Sweetheart_F);
+	
 	subtype Matrix_Role is Person_Role range Detective .. Hunter;
 	subtype Night_Role is Person_Role range Astronomer .. Hunter;
 	subtype Daytime_Role is Person_Role range Detective .. Doctor;
@@ -58,6 +58,12 @@ package Vampire.Villages is
 	
 	type Role_Appearance is (None, Random, Force);
 	type Role_Appearances is array(Unfortunate_Inhabitant .. Lover) of Role_Appearance;
+	
+	-- 参加者
+	
+	type Requested_Role is (Random, Rest, 
+		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
+		Village_Side, Vampire_Side, Gremlin);
 	
 	type Person_State is (Normal, Infected, Died);
 	
@@ -98,7 +104,9 @@ package Vampire.Villages is
 		Records => Person_Records.Empty_Vector,
 		Commited => False);
 	
-	package People is new Ada.Containers.Vectors (Natural, Person_Type);
+	package People is new Ada.Containers.Vectors (Person_Index, Person_Type);
+	
+	-- ログ
 	
 	type Message_Kind is (
 		Narration,                        -- ト書き
@@ -191,6 +199,8 @@ package Vampire.Villages is
 		Counts : Voted_Counts (0 .. Last);
 	end record;
 	
+	-- 村
+	
 	type Village_Time is (Daytime, Vote, Night);
 	
 	type Village_Type is new Tabula.Villages.Village_Type with record
@@ -199,7 +209,7 @@ package Vampire.Villages is
 		State : Village_State := Prologue;
 		Today : Integer := 0;
 		Time : Village_Time := Daytime;
-		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新日時(夜→昼の時点)
+		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新時刻(1日目は夜を飛ばすため調整)
 		Execution : Execution_Mode := From_First;
 		Teaming : Teaming_Mode := Shuffling_Headless;
 		Monster_Side : Monster_Side_Mode := Fixed;
@@ -216,52 +226,49 @@ package Vampire.Villages is
 		Messages : aliased Villages.Messages.Vector;
 	end record;
 	
-	function Count_Messages(Village : Village_Type; Day : Natural) return Message_Counts;
-	function Count_Speech(Village : Village_Type; Day : Natural) return Natural;
+	-- 発言数
+	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts;
+	function Count_Total_Speech (Village : Village_Type; Day : Natural) return Natural;
 	
-	function Joined (Village : Village_Type; User_Id : String) return Integer;
-	function Rejoined (Village : Village_Type; Escaped_Subject : Natural) return Integer;
-	function Already_Joined_Another_Sex (Village : Village_Type; User_Id : String; Sex : Casts.Person_Sex) return Boolean;
-	function Last_Joined_Time (Village : Village_Type) return Ada.Calendar.Time;
-	function Escape_Duration (Village : Village_Type) return Duration;
-	
-	function Be_Voting (Village : Village_Type) return Boolean;
-	function Provisional_Voted (Village : Village_Type) return Boolean;
-	function Vote_Finished (Village : Village_Type) return Boolean;
-	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
-	function No_Commit (Village : Village_Type) return Boolean;
-	function Commit_Finished (Village : Village_Type) return Boolean;
-	
+	-- 更新予定時刻
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
 	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time;
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
 	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
 	
-	function Find_Superman (Village : Village_Type; Role : Person_Role) return Integer;
-	function Unfortunate (Village : Village_Type) return Boolean;
-	function Male_And_Female (People : Villages.People.Vector) return Boolean;
-	
+	-- 村抜け
+	function Escape_Duration (Village : Village_Type) return Duration;
 	procedure Escape (
 		Village : in out Village_Type;
 		Subject : in Natural;
 		Time : in Ada.Calendar.Time);
 	
+	-- 投票
+	function Be_Voting (Village : Village_Type) return Boolean; -- 本日投票を行うかどうか
+	function Provisional_Voted (Village : Village_Type) return Boolean;
+	function Vote_Finished (Village : Village_Type) return Boolean;
+	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
+	function No_Commit (Village : Village_Type) return Boolean;
+	function Commit_Finished (Village : Village_Type) return Boolean;
 	procedure Vote (
 		Village : in out Village_Type;
 		Player : in Natural;
 		Target : in Integer);
+	-- 一次開票の実行
 	procedure Provisional_Vote (
 		Village : in out Village_Type;
 		Time : in Ada.Calendar.Time;
 		Changed : in out Boolean);
+	
+	-- 能力者
+	function Find_Superman (Village : Village_Type; Role : Person_Role) return Integer;
+	function Unfortunate (Village : Village_Type) return Boolean;
 	
 	procedure Night_Talk (
 		Village : in out Village_Type;
 		Player : in Natural;
 		Text : in String;
 		Time : in Ada.Calendar.Time);
-	
-	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
 	overriding function Term (Village : Village_Type) return Village_Term;
 	
@@ -272,11 +279,20 @@ package Vampire.Villages is
 	
 	overriding procedure Iterate_People (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Tabula.Villages.Person_Type'Class));
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Tabula.Villages.Person_Type'Class));
+	
+	overriding procedure Iterate_Escaped_People (
+		Village : in Village_Type;
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Tabula.Villages.Person_Type'Class));
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Root_Option_Item'Class));
+		Process : not null access procedure (
+			Item : in Root_Option_Item'Class));
 	
 	package Options is
 		

@@ -338,8 +338,16 @@ package body Vampire.Renderers is
 				when Vampire.Villages.Escaped_Join
 					| Vampire.Villages.Escaped_Speech
 					| Vampire.Villages.Escape =>
-					return Vampire.Villages.Rejoined (
-						Village, Message.Subject) < 0;
+					declare
+						Rejoined : Person_Index'Base := Village.Joined (
+							Village.Escaped_People.Constant_Reference (Message.Subject).Element.
+								Id.Constant_Reference.Element.all);
+					begin
+						return Rejoined = No_Person
+							or else not Same_Id_And_Figure (
+								Village.Escaped_People.Constant_Reference (Message.Subject).Element.all,
+								Village.People.Constant_Reference (Rejoined).Element.all);
+					end;
 				when others =>
 					return False;
 			end case;

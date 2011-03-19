@@ -129,7 +129,7 @@ package body Tabula.Villages.Lists is
 			People => Empty_List)
 		do
 			declare
-				procedure Process (Item : Person_Type'Class) is
+				procedure Process (Index : Person_Index; Item : Person_Type'Class) is
 				begin
 				   Append (Result.People, Item.Id.Constant_Reference.Element.all);
 				end Process;

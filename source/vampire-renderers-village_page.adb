@@ -702,7 +702,7 @@ is
 						Sets : constant Vampire.Villages.Teaming.Role_Set_Array :=
 							Vampire.Villages.Teaming.Possibilities (
 								People_Count => Village.People.Length,
-								Male_And_Female => Vampire.Villages.Male_And_Female (Village.People),
+								Male_And_Female => Village.Male_And_Female,
 								Execution => Village.Execution,
 								Teaming => Village.Teaming,
 								Unfortunate => Village.Unfortunate,
@@ -908,7 +908,7 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Pos : Paging_Pos)
 	is
-		Speech_Count : constant Natural := Vampire.Villages.Count_Speech (Village.all, Day);
+		Speech_Count : constant Natural := Vampire.Villages.Count_Total_Speech (Village.all, Day);
 		F, L, R : Natural;
 	begin
 		if Pos /= Tip then
@@ -1309,17 +1309,22 @@ is
 											Narration(Name(Subject) & "が現れました。", Class => "narratione");
 										end;
 									when Vampire.Villages.Speech | Vampire.Villages.Escaped_Speech =>
-										if Message.Kind = Vampire.Villages.Speech
-											or else Vampire.Villages.Rejoined (Village.all, Message.Subject) >= 0
-										then
-											declare
-												Subject : Integer;
-											begin
-												if Message.Kind = Vampire.Villages.Speech then
-													Subject := Message.Subject;
-												else
-													Subject := Vampire.Villages.Rejoined (Village.all, Message.Subject);
+										declare
+											Subject : Person_Index'Base := Message.Subject;
+										begin
+											if Message.Kind = Escaped_Speech then
+												Subject := Village.Joined (
+													Village.Escaped_People.Constant_Reference (Message.Subject).Element.
+														Id.Constant_Reference.Element.all);
+												if Subject /= No_Person
+													and then not Same_Id_And_Figure (
+														Village.Escaped_People.Constant_Reference (Message.Subject).Element.all,
+														Village.People.Constant_Reference (Subject).Element.all)
+												then
+													Subject := No_Person;
 												end if;
+											end if;
+											if Subject /= No_Person then
 												if Last_Speech /= Subject then
 													New_X : loop
 														declare
@@ -1344,11 +1349,11 @@ is
 												else
 													Last_Speech_Time := Message.Time;
 												end if;
-											end;
-											Speech (Message, "speech", Last_Speech_Time, X => X);
-										else
-											Speech(Message, "escaped", Message.Time);
-										end if;
+												Speech (Message, "speech", Last_Speech_Time, X => X);
+											else
+												Speech(Message, "escaped", Message.Time);
+											end if;
+										end;
 									when Vampire.Villages.Monologue =>
 										if Village.State >= Epilogue
 											or else Message.Subject = Player_Index

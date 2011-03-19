@@ -109,7 +109,7 @@ begin
 				declare
 					Sets : Teaming.Role_Set_Array renames Teaming.Possibilities (
 						People_Count => Village.People.Length,
-						Male_And_Female => Male_And_Female (Village.People),
+						Male_And_Female => Village.Male_And_Female,
 						Execution => Village.Execution,
 						Teaming => Village.Teaming,
 						Unfortunate => Village.Unfortunate,

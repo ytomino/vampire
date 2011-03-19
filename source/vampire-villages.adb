@@ -48,10 +48,16 @@ package body Vampire.Villages is
 							Result(Current.Subject).Last_Action_Time := Current.Time;
 						when Escaped_Speech =>
 							declare
-								Rejoined_Index : constant Integer := Rejoined(Village, Current.Subject);
+								Rejoined : constant Person_Index'Base := Village.Joined (
+									Village.Escaped_People.Constant_Reference (Current.Subject).Element.
+										Id.Constant_Reference.Element.all);
 							begin
-								if Rejoined_Index >= 0 then
-									Result(Rejoined_Index).Speech := Result(Rejoined_Index).Speech + 1;
+								if Rejoined /= No_Person
+									and then Same_Id_And_Figure (
+										Village.Escaped_People.Constant_Reference (Current.Subject).Element.all,
+										Village.People.Constant_Reference (Rejoined).Element.all)
+								then
+									Result (Rejoined).Speech := Result (Rejoined).Speech + 1;
 								end if;
 							end;
 						when Monologue =>
@@ -74,7 +80,7 @@ package body Vampire.Villages is
 		return Result;
 	end Count_Messages;
 	
-	function Count_Speech(Village : Village_Type; Day : Natural) return Natural is
+	function Count_Total_Speech (Village : Village_Type; Day : Natural) return Natural is
 		Result : Natural := 0;
 	begin
 		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
@@ -87,47 +93,7 @@ package body Vampire.Villages is
 			end;
 		end loop;
 		return Result;
-	end Count_Speech;
-	
-	function Last_Joined_Time(Village : Village_Type) return Ada.Calendar.Time is
-		Result : Ada.Calendar.Time;
-	begin
-		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
-			if Village.Messages.Constant_Reference(Position).Element.Kind = Join then
-				Result := Village.Messages.Constant_Reference(Position).Element.Time;
-			end if;
-		end loop;
-		return Result;
-	end Last_Joined_Time;
-	
-	function Joined(Village : Village_Type; User_Id : String) return Integer is
-	begin
-		for Position in Village.People.First_Index .. Village.People.Last_Index loop
-			if Village.People.Constant_Reference(Position).Element.Id = User_Id then
-				return Position;
-			end if;
-		end loop;
-		return -1;
-	end Joined;
-	
-	function Rejoined(Village : Village_Type; Escaped_Subject : Natural) return Integer is
-		E : Person_Type renames Village.Escaped_People.Constant_Reference(Escaped_Subject).Element.all;
-		I : constant Integer := Joined(Village, Ada.Strings.Unbounded.To_String(E.Id));
-	begin
-		if I < 0 then
-			return -1;
-		else
-			declare
-				R : Person_Type renames Village.People.Constant_Reference(I).Element.all;
-			begin
-				if R.Id = E.Id and then R.Image = E.Image then
-					return I;
-				else
-					return -1;
-				end if;
-			end;
-		end if;
-	end Rejoined;
+	end Count_Total_Speech;
 	
 	function No_Commit (Village : Village_Type) return Boolean is
 	begin
@@ -279,74 +245,45 @@ package body Vampire.Villages is
 		end if;
 	end Unfortunate;
 	
-	function Male_And_Female (People : Villages.People.Vector) return Boolean is
-		Male_Exists, Female_Exists : Boolean := False;
-	begin
-		for Position in People.First_Index .. People.Last_Index loop
-			case People.Constant_Reference (Position).Element.Sex is
-				when Casts.Male =>
-					Male_Exists := True;
-				when Casts.Female =>
-					Female_Exists := True;
-			end case;
-		end loop;
-		return Male_Exists and Female_Exists;
-	end Male_And_Female;
-	
-	procedure Escape(Village : in out Villages.Village_Type; Subject : Natural; Time : Ada.Calendar.Time) is
+	procedure Escape (
+		Village : in out Village_Type;
+		Subject : Natural;
+		Time : Ada.Calendar.Time)
+	is
 		Escaped_Index : Natural;
 	begin
-		People.Append(Village.Escaped_People, Village.People.Constant_Reference(Subject).Element.all);
-		People.Delete(Village.People, Subject);
+		People.Append (Village.Escaped_People, Village.People.Constant_Reference (Subject).Element.all);
+		People.Delete (Village.People, Subject);
 		Escaped_Index := Village.Escaped_People.Last_Index;
 		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 			declare
-				Kind : Villages.Message_Kind renames Village.Messages.Constant_Reference (I).Element.Kind;
+				Kind : constant Villages.Message_Kind :=
+					Village.Messages.Constant_Reference (I).Element.Kind;
 			begin
-				if Kind = Villages.Escaped_Join then
+				if Kind = Escaped_Join then
 					null;
-				elsif Kind = Villages.Escaped_Speech then
+				elsif Kind = Escaped_Speech then
 					null;
-				elsif Kind = Villages.Escape then
+				elsif Kind = Escape then
 					null;
-				elsif Kind = Villages.Speech and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
-					declare
-						procedure Update(Message : in out Villages.Message) is
-						begin
-							Message.Subject := Escaped_Index;
-							Message.Kind := Villages.Escaped_Speech;
-						end Update;
-					begin
-						Messages.Update_Element(Village.Messages, I, Update'Access);
-					end;
-				elsif Kind = Villages.Join and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
-					declare
-						procedure Update(Message : in out Villages.Message) is
-						begin
-							Message.Subject := Escaped_Index;
-							Message.Kind := Villages.Escaped_Join;
-						end Update;
-					begin
-						Messages.Update_Element(Village.Messages, I, Update'Access);
-					end;
+				elsif Kind = Speech and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
+					Village.Messages.Reference (I).Element.Kind := Escaped_Speech;
+					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
+				elsif Kind = Join and then Village.Messages.Constant_Reference (I).Element.Subject = Subject then
+					Village.Messages.Reference (I).Element.Kind := Escaped_Join;
+					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
 				elsif Village.Messages.Constant_Reference (I).Element.Subject > Subject then
-					declare
-						procedure Update(Message : in out Villages.Message) is
-						begin
-							Message.Subject := Message.Subject - 1;
-						end Update;
-					begin
-						Messages.Update_Element(Village.Messages, I, Update'Access);
-					end;
+					Village.Messages.Reference (I).Element.Subject :=
+						Village.Messages.Constant_Reference (I).Element.Subject - 1;
 				end if;
 			end;
 		end loop;
-		Messages.Append(Village.Messages, Message'(
+		Messages.Append (Village.Messages, Message'(
 			Kind => Escape,
 			Day => Village.Today,
 			Time => Time,
 			Subject => Escaped_Index,
-			Target => -1,
+			Target => No_Index,
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Escape;
 	
@@ -433,24 +370,6 @@ package body Vampire.Villages is
 		end if;
 	end Provisional_Vote;
 	
-	function Already_Joined_Another_Sex(Village : Village_Type; User_Id : String; Sex : Casts.Person_Sex) return Boolean is
-	begin
-		Search_Pre : for I in reverse Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index loop
-			declare
-				P : Person_Type renames Village.Escaped_People.Constant_Reference(I).Element.all;
-			begin
-				if P.Id = User_Id then
-					if P.Sex /= Sex then
-						return True;
-					else
-						exit Search_Pre;
-					end if;
-				end if;
-			end;
-		end loop Search_Pre;
-		return False;
-	end Already_Joined_Another_Sex;
-	
 	function Escape_Duration(Village : Village_Type) return Duration is
 	begin
 		case Village.Term is
@@ -497,20 +416,6 @@ package body Vampire.Villages is
 		end if;
 	end Night_Talk;
 	
-	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : Village_Type) is
-	begin
-		for Position in Village.People.First_Index .. Village.People.Last_Index loop
-			declare
-				P : Villages.Person_Type renames Village.People.Constant_Reference(Position).Element.all;
-			begin
-				-- remove all duplicated characters
-				Casts.Exclude_Person (Cast, P.Name.Constant_Reference.Element.all, P.Group);
-				-- remove one duplicated work
-				Casts.Exclude_Work (Cast, P.Work.Constant_Reference.Element.all);
-			end;
-		end loop;
-	end Exclude_Taken;
-	
 	overriding function Term (Village : Village_Type) return Village_Term is
 	begin
 		if Village.Day_Duration < 24 * 60 * 60.0 then
@@ -531,16 +436,25 @@ package body Vampire.Villages is
 	
 	overriding procedure Iterate_People (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Tabula.Villages.Person_Type'Class))
-	is
-		Ite : People.Iterator := Village.People.Iterate;
-		I : People.Cursor := First (Ite);
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Tabula.Villages.Person_Type'Class)) is
 	begin
-		while Has_Element (I) loop
-			Process (Village.People.Constant_Reference (I).Element.all);
-			I := Next (Ite, I);
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			Process (I, Village.People.Constant_Reference (I).Element.all);
 		end loop;
 	end Iterate_People;
+	
+	overriding procedure Iterate_Escaped_People (
+		Village : in Village_Type;
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Tabula.Villages.Person_Type'Class)) is
+	begin
+		for I in Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index loop
+			Process (I, Village.People.Constant_Reference (I).Element.all);
+		end loop;
+	end Iterate_Escaped_People;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

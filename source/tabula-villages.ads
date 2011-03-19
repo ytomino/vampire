@@ -21,6 +21,11 @@ package Tabula.Villages is
 		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
+	subtype Person_Index is Natural;
+	No_Person : constant Person_Index'Base := -1;
+	
+	function Same_Id_And_Figure (Left, Right : Person_Type'Class) return Boolean;
+	
 	-- オプション
 	
 	type Village_Type is tagged;
@@ -42,7 +47,7 @@ package Tabula.Villages is
 		Item : in Root_Option_Item;
 		Value : in String) is abstract;
 	
-	-- 村データ
+	-- 村
 	
 	type Village_Type is abstract tagged limited record
 		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
@@ -59,7 +64,16 @@ package Tabula.Villages is
 	
 	procedure Iterate_People (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Person_Type'Class)) is
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Person_Type'Class)) is
+		abstract;
+	
+	procedure Iterate_Escaped_People (
+		Village : in Village_Type;
+		Process : not null access procedure (
+			Index : Person_Index;
+			Item : in Person_Type'Class)) is
 		abstract;
 	
 	procedure Iterate_Options (
@@ -68,5 +82,17 @@ package Tabula.Villages is
 		abstract;
 	
 	function Option_Changed (Village : Village_Type) return Boolean;
+	
+	-- 参加状況
+	function Joined (Village : Village_Type; User_Id : String) return Person_Index'Base;
+	
+	function Already_Joined_As_Another_Sex (
+		Village : Village_Type;
+		User_Id : String;
+		Sex : Casts.Person_Sex) return Boolean;
+	function Male_And_Female (Village : Village_Type) return Boolean;
+	
+	-- 既に取られているものを除外
+	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
 	
 end Tabula.Villages;
