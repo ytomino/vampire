@@ -11,11 +11,13 @@ package Tabula.Villages.Lists is
 		Type_Code : aliased Ada.Strings.Unbounded.Unbounded_String; -- YAML type
 		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
 		By : aliased Ada.Strings.Unbounded.Unbounded_String;
-		Day_Duration : Duration;
-		Today : Natural;
+		Term : Village_Term;
 		State : Village_State;
+		Today : Natural;
 		People : User_Lists.List;
 	end record;
+	
+	function Summary (Type_Code : String; Village : Village_Type'Class) return Village_Summary;
 	
 	package Summary_Maps is new Ada.Containers.Ordered_Maps (Village_Id, Village_Summary);
 	
@@ -32,14 +34,21 @@ package Tabula.Villages.Lists is
 		Summaries : in Summary_Maps.Map;
 		Update : in Boolean);
 	
+	type Registered_Type is record
+		Type_Code : Static_String_Access;
+		Load_Summary : Load_Summary_Function;
+		Create_Log : Create_Log_Procedure;
+	end record;
+	
+	type Registered_Type_Array is array (Positive range <>) of Registered_Type;
+	
 	function Create (
 		Data_Directory : not null Static_String_Access;
 		HTML_Directory : not null Static_String_Access;
 		Blocking_Short_Term_File_Name : not null Static_String_Access;
 		Cache_File_Name : not null Static_String_Access;
-		Load_Summary : not null Load_Summary_Function;
-		Create_Log : not null Create_Log_Procedure;
-		Create_Index : not null Create_Index_Procedure)
+		Create_Index : not null Create_Index_Procedure;
+		Types : Registered_Type_Array)
 		return Villages_List;
 	
 	-- 村ID
@@ -84,16 +93,18 @@ package Tabula.Villages.Lists is
 	
 private
 	
+	Registered_Type_Capacity : constant := 2;
+	
 	type Villages_List is limited record
 		Data_Directory : not null Static_String_Access;
 		HTML_Directory : not null Static_String_Access;
 		Blocking_Short_Term_File_Name : not null Static_String_Access;
 		Cache_File_Name : not null Static_String_Access;
-		Load_Summary : not null Load_Summary_Function;
-		Create_Log : not null Create_Log_Procedure;
 		Create_Index : not null Create_Index_Procedure;
 		Map : aliased Summary_Maps.Map;
 		Map_Read : Boolean;
+		Registered_Type_Count : Natural;
+		Registered_Types : Registered_Type_Array (1 .. Registered_Type_Capacity);
 	end record;
 	
 end Tabula.Villages.Lists;

@@ -191,6 +191,8 @@ package Vampire.Villages is
 		Counts : Voted_Counts (0 .. Last);
 	end record;
 	
+	type Village_Time is (Daytime, Vote, Night);
+	
 	type Village_Type is new Tabula.Villages.Village_Type with record
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
@@ -260,6 +262,17 @@ package Vampire.Villages is
 		Time : in Ada.Calendar.Time);
 	
 	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
+	
+	overriding function Term (Village : Village_Type) return Village_Term;
+	
+	overriding procedure Get_State (
+		Village : in Village_Type;
+		State : out Village_State;
+		Today : out Natural);
+	
+	overriding procedure Iterate_People (
+		Village : in Village_Type;
+		Process : not null access procedure (Item : in Tabula.Villages.Person_Type'Class));
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

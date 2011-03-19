@@ -21,5 +21,6 @@ package Vampire.Villages.Village_IO is
 	package Daytime_Preview_IO is new Serialization.IO_Enumeration (Daytime_Preview_Mode);
 	package Doctor_Infected_IO is new Serialization.IO_Enumeration (Doctor_Infected_Mode);
 	package Unfortunate_IO is new Serialization.IO_Enumeration (Unfortunate_Mode);
+	package Village_Time_IO is new Serialization.IO_Enumeration(Village_Time);
 	
 end Vampire.Villages.Village_IO;

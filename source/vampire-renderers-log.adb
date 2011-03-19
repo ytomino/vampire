@@ -7,34 +7,12 @@ with Vampire.Configurations.Templates;
 with Vampire.Renderers.List_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Villages.Load;
-with Vampire.Villages.Village_IO;
 package body Vampire.Renderers.Log is
 	use Tabula.Villages;
 	use Tabula.Villages.Lists.Summary_Maps;
 	use Tabula.Villages.Lists.User_Lists;
 	use Villages;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	
-	function Summary (
-		Village : Vampire.Villages.Village_Type)
-		return Tabula.Villages.Lists.Village_Summary
-	is
-		Id_List : Tabula.Villages.Lists.User_Lists.List;
-	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			Append (Id_List, +Village.People.Constant_Reference(I).Element.Id);
-		end loop;
-		return (
-			Type_Code => +Vampire.Villages.Village_IO.YAML_Type,
-			Name => Village.Name, 
-			By => Village.By,
-			Day_Duration => Village.Day_Duration,
-			People => Id_List, 
-			Today => Village.Today,
-			State => Village.State);
-	end Summary;
 	
 	function Load_Summary (
 		List : Tabula.Villages.Lists.Villages_List;
@@ -44,7 +22,7 @@ package body Vampire.Renderers.Log is
 		Village : Vampire.Villages.Village_Type;
 	begin
 		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => True);
-		return Summary (Village);
+		return Tabula.Villages.Lists.Summary (Type_Code, Village);
 	end Load_Summary;
 	
 	procedure Create_Log (

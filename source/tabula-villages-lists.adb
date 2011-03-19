@@ -1,10 +1,69 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
 with Ada.Formatting;
+with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
+with YAML.Streams;
 package body Tabula.Villages.Lists is
 	use Summary_Maps;
+	use User_Lists;
 	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type YAML.Event_Type;
+	
+	function Get_YAML_Type (Name : String) return String is
+		Result : Ada.Strings.Unbounded.Unbounded_String;
+		File : Ada.Streams.Stream_IO.File_Type :=
+			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Name => Name);
+		Parser : YAML.Parser := YAML.Streams.Create (
+			Ada.Streams.Stream_IO.Stream (File));
+	begin
+		declare
+			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
+			begin
+				if Event.Event_Type /= YAML.Stream_Start then
+					raise Ada.IO_Exceptions.Data_Error;
+				end if;
+			end Process;
+		begin
+			YAML.Parse (Parser, Process'Access);
+		end;
+		declare
+			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
+			begin
+				if Event.Event_Type /= YAML.Document_Start then
+					raise Ada.IO_Exceptions.Data_Error;
+				end if;
+			end Process;
+		begin
+			YAML.Parse (Parser, Process'Access);
+		end;
+		declare
+			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
+			begin
+				if Event.Event_Type /= YAML.Mapping_Start then
+					raise Ada.IO_Exceptions.Data_Error;
+				end if;
+				Result := +Event.Tag.all;
+			end Process;
+		begin
+			YAML.Parse (Parser, Process'Access);
+		end;
+		Ada.Streams.Stream_IO.Close (File);
+		if Result.Element (1) = '!' then
+			Ada.Strings.Unbounded.Delete (Result, 1, 1);
+		end if;
+		return Ada.Strings.Unbounded.To_String (Result);
+	end Get_YAML_Type;
+	
+	function Get_Type_Index (List : Villages_List; Type_Code : String) return Positive is
+	begin
+		for I in 1 .. List.Registered_Type_Count loop
+			if List.Registered_Types (I).Type_Code.all = Type_Code then
+				return I;
+			end if;
+		end loop;
+		raise Ada.IO_Exceptions.Data_Error with "unknown type " & Type_Code;
+	end Get_Type_Index;
 	
 	procedure Read_Summaries (List : in out Villages_List) is
 	begin
@@ -30,7 +89,10 @@ package body Tabula.Villages.Lists is
 						begin
 							if Id (Id'First) in '0' .. '9' then
 								declare
-									Summary : Village_Summary renames List.Load_Summary (List, Id);
+									Type_Code : constant String := Get_YAML_Type (Ada.Directories.Full_Name (File));
+									Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+									Summary : Village_Summary
+										renames List.Registered_Types (Type_Index).Load_Summary (List, Id);
 								begin
 									Insert (List.Map, Id, Summary);
 								end;
@@ -52,14 +114,38 @@ package body Tabula.Villages.Lists is
 		end if;
 	end Read_Summaries;
 	
+	function Summary (Type_Code : String; Village : Village_Type'Class) return Village_Summary is
+		State : Village_State;
+		Today : Natural;
+	begin
+		Get_State (Village, State, Today);
+		return Result : Village_Summary := (
+			Type_Code => +Type_Code,
+			Name => Village.Name, 
+			By => Village.By,
+			Term => Village.Term,
+			Today => Today,
+			State => State,
+			People => Empty_List)
+		do
+			declare
+				procedure Process (Item : Person_Type'Class) is
+				begin
+				   Append (Result.People, Item.Id.Constant_Reference.Element.all);
+				end Process;
+			begin
+				Iterate_People (Village, Process'Access);
+			end;
+		end return;
+	end Summary;
+	
 	function Create (
 		Data_Directory : not null Static_String_Access;
 		HTML_Directory : not null Static_String_Access;
 		Blocking_Short_Term_File_Name : not null Static_String_Access;
 		Cache_File_Name : not null Static_String_Access;
-		Load_Summary : not null Load_Summary_Function;
-		Create_Log : not null Create_Log_Procedure;
-		Create_Index : not null Create_Index_Procedure)
+		Create_Index : not null Create_Index_Procedure;
+		Types : Registered_Type_Array)
 		return Villages_List is
 	begin
 		return (
@@ -67,11 +153,12 @@ package body Tabula.Villages.Lists is
 			HTML_Directory => HTML_Directory,
 			Blocking_Short_Term_File_Name => Blocking_Short_Term_File_Name,
 			Cache_File_Name => Cache_File_Name,
-			Load_Summary => Load_Summary,
-			Create_Log => Create_Log,
 			Create_Index => Create_Index,
 			Map => Empty_Map,
-			Map_Read => False);
+			Map_Read => False,
+			Registered_Type_Count => Types'Length,
+			Registered_Types => Types &
+				Registered_Type_Array'(1 .. Registered_Type_Capacity - Types'Length => <>));
 	end Create;
 	
 	function File_Name (List : Villages_List; Id : Village_Id) return String is
@@ -174,7 +261,7 @@ package body Tabula.Villages.Lists is
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
 			begin
-				if not Long_Only or else V.Day_Duration >= 24 * 60 * 60.0 then
+				if not Long_Only or else V.Term = Long then
 					if V.State <= Playing then
 						if V.People.Contains (User_Id) then
 							Result := Result + 1;
@@ -197,7 +284,12 @@ package body Tabula.Villages.Lists is
 		if Summary.State = Closed
 			and then not Ada.Directories.Exists (HTML_File_Name (List, Id, 0))
 		then
-			List.Create_Log (List, Id);
+			declare
+				Type_Index : constant Positive :=
+					Get_Type_Index (List, Summary.Type_Code.Constant_Reference.Element.all);
+			begin
+				List.Registered_Types (Type_Index).Create_Log (List, Id);
+			end;
 			List.Create_Index (List.Map, Update => True);
 		end if;
 	end Update;
@@ -229,7 +321,13 @@ package body Tabula.Villages.Lists is
 			I : Summary_Maps.Cursor := List.Map.First;
 		begin
 			while Has_Element (I) loop
-				List.Create_Log (List, List.Map.Constant_Reference (I).Key.all);
+				declare
+					Id : constant String := List.Map.Constant_Reference (I).Key.all;
+					Type_Code : constant String := Get_YAML_Type (File_Name (List, Id));
+					Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+				begin
+					List.Registered_Types (Type_Index).Create_Log (List, Id);
+				end;
 				Next (I);
 			end loop;
 		end;

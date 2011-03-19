@@ -1272,7 +1272,7 @@ is
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
 				X_Generator : aliased Ada.Numerics.MT19937.Generator :=
-				   Ada.Numerics.MT19937.Initialize (12);
+					Ada.Numerics.MT19937.Initialize (12);
 			begin
 				if Object.HTML_Version = Web.HTML then
 					Paging (Output, Top);

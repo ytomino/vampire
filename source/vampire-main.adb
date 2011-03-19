@@ -38,7 +38,6 @@ procedure Vampire.Main is
 	use type Casts.Work;
 	use type Users.Lists.User_State;
 	use type Tabula.Villages.Village_State;
-	use type Tabula.Villages.Village_Time;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -46,6 +45,7 @@ procedure Vampire.Main is
 	use type Villages.Person_State;
 	use type Villages.Message_Kind;
 	use type Villages.Message;
+	use type Villages.Village_Time;
 	
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
@@ -89,20 +89,23 @@ procedure Vampire.Main is
 	-- 乱数シード
 	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
 	
+	-- ユーザー情報
+	Users_List : Users.Lists.Users_List := Users.Lists.Create (
+		Directory => Configurations.Users_Directory'Access,
+		Log_File_Name => Configurations.Users_Log_File_Name'Access);
+	
 	-- 村情報
 	Villages_List : Tabula.Villages.Lists.Villages_List := Tabula.Villages.Lists.Create (
 		Data_Directory => Configurations.Villages_Data_Directory'Access,
 		HTML_Directory => Configurations.Villages_HTML_Directory'Access,
 		Blocking_Short_Term_File_Name => Configurations.Villages_Blocking_Short_Term_File_Name'Access,
 		Cache_File_Name => Configurations.Villages_Cache_File_Name'Access,
-		Load_Summary => Renderers.Log.Load_Summary'Access,
-		Create_Log => Renderers.Log.Create_Log'Access,
-		Create_Index => Renderers.Log.Create_Index'Access);
-	
-	-- ユーザー情報
-	Users_List : Users.Lists.Users_List := Users.Lists.Create (
-		Directory => Configurations.Users_Directory'Access,
-		Log_File_Name => Configurations.Users_Log_File_Name'Access);
+		Create_Index => Renderers.Log.Create_Index'Access,
+		Types => (
+			1 => (
+				Type_Code => Renderers.Log.Type_Code'Access,
+				Load_Summary => Renderers.Log.Load_Summary'Access,
+				Create_Log => Renderers.Log.Create_Log'Access)));
 	
 begin
 	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
@@ -315,7 +318,7 @@ begin
 									By => +User_Id,
 									State => Tabula.Villages.Prologue,
 									Today => 0,
-									Time => Tabula.Villages.Daytime,
+									Time => Villages.Daytime,
 									Dawn => Now,
 									Day_Duration => Day_Duration,
 									Night_Duration => Default_Night_Duration,
@@ -353,7 +356,9 @@ begin
 										Tabula.Villages.Lists.Update (
 											Villages_List, 
 											New_Village_Id,
-											Renderers.Log.Summary (Village));
+											Tabula.Villages.Lists.Summary (
+												Renderers.Log.Type_Code,
+												Village));
 										Users.Lists.Update (Users_List,
 											Id => User_Id,
 											Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
@@ -511,7 +516,9 @@ begin
 										Tabula.Villages.Lists.Update (
 											Villages_List,
 											Village_Id,
-											Renderers.Log.Summary (Village));
+											Tabula.Villages.Lists.Summary (
+												Renderers.Log.Type_Code,
+												Village));
 									end if;
 								end;
 								-- 村レンダリング
@@ -554,7 +561,7 @@ begin
 										Web.Header_Break (Output);
 										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "あなたは死にました。", User_Id, User_Password);
 										return False;
-									elsif Village.Time /= Tabula.Villages.Daytime then
+									elsif Village.Time /= Villages.Daytime then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
@@ -670,7 +677,9 @@ begin
 															Tabula.Villages.Lists.Update (
 																Villages_List,
 																Village_Id,
-																Renderers.Log.Summary (Village));
+																Tabula.Villages.Lists.Summary (
+																	Renderers.Log.Type_Code,
+																	Village));
 															Web.Header_Content_Type (Output, Web.Text_HTML);
 															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 															Web.Header_Break (Output);
@@ -717,7 +726,9 @@ begin
 											Tabula.Villages.Lists.Update (
 												Villages_List,
 												Village_Id,
-												Renderers.Log.Summary (Village));
+												Tabula.Villages.Lists.Summary (
+													Renderers.Log.Type_Code,
+													Village));
 											Web.Header_Content_Type (Output, Web.Text_HTML);
 											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 											Web.Header_Break (Output);
@@ -733,7 +744,7 @@ begin
 									Web.Header_Break (Output);
 									Renderer.Error_Page(Output, "参加していません。");
 								elsif Cmd = "commit" then
-									if Village.Time = Tabula.Villages.Night then
+									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
@@ -756,7 +767,9 @@ begin
 													Tabula.Villages.Lists.Update (
 														Villages_List,
 														Village_Id,
-														Renderers.Log.Summary (Village));
+														Tabula.Villages.Lists.Summary (
+															Renderers.Log.Type_Code,
+															Village));
 												end if;
 											end;
 										end if;
@@ -800,7 +813,9 @@ begin
 												Tabula.Villages.Lists.Update (
 													Villages_List,
 													Village_Id,
-													Renderers.Log.Summary (Village));
+													Tabula.Villages.Lists.Summary (
+														Renderers.Log.Type_Code,
+														Village));
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
@@ -871,7 +886,7 @@ begin
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output, "見つめられるのは一日一度です。");
-											elsif Village.Time = Tabula.Villages.Night then
+											elsif Village.Time = Villages.Night then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
@@ -1062,7 +1077,7 @@ begin
 												User_Password => User_Password);
 										else
 											if Text /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Note then
-												if Village.Time = Tabula.Villages.Night
+												if Village.Time = Villages.Night
 													and then Village.People.Constant_Reference(Player).Element.Role in Villages.Vampire_Role
 													and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State /= Villages.Died
 												then
@@ -1076,7 +1091,7 @@ begin
 										end if;
 									end;
 								elsif Cmd = "vote" then
-									if Village.Time = Tabula.Villages.Night then
+									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
@@ -1116,7 +1131,7 @@ begin
 										Target_Day : Natural := Village.Today;
 										Special_Used : Boolean := False;
 									begin
-										if Village.Time = Tabula.Villages.Night then
+										if Village.Time = Villages.Night then
 											Target_Day := Target_Day - 1;
 										end if;
 										for I in 0 .. Target_Day - 1 loop
@@ -1133,7 +1148,7 @@ begin
 											and then (Village.People.Constant_Reference(Player).Element.Role = Villages.Detective
 											or else Village.People.Constant_Reference(Player).Element.Role = Villages.Doctor)
 										then
-											if Village.Time = Tabula.Villages.Night then
+											if Village.Time = Villages.Night then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
@@ -1169,7 +1184,7 @@ begin
 										end if;
 									end;
 								elsif Cmd = "target2" then
-									if Village.Time = Tabula.Villages.Night then
+									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);

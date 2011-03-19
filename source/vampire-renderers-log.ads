@@ -1,12 +1,12 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Vampire.Villages;
+private with Vampire.Villages.Village_IO;
 package Vampire.Renderers.Log is
+	
+	Type_Code : aliased constant String;
 	
 	type Renderer is new Renderers.Renderer with null record;
 	
-	function Summary (
-		Village : Vampire.Villages.Village_Type)
-		return Tabula.Villages.Lists.Village_Summary;
 	function Load_Summary (
 		List : Tabula.Villages.Lists.Villages_List;
 		Id : Tabula.Villages.Village_Id)
@@ -19,6 +19,8 @@ package Vampire.Renderers.Log is
 		Update : in Boolean);
 	
 private
+	
+	Type_Code : aliased constant String := Villages.Village_IO.Yaml_Type;
 	
 	overriding procedure Link_Style_Sheet(
 		Object : in Renderer;

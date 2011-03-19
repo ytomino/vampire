@@ -87,7 +87,7 @@ package body Vampire.Villages.Village_IO is
 		use Serialization;
 		use Calendar.Time_IO;
 		use Tabula.Villages.Village_IO.Village_State_IO;
-		use Tabula.Villages.Village_IO.Village_Time_IO;
+		use Village_Time_IO;
 		use Execution_IO;
 		use Attack_IO;
 		use Servant_Knowing_IO;

@@ -11,8 +11,9 @@ package Tabula.Villages is
 	
 	-- 村の状態
 	
+	type Village_Term is (Short, Long); -- 短期 or 長期
+	
 	type Village_State is (Prologue, Playing, Epilogue, Closed);
-	type Village_Time is (Daytime, Vote, Night);
 	
 	-- 参加者
 	
@@ -47,6 +48,19 @@ package Tabula.Villages is
 		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
 		By : aliased Ada.Strings.Unbounded.Unbounded_String; -- 作成者
 	end record;
+	
+	function Term (Village : Village_Type) return Village_Term is abstract;
+	
+	procedure Get_State (
+		Village : in Village_Type;
+		State : out Village_State;
+		Today : out Natural) is -- Prologue = 0
+		abstract;
+	
+	procedure Iterate_People (
+		Village : in Village_Type;
+		Process : not null access procedure (Item : in Person_Type'Class)) is
+		abstract;
 	
 	procedure Iterate_Options (
 		Village : in Village_Type;

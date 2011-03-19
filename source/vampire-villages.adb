@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Generic_Array_Sort;
 package body Vampire.Villages is
+	use People;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
@@ -452,11 +453,10 @@ package body Vampire.Villages is
 	
 	function Escape_Duration(Village : Village_Type) return Duration is
 	begin
-		if Village.Day_Duration < 24 * 60 * 60.0 then
-			return 12 * 60 * 60 * 1.0;
-		else
-			return 7 * 24 * 60 * 60 * 1.0;
-		end if;
+		case Village.Term is
+			when Short => return 12 * 60 * 60 * 1.0;
+			when Long => return 7 * 24 * 60 * 60 * 1.0;
+		end case;
 	end Escape_Duration;
 	
 	procedure Night_Talk (
@@ -511,6 +511,37 @@ package body Vampire.Villages is
 		end loop;
 	end Exclude_Taken;
 	
+	overriding function Term (Village : Village_Type) return Village_Term is
+	begin
+		if Village.Day_Duration < 24 * 60 * 60.0 then
+			return Short;
+		else
+			return Long;
+		end if;
+	end Term;
+	
+	overriding procedure Get_State (
+		Village : in Village_Type;
+		State : out Village_State;
+		Today : out Natural) is
+	begin
+		State := Village.State;
+		Today := Village.Today;
+	end Get_State;
+	
+	overriding procedure Iterate_People (
+		Village : in Village_Type;
+		Process : not null access procedure (Item : in Tabula.Villages.Person_Type'Class))
+	is
+		Ite : People.Iterator := Village.People.Iterate;
+		I : People.Cursor := First (Ite);
+	begin
+		while Has_Element (I) loop
+			Process (Village.People.Constant_Reference (I).Element.all);
+			I := Next (Ite, I);
+		end loop;
+	end Iterate_People;
+	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;
 		Process : not null access procedure (Item : in Root_Option_Item'Class)) is
@@ -534,7 +565,7 @@ package body Vampire.Villages is
 			
 			overriding function Available (Item : Option_Item) return Boolean is
 			begin
-				return Item.Village.Day_Duration < 24 * 60 * 60.0;
+				return Item.Village.Term = Short;
 			end Available;
 			
 			overriding function Name (Item : Option_Item) return String is
@@ -596,7 +627,7 @@ package body Vampire.Villages is
 			
 			overriding function Available (Item : Option_Item) return Boolean is
 			begin
-				return Item.Village.Day_Duration < 24 * 60 * 60.0;
+				return Item.Village.Term = Short;
 			end Available;
 			
 			overriding function Name (Item : Option_Item) return String is

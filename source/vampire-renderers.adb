@@ -75,7 +75,7 @@ package body Vampire.Renderers is
 							Link (Renderer'Class (Object), Output, Ref.Key.all, Log => Log,
 								User_Id => User_Id, User_Password => User_Password);
 							Write(Output, ">");
-							if Ref.Element.Day_Duration < 24 * 60 * 60.0 then
+							if Ref.Element.Term = Short then
 								Write(Output, "短期 ");
 							end if;
 							Web.Write_In_HTML (
