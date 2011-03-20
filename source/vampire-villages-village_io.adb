@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
+with System.Address_Image;
 with Tabula.Calendar.Time_IO;
 with Tabula.Casts.Cast_IO;
 with Tabula.Villages.Village_IO;

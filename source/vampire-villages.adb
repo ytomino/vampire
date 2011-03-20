@@ -18,6 +18,40 @@ package body Vampire.Villages is
 		end case;
 	end Provisional_Voting;
 	
+	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
+		return Village_Type
+	is
+		Day_Duration : Duration;
+	begin
+		case Term is
+			when Short => Day_Duration := Default_Short_Day_Duration;
+			when Long => Day_Duration := Default_Long_Day_Duration;
+		end case;
+		return (
+			Name => +Name,
+			By => +By,
+			State => Prologue,
+			Today => 0,
+			Time => Daytime,
+			Dawn => Time,
+			Day_Duration => Day_Duration,
+			Night_Duration => Default_Night_Duration,
+			Execution => Initial_Execution,
+			Teaming => Initial_Teaming,
+			Monster_Side => Initial_Monster_Side,
+			Attack => Initial_Attack,
+			Servant_Knowing => Initial_Servant_Knowing,
+			Daytime_Preview => Initial_Daytime_Preview,
+			Doctor_Infected => Initial_Doctor_Infected,
+			Hunter_Silver_Bullet => Initial_Hunter_Silver_Bullet,
+			Unfortunate => Initial_Unfortunate,
+			Appearance => (others => Random),
+			Dummy_Role => Inhabitant,
+			People => People.Empty_Vector,
+			Escaped_People => People.Empty_Vector,
+			Messages => Messages.Empty_Vector);
+	end Create;
+	
 	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
 			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0, 

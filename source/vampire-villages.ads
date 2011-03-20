@@ -226,6 +226,10 @@ package Vampire.Villages is
 		Messages : aliased Villages.Messages.Vector;
 	end record;
 	
+	-- 作成
+	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
+		return Village_Type;
+	
 	-- 発言数
 	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts;
 	function Count_Total_Speech (Village : Village_Type; Day : Natural) return Natural;

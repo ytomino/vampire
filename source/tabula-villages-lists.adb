@@ -187,35 +187,43 @@ package body Tabula.Villages.Lists is
 	end Exists;
 	
 	function New_Village_Id (List : Villages_List) return Village_Id is
-		Search : Ada.Directories.Search_Type;
-		File : Ada.Directories.Directory_Entry_Type;
-		Result : Integer := 0;
+		Next : Integer := 0;
 	begin
-		Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
-		while Ada.Directories.More_Entries (Search) loop
-			Ada.Directories.Get_Next_Entry (Search, File);
-			declare
-				File_Name : String renames Ada.Directories.Simple_Name (File);
-			begin
-				declare
-					Num : constant Integer := Integer'Value (File_Name);
-				begin
-					if Num >= Result then
-						Result := Num + 1;
-					end if;
-				end;
-			exception
-				when Constraint_Error => null;
-			end;
-		end loop;
-		Ada.Directories.End_Search (Search);
 		declare
-			Image : String := Integer'Image (Result);
+			Search : Ada.Directories.Search_Type;
+		begin
+			Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
+			while Ada.Directories.More_Entries (Search) loop
+				declare
+					File : Ada.Directories.Directory_Entry_Type;
+				begin
+					Ada.Directories.Get_Next_Entry (Search, File);
+					declare
+						File_Name : constant String := Ada.Directories.Simple_Name (File);
+					begin
+						declare
+							Num : constant Integer := Integer'Value (File_Name);
+						begin
+							if Num >= Next then
+								Next := Num + 1;
+							end if;
+						end;
+					exception
+						when Constraint_Error => null;
+					end;
+				end;
+			end loop;
+			Ada.Directories.End_Search (Search);
+		end;
+		declare
+			Image : String := Integer'Image (Next);
+			Result : Village_Id;
 		begin
 			if Image (Image'First) = ' ' then
 				Image (Image'First) := '0';
 			end if;
-			return (1 .. 4 - Image'Length => '0') & Image;
+			Result := String'(1 .. 4 - Image'Length => '0') & Image;
+			return Result;
 		end;
 	end New_Village_Id;
 	

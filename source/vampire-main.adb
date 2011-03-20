@@ -36,6 +36,7 @@ procedure Vampire.Main is
 	use type Casts.Work;
 	use type Users.Lists.User_State;
 	use type Tabula.Villages.Village_State;
+	use type Tabula.Villages.Village_Term;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -180,7 +181,8 @@ begin
 							User_Id => New_User_Id, User_Password => New_User_Password);
 						Users.Lists.Update (Users_List,
 							Id => New_User_Id,
-							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+							Remote_Addr => Remote_Addr,
+							Remote_Host => Remote_Host,
 							Now => Now,
 							Info => User_Info);
 				end case;
@@ -199,7 +201,8 @@ begin
 					when Users.Lists.Valid =>
 						Users.Lists.Update (Users_List,
 							Id => User_Id,
-							Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+							Remote_Addr => Remote_Addr,
+							Remote_Host => Remote_Host,
 							Now => Now,
 							Info => User_Info);
 					when others =>
@@ -263,7 +266,7 @@ begin
 			declare
 				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
-				Day_Duration : Duration;
+				Term : Tabula.Villages.Village_Term;
 				Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
 			begin
 				Users.Lists.Query (Users_List,
@@ -271,6 +274,11 @@ begin
 					Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
 					Now => Now,
 					Info => User_Info, State => User_State);
+				if Cmd = "news" then
+					Term := Tabula.Villages.Short;
+				else
+					Term := Tabula.Villages.Long;
+				end if;
 				case User_State is
 					when Users.Lists.Valid =>
 						Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
@@ -282,10 +290,12 @@ begin
 							Web.Header_Break (Output);
 							Renderer.Message_Page(Output, Message => "同時に村をふたつ作成することはできません。",
 								User_Id => User_Id, User_Password => User_Password);
-						elsif Cmd = "news" and then (User_Info.Disallow_New_Village or else (
-							Tabula.Villages.Lists.Blocking_Short_Term (Villages_List)
-							and then User_Id /= Users.Administrator
-							and then User_Id /= "she")) -- ハードコーディングですよ酷いコードですね
+						elsif Term = Tabula.Villages.Short
+							and then (User_Info.Disallow_New_Village
+								or else (
+									Tabula.Villages.Lists.Blocking_Short_Term (Villages_List)
+									and then User_Id /= Users.Administrator
+									and then User_Id /= "she")) -- ハードコーディングですよ酷いコードですね
 						then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
@@ -293,39 +303,10 @@ begin
 							Renderer.Message_Page(Output, Message => "えーと、しばらく短期は延期で。",
 								User_Id => User_Id, User_Password => User_Password);
 						else
-							if Cmd = "news" then
-								Day_Duration := Default_Short_Day_Duration;
-							else
-								Day_Duration := Default_Long_Day_Duration;
-							end if;
 							declare
-								New_Village_Id : String renames Tabula.Villages.Lists.New_Village_Id (Villages_List);
-								Village_Name : String renames Web.Element (Inputs, "name");
-								Village : Villages.Village_Type := (
-									Name => +Village_Name,
-									By => +User_Id,
-									State => Tabula.Villages.Prologue,
-									Today => 0,
-									Time => Villages.Daytime,
-									Dawn => Now,
-									Day_Duration => Day_Duration,
-									Night_Duration => Default_Night_Duration,
-									Execution            => Villages.Initial_Execution,
-									Teaming              => Villages.Initial_Teaming,
-									Monster_Side         => Villages.Initial_Monster_Side,
-									Attack               => Villages.Initial_Attack,
-									Servant_Knowing      => Villages.Initial_Servant_Knowing,
-									Daytime_Preview      => Villages.Initial_Daytime_Preview,
-									Doctor_Infected      => Villages.Initial_Doctor_Infected,
-									Hunter_Silver_Bullet => Villages.Initial_Hunter_Silver_Bullet,
-									Unfortunate          => Villages.Initial_Unfortunate,
-									Appearance => (others => Villages.Random),
-									Dummy_Role => Villages.Inhabitant,
-									People => Villages.People.Empty_Vector,
-									Escaped_People => Villages.People.Empty_Vector,
-									Messages => Villages.Messages.Empty_Vector);
+								Village_Name : constant String := Web.Element (Inputs, "name");
 							begin
-								if Village.Name = "" then
+								if Village_Name = "" then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 									Web.Header_Break (Output);
@@ -333,8 +314,18 @@ begin
 										Message => "村名を入力してください。",
 										User_Id => User_Id, User_Password => User_Password);
 								else
+									declare
+										Village : Villages.Village_Type := Villages.Create (
+											Name => Village_Name,
+											By => User_Id,
+											Term => Term,
+											Time => Now);
+										The_New_Village_Id : constant Tabula.Villages.Village_Id :=
+											Tabula.Villages.Lists.New_Village_Id (Villages_List);
 									begin
-										Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, New_Village_Id), Village);
+										Villages.Save (
+											Tabula.Villages.Lists.File_Name (Villages_List, The_New_Village_Id),
+											Village);
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
@@ -343,13 +334,14 @@ begin
 											User_Id => User_Id, User_Password => User_Password);
 										Tabula.Villages.Lists.Update (
 											Villages_List, 
-											New_Village_Id,
+											The_New_Village_Id,
 											Tabula.Villages.Lists.Summary (
 												Renderers.Log.Type_Code,
 												Village));
 										Users.Lists.Update (Users_List,
 											Id => User_Id,
-											Remote_Addr => Remote_Addr, Remote_Host => Remote_Host,
+											Remote_Addr => Remote_Addr,
+											Remote_Host => Remote_Host,
 											Now => Now,
 											Info => User_Info);
 									exception
@@ -487,6 +479,7 @@ begin
 						Village : aliased Villages.Village_Type;
 					begin
 						Villages.Load (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
+						Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
 						if Cmd = "" then
 							if Post then
 								Render_Reload_Page;

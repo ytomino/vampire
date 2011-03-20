@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Exceptions;
+with Ada.Directories.Temporary;
 with Ada.Streams.Stream_IO;
 with Serialization.YAML;
 with YAML.Streams;
@@ -8,11 +9,9 @@ procedure Vampire.Villages.Save (
 	Name : in String;
 	Village : in out Villages.Village_Type)
 is
-	File : Ada.Streams.Stream_IO.File_Type;
+	Temporary_Name : constant String := Ada.Directories.Temporary.Create_Temporary_File;
+	File : Ada.Streams.Stream_IO.File_Type := Ada.Streams.Stream_IO.Create (Name => Temporary_Name);
 begin
-	Ada.Streams.Stream_IO.Create (
-		File,
-		Name => Name);
 	declare
 		Emitter : aliased YAML.Emitter := YAML.Streams.Create (
 			Ada.Streams.Stream_IO.Stream (File));
@@ -26,8 +25,10 @@ begin
 		YAML.Flush (Emitter);
 	end;
 	Ada.Streams.Stream_IO.Close (File);
+	Ada.Directories.Rename (Old_Name => Temporary_Name, New_Name => Name);
 exception
 	when E : others =>
+		Ada.Debug.Put (Temporary_Name);
 		declare
 			Message : constant String := Name & ": " & Ada.Exceptions.Exception_Message (E);
 		begin
