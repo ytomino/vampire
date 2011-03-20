@@ -42,7 +42,7 @@ ifneq ($(WHYLIVE),)
 LARGS:=$(LARGS) -Xlinker -why_live -Xlinker $(WHYLIVE)
 endif
 else
-CARGS:=$(CARGS) -fdata-sections
+CARGS:=$(CARGS) -ffunction-sections -fdata-sections
 LARGS:=$(LARGS) -Xlinker --gc-sections -s
 endif
 else

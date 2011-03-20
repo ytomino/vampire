@@ -1,12 +1,12 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
-with Ada.Text_IO;
+with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
 with System.Debug;
 package body Tabula.Debug is
 	
 	Name : Static_String_Access;
-	File : Ada.Text_IO.File_Type;
+	File : Ada.Streams.Stream_IO.File_Type;
 	Time : Ada.Calendar.Time;
 	
 	procedure Start is
@@ -16,9 +16,13 @@ package body Tabula.Debug is
 		if Name = null then
 			raise Program_Error with "debug log handler is not installed.";
 		end if;
-		Ada.Text_IO.Create (File, Ada.Text_IO.Append_File, Name.all);
-		Ada.Text_IO.Put (File, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----");
-		Ada.Text_IO.New_Line (File);
+		Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Append_File, Name.all);
+		declare
+			Stream : Ada.Streams.Stream_IO.Stream_Access :=
+				Ada.Streams.Stream_IO.Stream (File);
+		begin
+			String'Write (Stream, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----" & ASCII.LF);
+		end;
 	end Start;
 	
 	function Put (
@@ -27,11 +31,15 @@ package body Tabula.Debug is
 		Enclosing_Entity : String)
 		return Boolean is
 	begin
-		if not Ada.Text_IO.Is_Open (File) then
+		if not Ada.Streams.Stream_IO.Is_Open (File) then
 			Start;
 		end if;
-		Ada.Text_IO.Put (File, Source_Location & ": (" & Enclosing_Entity & ") " & S);
-		Ada.Text_IO.New_Line (File);
+		declare
+			Stream : Ada.Streams.Stream_IO.Stream_Access :=
+				Ada.Streams.Stream_IO.Stream (File);
+		begin
+			String'Write (Stream, Source_Location & ": (" & Enclosing_Entity & ") " & S & ASCII.LF);
+		end;
 		return True;
 	end Put;
 	

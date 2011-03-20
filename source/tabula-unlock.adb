@@ -1,14 +1,19 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
-with Ada.Text_IO;
 with Ada.Directories;
 with Ada.IO_Exceptions;
+with Ada.Streams.Stream_IO.Standards;
+with Web;
 with Tabula.Debug;
 procedure Tabula.Unlock (
 	Lock_Name : in not null Static_String_Access;
 	Debug_Log_File_Name : in not null Static_String_Access)
 is
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
+	
+	Output : not null Ada.Streams.Stream_IO.Stream_Access :=
+		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standards.Standard_Output.all);
+	
 	Count : Natural := 0;
 begin
 	Debug.Hook (Debug_Log_File_Name, Now);
@@ -22,12 +27,12 @@ begin
 		end;
 	end loop Deleting;
 	declare
-		use Ada.Text_IO;
 		Message : constant String := Natural'Image (Count) & " OK.";
 	begin
 		Ada.Debug.Put (Message);
-		Put ("content-type: text/plain"); New_Line;
-		New_Line;
-		Put (Message); New_Line;
+		Web.Header_Content_Type (Output, Web.Text_Plain);
+		Web.Header_Break(Output);
+		String'Write (Output, Message);
+		Character'Write (Output, ASCII.LF);
 	end;
 end Tabula.Unlock;

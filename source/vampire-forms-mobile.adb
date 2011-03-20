@@ -32,8 +32,7 @@ package body Vampire.Forms.Mobile is
 		New_User_Id: in String;
 		New_User_Password : in String) is
 	begin
-		Web.String_Maps.Include (Cookie, "id", New_User_Id);
-		Web.String_Maps.Include (Cookie, "password", New_User_Password);
+		null;
 	end Set_User;
 	
 	overriding function Is_User_Page (

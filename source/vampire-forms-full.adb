@@ -32,7 +32,8 @@ package body Vampire.Forms.Full is
 		New_User_Id: in String;
 		New_User_Password : in String) is
 	begin
-		null;
+		Web.String_Maps.Include (Cookie, "id", New_User_Id);
+		Web.String_Maps.Include (Cookie, "password", New_User_Password);
 	end Set_User;
 	
 	overriding function Is_User_Page (

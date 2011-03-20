@@ -693,7 +693,7 @@ package body Vampire.Villages is
 			Item : in Tabula.Villages.Person_Type'Class)) is
 	begin
 		for I in Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index loop
-			Process (I, Village.People.Constant_Reference (I).Element.all);
+			Process (I, Village.Escaped_People.Constant_Reference (I).Element.all);
 		end loop;
 	end Iterate_Escaped_People;
 	

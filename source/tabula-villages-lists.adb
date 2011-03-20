@@ -65,7 +65,15 @@ package body Tabula.Villages.Lists is
 		raise Ada.IO_Exceptions.Data_Error with "unknown type " & Type_Code;
 	end Get_Type_Index;
 	
-	procedure Read_Summaries (List : in out Villages_List) is
+	procedure Cache_Summaries (List : in Villages_List) is
+		File: Ada.Streams.Stream_IO.File_Type :=
+			Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Cache_File_Name.all);
+	begin
+		Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
+		Ada.Streams.Stream_IO.Close (File);
+	end Cache_Summaries;
+	
+	procedure Read_Summaries (List : in out Villages_List; Update_Cache : Boolean) is
 	begin
 		if not List.Map_Read then
 			if Ada.Directories.Exists (List.Cache_File_Name.all) then
@@ -100,14 +108,9 @@ package body Tabula.Villages.Lists is
 						end;
 					end loop;
 					Ada.Directories.End_Search (Search);
-					-- cache
-					declare
-						File: Ada.Streams.Stream_IO.File_Type :=
-							Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Cache_File_Name.all);
-					begin
-						Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
-						Ada.Streams.Stream_IO.Close (File);
-					end;
+					if Update_Cache then
+						Cache_Summaries (List);
+					end if;
 				end;
 			end if;
 			List.Map_Read := True;
@@ -218,7 +221,7 @@ package body Tabula.Villages.Lists is
 	
 	procedure Get_Summaries (List : in out Villages_List; Result : out Summary_Maps.Map) is
 	begin
-		Read_Summaries (List);
+		Read_Summaries (List, True);
 		List.Create_Index (List.Map, Update => False);
 		Result := List.Map;
 	end Get_Summaries;
@@ -279,7 +282,7 @@ package body Tabula.Villages.Lists is
 		Id : Village_Id;
 		Summary : Village_Summary) is
 	begin
-		Read_Summaries (List);
+		Read_Summaries (List, False);
 		Include (List.Map, Id, Summary);
 		if Summary.State = Closed
 			and then not Ada.Directories.Exists (HTML_File_Name (List, Id, 0))
@@ -292,6 +295,7 @@ package body Tabula.Villages.Lists is
 			end;
 			List.Create_Index (List.Map, Update => True);
 		end if;
+		Cache_Summaries (List);
 	end Update;
 	
 	procedure Refresh (List : in out Villages_List) is
@@ -315,7 +319,7 @@ package body Tabula.Villages.Lists is
 		end loop;
 		Ada.Directories.End_Search (Search);
 		-- remake cache
-		Read_Summaries (List);
+		Read_Summaries (List, True);
 		-- remake html
 		declare
 			I : Summary_Maps.Cursor := List.Map.First;
