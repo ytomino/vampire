@@ -28,53 +28,7 @@ package Vampire.Renderers is
 	
 	type Configuration_Access is access constant Configuration;
 	
-	Speeches_By_Page : constant := 12;
-	
 	type Renderer(Configuration : Configuration_Access) is tagged null record;
-	
-	-- Info
-	
-	function Get_Village_Id(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Tabula.Villages.Village_Id;
-	
-	procedure Get_Day(
-		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
-		Query_Strings : in Web.Query_Strings; 
-		Day : out Natural);
-	
-	procedure Get_Range(
-		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
-		Day : in Natural;
-		Query_Strings : in Web.Query_Strings; 
-		First, Last : out Integer);
-	
-	function Get_User_Id(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return String;
-	
-	function Get_User_Password(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return String;
-	
-	procedure Set_User(
-		Object : in Renderer; 
-		Cookie : in out Web.Cookie;
-		New_User_Id: in String;
-		New_User_Password : in String);
-	
-	function Get_Text(
-		Object : Renderer; 
-		Inputs : Web.Query_Strings) return String;
-	
-	function Is_User_Page(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return Boolean;
 	
 	-- Page Generating
 	

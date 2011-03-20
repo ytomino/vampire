@@ -24,4 +24,6 @@ package Vampire is
 	
 	Max_Length_Of_Message : constant := 1024;
 	
+	Speeches_By_Page : constant := 12;
+	
 end Vampire;

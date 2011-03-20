@@ -3,50 +3,6 @@ package Vampire.Renderers.Simple is
 	
 	type Renderer is new Renderers.Renderer with null record;
 	
-	-- Info
-	
-	overriding function Get_Village_Id(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings) return Tabula.Villages.Village_Id;
-	
-	overriding procedure Get_Day(
-		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
-		Query_Strings : in Web.Query_Strings; 
-		Day : out Natural);
-	
-	overriding procedure Get_Range(
-		Object : in Renderer; 
-		Village : in Vampire.Villages.Village_Type; 
-		Day : in Natural;
-		Query_Strings : in Web.Query_Strings; 
-		First, Last : out Integer);
-	
-	overriding function Get_User_Id(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return String;
-	
-	overriding function Get_User_Password(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return String;
-	
-	overriding procedure Set_User(
-		Object : in Renderer; 
-		Cookie : in out Web.Cookie;
-		User_Id: in String;
-		User_Password : in String);
-	
-	overriding function Get_Text(
-		Object : Renderer; 
-		Inputs : Web.Query_Strings) return String;
-	
-	overriding function Is_User_Page(
-		Object : Renderer; 
-		Query_Strings : Web.Query_Strings;
-		Cookie : Web.Cookie) return Boolean;
-	
 	-- Page Generating
 	
 	overriding procedure Refresh_Page(

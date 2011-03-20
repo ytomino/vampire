@@ -14,6 +14,7 @@ with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
 with Vampire.Configurations.Templates;
+with Vampire.Forms.Select_Form;
 with Vampire.Renderers.Error_Page;
 with Vampire.Renderers.Index_Page;
 with Vampire.Renderers.Message_Page;
@@ -95,10 +96,13 @@ begin
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
 		Post : Boolean renames Web.Post;
 		-- Values
+		pragma Warnings (Off); -- compiler...
+		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (Query_Strings);
+		pragma Warnings (On);
 		Renderer : Renderers.Renderer'Class renames Get_Renderer(Query_Strings);
-		User_Id : String renames Renderers.Get_User_Id(Renderer, Query_Strings => Query_Strings, Cookie => Cookie);
-		User_Password : String renames Renderers.Get_User_Password(Renderer, Query_Strings => Query_Strings, Cookie => Cookie);
-		Village_Id : Tabula.Villages.Village_Id renames Renderers.Get_Village_Id(Renderer, Query_Strings);
+		User_Id : constant String := Form.Get_User_Id (Query_Strings, Cookie);
+		User_Password : constant String := Form.Get_User_Password (Query_Strings, Cookie);
+		Village_Id : constant Tabula.Villages.Village_Id := Form.Get_Village_Id (Query_Strings);
 		Cmd : String renames Web.Element (Inputs, "cmd");
 		procedure Render_Reload_Page is
 		begin
@@ -163,8 +167,11 @@ begin
 							Village_Id => Village_Id, Message => "パスワードが異なります。",
 							User_Id => "", User_Password => "");
 					when Users.Lists.Valid =>
-						Renderer.Set_User(Cookie,
-							New_User_Id => New_User_Id, New_User_Password => New_User_Password);
+						Forms.Set_User (
+							Form,
+							Cookie,
+							New_User_Id => New_User_Id,
+							New_User_Password => New_User_Password);
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 						Web.Header_Break (Output);
@@ -199,8 +206,11 @@ begin
 						null;
 				end case;
 			end;
-			Renderer.Set_User(Cookie,
-				New_User_Id => "", New_User_Password => "");
+			Forms.Set_User (
+				Form,
+				Cookie,
+				New_User_Id => "",
+				New_User_Password => "");
 			Web.Header_Content_Type (Output, Web.Text_HTML);
 			Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 			Web.Header_Break (Output);
@@ -228,8 +238,11 @@ begin
 						Now => Now,
 						Result => Registered);
 					if Registered then
-						Renderer.Set_User(Cookie,
-							New_User_Id => New_User_Id, New_User_Password => New_User_Password);
+						Forms.Set_User (
+							Form,
+							Cookie,
+							New_User_Id => New_User_Id,
+							New_User_Password => New_User_Password);
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 						Web.Header_Break (Output);
@@ -382,7 +395,7 @@ begin
 			if Cmd = "" then
 				if Post then
 					Render_Reload_Page;
-				elsif Renderer.Is_User_Page(Query_Strings => Query_Strings, Cookie => Cookie) then
+				elsif Form.Is_User_Page (Query_Strings, Cookie) then
 					declare
 						User_State : Users.Lists.User_State;
 						User_Info : Users.User_Info;
@@ -498,22 +511,20 @@ begin
 								end;
 								-- 村レンダリング
 								declare
-									Day : Natural;
-									First, Last : Integer;
+									Day : Natural := Form.Get_Day (Village, Query_Strings);
+									Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
 								begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 									Web.Header_Break (Output);
-									Renderer.Get_Day(Village, Query_Strings, Day);
-									Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
 									Renderers.Village_Page(
 										Renderer,
 										Output,
 										Village_Id,
 										Village'Access,
 										Day => Day,
-										First => First,
-										Last => Last,
+										First => Message_Range.First,
+										Last => Message_Range.Last,
 										User_Id => User_Id,
 										User_Password => User_Password);
 								end;
@@ -663,7 +674,7 @@ begin
 										Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 									else
 										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											Villages.Narration (Village, Text, Now);
 											Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
@@ -870,7 +881,7 @@ begin
 								elsif Cmd = "speech" then
 									if Speech_Check then
 										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											if Text'Length > 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -896,7 +907,7 @@ begin
 								elsif Cmd = "speech2" then
 									if Speech_Check then
 										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											if Text'Length > 0 then
 												Villages.Speech (Village, Player, Text, Now);
@@ -913,23 +924,21 @@ begin
 											when Villages.Speech =>
 												if Speech_Check then
 													declare
-														Text : String renames Renderers.Get_Text(Renderer, Inputs);
-														Day : Natural;
-														First, Last : Integer;
+														Text : constant String := Form.Get_Text (Inputs);
+														Day : Natural := Form.Get_Day (Village, Query_Strings);
+														Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
 													begin
 														Web.Header_Content_Type (Output, Web.Text_HTML);
 														Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 														Web.Header_Break (Output);
-														Renderer.Get_Day(Village, Query_Strings, Day);
-														Renderer.Get_Range(Village, Day, Query_Strings, First, Last);
 														Renderers.Village_Page(
 															Renderer,
 															Output,
 															Village_Id,
 															Village'Access,
 															Day => Day,
-															First => First,
-															Last => Last,
+															First => Message_Range.First,
+															Last => Message_Range.Last,
 															Editing_Text => Text,
 															User_Id => User_Id,
 															User_Password => User_Password);
@@ -948,7 +957,7 @@ begin
 										Renderer.Error_Page(Output, "エピローグでは独白は喋れません。");
 									else
 										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											if Text'Length > Max_Length_Of_Message then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -988,7 +997,7 @@ begin
 										Renderer.Error_Page(Output, "生者は呻けません。");
 									else
 										declare
-											Text : String renames Renderers.Get_Text(Renderer, Inputs);
+											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											if Text'Length > Max_Length_Of_Message then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -1017,7 +1026,7 @@ begin
 									end if;
 								elsif Cmd = "note" then
 									declare
-										Text : String renames Renderers.Get_Text(Renderer, Inputs);
+										Text : constant String := Form.Get_Text (Inputs);
 									begin
 										if Text'Length > Max_Length_Of_Message then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
