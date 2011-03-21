@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Web;
+with Tabula.Casts;
 with Tabula.Villages;
 with Vampire.Villages;
 package Vampire.Forms is
@@ -22,6 +23,21 @@ package Vampire.Forms is
 		return String is
 		abstract;
 	
+	function Get_New_User_Id (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return String;
+	
+	function Get_New_User_Password (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return String;
+	
+	function Get_New_User_Confirmation_Password (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return String;
+	
 	procedure Set_User (
 		Form : in out Root_Form_Type;
 		Cookie : in out Web.Cookie;
@@ -37,6 +53,11 @@ package Vampire.Forms is
 		Cookie : Web.Cookie)
 		return Boolean is
 		abstract;
+	
+	function Is_User_List_Page (
+		Form : Root_Form_Type'Class;
+		Query_Strings : Web.Query_Strings)
+		return Boolean;
 	
 	-- 村
 	
@@ -65,10 +86,66 @@ package Vampire.Forms is
 		return Message_Range is
 		abstract;
 	
+	-- コマンド
+	
+	function Get_Command (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return String;
+	
+	function Get_New_Village_Name (
+		Form : Root_Form_Type;
+		Inputs : Web.Query_Strings)
+		return String is
+		abstract;
+	
+	type Joining is record
+		Work_Index : Tabula.Casts.Works.Cursor; -- "既定"はNo_Element
+		Name_Index : Tabula.Casts.People.Cursor; -- No_Elementにはならない
+		Request : Villages.Requested_Role;
+	end record;
+	
+	function Get_Joining (
+		Form : Root_Form_Type;
+		Inputs : Web.Query_Strings)
+		return Joining;
+	
+	type Mark is (Missing, NG, OK);
+	
+	function Get_Answered (
+		Form : Root_Form_Type;
+		Inputs : Web.Query_Strings)
+		return Mark;
+	
 	function Get_Text (
 		Form : Root_Form_Type;
 		Inputs : Web.Query_Strings)
 		return String is
 		abstract;
+	
+	function Get_Reedit_Kind (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return Villages.Message_Kind;
+	
+	function Get_Action (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return String;
+	
+	function Get_Target (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return Villages.People.Cursor;
+	
+	function Get_Special (
+		Form : Root_Form_Type'Class;
+		Inputs : Web.Query_Strings)
+		return Boolean;
+	
+	procedure Set_Rule (
+		Form : in Root_Form_Type'Class;
+		Village : in out Villages.Village_Type;
+		Inputs : in Web.Query_Strings);
 	
 end Vampire.Forms;

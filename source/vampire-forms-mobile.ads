@@ -50,6 +50,11 @@ package Vampire.Forms.Mobile is
 		Query_Strings : Web.Query_Strings)
 		return Message_Range;
 	
+	overriding function Get_New_Village_Name (
+		Form : Form_Type;
+		Inputs : Web.Query_Strings)
+		return String;
+	
 	overriding function Get_Text (
 		Form : Form_Type;
 		Inputs : Web.Query_Strings)

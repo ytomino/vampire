@@ -162,6 +162,7 @@ package Vampire.Villages is
 		Breakdown);                       -- 開始
 	
 	subtype Action_Message_Kind is Message_Kind range Action_Wake .. Action_Vampire_Gaze_Blocked;
+	
 	subtype Doctor_Message_Kind is Message_Kind range Doctor_Cure .. Doctor_Found_Gremlin_Preview;
 	subtype Detective_Message_Kind is Message_Kind range Detective_Survey .. Detective_Survey_Victim;
 	subtype Hunter_Message_Kind is Message_Kind range Hunter_Guard .. Hunter_Failed_With_Silver;

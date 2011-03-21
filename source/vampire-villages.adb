@@ -8,6 +8,16 @@ package body Vampire.Villages is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
 	
+	function Equivalent_Messages (Left, Right : Message) return Boolean is
+	begin
+		return Left.Day = Right.Day
+			and then abs (Left.Time - Right.Time) < 1.0 -- 一秒未満は記録されないため
+			and then Left.Kind = Right.Kind
+			and then Left.Subject = Right.Subject
+			and then Left.Target = Right.Target
+			and then Left.Text = Right.Text;
+	end Equivalent_Messages;
+	
 	function Provisional_Voting (Mode : Execution_Mode) return Boolean is
 	begin
 		case Mode is
@@ -630,7 +640,7 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Speech;
@@ -649,7 +659,7 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Monologue;
@@ -668,7 +678,7 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Ghost;
@@ -686,7 +696,7 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else Village.Messages.Last_Element /= New_Item then
+		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Narration;

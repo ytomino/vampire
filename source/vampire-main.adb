@@ -104,7 +104,7 @@ begin
 		User_Id : constant String := Form.Get_User_Id (Query_Strings, Cookie);
 		User_Password : constant String := Form.Get_User_Password (Query_Strings, Cookie);
 		Village_Id : constant Tabula.Villages.Village_Id := Form.Get_Village_Id (Query_Strings);
-		Cmd : String renames Web.Element (Inputs, "cmd");
+		Cmd : constant String := Form.Get_Command (Inputs);
 		procedure Render_Reload_Page is
 		begin
 			Web.Header_See_Other (Output, Web.Request_URI);
@@ -126,8 +126,8 @@ begin
 			Web.Header_Break (Output);
 		elsif Cmd = "logon" then
 			declare
-				New_User_Id : String renames Web.Element (Inputs, "id");
-				New_User_Password : String renames Web.Element (Inputs, "password");
+				New_User_Id : constant String := Form.Get_New_User_Id (Inputs);
+				New_User_Password : constant String := Form.Get_New_User_Password (Inputs);
 				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 			begin
@@ -222,9 +222,9 @@ begin
 				User_Id => "", User_Password => "");
 		elsif Cmd = "register" then
 			declare
-				New_User_Id : String renames Web.Element (Inputs, "id");
-				New_User_Password : String renames Web.Element (Inputs, "password");
-				New_User_Password_Retype : String renames Web.Element (Inputs, "password2");
+				New_User_Id : constant String := Form.Get_New_User_Id (Inputs);
+				New_User_Password : constant String := Form.Get_New_User_Password (Inputs);
+				New_User_Password_Retype : constant String := Form.Get_New_User_Confirmation_Password (Inputs);
 				Registered : Boolean;
 			begin
 				if New_User_Password /= New_User_Password_Retype then
@@ -304,7 +304,7 @@ begin
 								User_Id => User_Id, User_Password => User_Password);
 						else
 							declare
-								Village_Name : constant String := Web.Element (Inputs, "name");
+								Village_Name : constant String := Form.Get_New_Village_Name (Inputs);
 							begin
 								if Village_Name = "" then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -315,17 +315,17 @@ begin
 										User_Id => User_Id, User_Password => User_Password);
 								else
 									declare
-										Village : Villages.Village_Type := Villages.Create (
+										New_Village : Villages.Village_Type := Villages.Create (
 											Name => Village_Name,
 											By => User_Id,
 											Term => Term,
 											Time => Now);
-										The_New_Village_Id : constant Tabula.Villages.Village_Id :=
+										New_Village_Id : constant Tabula.Villages.Village_Id :=
 											Tabula.Villages.Lists.New_Village_Id (Villages_List);
 									begin
 										Villages.Save (
-											Tabula.Villages.Lists.File_Name (Villages_List, The_New_Village_Id),
-											Village);
+											Tabula.Villages.Lists.File_Name (Villages_List, New_Village_Id),
+											New_Village);
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 										Web.Header_Break (Output);
@@ -334,10 +334,10 @@ begin
 											User_Id => User_Id, User_Password => User_Password);
 										Tabula.Villages.Lists.Update (
 											Villages_List, 
-											The_New_Village_Id,
+											New_Village_Id,
 											Tabula.Villages.Lists.Summary (
 												Renderers.Log.Type_Code,
-												Village));
+												New_Village));
 										Users.Lists.Update (Users_List,
 											Id => User_Id,
 											Remote_Addr => Remote_Addr,
@@ -416,7 +416,7 @@ begin
 							Renderer.Error_Page(Output, "正常にログオンしないとユーザーページは表示できません。");
 						end if;
 					end;
-				elsif Web.Element (Query_Strings, "users") = "all" then
+				elsif Form.Is_User_List_Page (Query_Strings) then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 					Web.Header_Break (Output);
@@ -479,7 +479,7 @@ begin
 						Village : aliased Villages.Village_Type;
 					begin
 						Villages.Load (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-						Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
+						-- Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
 						if Cmd = "" then
 							if Post then
 								Render_Reload_Page;
@@ -590,19 +590,20 @@ begin
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "既に他の村に参加しています。", User_Id, User_Password);
 									else
 										declare
-											Work_Num : Integer := Natural'Value(Web.Element(Inputs, "work"));
-											Name_Num : constant Natural := Natural'Value(Web.Element(Inputs, "name"));
-											Request : constant Villages.Requested_Role := Villages.Requested_Role'Value(Web.Element(Inputs, "request"));
+											Joining : Forms.Joining := Form.Get_Joining (Inputs);
 											Cast : Casts.Cast_Collection := Casts.Load (Configurations.Cast_File_Name);
 										begin
 											Villages.Exclude_Taken (Cast, Village);
 											declare
-												Person_Template : Casts.Person renames Cast.People.Constant_Reference (Name_Num).Element.all;
+												Person_Template : Casts.Person
+													renames Cast.People.Constant_Reference (Joining.Name_Index).Element.all;
 											begin
-												if Work_Num < 0 then
-													Work_Num := Casts.Find (Cast.Works, Person_Template.Work.Constant_Reference.Element.all);
+												if Joining.Work_Index < 0 then
+													Joining.Work_Index := Casts.Find (
+														Cast.Works,
+														Person_Template.Work.Constant_Reference.Element.all);
 												end if;
-												if Work_Num < 0 then
+												if Joining.Work_Index < 0 then
 													Web.Header_Content_Type (Output, Web.Text_HTML);
 													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 													Web.Header_Break (Output);
@@ -611,7 +612,8 @@ begin
 														User_Id, User_Password);
 												else
 													declare
-														Selected_Work : access constant Casts.Work := Cast.Works.Constant_Reference(Work_Num).Element;
+														Selected_Work : Casts.Work
+															renames Cast.Works.Constant_Reference (Joining.Work_Index).Element.all;
 													begin
 														if Person_Template.Name = "" or Selected_Work.Name = "" then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -638,8 +640,8 @@ begin
 																Village,
 																User_Id,
 																Person_Template,
-																Selected_Work.all,
-																Request,
+																Selected_Work,
+																Joining.Request,
 																User_Info.Ignore_Request,
 																Now);
 															Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
@@ -670,7 +672,9 @@ begin
 											Text : constant String := Form.Get_Text (Inputs);
 										begin
 											Villages.Narration (Village, Text, Now);
-											Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
+											Villages.Save (
+												Tabula.Villages.Lists.File_Name (Villages_List, Village_Id),
+												Village);
 										end;
 										Render_Reload_Page;
 									end if;
@@ -687,11 +691,15 @@ begin
 										Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 									else
 										declare
-											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
-											Removed_Id : constant String := Village.People.Constant_Reference(Target).Element.Id.Constant_Reference.Element.all;
+											Target : constant Integer := Form.Get_Target (Inputs);
+											Removed_Id : constant String :=
+												Village.People.Constant_Reference (Target).Element.
+													Id.Constant_Reference.Element.all;
 										begin
 											Villages.Escape(Village, Target, Now);
-											Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
+											Villages.Save (
+												Tabula.Villages.Lists.File_Name (Villages_List, Village_Id),
+												Village);
 											Tabula.Villages.Lists.Update (
 												Villages_List,
 												Village_Id,
@@ -757,26 +765,18 @@ begin
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "村から出られるのはプロローグのみです。");
 									else
-										declare
-											OK : Boolean := False;
-										begin
-											begin
-												declare
-													X : constant Integer := Integer'Value(Web.Element(Inputs, "x"));
-													Y : constant Integer := Integer'Value(Web.Element(Inputs, "y"));
-													Z : constant Integer := Integer'Value(Web.Element(Inputs, "z"));
-												begin
-													OK := X + Y = Z;
-												end;
-											exception
-												when Constraint_Error =>
-													Web.Header_Content_Type (Output, Web.Text_HTML);
-													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-													Web.Header_Break (Output);
-													Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えを入力してください。", User_Id, User_Password);
-													goto Exit_Answer;
-											end;
-											if OK then
+										case Form.Get_Answered (Inputs) is
+											when Forms.Missing =>
+												Web.Header_Content_Type (Output, Web.Text_HTML);
+												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Break (Output);
+												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えを入力してください。", User_Id, User_Password);
+											when Forms.NG =>
+												Web.Header_Content_Type (Output, Web.Text_HTML);
+												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Break (Output);
+												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えが違います。", User_Id, User_Password);
+											when Forms.OK =>
 												Villages.Escape(Village, Player, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												Tabula.Villages.Lists.Update (
@@ -789,20 +789,14 @@ begin
 												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "旅に出ました。", User_Id, User_Password);
-											else
-												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-												Web.Header_Break (Output);
-												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えが違います。", User_Id, User_Password);
-											end if;
-											<<Exit_Answer>> null;
-										end;
+										end case;
 									end if;
 								elsif Cmd = "action" then
 									declare
-										Action : String renames Web.Element(Inputs, "action");
-										Said : Villages.Message_Counts renames Villages.Count_Messages(Village, Village.Today);
-										Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
+										Action : constant String := Form.Get_Action (Inputs);
+										Target : constant Integer := Form.Get_Target (Inputs);
+										Said : Villages.Message_Counts
+											renames Villages.Count_Messages(Village, Village.Today);
 									begin
 										if Target < 0 or else Action = "" then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -910,38 +904,34 @@ begin
 										Render_Reload_Page;
 									end if;
 								elsif Cmd = "reedit" then
-									declare
-										Kind : Villages.Message_Kind renames Villages.Message_Kind'Value (Web.Element (Inputs, "kind"));
-									begin
-										case Kind is
-											when Villages.Speech =>
-												if Speech_Check then
-													declare
-														Text : constant String := Form.Get_Text (Inputs);
-														Day : Natural := Form.Get_Day (Village, Query_Strings);
-														Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
-													begin
-														Web.Header_Content_Type (Output, Web.Text_HTML);
-														Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
-														Web.Header_Break (Output);
-														Renderers.Village_Page(
-															Renderer,
-															Output,
-															Village_Id,
-															Village'Access,
-															Day => Day,
-															First => Message_Range.First,
-															Last => Message_Range.Last,
-															Editing_Text => Text,
-															User_Id => User_Id,
-															User_Password => User_Password);
-													end;
-												end if;
-											when others =>
-												-- 通常発言以外の再編集は未実装……
-												Render_Reload_Page;
-										end case;
-									end;
+									case Form.Get_Reedit_Kind (Inputs) is
+										when Villages.Speech =>
+											if Speech_Check then
+												declare
+													Text : constant String := Form.Get_Text (Inputs);
+													Day : Natural := Form.Get_Day (Village, Query_Strings);
+													Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
+												begin
+													Web.Header_Content_Type (Output, Web.Text_HTML);
+													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+													Web.Header_Break (Output);
+													Renderers.Village_Page(
+														Renderer,
+														Output,
+														Village_Id,
+														Village'Access,
+														Day => Day,
+														First => Message_Range.First,
+														Last => Message_Range.Last,
+														Editing_Text => Text,
+														User_Id => User_Id,
+														User_Password => User_Password);
+												end;
+											end if;
+										when others =>
+											-- 通常発言以外の再編集は未実装……
+											Render_Reload_Page;
+									end case;
 								elsif Cmd = "monologue" then
 									if Village.State = Tabula.Villages.Epilogue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -1060,7 +1050,7 @@ begin
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "今は投票できない時間帯です。", User_Id, User_Password);
 									else
 										declare
-											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
+											Target : constant Integer := Form.Get_Target (Inputs);
 										begin
 											if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
@@ -1088,8 +1078,8 @@ begin
 									end if;
 								elsif Cmd = "target" then
 									declare
-										Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
-										Special : constant Boolean := Web.Checkbox_Value(Web.Element(Inputs, "special"));
+										Target : constant Integer := Form.Get_Target (Inputs);
+										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 										Special_Used : constant Boolean := Village.Already_Used_Special (Player);
 									begin
@@ -1143,7 +1133,7 @@ begin
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "医者と探偵は、夜に能力を使えません。", User_Id, User_Password);
 									else
 										declare
-											Target : constant Integer := Integer'Value(Web.Element(Inputs, "target"));
+											Target : constant Integer := Form.Get_Target (Inputs);
 										begin
 											case Village.People.Constant_Reference (Player).Element.Role is
 												when Villages.Doctor | Villages.Detective =>
@@ -1165,14 +1155,7 @@ begin
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "開始以降ルールは変更できません。", User_Id, User_Password);
 									else
-										declare
-											procedure Process (Item : in Tabula.Villages.Root_Option_Item'Class) is
-											begin
-												Tabula.Villages.Change (Village, Item, Web.Element (Inputs, Item.Name));
-											end Process;
-										begin
-											Vampire.Villages.Iterate_Options (Village, Process'Access);
-										end;
+										Forms.Set_Rule (Form, Village, Inputs);
 										Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 										Render_Reload_Page;
 									end if;

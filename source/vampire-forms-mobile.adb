@@ -116,6 +116,16 @@ package body Vampire.Forms.Mobile is
 			end if;
 	end Get_Range;
 	
+	overriding function Get_New_Village_Name (
+		Form : Form_Type;
+		Inputs : Web.Query_Strings)
+		return String is
+	begin
+		return Ada.Strings.Fixed.Trim (
+			iconv.Decode (Form.Encoding, Web.Element (Inputs, "name")),
+			Ada.Strings.Both);
+	end Get_New_Village_Name;
+	
 	overriding function Get_Text (
 		Form : Form_Type;
 		Inputs : Web.Query_Strings)
