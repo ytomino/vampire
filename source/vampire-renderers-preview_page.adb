@@ -22,11 +22,11 @@ is
 			Web.Write_In_Attribute (Output, Object.HTML_Version, +Message.Text);
 			Write(Output, '"');
 		elsif Tag = "longer" then
-			if Ada.Strings.Unbounded.Length(Message.Text) > Max_Length_Of_Message then
+			if Ada.Strings.Unbounded.Length(Message.Text) > Villages.Max_Length_Of_Message then
 				Web.Producers.Produce(Output, Template);
 			end if;
 		elsif Tag = "ok" then
-			if Ada.Strings.Unbounded.Length(Message.Text) <= Max_Length_Of_Message then
+			if Ada.Strings.Unbounded.Length(Message.Text) <= Villages.Max_Length_Of_Message then
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		else

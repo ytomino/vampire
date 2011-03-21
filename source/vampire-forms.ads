@@ -1,11 +1,68 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Streams;
 with Web;
 with Tabula.Casts;
 with Tabula.Villages;
 with Vampire.Villages;
 package Vampire.Forms is
 	
+	type Role_Images is array (Villages.Person_Role) of not null access constant String;
+	
+	type Template_Set_Type is (For_Full, For_Mobile);
+	
 	type Root_Form_Type is abstract tagged limited null record;
+	
+	-- HTML / template set
+	
+	function HTML_Version (Form : Root_Form_Type) return Web.HTML_Version is abstract;
+	function Template_Set (Form : Root_Form_Type) return Template_Set_Type is abstract;
+	
+	-- 出力用
+	
+	procedure Write_In_HTML (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type;
+		Item : in String;
+		Pre : in Boolean := False) is abstract;
+	
+	procedure Write_In_Attribute (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type;
+		Item : in String) is abstract;
+	
+	procedure Write_Link_To_Index_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String) is abstract;
+	
+	procedure Write_Link_To_User_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String) is abstract;
+	
+	procedure Write_Link_To_Village_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type;
+		Current_Directory : in String;
+		HTML_Directory : in String;
+		Log : in Boolean;
+		Village_Id : Tabula.Villages.Village_Id;
+		Day : Integer := -1;
+		First : Integer := -1;
+		Last : Integer := -1;
+		Latest : Integer := -1;
+		User_Id : in String;
+		User_Password : in String) is abstract;
+	
+	procedure Write_Link_To_Resource (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		Resource : in String);
 	
 	-- ユーザー情報
 	
@@ -13,15 +70,13 @@ package Vampire.Forms is
 		Form : Root_Form_Type;
 		Query_Strings : Web.Query_Strings;
 		Cookie : Web.Cookie)
-		return String is
-		abstract;
+		return String is abstract;
 	
 	function Get_User_Password (
 		Form : Root_Form_Type;
 		Query_Strings : Web.Query_Strings;
 		Cookie : Web.Cookie)
-		return String is
-		abstract;
+		return String is abstract;
 	
 	function Get_New_User_Id (
 		Form : Root_Form_Type'Class;
@@ -42,8 +97,7 @@ package Vampire.Forms is
 		Form : in out Root_Form_Type;
 		Cookie : in out Web.Cookie;
 		New_User_Id: in String;
-		New_User_Password : in String) is
-		abstract;
+		New_User_Password : in String) is abstract;
 	
 	-- 個人ページ
 	
@@ -51,8 +105,7 @@ package Vampire.Forms is
 		Form : Root_Form_Type;
 		Query_Strings : Web.Query_Strings;
 		Cookie : Web.Cookie)
-		return Boolean is
-		abstract;
+		return Boolean is abstract;
 	
 	function Is_User_List_Page (
 		Form : Root_Form_Type'Class;
@@ -64,15 +117,13 @@ package Vampire.Forms is
 	function Get_Village_Id (
 		Form : Root_Form_Type;
 		Query_Strings : Web.Query_Strings)
-		return Tabula.Villages.Village_Id is
-		abstract;
+		return Tabula.Villages.Village_Id is abstract;
 	
 	function Get_Day (
 		Form : Root_Form_Type;
 		Village : Villages.Village_Type; 
 		Query_Strings : Web.Query_Strings)
-		return Natural is
-		abstract;
+		return Natural is abstract;
 	
 	type Message_Range is record
 	   First, Last : Integer;
@@ -83,8 +134,7 @@ package Vampire.Forms is
 		Village : Villages.Village_Type; 
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Message_Range is
-		abstract;
+		return Message_Range is abstract;
 	
 	-- コマンド
 	
@@ -96,8 +146,7 @@ package Vampire.Forms is
 	function Get_New_Village_Name (
 		Form : Root_Form_Type;
 		Inputs : Web.Query_Strings)
-		return String is
-		abstract;
+		return String is abstract;
 	
 	type Joining is record
 		Work_Index : Tabula.Casts.Works.Cursor; -- "既定"はNo_Element
@@ -120,8 +169,7 @@ package Vampire.Forms is
 	function Get_Text (
 		Form : Root_Form_Type;
 		Inputs : Web.Query_Strings)
-		return String is
-		abstract;
+		return String is abstract;
 	
 	function Get_Reedit_Kind (
 		Form : Root_Form_Type'Class;

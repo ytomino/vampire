@@ -13,7 +13,6 @@ with Tabula.Users.Lists;
 with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
-with Vampire.Configurations.Templates;
 with Vampire.Forms.Select_Form;
 with Vampire.Renderers.Error_Page;
 with Vampire.Renderers.Index_Page;
@@ -83,9 +82,9 @@ begin
 		function Get_Renderer(Query_Strings : in Web.Query_Strings) return Renderers.Renderer'Class is
 		begin
 			if Web.Element (Query_Strings, "b") = "k" then
-				return Renderers.Simple.Renderer'(Configuration => Configurations.Templates.Simple_Configuration);
+				return Renderers.Simple.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Mobile)'Access);
 			else
-				return Renderers.Renderer'(Configuration => Configurations.Templates.Configuration);
+				return Renderers.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Full)'Access);
 			end if;
 		end Get_Renderer;
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
@@ -109,7 +108,7 @@ begin
 		begin
 			Web.Header_See_Other (Output, Web.Request_URI);
 			Web.Header_Content_Type (Output, Web.Text_HTML);
-			Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+			Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 			Web.Header_Break (Output);
 			Renderer.Refresh_Page (Output, URI => Web.Request_URI);
 		end Render_Reload_Page;
@@ -139,7 +138,7 @@ begin
 				case User_State is
 					when Users.Lists.Log_Off =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "IDを入力してください。",
@@ -147,14 +146,14 @@ begin
 					when Users.Lists.Unknown =>
 						if Users.Valid_Id_String(New_User_Id) then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Register_Page(Output,
 								Village_Id => Village_Id,
 								New_User_Id => New_User_Id, New_User_Password => New_User_Password);
 						else
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Message_Page(Output,
 								Village_Id => Village_Id, Message => "変な文字は使わないでください。",
@@ -162,7 +161,7 @@ begin
 						end if;
 					when Users.Lists.Invalid =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "パスワードが異なります。",
@@ -174,7 +173,7 @@ begin
 							New_User_Id => New_User_Id,
 							New_User_Password => New_User_Password);
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "ログオンしました。",
@@ -215,7 +214,7 @@ begin
 				New_User_Id => "",
 				New_User_Password => "");
 			Web.Header_Content_Type (Output, Web.Text_HTML);
-			Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+			Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 			Web.Header_Break (Output);
 			Renderer.Message_Page(Output,
 				Village_Id => Village_Id, Message => "ログオフしました。",
@@ -229,7 +228,7 @@ begin
 			begin
 				if New_User_Password /= New_User_Password_Retype then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Message_Page(Output,
 						Village_Id => Village_Id, Message => "再入力されたパスワードが異なります。",
@@ -247,14 +246,14 @@ begin
 							New_User_Id => New_User_Id,
 							New_User_Password => New_User_Password);
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "登録しました。",
 							User_Id => New_User_Id, User_Password => New_User_Password);
 					else
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Message_Page(Output,
 							Village_Id => Village_Id, Message => "登録に失敗しました。",
@@ -286,7 +285,7 @@ begin
 							and then Tabula.Villages.Lists.Exists_Opened_By (Summaries, User_Id)
 						then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Message_Page(Output, Message => "同時に村をふたつ作成することはできません。",
 								User_Id => User_Id, User_Password => User_Password);
@@ -298,7 +297,7 @@ begin
 									and then User_Id /= "she")) -- ハードコーディングですよ酷いコードですね
 						then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Message_Page(Output, Message => "えーと、しばらく短期は延期で。",
 								User_Id => User_Id, User_Password => User_Password);
@@ -308,7 +307,7 @@ begin
 							begin
 								if Village_Name = "" then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
-									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
 									Renderer.Message_Page(Output,
 										Message => "村名を入力してください。",
@@ -327,7 +326,7 @@ begin
 											Tabula.Villages.Lists.File_Name (Villages_List, New_Village_Id),
 											New_Village);
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output,
 											Message => "新たな村「" & Village_Name & "」を作成しました。",
@@ -347,7 +346,7 @@ begin
 									exception
 										when Ada.IO_Exceptions.Name_Error =>
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderer.Message_Page(Output,
 												Message => "作成に失敗しました。",
@@ -358,7 +357,7 @@ begin
 						end if;
 					when others =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
-						Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
 						Renderer.Error_Page(Output, "正常にログオンしてください。");
 				end case;
@@ -378,7 +377,7 @@ begin
 					Render_Reload_Page;
 				else
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 				end if;
@@ -400,7 +399,7 @@ begin
 							Info => User_Info, State => User_State);
 						if User_State = Users.Lists.Valid and then User_Id /= Users.Administrator then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
 							Renderer.User_Page (
@@ -411,14 +410,14 @@ begin
 								User_Info => User_Info);
 						else
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Error_Page(Output, "正常にログオンしないとユーザーページは表示できません。");
 						end if;
 					end;
 				elsif Form.Is_User_List_Page (Query_Strings) then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					declare
 						Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
@@ -434,7 +433,7 @@ begin
 					end;
 				else
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					declare
 						Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
@@ -443,14 +442,14 @@ begin
 						Renderer.Index_Page (
 							Output,
 							Summaries,
-							Users.Lists.Muramura_Count (Users_List, Now, Muramura_Duration),
+							Users.Lists.Muramura_Count (Users_List, Now, Configurations.Muramura_Duration),
 							User_Id => User_Id,
 							User_Password => User_Password);
 					end;
 				end if;
 			else
 				Web.Header_Content_Type (Output, Web.Text_HTML);
-				Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+				Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 				Web.Header_Break (Output);
 				Renderer.Error_Page(Output, "不正なコマンド(" & Cmd & ")が送られました。");
 			end if;
@@ -466,12 +465,12 @@ begin
 					Info => User_Info, State => User_State);
 				if User_State = Users.Lists.Invalid then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Error_Page(Output, "パスワードが不正です。");
 				elsif not Tabula.Villages.Lists.Exists (Villages_List, Village_Id) then
 					Web.Header_Content_Type (Output, Web.Text_HTML);
-					Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
 					Renderer.Error_Page(Output, "存在しない村が指定されました。");
 				else
@@ -508,7 +507,7 @@ begin
 									Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
 								begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
-									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
 									Renderers.Village_Page(
 										Renderer,
@@ -524,7 +523,7 @@ begin
 							end if;
 						elsif Village.State = Tabula.Villages.Closed then
 							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
 							Renderer.Error_Page(Output, "終了した村にコマンドが送られました。");
 						else
@@ -536,13 +535,13 @@ begin
 										and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died
 									then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "あなたは死にました。", User_Id, User_Password);
 										return False;
 									elsif Village.Time /= Villages.Daytime then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderers.Message_Page(Renderer, Output,
 											Village_Id, Village'Access, "今は喋れない時間帯です。", User_Id, User_Password);
@@ -556,23 +555,23 @@ begin
 								Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
 								if User_State /= Users.Lists.Valid then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
-									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
 									Renderer.Error_Page(Output, "正常にログオンしてください。");
 								elsif Cmd = "join" then
 									if Player >= 0 then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "既にこの村に参加しています。");
 									elsif Village.State /= Tabula.Villages.Prologue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "締め切りです。", User_Id, User_Password);
 									elsif Tabula.Villages.Lists.Exists_Opened_By (Summaries, User_Id, Excluding => Village_Id) then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "自分の作成した村に入ってください。", User_Id, User_Password);
 									elsif Village.Day_Duration >= 24 * 60 * 60.0
@@ -585,7 +584,7 @@ begin
 											Long_Only => True) > 0
 									then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "既に他の村に参加しています。", User_Id, User_Password);
 									else
@@ -605,7 +604,7 @@ begin
 												end if;
 												if Joining.Work_Index < 0 then
 													Web.Header_Content_Type (Output, Web.Text_HTML);
-													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+													Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 													Web.Header_Break (Output);
 													Renderer.Message_Page(Output, Village_Id, Village'Access,
 														"申し訳ありませんが既定の肩書き(" & Person_Template.Work.Constant_Reference.Element.all & ")は既に取られています。",
@@ -617,22 +616,22 @@ begin
 													begin
 														if Person_Template.Name = "" or Selected_Work.Name = "" then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "既に取られています。", User_Id, User_Password);
 														elsif Selected_Work.Sex /= Casts.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "性別と肩書きが一致しません。", User_Id, User_Password);
 														elsif Selected_Work.Nominated and then Selected_Work.Name /= Person_Template.Work then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "その肩書きは特定の組み合わせでしか使えません。", User_Id, User_Password);
 														elsif Villages.Already_Joined_As_Another_Sex(Village, User_Id, Person_Template.Sex) then
 															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "以前にエントリされたときと性別が異なります。", User_Id, User_Password);
 														else
@@ -652,7 +651,7 @@ begin
 																	Renderers.Log.Type_Code,
 																	Village));
 															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
 															Renderer.Message_Page(Output, Village_Id, Village'Access, "村に参加しました。", User_Id, User_Password);
 														end if;
@@ -664,7 +663,7 @@ begin
 								elsif Cmd = "narration" then
 									if User_Id /= Tabula.Users.Administrator then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 									else
@@ -681,12 +680,12 @@ begin
 								elsif Cmd = "remove" then
 									if Village.State /= Tabula.Villages.Prologue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "除名を行えるのはプロローグのみです。");
 									elsif User_Id /= Tabula.Users.Administrator then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "administratorのみに許された操作です。");
 									else
@@ -707,7 +706,7 @@ begin
 													Renderers.Log.Type_Code,
 													Village));
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderers.Message_Page(Renderer, Output,
 												Village_Id, Village'Access,
@@ -717,18 +716,18 @@ begin
 									end if;
 								elsif Player < 0 then
 									Web.Header_Content_Type (Output, Web.Text_HTML);
-									Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
 									Renderer.Error_Page(Output, "参加していません。");
 								elsif Cmd = "commit" then
 									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "今は行動を終えられない時間帯です。", User_Id, User_Password);
 									elsif Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "死者は行動を決定できません。");
 									else
@@ -761,19 +760,19 @@ begin
 								elsif Cmd = "escape" then
 									if Village.State /= Tabula.Villages.Prologue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "村から出られるのはプロローグのみです。");
 									else
 										case Form.Get_Answered (Inputs) is
 											when Forms.Missing =>
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えを入力してください。", User_Id, User_Password);
 											when Forms.NG =>
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "答えが違います。", User_Id, User_Password);
 											when Forms.OK =>
@@ -786,7 +785,7 @@ begin
 														Renderers.Log.Type_Code,
 														Village));
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "旅に出ました。", User_Id, User_Password);
 										end case;
@@ -800,19 +799,19 @@ begin
 									begin
 										if Target < 0 or else Action = "" then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "対象と行動を選んでください。", User_Id, User_Password);
 										elsif Action = "wake" then
 											if Said(Player).Wake > 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output,
 													"人を起こせるのは一日一度です。");
 											elsif not Village.People.Constant_Reference(Target).Element.Commited then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "相手はまだ行動を終えていません。", User_Id, User_Password);
 											else
@@ -823,7 +822,7 @@ begin
 										elsif Action = "encourage" then
 											if Said(Player).Encourage > 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output,
 													"話の続きを促せるのは一日一度です。");
@@ -835,22 +834,22 @@ begin
 										elsif Action = "vampire_gaze" then
 											if Village.People.Constant_Reference(Player).Element.Role not in Villages.Vampire_Role then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output, "見つめられるのは吸血鬼だけです。");
 											elsif Village.People.Constant_Reference(Target).Element.Role in Villages.Vampire_Role then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "見つめようとした相手は吸血鬼です。", User_Id, User_Password);
 											elsif Said(Player).Vampire_Gaze > 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Error_Page(Renderer, Output, "見つめられるのは一日一度です。");
 											elsif Village.Time = Villages.Night then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Message_Page(Renderer, Output, Village_Id, Village'Access, "夜は直接会話できます。", User_Id, User_Password);
 											else
@@ -860,7 +859,7 @@ begin
 											end if;
 										else
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderer.Error_Page(Output, "サポートされていない種類のアクションを行おうとしました。");
 										end if;
@@ -872,7 +871,7 @@ begin
 										begin
 											if Text'Length > 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Preview_Page(Renderer, Output,
 													Village_Id,
@@ -913,7 +912,7 @@ begin
 													Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
 												begin
 													Web.Header_Content_Type (Output, Web.Text_HTML);
-													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+													Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 													Web.Header_Break (Output);
 													Renderers.Village_Page(
 														Renderer,
@@ -935,16 +934,16 @@ begin
 								elsif Cmd = "monologue" then
 									if Village.State = Tabula.Villages.Epilogue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "エピローグでは独白は喋れません。");
 									else
 										declare
 											Text : constant String := Form.Get_Text (Inputs);
 										begin
-											if Text'Length > Max_Length_Of_Message then
+											if Text'Length > Villages.Max_Length_Of_Message then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Preview_Page(Output,
 													Village_Id,
@@ -970,21 +969,21 @@ begin
 								elsif Cmd = "ghost" then
 									if Village.State = Tabula.Villages.Epilogue then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "エピローグでは呻けません。");
 									elsif Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State /= Villages.Died then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Error_Page(Output, "生者は呻けません。");
 									else
 										declare
 											Text : constant String := Form.Get_Text (Inputs);
 										begin
-											if Text'Length > Max_Length_Of_Message then
+											if Text'Length > Villages.Max_Length_Of_Message then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Preview_Page(Output,
 													Village_Id,
@@ -1011,9 +1010,9 @@ begin
 									declare
 										Text : constant String := Form.Get_Text (Inputs);
 									begin
-										if Text'Length > Max_Length_Of_Message then
+										if Text'Length > Villages.Max_Length_Of_Message then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderers.Preview_Page(Renderer, Output,
 												Village_Id,
@@ -1045,7 +1044,7 @@ begin
 								elsif Cmd = "vote" then
 									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "今は投票できない時間帯です。", User_Id, User_Password);
 									else
@@ -1054,17 +1053,17 @@ begin
 										begin
 											if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Error_Page(Output, "あなたは死んでいます。");
 											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Error_Page(Output, "死者に投票はできません。");
 											elsif Target >= 0 and then not Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Message_Page(Output, Village_Id, Village'Access, "仮投票が行われました。選ばれた候補以外に投票はできなくなります。", User_Id, User_Password);
 											else
@@ -1085,7 +1084,7 @@ begin
 									begin
 										if Special_Used and Special then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
-											Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
 											Renderer.Error_Page(Output, "銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
@@ -1093,19 +1092,19 @@ begin
 										then
 											if Village.Time = Villages.Night then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Message_Page(Output, Village_Id, Village'Access, "医者と探偵は、夜に能力を使えません。", User_Id, User_Password);
 											elsif Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target >= 0 then
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderer.Error_Page(Output, "医者と探偵の行動選択は一日に一度しかできません。");
 											elsif Target < 0 then
 												Render_Reload_Page;
 											else
 												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
 												Renderers.Target_Page(Renderer, Output,
 													Village_Id,
@@ -1128,7 +1127,7 @@ begin
 								elsif Cmd = "target2" then
 									if Village.Time = Villages.Night then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "医者と探偵は、夜に能力を使えません。", User_Id, User_Password);
 									else
@@ -1142,7 +1141,7 @@ begin
 													Render_Reload_Page;
 												when others =>
 													Web.Header_Content_Type (Output, Web.Text_HTML);
-													Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+													Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 													Web.Header_Break (Output);
 													Renderer.Error_Page(Output, "医者と探偵以外は、日中に能力を使えません。");
 											end case;
@@ -1151,7 +1150,7 @@ begin
 								elsif Cmd = "rule" then
 									if Village.Today > 0 then
 										Web.Header_Content_Type (Output, Web.Text_HTML);
-										Web.Header_Cookie (Output, Cookie, Now + Cookie_Duration);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 										Web.Header_Break (Output);
 										Renderer.Message_Page(Output, Village_Id, Village'Access, "開始以降ルールは変更できません。", User_Id, User_Password);
 									else

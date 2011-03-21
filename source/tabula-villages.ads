@@ -59,27 +59,23 @@ package Tabula.Villages is
 	procedure Get_State (
 		Village : in Village_Type;
 		State : out Village_State;
-		Today : out Natural) is -- Prologue = 0
-		abstract;
+		Today : out Natural) is abstract; -- Prologue = 0
 	
 	procedure Iterate_People (
 		Village : in Village_Type;
 		Process : not null access procedure (
 			Index : Person_Index;
-			Item : in Person_Type'Class)) is
-		abstract;
+			Item : in Person_Type'Class)) is abstract;
 	
 	procedure Iterate_Escaped_People (
 		Village : in Village_Type;
 		Process : not null access procedure (
 			Index : Person_Index;
-			Item : in Person_Type'Class)) is
-		abstract;
+			Item : in Person_Type'Class)) is abstract;
 	
 	procedure Iterate_Options (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Root_Option_Item'Class)) is
-		abstract;
+		Process : not null access procedure (Item : in Root_Option_Item'Class)) is abstract;
 	
 	function Option_Changed (Village : Village_Type) return Boolean;
 	

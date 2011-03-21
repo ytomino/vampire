@@ -7,6 +7,7 @@ with Tabula.Calendar;
 with Tabula.Casts.Load;
 with Tabula.Users;
 with Vampire.Configurations;
+with Vampire.Forms.Mobile;
 with Vampire.Villages.Teaming;
 procedure Vampire.Renderers.Village_Page (
 	Object : in Renderer'Class;
@@ -29,17 +30,6 @@ is
 	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
 	
 	Line_Break : constant Character := Ascii.LF;
-	
-	Role_Image_File_Name : constant array(Vampire.Villages.Person_Role) of not null access constant String := (
-		Vampire.Villages.Gremlin => new String'("gremlin.png"),
-		Vampire.Villages.Vampire_Role => new String'("vampire.png"),
-		Vampire.Villages.Servant => new String'("servant.png"),
-		Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant => new String'("inhabitant.png"),
-		Vampire.Villages.Detective => new String'("detective.png"),
-		Vampire.Villages.Doctor => new String'("doctor.png"),
-		Vampire.Villages.Astronomer => new String'("astronomer.png"),
-		Vampire.Villages.Hunter => new String'("hunter.png"),
-		Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F => new String'("sweetheart.png"));
 	
 	type Stage_Kind is (A_Village, A_Castle);
 	type Stage_Type is record
@@ -930,11 +920,11 @@ is
 					User_Id => User_Id, User_Password => User_Password);
 				Write(Output, ">全</a>");
 			end if;
-			for I in 0 .. (Speech_Count - 1) / Speeches_By_Page loop
+			for I in 0 .. (Speech_Count - 1) / Forms.Mobile.Speeches_By_Page loop
 				declare
 					I_S : String renames To_String(I + 1);
-					I_F : constant Natural := I * Speeches_By_Page;
-					I_L : Natural := I_F + (Speeches_By_Page - 1);
+					I_F : constant Natural := I * Forms.Mobile.Speeches_By_Page;
+					I_L : Natural := I_F + (Forms.Mobile.Speeches_By_Page - 1);
 				begin
 					if Village.State = Closed or else Day /= Village.Today then
 						if I_L > Speech_Count then
@@ -953,8 +943,8 @@ is
 					end if;
 				end;
 			end loop;
-			if Speech_Count > Speeches_By_Page then
-				R := Speech_Count - Speeches_By_Page;
+			if Speech_Count > Forms.Mobile.Speeches_By_Page then
+				R := Speech_Count - Forms.Mobile.Speeches_By_Page;
 			else
 				R := 0;
 			end if;
@@ -964,7 +954,7 @@ is
 				Write(Output, "|新|");
 			else
 				Write(Output, "|<a href=");
-				Link (Object, Output, Village_Id, Day, Latest => Speeches_By_Page,
+				Link (Object, Output, Village_Id, Day, Latest => Forms.Mobile.Speeches_By_Page,
 					User_Id => User_Id, User_Password => User_Password);
 				Write(Output, ">新</a>|");
 			end if;
@@ -988,7 +978,7 @@ is
 			Link_Style_Sheet (Object, Output);
 			Write(Output, "/>");
 		elsif Tag = "background" then
-			Link_Image (Object, Output, Object.Configuration.Background_Image_File_Name.all);
+			Link_Image (Object, Output, Object.Configuration.Relative_Background_Image_File_Name.all);
 		elsif Tag = "styles" then
 			if not Village.People.Is_Empty then
 				Write(Output, "<style>");
@@ -1204,7 +1194,7 @@ is
 					begin
 						if Role /= Vampire.Villages.Inhabitant and then Object.HTML_Version = Web.XHTML then
 							Write (Output, "<img width=""16"" height=""16"" src=");
-							Link_Image (Object, Output, Role_Image_File_Name (Role).all);
+							Link_Image (Object, Output, Configurations.Relative_Role_Image_File_Names (Role).all);
 							Write (Output, " />");
 						end if;
 						Web.Write_In_HTML (Output, Object.HTML_Version, Message);
@@ -1941,7 +1931,7 @@ is
 								Write(Output, Role_Text(Person));
 							elsif Tag = "roleimg" then
 								if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died then
-									Link_Image (Object, Output, Role_Image_File_Name(Person.Role).all);
+									Link_Image (Object, Output, Configurations.Relative_Role_Image_File_Names (Person.Role).all);
 								end if;
 							elsif Tag = "vote" then
 								if Village.State = Playing

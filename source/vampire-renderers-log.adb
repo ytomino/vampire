@@ -3,7 +3,8 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
 with Web.RSS;
-with Vampire.Configurations.Templates;
+with Vampire.Configurations;
+with Vampire.Forms;
 with Vampire.Renderers.List_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Villages.Load;
@@ -34,7 +35,7 @@ package body Vampire.Renderers.Log is
 		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => False);
 		for Day in 0 .. Village.Today loop
 			declare
-				Renderer : Log.Renderer(Configurations.Templates.Configuration);
+				Renderer : Log.Renderer(Configurations.Template_Names (Forms.For_Full)'Access);
 				Output : Ada.Streams.Stream_IO.File_Type;
 			begin
 				Ada.Streams.Stream_IO.Create (
@@ -59,7 +60,7 @@ package body Vampire.Renderers.Log is
 		Update : in Boolean)
 	is
 		procedure Make_Log_Index (Summaries : in Lists.Summary_Maps.Map) is
-			Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Templates.Configuration);
+			Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Full)'Access);
 			File: Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (Name => Configurations.Villages_Index_HTML_File_Name);
 		begin

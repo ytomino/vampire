@@ -3,30 +3,12 @@ with Ada.Calendar;
 with Ada.Streams;
 with Web;
 with Tabula.Villages.Lists;
+with Vampire.Configurations;
 with Vampire.Villages;
 private with Web.Producers;
 package Vampire.Renderers is
 	
-	type File_Name is not null access constant String;
-	
-	type Configuration is record
-		Image_Directory : File_Name;
-		Log_Directory : File_Name;
-		Style_Sheet_File_Name : File_Name;
-		Background_Image_File_Name : File_Name;
-		Template_Index_File_Name : not null access constant String;
-		Template_List_File_Name : not null access constant String;
-		Template_Users_File_Name : not null access constant String;
-		Template_Register_File_Name : not null access constant String;
-		Template_User_File_Name : not null access constant String;
-		Template_Village_File_Name : not null access constant String;
-		Template_Preview_File_Name : not null access constant String;
-		Template_Target_File_Name : not null access constant String;
-		Template_Message_File_Name : not null access constant String;
-		Template_Error_File_Name : not null access constant String;
-	end record;
-	
-	type Configuration_Access is access constant Configuration;
+	type Configuration_Access is access constant Configurations.Template_Names_Type;
 	
 	type Renderer(Configuration : Configuration_Access) is tagged null record;
 	

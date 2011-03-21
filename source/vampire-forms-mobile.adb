@@ -1,5 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Directories;
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded;
 package body Vampire.Forms.Mobile is
 	use type Tabula.Villages.Village_State;
 	
@@ -7,6 +9,135 @@ package body Vampire.Forms.Mobile is
 	begin
 		return (Encoding => iconv.Open (Encoded => "SJIS", Decoded => "UTF-8"));
 	end Create;
+	
+	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version is
+	begin
+		return Web.HTML;
+	end HTML_Version;
+	
+	overriding function Template_Set (Form : Form_Type) return Template_Set_Type is
+	begin
+		return For_Mobile;
+	end Template_Set;
+	
+	overriding procedure Write_In_HTML (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Form_Type;
+		Item : in String;
+		Pre : in Boolean := False) is
+	begin
+		Web.Write_In_HTML (Stream, Web.HTML, iconv.Encode (Form.Encoding, Item), Pre);
+	end Write_In_HTML;
+	
+	overriding procedure Write_In_Attribute (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Form_Type;
+		Item : in String) is
+	begin
+		Web.Write_In_Attribute (Stream, Web.HTML, iconv.Encode (Form.Encoding, Item));
+	end Write_In_Attribute;
+	
+	procedure Write_Link_To_Index_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Form_Type;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String)
+	is
+		Parameters : aliased Ada.Strings.Unbounded.Unbounded_String;
+	begin
+		Ada.Strings.Unbounded.Append (Parameters, "?b=k");
+		if User_Id'Length > 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&i=" & User_Id &
+				"&p=" & Web.Encode_URI (User_Password));
+		end if;
+		Write_Link_To_Resource (
+			Stream,
+			Form,
+			Current_Directory => Current_Directory,
+			Resource =>
+				Ada.Directories.Simple_Name (Web.Request_Path) &
+				Parameters.Constant_Reference.Element.all);
+	end Write_Link_To_Index_Page;
+	
+	overriding procedure Write_Link_To_User_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Form_Type;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String)
+	is
+		Parameters : aliased Ada.Strings.Unbounded.Unbounded_String;
+	begin
+		Ada.Strings.Unbounded.Append (Parameters, "?b=k");
+		if User_Id'Length > 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&i=" & User_Id &
+				"&p=" & Web.Encode_URI (User_Password));
+		end if;
+		Ada.Strings.Unbounded.Append (
+			Parameters,
+			"&u=" & User_Id);
+		Write_Link_To_Resource (
+			Stream,
+			Form,
+			Current_Directory => Current_Directory,
+			Resource =>
+				Ada.Directories.Simple_Name (Web.Request_Path) &
+				Parameters.Constant_Reference.Element.all);
+	end Write_Link_To_User_Page;
+	
+	overriding procedure Write_Link_To_Village_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Form_Type;
+		Current_Directory : in String;
+		HTML_Directory : in String;
+		Log : in Boolean;
+		Village_Id : Tabula.Villages.Village_Id;
+		Day : Integer := -1;
+		First : Integer := -1;
+		Last : Integer := -1;
+		Latest : Integer := -1;
+		User_Id : in String;
+		User_Password : in String)
+	is
+		Parameters : aliased Ada.Strings.Unbounded.Unbounded_String;
+	begin
+		Ada.Strings.Unbounded.Append (Parameters, "?b=k");
+		if User_Id'Length > 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&i=" & User_Id &
+				"&p=" & Web.Encode_URI (User_Password));
+		end if;
+		Ada.Strings.Unbounded.Append (
+			Parameters,
+			"&v=" & Village_Id);
+		if Day >= 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&d=" & Image (Day));
+		end if;
+		if First >= 0 and then Last >= 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&r=" & Image (First) & '-' & Image (Last));
+		elsif Latest >= 0 then
+			Ada.Strings.Unbounded.Append (
+				Parameters,
+				"&r=" & Image (Latest));
+		end if;
+		Write_Link_To_Resource (
+			Stream,
+			Form,
+			Current_Directory => Current_Directory,
+			Resource =>
+				Ada.Directories.Simple_Name (Web.Request_Path) &
+				Parameters.Constant_Reference.Element.all);
+	end Write_Link_To_Village_Page;
 	
 	overriding function Get_User_Id(
 		Form : Form_Type;

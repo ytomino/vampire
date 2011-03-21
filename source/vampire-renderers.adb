@@ -144,7 +144,7 @@ package body Vampire.Renderers is
 			Link_Style_Sheet(Renderer'Class(Object), Output);
 			Write(Output, "/>");
 		elsif Tag = "background" then
-			Link_Image(Renderer'Class(Object), Output, Object.Configuration.Background_Image_File_Name.all);
+			Link_Image(Renderer'Class(Object), Output, Object.Configuration.Relative_Background_Image_File_Name.all);
 		elsif Tag = "back" then
 			Write(Output, "<a href=");
 			Link(Renderer'Class(Object), Output, User_Id => User_Id, User_Password => User_Password);
@@ -380,7 +380,7 @@ package body Vampire.Renderers is
 			Write(Output, User_Id);
 		elsif Log then
 			Write(Output, "./");
-			Write(Output, Object.Configuration.Log_Directory.all);
+			Write(Output, Configurations.Villages_HTML_Directory);
 			Write(Output, '/');
 			Write(Output, Village_Id);
 			Write(Output, "-0.html");

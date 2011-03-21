@@ -1,5 +1,20 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Directories.Hierarchical_File_Names;
 package body Vampire.Forms is
+	
+	procedure Write_Link_To_Resource (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		Resource : in String) is
+	begin
+		String'Write (Stream,
+			"""" &
+			Ada.Directories.Hierarchical_File_Names.Relative_Name (
+				Name => Resource,
+				From => Current_Directory) &
+			"""");
+	end Write_Link_To_Resource;
 	
 	function Get_New_User_Id (
 		Form : Root_Form_Type'Class;
