@@ -35,7 +35,7 @@ package body Tabula.Users.Lists is
 	
 	package Users_Log is new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
 	
-	function Load_Users_Log (List : not null access Users_List) return Users_Log.Map is
+	function Load_Users_Log (List : not null access User_List) return Users_Log.Map is
 	begin
 		return Result : Users_Log.Map do
 			List.Log_Read_Count := List.Log_Read_Count + 1;
@@ -57,7 +57,7 @@ package body Tabula.Users.Lists is
 	end Load_Users_Log;
 	
 	procedure Add_To_Users_Log (
-		List : in Users_List;
+		List : in User_List;
 		Id : in String;
 		Remote_Addr : in String;
 		Remote_Host : in String;
@@ -81,18 +81,18 @@ package body Tabula.Users.Lists is
 	function Create (
 		Directory : not null Static_String_Access;
 		Log_File_Name : not null Static_String_Access)
-		return Users_List is
+		return User_List is
 	begin
 		return (Directory => Directory, Log_File_Name => Log_File_Name, Log_Read_Count => 0);
 	end Create;
 	
-	function Exists (List : Users_List; Id : String) return Boolean is
+	function Exists (List : User_List; Id : String) return Boolean is
 	begin
 		return Ada.Directories.Exists (Ada.Directories.Compose (List.Directory.all, Id));
 	end Exists;
 	
 	procedure Query (
-		List : in Users_List;
+		List : in User_List;
 		Id : in String;
 		Password : in String;
 		Remote_Addr : in String;
@@ -135,7 +135,7 @@ package body Tabula.Users.Lists is
 	end Query;
 	
 	procedure New_User (
-		List : in out Users_List;
+		List : in out User_List;
 		Id : in String;
 		Password : in String;
 		Remote_Addr : in String;
@@ -169,7 +169,7 @@ package body Tabula.Users.Lists is
 	end New_User;
 	
 	procedure Update (
-		List : in out Users_List;
+		List : in out User_List;
 		Id : in String;
 		Remote_Addr : in String;
 		Remote_Host : in String;
@@ -182,7 +182,7 @@ package body Tabula.Users.Lists is
 		Save (Ada.Directories.Compose (List.Directory.all, Id), Info);
 	end Update;
 	
-	function All_Users (List : Users_List) return User_Info_Maps.Map is
+	function All_Users (List : User_List) return User_Info_Maps.Map is
 		Search : Ada.Directories.Search_Type;
 		File : Ada.Directories.Directory_Entry_Type;
 	begin
@@ -212,7 +212,7 @@ package body Tabula.Users.Lists is
 	end All_Users;
 	
 	function Muramura_Count (
-		List : Users_List;
+		List : User_List;
 		Now : Ada.Calendar.Time;
 		Muramura_Duration : Duration)
 		return Natural
@@ -237,7 +237,7 @@ package body Tabula.Users.Lists is
 	end Muramura_Count;
 	
 	procedure Iterate_Log (
-		List : in Users_List;
+		List : in User_List;
 		Process : not null access procedure (
 			Id : in String;
 			Remote_Addr : in String;

@@ -3,25 +3,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
 	<head>
 		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
-		<?stylesheet><link rel="stylesheet" type="text/css" href="style.css" /></?stylesheet>
+		<link rel="stylesheet" type="text/css" ?href_stylesheet href="style.css" />
 		<title>The Village of Vampire</title>
 	</head>
-	<body background=?background>
+	<body ?background background="./image/background.png">
 		<h1>The Village of Vampire</h1>
 		<div class="bar">
 			<table>
-				<tr><td><?back>戻る</?back></td></tr>
+				<tr><td><a ?href_index>戻る</a></td></tr>
 			</table>
 		</div>
 		<h2>終了した村の記録</h2>
-		<?log><table class="villagelist" cellspacing="0">
-			<?village>
+		<?list><table class="villagelist" cellspacing="0">
+			<?item>
 				<tr>
 					<td><?id>村番号</?id></td>
-					<td><?name>村名</?name></td>
+					<td><a ?href_village><?name>村名</?name></a></td>
 				</tr>
-			</?village>
-		</table></?log>
+			</?item>
+		</table></?list>
 		<p class="auther">
 			The Village of Vampire by YT
 		</p>

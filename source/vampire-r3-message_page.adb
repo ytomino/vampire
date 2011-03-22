@@ -15,7 +15,14 @@ is
 		Tag : in String;
 		Contents : in Web.Producers.Template) is
 	begin
-		if Tag = "message" then
+		if Tag = "action_uri" then
+			String'Write (Output, "action=");
+			Forms.Write_Link_To_Resource (
+				Output,
+				Form,
+				Current_Directory => ".",
+				Resource => Forms.Self);
+		elsif Tag = "message" then
 			Forms.Write_In_HTML (Output, Form, Message);
 		elsif Tag = "parameters" then
 			case Base_Page is
@@ -58,12 +65,6 @@ is
 							Day_Name (Today, Today, State) & " - ");
 				end;
 			end if;
-		elsif Tag = "uri" then
-			Forms.Write_Link_To_Resource (
-				Output,
-				Form,
-				Current_Directory => ".",
-				Resource => Forms.Self);
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;

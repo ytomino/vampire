@@ -47,7 +47,7 @@ begin
 				Remote_Host => +Remote_Host,
 				Time => Time));
 		end Process;
-		List : Users_List := Create (
+		List : User_List := Create (
 			Directory => Users_Directory,
 			Log_File_Name => Static_String_Access (Input_File_Name.Constant_Reference.Element));
 	begin

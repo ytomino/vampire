@@ -8,11 +8,11 @@ package Vampire.Renderers.Log is
 	type Renderer is new Renderers.Renderer with null record;
 	
 	function Load_Summary (
-		List : Tabula.Villages.Lists.Villages_List;
+		List : Tabula.Villages.Lists.Village_List;
 		Id : Tabula.Villages.Village_Id)
 		return Tabula.Villages.Lists.Village_Summary;
 	procedure Create_Log (
-		List : Tabula.Villages.Lists.Villages_List;
+		List : Tabula.Villages.Lists.Village_List;
 		Id : in Tabula.Villages.Village_Id);
 	procedure Create_Index (
 		Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;

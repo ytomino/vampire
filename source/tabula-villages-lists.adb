@@ -54,7 +54,7 @@ package body Tabula.Villages.Lists is
 		return Ada.Strings.Unbounded.To_String (Result);
 	end Get_YAML_Type;
 	
-	function Get_Type_Index (List : Villages_List; Type_Code : String) return Positive is
+	function Get_Type_Index (List : Village_List; Type_Code : String) return Positive is
 	begin
 		for I in 1 .. List.Registered_Type_Count loop
 			if List.Registered_Types (I).Type_Code.all = Type_Code then
@@ -64,7 +64,7 @@ package body Tabula.Villages.Lists is
 		raise Ada.IO_Exceptions.Data_Error with "unknown type " & Type_Code;
 	end Get_Type_Index;
 	
-	procedure Cache_Summaries (List : in Villages_List) is
+	procedure Cache_Summaries (List : in Village_List) is
 		File: Ada.Streams.Stream_IO.File_Type :=
 			Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Cache_File_Name.all);
 	begin
@@ -72,7 +72,7 @@ package body Tabula.Villages.Lists is
 		Ada.Streams.Stream_IO.Close (File);
 	end Cache_Summaries;
 	
-	procedure Read_Summaries (List : in out Villages_List; Update_Cache : Boolean) is
+	procedure Read_Summaries (List : in out Village_List; Update_Cache : Boolean) is
 	begin
 		if not List.Map_Read then
 			if Ada.Directories.Exists (List.Cache_File_Name.all) then
@@ -148,7 +148,7 @@ package body Tabula.Villages.Lists is
 		Cache_File_Name : not null Static_String_Access;
 		Create_Index : not null Create_Index_Procedure;
 		Types : Registered_Type_Array)
-		return Villages_List is
+		return Village_List is
 	begin
 		return (
 			Data_Directory => Data_Directory,
@@ -163,12 +163,12 @@ package body Tabula.Villages.Lists is
 				Registered_Type_Array'(1 .. Registered_Type_Capacity - Types'Length => <>));
 	end Create;
 	
-	function File_Name (List : Villages_List; Id : Village_Id) return String is
+	function File_Name (List : Village_List; Id : Village_Id) return String is
 	begin
 		return Ada.Directories.Compose (List.Data_Directory.all, Id);
 	end File_Name;
 	
-	function HTML_File_Name (List : Villages_List; Id : Village_Id; Day : Natural) return String is
+	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural) return String is
 	begin
 		return Ada.Directories.Compose (
 			Containing_Directory => List.HTML_Directory.all,
@@ -176,12 +176,12 @@ package body Tabula.Villages.Lists is
 			Extension => "html");
 	end HTML_File_Name;
 	
-	function Exists (List : Villages_List; Id : Village_Id) return Boolean is
+	function Exists (List : Village_List; Id : Village_Id) return Boolean is
 	begin
 		return Ada.Directories.Exists (File_Name (List, Id));
 	end Exists;
 	
-	function New_Village_Id (List : Villages_List) return Village_Id is
+	function New_Village_Id (List : Village_List) return Village_Id is
 		Next : Integer := 0;
 	begin
 		declare
@@ -222,7 +222,7 @@ package body Tabula.Villages.Lists is
 		end;
 	end New_Village_Id;
 	
-	procedure Get_Summaries (List : in out Villages_List; Result : out Summary_Maps.Map) is
+	procedure Get_Summaries (List : in out Village_List; Result : out Summary_Maps.Map) is
 	begin
 		Read_Summaries (List, True);
 		List.Create_Index (List.Map, Update => False);
@@ -281,7 +281,7 @@ package body Tabula.Villages.Lists is
 	end Count_Joined_By;
 
 	procedure Update (
-		List : in out Villages_List;
+		List : in out Village_List;
 		Id : Village_Id;
 		Summary : Village_Summary) is
 	begin
@@ -301,7 +301,7 @@ package body Tabula.Villages.Lists is
 		Cache_Summaries (List);
 	end Update;
 	
-	procedure Refresh (List : in out Villages_List) is
+	procedure Refresh (List : in out Village_List) is
 		Search : Ada.Directories.Search_Type;
 		File : Ada.Directories.Directory_Entry_Type;
 	begin
@@ -342,7 +342,7 @@ package body Tabula.Villages.Lists is
 		List.Create_Index (List.Map, Update => True);
 	end Refresh;
 	
-	function Blocking_Short_Term (List : Villages_List) return Boolean is
+	function Blocking_Short_Term (List : Village_List) return Boolean is
 	begin
 		return Ada.Directories.Exists (List.Blocking_Short_Term_File_Name.all);
 	end Blocking_Short_Term;

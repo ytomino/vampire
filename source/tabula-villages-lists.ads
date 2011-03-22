@@ -21,14 +21,14 @@ package Tabula.Villages.Lists is
 	
 	package Summary_Maps is new Ada.Containers.Ordered_Maps (Village_Id, Village_Summary);
 	
-	type Villages_List (<>) is limited private;
+	type Village_List (<>) is limited private;
 	
 	type Load_Summary_Function is access function (
-		List : Villages_List;
+		List : Village_List;
 		Id : Village_Id)
 		return Village_Summary;
 	type Create_Log_Procedure is access procedure (
-		List : Villages_List;
+		List : Village_List;
 		Id : in Villages.Village_Id);
 	type Create_Index_Procedure is access procedure (
 		Summaries : in Summary_Maps.Map;
@@ -49,19 +49,19 @@ package Tabula.Villages.Lists is
 		Cache_File_Name : not null Static_String_Access;
 		Create_Index : not null Create_Index_Procedure;
 		Types : Registered_Type_Array)
-		return Villages_List;
+		return Village_List;
 	
 	-- 村ID
 	
-	function File_Name (List : Villages_List; Id : Village_Id) return String;
-	function HTML_File_Name (List : Villages_List; Id : Village_Id; Day : Natural) return String;
+	function File_Name (List : Village_List; Id : Village_Id) return String;
+	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural) return String;
 	
-	function Exists (List : Villages_List; Id : Village_Id) return Boolean;
-	function New_Village_Id (List : Villages_List) return Village_Id;
+	function Exists (List : Village_List; Id : Village_Id) return Boolean;
+	function New_Village_Id (List : Village_List) return Village_Id;
 	
 	-- 問い合わせ
 	
-	procedure Get_Summaries (List : in out Villages_List; Result : out Summary_Maps.Map);
+	procedure Get_Summaries (List : in out Village_List; Result : out Summary_Maps.Map);
 	
 	-- あるユーザーが村を作っているか
 	function Exists_Opened_By (
@@ -82,20 +82,20 @@ package Tabula.Villages.Lists is
 	-- 更新
 	
 	procedure Update (
-		List : in out Villages_List;
+		List : in out Village_List;
 		Id : Village_Id;
 		Summary : Village_Summary);
 	
-	procedure Refresh (List : in out Villages_List); -- 全部を再作成
+	procedure Refresh (List : in out Village_List); -- 全部を再作成
 	
 	-- 短期村作成禁止
-	function Blocking_Short_Term (List : Villages_List) return Boolean;
+	function Blocking_Short_Term (List : Village_List) return Boolean;
 	
 private
 	
 	Registered_Type_Capacity : constant := 2;
 	
-	type Villages_List is limited record
+	type Village_List is limited record
 		Data_Directory : not null Static_String_Access;
 		HTML_Directory : not null Static_String_Access;
 		Blocking_Short_Term_File_Name : not null Static_String_Access;

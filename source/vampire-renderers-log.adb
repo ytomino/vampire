@@ -4,8 +4,8 @@ with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
 with Web.RSS;
 with Vampire.Configurations;
-with Vampire.Forms;
-with Vampire.Renderers.List_Page;
+with Vampire.Forms.Full;
+with Vampire.R3.Log_Index_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Villages.Load;
 package body Vampire.Renderers.Log is
@@ -16,7 +16,7 @@ package body Vampire.Renderers.Log is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function Load_Summary (
-		List : Tabula.Villages.Lists.Villages_List;
+		List : Tabula.Villages.Lists.Village_List;
 		Id : Tabula.Villages.Village_Id)
 		return Tabula.Villages.Lists.Village_Summary
 	is
@@ -27,7 +27,7 @@ package body Vampire.Renderers.Log is
 	end Load_Summary;
 	
 	procedure Create_Log (
-		List : Tabula.Villages.Lists.Villages_List;
+		List : Tabula.Villages.Lists.Village_List;
 		Id : in Tabula.Villages.Village_Id)
 	is
 		Village : aliased Vampire.Villages.Village_Type;
@@ -60,11 +60,21 @@ package body Vampire.Renderers.Log is
 		Update : in Boolean)
 	is
 		procedure Make_Log_Index (Summaries : in Lists.Summary_Maps.Map) is
-			Renderer : Renderers.Log.Renderer := Renderers.Log.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Full)'Access);
+			Form : Forms.Full.Form_Type := Forms.Full.Create;
 			File: Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (Name => Configurations.Villages_Index_HTML_File_Name);
 		begin
-			Renderers.List_Page (Renderer, Ada.Streams.Stream_IO.Stream (File), Summaries);
+			R3.Log_Index_Page (
+				Ada.Streams.Stream_IO.Stream (File),
+				Form,
+				Configurations.Template_Names (Forms.For_Full).Template_Log_Index_File_Name.all,
+				HTML_Directory => Configurations.Villages_HTML_Directory,
+				Style_Sheet => Configurations.Style_Sheet_File_Name,
+				Background =>
+					Ada.Directories.Compose (
+						Containing_Directory => Configurations.Template_Names (Forms.For_Full).Image_Directory.all,
+						Name => Configurations.Template_Names (Forms.For_Full).Relative_Background_Image_File_Name.all),
+				Summaries => Summaries);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_Log_Index;
 		procedure Make_RSS (Summaries : in Lists.Summary_Maps.Map) is

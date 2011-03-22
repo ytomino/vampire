@@ -10,19 +10,22 @@ procedure Vampire.R3.User_List_Page (
 	User_Id : in String;
 	User_Password : in String)
 is
+	use Users.Lists.User_Info_Maps;
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
 		Template : in Web.Producers.Template) is
 	begin
-		if Tag = "index" then
+		if Tag = "href_index" then
+			String'Write (Output, "href=");
 			Forms.Write_Link_To_Index_Page (
 				Output,
 				Form,
 				Current_Directory => ".",
 				User_Id => User_Id,
 				User_Password => User_Password);
-		elsif Tag = "logindex" then
+		elsif Tag = "href_logindex" then
+			String'Write (Output, "href=");
 			Forms.Write_Link_To_Resource (
 				Output,
 				Form,
@@ -42,7 +45,7 @@ is
 						Forms.Write_In_HTML (
 							Output,
 							Form,
-							Users.Lists.User_Info_Maps.Key (I));
+							Key (I));
 					elsif Tag = "joined_count" then
 						Forms.Write_In_HTML (
 							Output,
@@ -50,7 +53,7 @@ is
 							Image (
 								Tabula.Villages.Lists.Count_Joined_By (
 									Summaries,
-									Users.Lists.User_Info_Maps.Key (I),
+									Key (I),
 									Filter => (
 										Tabula.Villages.Prologue | Tabula.Villages.Playing => False,
 										Tabula.Villages.Epilogue | Tabula.Villages.Closed => True),
@@ -66,7 +69,7 @@ is
 					end if;
 				end Handle_User;
 			begin
-				while Users.Lists.User_Info_Maps.Has_Element (I) loop
+				while Has_Element (I) loop
 					if Tabula.Villages.Lists.Count_Joined_By (
 						Summaries,
 						User_List.Constant_Reference (I).Key.all,
@@ -77,7 +80,7 @@ is
 					then
 						Web.Producers.Produce (Output, Template, Handler => Handle_User'Access);
 					end if;
-					Users.Lists.User_Info_Maps.Next (I);
+					Next (I);
 				end loop;
 			end;
 		else
