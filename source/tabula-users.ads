@@ -42,7 +42,7 @@ package Tabula.Users is
 		Disallow_New_Village : Boolean := False;
 		No_Log : Boolean := False;
 		-- IDを変更した場合
-		Renamed : Ada.Strings.Unbounded.Unbounded_String;
+		Renamed : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
 private

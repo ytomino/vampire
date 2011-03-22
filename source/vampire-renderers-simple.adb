@@ -18,32 +18,6 @@ package body Vampire.Renderers.Simple is
 	
 	subtype Super is Renderers.Renderer;
 	
-	overriding procedure Refresh_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		URI : in String) 
-	is
-		Encoder_Stream : aliased iconv.Streams.Stream := iconv.Streams.Create (Output, Ready_Encoding);
-	begin
-		Write(Encoder_Stream'Access, 
-			"<html>" & 
-			"<head>" &
-			"<meta http-equiv=""CONTENT-TYPE"" content=""text/html; charset=SJIS"">" &
-			"<title>" & "The Village of Vampire" & "</title>" &
-			"</head>" &
-			"<body>" &
-			"<h1>" & "The Village of Vampire" & "</h1>" &
-			"<hr>" &
-			"<div>受理しました。<div>" &
-			"<hr>" &
-			"<div><a href=""");
-		Write(Encoder_Stream'Access, URI);
-		Write(Encoder_Stream'Access, 
-			""">戻る</a><div>" &
-			"</body>" &
-			"</html>");
-	end Refresh_Page;
-	
 	overriding procedure Produce(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

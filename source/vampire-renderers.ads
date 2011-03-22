@@ -12,13 +12,6 @@ package Vampire.Renderers is
 	
 	type Renderer(Configuration : Configuration_Access) is tagged null record;
 	
-	-- Page Generating
-	
-	procedure Refresh_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		URI : in String);
-	
 private
 	
 	procedure Produce(

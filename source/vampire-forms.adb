@@ -24,7 +24,9 @@ package body Vampire.Forms is
 		Character'Write (Stream, '"');
 		String'Write (Stream, Relative);
 		if Parameters.Is_Empty then
-			if Relative'Length = 0 then
+			if Relative'Length = 0
+				or else Ada.Directories.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
+			then
 				String'Write (Stream, "./");
 			end if;
 		else

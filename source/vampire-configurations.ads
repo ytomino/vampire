@@ -64,14 +64,14 @@ package Vampire.Configurations is
 		Relative_Background_Image_File_Name : not null Static_String_Access;
 		Relative_Role_Image_File_Names : not null access constant Forms.Role_Images;
 		Template_Index_File_Name : not null access constant String;
-		Template_List_File_Name : not null access constant String;
-		Template_Users_File_Name : not null access constant String;
 		Template_Register_File_Name : not null access constant String;
 		Template_User_File_Name : not null access constant String;
+		Template_User_List_File_Name : not null access constant String;
 		Template_Village_File_Name : not null access constant String;
 		Template_Preview_File_Name : not null access constant String;
 		Template_Target_File_Name : not null access constant String;
 		Template_Message_File_Name : not null access constant String;
+		Template_Log_Index_File_Name : not null access constant String;
 	end record;
 	
 	Template_Names : constant array (Forms.Template_Set_Type) of aliased Template_Names_Type := (
@@ -81,28 +81,28 @@ package Vampire.Configurations is
 			Relative_Background_Image_File_Name => Relative_Background_Image_File_Name'Access,
 			Relative_Role_Image_File_Names => Relative_Role_Image_File_Names'Access,
 			Template_Index_File_Name => new String'("template-index.html"),
-			Template_List_File_Name => new String'("template-list.html"),
-			Template_Users_File_Name => new String'("template-users.html"),
 			Template_Register_File_Name => new String'("template-register.html"),
 			Template_User_File_Name => new String'("template-user.html"),
+			Template_User_List_File_Name => new String'("template-userlist.html"),
 			Template_Village_File_Name => new String'("template-village.html"),
 			Template_Preview_File_Name => new String'("template-preview.html"),
 			Template_Target_File_Name => new String'("template-target.html"),
-			Template_Message_File_Name => new String'("template-message.html")),
+			Template_Message_File_Name => new String'("template-message.html"),
+			Template_Log_Index_File_Name => new String'("template-logindex.html")),
 		Forms.For_Mobile => (
 			Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
 			Image_Directory => Image_Directory'Access,
 			Relative_Background_Image_File_Name => Relative_Background_Image_File_Name'Access,
 			Relative_Role_Image_File_Names => Relative_Role_Image_File_Names'Access,
 			Template_Index_File_Name => new String'("template-index-simple.html"),
-			Template_List_File_Name => new String'("template-list-simple.html"),
-			Template_Users_File_Name => new String'("template-users-simple.html"),
 			Template_Register_File_Name => new String'("template-register-simple.html"),
 			Template_User_File_Name => new String'("template-user-simple.html"),
+			Template_User_List_File_Name => new String'("template-userlist-simple.html"),
 			Template_Village_File_Name => new String'("template-village-simple.html"),
 			Template_Preview_File_Name => new String'("template-preview-simple.html"),
 			Template_Target_File_Name => new String'("template-target-simple.html"),
-			Template_Message_File_Name => new String'("template-message-simple.html")));
+			Template_Message_File_Name => new String'("template-message-simple.html"),
+			Template_Log_Index_File_Name => new String'("template-logindex-simple.html")));
 	
 	-- cookie有効期限
 	Cookie_Duration : constant Duration := 4 * 24 * 60 * 60 * 1.0;

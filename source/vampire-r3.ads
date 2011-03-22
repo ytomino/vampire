@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-private with Ada.Streams;
+with Ada.Streams;
+with Tabula.Villages;
 private with Web.Producers;
-private with Tabula.Villages;
 package Vampire.R3 is
 	
 private

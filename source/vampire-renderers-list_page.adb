@@ -10,5 +10,5 @@ is
 		Handle_List (Output, Tag, Template, Object, Summaries, 9999, "", "");
 	end Handle;
 begin
-	Produce (Object, Output, Object.Configuration.Template_List_File_Name.all, Handle'Access);
+	Produce (Object, Output, Object.Configuration.Template_Log_Index_File_Name.all, Handle'Access);
 end Vampire.Renderers.List_Page;

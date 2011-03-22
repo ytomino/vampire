@@ -290,16 +290,6 @@ package body Vampire.Renderers is
 	
 	-- Page Generating
 	
-	procedure Refresh_Page(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		URI : in String) is
-	begin
-		Write(Output,
-			"<meta http-equiv=""REFRESH"" content=""0;URL=" & URI & """ />" &
-			"<style>body{background-color:black;}</style>");
-	end Refresh_Page;
-	
 	procedure Produce(
 		Object : in Renderer;
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

@@ -15,12 +15,13 @@ with Tabula.Villages.Lists;
 with Vampire.Configurations;
 with Vampire.Forms.Select_Form;
 with Vampire.R3.Message_Page;
+with Vampire.R3.Refresh_Page;
+with Vampire.R3.User_List_Page;
 with Vampire.Renderers.Index_Page;
 with Vampire.Renderers.Preview_Page;
 with Vampire.Renderers.Register_Page;
 with Vampire.Renderers.Target_Page;
 with Vampire.Renderers.User_Page;
-with Vampire.Renderers.Users_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Renderers.Simple;
 with Vampire.Renderers.Log;
@@ -96,18 +97,19 @@ begin
 			end if;
 		end Get_Renderer;
 		Renderer : Renderers.Renderer'Class renames Get_Renderer(Query_Strings);
-		procedure Render_Reload_Page is
-		begin
-			Web.Header_See_Other (Output, Web.Request_URI);
-			Web.Header_Content_Type (Output, Web.Text_HTML);
-			Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-			Web.Header_Break (Output);
-			Renderer.Refresh_Page (Output, URI => Web.Request_URI);
-		end Render_Reload_Page;
-		-- Values
 		pragma Warnings (Off); -- compiler...
 		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (Query_Strings);
 		pragma Warnings (On);
+		procedure Refresh_Page is
+			Self_URI : constant String := Web.Request_URI;
+		begin
+			Web.Header_See_Other (Output, Self_URI);
+			Web.Header_Content_Type (Output, Web.Text_HTML);
+			Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+			Web.Header_Break (Output);
+			R3.Refresh_Page (Output, Form, URI => Self_URI);
+		end Refresh_Page;
+		-- Values
 		User_Id : constant String := Form.Get_User_Id (Query_Strings, Cookie);
 		User_Password : constant String := Form.Get_User_Password (Query_Strings, Cookie);
 		Base_Page : constant Forms.Base_Page := Form.Get_Base_Page (Query_Strings, Cookie);
@@ -467,7 +469,7 @@ begin
 				elsif Cmd = "remakelog" then
 					if User_State = Users.Lists.Valid and then User_Id = Tabula.Users.Administrator then
 						Tabula.Villages.Lists.Refresh (Villages_List);
-						Render_Reload_Page;
+						Refresh_Page;
 					else
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
@@ -485,60 +487,62 @@ begin
 					-- index page, user page, all users page
 					if Cmd = "" then
 						if Post then
-							Render_Reload_Page;
+							Refresh_Page;
 						elsif Base_Page = Forms.User_Page then
-							declare
-								Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
-							begin
-								if User_State = Users.Lists.Valid and then User_Id /= Users.Administrator then
+							if User_State = Users.Lists.Valid and then User_Id /= Users.Administrator then
+								declare
+									Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
+								begin
+									Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
-									Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
 									Renderer.User_Page (
 										Output,
 										Summaries,
 										User_Id => User_Id,
 										User_Password => User_Password,
 										User_Info => User_Info);
-								else
-									Web.Header_Content_Type (Output, Web.Text_HTML);
-									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-									Web.Header_Break (Output);
-									R3.Message_Page (
-										Output,
-										Form,
-										Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
-										Base_Page => Forms.Index_Page,
-										Message => "ログオンしないとユーザーページは表示できません。",
-										User_Id => "",
-										User_Password => "");
-								end if;
-							end;
+								end;
+							else
+								Web.Header_Content_Type (Output, Web.Text_HTML);
+								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+								Web.Header_Break (Output);
+								R3.Message_Page (
+									Output,
+									Form,
+									Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
+									Base_Page => Forms.Index_Page,
+									Message => "ログオンしないとユーザーページは表示できません。",
+									User_Id => "",
+									User_Password => "");
+							end if;
 						elsif Base_Page = Forms.User_List_Page then
-							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-							Web.Header_Break (Output);
 							declare
 								Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
 							begin
 								Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
-								Renderers.Users_Page (
-									Renderer,
+								Web.Header_Content_Type (Output, Web.Text_HTML);
+								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+								Web.Header_Break (Output);
+								R3.User_List_Page (
 									Output,
-									Summaries,
+									Form,
+									Configurations.Template_Names (Form.Template_Set).Template_User_List_File_Name.all,
+									HTML_Directory => Configurations.Villages_HTML_Directory,
+									Summaries => Summaries,
 									User_List => Users.Lists.All_Users (Users_List),
 									User_Id => User_Id,
 									User_Password => User_Password);
 							end;
 						else -- index page
-							Web.Header_Content_Type (Output, Web.Text_HTML);
-							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-							Web.Header_Break (Output);
 							declare
 								Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
 							begin
 								Tabula.Villages.Lists.Get_Summaries (Villages_List, Summaries);
+								Web.Header_Content_Type (Output, Web.Text_HTML);
+								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+								Web.Header_Break (Output);
 								Renderer.Index_Page (
 									Output,
 									Summaries,
@@ -596,7 +600,7 @@ begin
 						-- Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
 						if Cmd = "" then
 							if Post then
-								Render_Reload_Page;
+								Refresh_Page;
 							else
 								-- 強制進行
 								declare
@@ -736,7 +740,7 @@ begin
 												Tabula.Villages.Lists.File_Name (Villages_List, Village_Id),
 												Village);
 										end;
-										Render_Reload_Page;
+										Refresh_Page;
 									end if;
 								elsif Cmd = "remove" then
 									if Village.State /= Tabula.Villages.Prologue then
@@ -791,14 +795,14 @@ begin
 												end if;
 											end;
 										end if;
-										Render_Reload_Page;
+										Refresh_Page;
 									end if;
 								elsif Cmd = "rollback" then
 									if Village.People.Constant_Reference(Player).Element.Commited then
 										Village.People.Reference(Player).Element.Commited := False;
 										Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 									end if;
-									Render_Reload_Page;
+									Refresh_Page;
 								elsif Cmd = "escape" then
 									if Village.State /= Tabula.Villages.Prologue then
 										Message_Page ("村から出られるのはプロローグのみです。");
@@ -837,7 +841,7 @@ begin
 											else
 												Villages.Wake (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										elsif Action = "encourage" then
 											if Said(Player).Encourage > 0 then
@@ -845,7 +849,7 @@ begin
 											else
 												Villages.Encourage (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										elsif Action = "vampire_gaze" then
 											if Village.People.Constant_Reference(Player).Element.Role not in Villages.Vampire_Role then
@@ -859,7 +863,7 @@ begin
 											else
 												Villages.Gaze (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										else
 											Message_Page ("未対応アクション(" & Action & ")を行おうとしました。");
@@ -905,7 +909,7 @@ begin
 															User_Id => User_Id,
 															User_Password => User_Password);
 													else
-														Render_Reload_Page;
+														Refresh_Page;
 													end if;
 												end;
 											end if;
@@ -919,7 +923,7 @@ begin
 														Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 													end if;
 												end;
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										else -- "reedit"
 											case Form.Get_Reedit_Kind (Inputs) is
@@ -948,7 +952,7 @@ begin
 													end if;
 												when others =>
 													-- 通常発言以外の再編集は未実装……
-													Render_Reload_Page;
+													Refresh_Page;
 											end case;
 										end if;
 									end;
@@ -980,7 +984,7 @@ begin
 													Villages.Monologue (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												end if;
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										end;
 									end if;
@@ -1016,7 +1020,7 @@ begin
 													Villages.Ghost (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												end if;
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										end;
 									end if;
@@ -1052,7 +1056,7 @@ begin
 												end if;
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 											end if;
-											Render_Reload_Page;
+											Refresh_Page;
 										end if;
 									end;
 								elsif Cmd = "vote" then
@@ -1073,7 +1077,7 @@ begin
 													Villages.Vote(Village, Player, Target);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 												end if;
-												Render_Reload_Page;
+												Refresh_Page;
 											end if;
 										end;
 									end if;
@@ -1094,7 +1098,7 @@ begin
 											elsif Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target >= 0 then
 												Message_Page ("医者と探偵の行動選択は一日に一度しかできません。");
 											elsif Target < 0 then
-												Render_Reload_Page;
+												Refresh_Page;
 											else
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
@@ -1114,7 +1118,7 @@ begin
 												Villages.Select_Target (Village, Player, Target, Special, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
 											end if;
-											Render_Reload_Page;
+											Refresh_Page;
 										end if;
 									end;
 								elsif Cmd = "target2" then
@@ -1128,7 +1132,7 @@ begin
 												when Villages.Doctor | Villages.Detective =>
 													Villages.Select_Target (Village, Player, Target, False, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-													Render_Reload_Page;
+													Refresh_Page;
 												when others =>
 													Message_Page ("医者と探偵以外は、日中に能力を使えません。");
 											end case;
@@ -1140,7 +1144,7 @@ begin
 									else
 										Forms.Set_Rule (Form, Village, Inputs);
 										Villages.Save (Tabula.Villages.Lists.File_Name (Villages_List, Village_Id), Village);
-										Render_Reload_Page;
+										Refresh_Page;
 									end if;
 								else
 									Message_Page ("不正なコマンド(" & Cmd & ")が送られました。");

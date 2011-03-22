@@ -268,7 +268,7 @@ package body Tabula.Villages.Lists is
 				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
 			begin
 				if not Long_Only or else V.Term = Long then
-					if V.State <= Playing then
+					if Filter (V.State) then
 						if V.People.Contains (User_Id) then
 							Result := Result + 1;
 						end if;

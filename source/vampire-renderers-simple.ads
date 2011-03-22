@@ -5,11 +5,6 @@ package Vampire.Renderers.Simple is
 	
 	-- Page Generating
 	
-	overriding procedure Refresh_Page(
-		Object : in Renderer; 
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		URI : in String);
-	
 private
 	
 	overriding procedure Produce(
