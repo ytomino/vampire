@@ -19,6 +19,31 @@ package Vampire.Forms is
 	
 	-- 出力用
 	
+	function Self return String;
+	
+	function Parameters_To_Index_Page (
+		Form : Root_Form_Type;
+		User_Id : String;
+		User_Password : String)
+		return Web.Query_Strings is abstract;
+	
+	function Parameters_To_User_Page (
+		Form : Root_Form_Type;
+		User_Id : String;
+		User_Password : String)
+		return Web.Query_Strings is abstract;
+	
+	function Parameters_To_Village_Page (
+		Form : Root_Form_Type;
+		Village_Id : Tabula.Villages.Village_Id;
+		Day : Integer := -1;
+		First : Integer := -1;
+		Last : Integer := -1;
+		Latest : Integer := -1;
+		User_Id : String;
+		User_Password : String)
+		return Web.Query_Strings is abstract;
+	
 	procedure Write_In_HTML (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type;
@@ -30,23 +55,30 @@ package Vampire.Forms is
 		Form : in Root_Form_Type;
 		Item : in String) is abstract;
 	
+	procedure Write_Link_To_Resource (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		Resource : in String;
+		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map);
+	
 	procedure Write_Link_To_Index_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type;
+		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
 		User_Id : in String;
-		User_Password : in String) is abstract;
+		User_Password : in String);
 	
 	procedure Write_Link_To_User_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type;
+		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
 		User_Id : in String;
-		User_Password : in String) is abstract;
+		User_Password : in String);
 	
 	procedure Write_Link_To_Village_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type;
+		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
 		HTML_Directory : in String;
 		Log : in Boolean;
@@ -56,13 +88,7 @@ package Vampire.Forms is
 		Last : Integer := -1;
 		Latest : Integer := -1;
 		User_Id : in String;
-		User_Password : in String) is abstract;
-	
-	procedure Write_Link_To_Resource (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type'Class;
-		Current_Directory : in String;
-		Resource : in String);
+		User_Password : in String);
 	
 	-- ユーザー情報
 	

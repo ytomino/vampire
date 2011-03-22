@@ -2,19 +2,109 @@
 with Ada.Directories.Hierarchical_File_Names;
 package body Vampire.Forms is
 	
+	function Self return String is
+	begin
+		-- "http://.../vampire/" -> ""
+		-- "http://localhost/vampire.cgi" -> "vampire.cgi"
+		return Ada.Directories.Simple_Name (Web.Request_Path);
+	end Self;
+	
 	procedure Write_Link_To_Resource (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
-		Resource : in String) is
-	begin
-		String'Write (Stream,
-			"""" &
+		Resource : in String;
+		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map)
+	is
+		Relative : constant String :=
 			Ada.Directories.Hierarchical_File_Names.Relative_Name (
 				Name => Resource,
-				From => Current_Directory) &
-			"""");
+				From => Current_Directory);
+	begin
+		Character'Write (Stream, '"');
+		String'Write (Stream, Relative);
+		if Parameters.Is_Empty then
+			if Relative'Length = 0 then
+				String'Write (Stream, "./");
+			end if;
+		else
+			Web.Write_Query_In_Attribute (
+				Stream,
+				Form.HTML_Version,
+				Parameters); -- Parameters should contain ASCII only
+		end if;
+		Character'Write (Stream, '"');
 	end Write_Link_To_Resource;
+	
+	procedure Write_Link_To_Index_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String) is
+	begin
+		Write_Link_To_Resource (
+			Stream,
+			Form,
+			Current_Directory => Current_Directory,
+			Resource => Self,
+			Parameters => Form.Parameters_To_Index_Page (User_Id, User_Password));
+	end Write_Link_To_Index_Page;
+	
+	procedure Write_Link_To_User_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		User_Id : in String;
+		User_Password : in String) is
+	begin
+		Write_Link_To_Resource (
+			Stream,
+			Form,
+			Current_Directory => Current_Directory,
+			Resource => Self,
+			Parameters => Form.Parameters_To_User_Page (User_Id, User_Password));
+	end Write_Link_To_User_Page;
+	
+	procedure Write_Link_To_Village_Page (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Form : in Root_Form_Type'Class;
+		Current_Directory : in String;
+		HTML_Directory : in String;
+		Log : in Boolean;
+		Village_Id : Tabula.Villages.Village_Id;
+		Day : Integer := -1;
+		First : Integer := -1;
+		Last : Integer := -1;
+		Latest : Integer := -1;
+		User_Id : in String;
+		User_Password : in String) is
+	begin
+		if Log then
+			Write_Link_To_Resource (
+				Stream,
+				Form,
+				Current_Directory => Current_Directory,
+				Resource => Ada.Directories.Compose (
+					Containing_Directory => HTML_Directory,
+					Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
+					Extension => "html"));
+		else
+			Write_Link_To_Resource (
+				Stream,
+				Form,
+				Current_Directory => Current_Directory,
+				Resource => Self,
+				Parameters => Form.Parameters_To_Village_Page (
+					Village_Id => Village_Id,
+					Day => Day,
+					First => First,
+					Last => Last,
+					Latest => Latest,
+					User_Id => User_Id,
+					User_Password => User_Password));
+		end if;
+	end Write_Link_To_Village_Page;
 	
 	function Get_New_User_Id (
 		Form : Root_Form_Type'Class;

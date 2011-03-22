@@ -310,7 +310,7 @@ package body Vampire.Renderers is
 	begin
 		Ada.Streams.Stream_IO.Open(File, Ada.Streams.Stream_IO.In_File, File_Name);
 		Web.Producers.Produce(Output,
-			Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Natural(Ada.Streams.Stream_IO.Size(File))),
+			Web.Producers.Read(Ada.Streams.Stream_IO.Stream(File), Ada.Streams.Stream_IO.Size(File)),
 			Handler => Handler);
 		Ada.Streams.Stream_IO.Close(File);
 	end Produce;

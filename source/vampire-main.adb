@@ -14,6 +14,7 @@ with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
 with Vampire.Forms.Select_Form;
+with Vampire.R3;
 with Vampire.Renderers.Error_Page;
 with Vampire.Renderers.Index_Page;
 with Vampire.Renderers.Message_Page;
