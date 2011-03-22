@@ -136,7 +136,7 @@ package body Vampire.Forms.Full is
 	
 	overriding function Get_Day (
 		Form : Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Query_Strings : Web.Query_Strings)
 		return Natural
 	is
@@ -154,7 +154,7 @@ package body Vampire.Forms.Full is
 	
 	overriding function Get_Range (
 		Form : Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
 		return Message_Range

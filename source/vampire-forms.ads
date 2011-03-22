@@ -8,6 +8,8 @@ package Vampire.Forms is
 	
 	type Role_Images is array (Villages.Person_Role) of not null access constant String;
 	
+	type Base_Page is (Index_Page, User_Page, User_List_Page, Village_Page);
+	
 	type Template_Set_Type is (For_Full, For_Mobile);
 	
 	type Root_Form_Type is abstract tagged limited null record;
@@ -125,6 +127,14 @@ package Vampire.Forms is
 		New_User_Id: in String;
 		New_User_Password : in String) is abstract;
 	
+	-- ページ
+	
+	function Get_Base_Page (
+		Form : Root_Form_Type'Class;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie)
+		return Base_Page;
+	
 	-- 個人ページ
 	
 	function Is_User_Page (
@@ -147,7 +157,7 @@ package Vampire.Forms is
 	
 	function Get_Day (
 		Form : Root_Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Query_Strings : Web.Query_Strings)
 		return Natural is abstract;
 	
@@ -157,7 +167,7 @@ package Vampire.Forms is
 	
 	function Get_Range (
 		Form : Root_Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
 		return Message_Range is abstract;

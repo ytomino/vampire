@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 private with Ada.Streams;
 private with Web.Producers;
+private with Tabula.Villages;
 package Vampire.R3 is
 	
 private
@@ -13,5 +14,11 @@ private
 			Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String;
 			Contents : Web.Producers.Template));
+	
+	function Day_Name (
+		Day : Natural;
+		Today : Natural;
+		State : Tabula.Villages.Village_State)
+		return String;
 	
 end Vampire.R3;

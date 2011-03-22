@@ -10,7 +10,7 @@ package body Tabula.Users is
 		Password_Digest_Image'Length /= Crypto.MD5.Message_Digest'Length,
 		"image length of MD5 /= 32");
 	
-	function Valid_Id_String (Id : String) return Boolean is 
+	function Valid_Id_String (Id : String) return Boolean is
 	begin
 		if Id = "" then
 			return False;

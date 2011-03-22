@@ -4,6 +4,7 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 package body Vampire.R3 is
 	use type Ada.Calendar.Time;
+	use type Tabula.Villages.Village_State;
 	
 	procedure Produce (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -61,5 +62,20 @@ package body Vampire.R3 is
 		Web.Producers.Produce (Output, Template, Handler => Handler);
 		Ada.Streams.Stream_IO.Close(File);
 	end Produce;
+	
+	function Day_Name (
+		Day : Natural;
+		Today : Natural;
+		State : Tabula.Villages.Village_State)
+		return String is
+	begin
+		if Day = 0 then
+			return "プロローグ";
+		elsif State >= Tabula.Villages.Epilogue and then Today = Day then
+			return "エピローグ";
+		else
+			return Image (Day) & "日目";
+		end if;
+	end Day_Name;
 	
 end Vampire.R3;

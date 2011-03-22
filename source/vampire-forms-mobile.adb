@@ -153,7 +153,7 @@ package body Vampire.Forms.Mobile is
 	
 	overriding function Get_Day (
 		Form : Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Query_Strings : Web.Query_Strings)
 		return Natural
 	is
@@ -161,7 +161,7 @@ package body Vampire.Forms.Mobile is
 	begin
 		return Natural'Value (S);
 	exception
-		when Constraint_Error => 
+		when Constraint_Error =>
 			if Village.State /= Tabula.Villages.Closed then
 				return Village.Today;
 			else
@@ -171,7 +171,7 @@ package body Vampire.Forms.Mobile is
 	
 	overriding function Get_Range (
 		Form : Form_Type;
-		Village : Villages.Village_Type; 
+		Village : Villages.Village_Type;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
 		return Message_Range
@@ -191,7 +191,7 @@ package body Vampire.Forms.Mobile is
 				Last => Natural'Value (Range_Arg (P + 1 .. Range_Arg'Last)));
 		end if;
 	exception
-		when Constraint_Error => 
+		when Constraint_Error =>
 			if Village.State /= Tabula.Villages.Closed and then Day = Village.Today then
 				declare
 					Total : constant Natural := Vampire.Villages.Count_Total_Speech (Village, Day);

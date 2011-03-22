@@ -64,7 +64,7 @@ package body Vampire.Villages is
 	
 	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
-			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0, 
+			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0,
 			Last_Action_Time => Calendar.Null_Time));
 	begin
 		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop

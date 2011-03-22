@@ -130,6 +130,23 @@ package body Vampire.Forms is
 		return Web.Element (Inputs, "password2");
 	end Get_New_User_Confirmation_Password;
 	
+	function Get_Base_Page (
+		Form : Root_Form_Type'Class;
+		Query_Strings : Web.Query_Strings;
+		Cookie : Web.Cookie)
+		return Base_Page is
+	begin
+		if Form.Get_Village_Id (Query_Strings) /= Tabula.Villages.Invalid_Village_Id then
+			return Village_Page;
+		elsif Form.Is_User_Page (Query_Strings, Cookie) then
+			return User_Page;
+		elsif Form.Is_User_List_Page (Query_Strings) then
+			return User_List_Page;
+		else
+			return Index_Page;
+		end if;
+	end Get_Base_Page;
+	
 	function Is_User_List_Page (
 		Form : Root_Form_Type'Class;
 		Query_Strings : Web.Query_Strings)

@@ -123,7 +123,7 @@ package body Tabula.Villages.Lists is
 		Get_State (Village, State, Today);
 		return Result : Village_Summary := (
 			Type_Code => +Type_Code,
-			Name => Village.Name, 
+			Name => Village.Name,
 			By => Village.By,
 			Term => Village.Term,
 			Today => Today,

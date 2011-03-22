@@ -72,7 +72,6 @@ package Vampire.Configurations is
 		Template_Preview_File_Name : not null access constant String;
 		Template_Target_File_Name : not null access constant String;
 		Template_Message_File_Name : not null access constant String;
-		Template_Error_File_Name : not null access constant String;
 	end record;
 	
 	Template_Names : constant array (Forms.Template_Set_Type) of aliased Template_Names_Type := (
@@ -89,8 +88,7 @@ package Vampire.Configurations is
 			Template_Village_File_Name => new String'("template-village.html"),
 			Template_Preview_File_Name => new String'("template-preview.html"),
 			Template_Target_File_Name => new String'("template-target.html"),
-			Template_Message_File_Name => new String'("template-message.html"),
-			Template_Error_File_Name => new String'("template-error.html")),
+			Template_Message_File_Name => new String'("template-message.html")),
 		Forms.For_Mobile => (
 			Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
 			Image_Directory => Image_Directory'Access,
@@ -104,8 +102,7 @@ package Vampire.Configurations is
 			Template_Village_File_Name => new String'("template-village-simple.html"),
 			Template_Preview_File_Name => new String'("template-preview-simple.html"),
 			Template_Target_File_Name => new String'("template-target-simple.html"),
-			Template_Message_File_Name => new String'("template-message-simple.html"),
-			Template_Error_File_Name => new String'("template-error-simple.html")));
+			Template_Message_File_Name => new String'("template-message-simple.html")));
 	
 	-- cookie有効期限
 	Cookie_Duration : constant Duration := 4 * 24 * 60 * 60 * 1.0;

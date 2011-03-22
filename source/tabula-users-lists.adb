@@ -94,7 +94,7 @@ package body Tabula.Users.Lists is
 	procedure Query (
 		List : in Users_List;
 		Id : in String;
-		Password : in String; 
+		Password : in String;
 		Remote_Addr : in String;
 		Remote_Host : in String;
 		Now : in Ada.Calendar.Time;
@@ -117,8 +117,8 @@ package body Tabula.Users.Lists is
 					if not Info.No_Log then
 						Add_To_Users_Log (
 							List,
-							Id => Id, 
-							Remote_Addr => Remote_Addr, 
+							Id => Id,
+							Remote_Addr => Remote_Addr,
 							Remote_Host => Remote_Host,
 							Now => Now);
 					else
@@ -223,7 +223,7 @@ package body Tabula.Users.Lists is
 		begin
 			if Now - Users_Log.Element(Position) <= Muramura_Duration then
 				declare
-					Item : User_Log_Item := (Users_Log.Key(Position).Id, 
+					Item : User_Log_Item := (Users_Log.Key(Position).Id,
 						Ada.Strings.Unbounded.Null_Unbounded_String,
 						Ada.Strings.Unbounded.Null_Unbounded_String);
 				begin

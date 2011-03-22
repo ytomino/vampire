@@ -78,8 +78,8 @@ package Vampire.Villages is
 	
 	-- 参加者
 	
-	type Requested_Role is (Random, Rest, 
-		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire, 
+	type Requested_Role is (Random, Rest,
+		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire,
 		Village_Side, Vampire_Side, Gremlin);
 	
 	type Person_State is (Normal, Infected, Died);
@@ -114,7 +114,7 @@ package Vampire.Villages is
 	end record;
 	
 	Empty_Person : constant Person_Type := (Casts.Empty_Person with
-		Id => Ada.Strings.Unbounded.Null_Unbounded_String, 
+		Id => Ada.Strings.Unbounded.Null_Unbounded_String,
 		Request => Random,
 		Ignore_Request => False,
 		Role => Inhabitant,

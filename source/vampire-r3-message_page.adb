@@ -1,54 +1,68 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings.Unbounded;
-procedure Vampire.Renderers.Message_Page(
-	Object : in Renderer'Class;
+procedure Vampire.R3.Message_Page(
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
+	Form : in Forms.Root_Form_Type'Class;
+	Template : in String;
+	Base_Page : in Forms.Base_Page;
 	Village_Id : in Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
-	Village : access Vampire.Villages.Village_Type := null;
+	Village : access Villages.Village_Type := null;
 	Message : in String;
 	User_Id : in String;
-	User_Password : in String) 
+	User_Password : in String)
 is
-	use Tabula.Villages;
-	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String; Contents : in Web.Producers.Template) is
+	procedure Handle (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "message" then
-			Web.Write_In_HTML (Output, Object.HTML_Version, Message);
+			Forms.Write_In_HTML (Output, Form, Message);
 		elsif Tag = "uri" then
-			Link(Object, Output, Village_Id => Village_Id,
-				User_Id => User_Id, User_Password => User_Password);
-		elsif Tag = "villageid" then
-			if Village_Id = Invalid_Village_Id then
-				Write(Output, """""");
-			else
-				Write(Output, '"');
-				Write(Output, Village_Id);
-				Write(Output, '"');
-			end if;
+			Forms.Write_Link_To_Resource (
+				Output,
+				Form,
+				Current_Directory => ".",
+				Resource => Forms.Self);
+		elsif Tag = "parameters" then
+			case Base_Page is
+				when Forms.Index_Page =>
+					Web.Write_Query_In_HTML (
+						Output,
+						Form.HTML_Version,
+						Form.Parameters_To_Index_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
+				when Forms.User_Page =>
+					Web.Write_Query_In_HTML (
+						Output,
+						Form.HTML_Version,
+						Form.Parameters_To_User_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
+				when Forms.User_List_Page =>
+					raise Program_Error with "unimplemented";
+				when Forms.Village_Page =>
+					Web.Write_Query_In_HTML (
+						Output,
+						Form.HTML_Version,
+						Form.Parameters_To_Village_Page (
+							Village_Id => Village_Id,
+							User_Id => User_Id,
+							User_Password => User_Password));
+			end case;
 		elsif Tag = "title" then
 			if Village /= null then
-				Web.Write_In_HTML (Output, Object.HTML_Version, Ada.Strings.Unbounded.To_String(Village.Name));
-				Write(Output, ' ');
-				Day_Name(Object, Output, Village.Today, Village.Today, Village.State);
-				Write(Output, " - ");
+				Forms.Write_In_HTML (
+					Output,
+					Form,
+					Village.Name.Constant_Reference.Element.all & " " & 
+						Day_Name (Village.Today, Village.Today, Village.State) &
+						" - ");
 			end if;
-		elsif Tag = "invillage" then
-			if Village /= null or else Village_Id /= Invalid_Village_Id then
-				Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
-			end if;
-		elsif Tag = "id" then
-			Write(Output, '"');
-			Web.Write_In_Attribute (Output, Object.HTML_Version, User_Id);
-			Write(Output, '"');
-		elsif Tag = "password" then
-			Write(Output, '"');
-			Web.Write_In_Attribute (Output, Object.HTML_Version, User_Password);
-			Write(Output, '"');
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;
 	end Handle;
 begin
-	Produce(Object, Output, Object.Configuration.Template_Message_File_Name.all, Handle'Access);
-end Vampire.Renderers.Message_Page;
+	Produce (Output, Template, Handler => Handle'Access);
+end Vampire.R3.Message_Page;

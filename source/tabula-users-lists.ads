@@ -18,7 +18,7 @@ package Tabula.Users.Lists is
 	procedure Query (
 		List : in Users_List;
 		Id : in String;
-		Password : in String; 
+		Password : in String;
 		Remote_Addr : in String;
 		Remote_Host : in String;
 		Now : in Ada.Calendar.Time;

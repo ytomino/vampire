@@ -71,7 +71,7 @@ begin
 						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
 						pragma Warnings (On);
 					begin
-						if I_Ref.Element.Remote_Addr = J_Ref.Element.Remote_Addr 
+						if I_Ref.Element.Remote_Addr = J_Ref.Element.Remote_Addr
 							or else (
 								I_Ref.Element.Remote_Host = J_Ref.Element.Remote_Host
 								and then J_Ref.Element.Remote_Host /= "")
