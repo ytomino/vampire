@@ -329,11 +329,17 @@ package body Tabula.Villages.Lists is
 		begin
 			while Has_Element (I) loop
 				declare
-					Id : constant String := List.Map.Constant_Reference (I).Key.all;
-					Type_Code : constant String := Get_YAML_Type (File_Name (List, Id));
-					Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+					Id : String renames List.Map.Constant_Reference (I).Key.all;
+					Summary : Village_Summary renames List.Map.Constant_Reference (I).Element.all;
 				begin
-					List.Registered_Types (Type_Index).Create_Log (List, Id);
+					if Summary.State = Closed then
+						declare
+							Type_Code : constant String := Get_YAML_Type (File_Name (List, Id));
+							Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+						begin
+							List.Registered_Types (Type_Index).Create_Log (List, Id);
+						end;
+					end if;
 				end;
 				Next (I);
 			end loop;

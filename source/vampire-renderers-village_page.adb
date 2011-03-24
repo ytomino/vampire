@@ -1184,7 +1184,9 @@ is
 						Web.Write_In_HTML (Output, Object.HTML_Version, Message);
 					end Handle_Narration;
 				begin
-					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
+					if Message'Length > 0 then
+						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
+					end if;
 				end Narration;
 				procedure Speech(Message : Vampire.Villages.Message; Class : String; Time : Ada.Calendar.Time; X : Integer := -1) is
 					procedure Handle_Speech(Output : not null access Ada.Streams.Root_Stream_Type'Class;

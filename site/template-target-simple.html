@@ -1,22 +1,19 @@
 <html>
 <head>
 <meta http-equiv="CONTENT-TYPE" content="text/html; charset=SJIS">
-<title><?title></?title>The Village of Vampire</title>
+<title><?village_name/> - The Village of Vampire</title>
 </head>
 <body>
-<h1><?title>æ‘å</?title></h1><hr>
-<?message>èƒ½åŠ›ä½¿ã£ã¡ã‚ƒã„ã¾ã™ã‹ï¼Ÿ</?message><hr>
-<form action=?uri class="button" method="POST">
-<input value=?button type="submit">
-<input value=?target type="hidden" name="target">
-<input value="target2" type="hidden" name="cmd">
+<h1><?village_name>‘º–¼</?village_name></h1><hr>
+<?message>”\—Íg‚Á‚¿‚á‚¢‚Ü‚·‚©H</?message><hr>
+<form class="button" method="POST" ?action_page>
+<input type="submit" ?value_submit>
+<input type="hidden" name="cmd" value="target2">
+<input type="hidden" name="target" ?value_target>
 </form>
-<form action=?uri method="GET">
-<input name="b" type="hidden" value="k">
-<input value=?id name="i" type="hidden">
-<input value=?password name="p" type="hidden">
-<?invillage><input value=?villageid name="v" type="hidden"></?invillage>
-<input type="submit" value="æˆ»ã‚‹">
+<form method="GET" ?action_cgi>
+<input type="submit" value="–ß‚é">
+<?parameters/>
 </form>
 </body>
 </html>

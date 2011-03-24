@@ -81,6 +81,12 @@ package body Vampire.R3 is
 		end if;
 	end Day_Name;
 	
+	function Name (Person : Vampire.Villages.Person_Type) return String is
+	begin
+		return Person.Work.Constant_Reference.Element.all &
+			Person.Name.Constant_Reference.Element.all;
+	end Name;
+	
 	procedure Handle_User_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in Web.Producers.Template;

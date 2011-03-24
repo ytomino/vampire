@@ -4,23 +4,23 @@
 	<head>
 		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" href="./style.css" />
-		<title><?title></?title>The Village of Vampire</title>
+		<title><?village_name/> - The Village of Vampire</title>
 	</head>
 	<body background="./image/background.png">
 		<h1>The Village of Vampire</h1>
-		<div class="center"><h2 class="villagetitle"><?title>村名</?title></h2></div>
+		<div class="center"><h2 class="villagetitle"><?village_name>村名</?village_name></h2></div>
 		<div class="center">
 			<p>
 				<?message>能力使っちゃいますか？</?message>
 			</p>
-			<form action=?uri class="button" method="POST">
-				<input value=?button type="submit" />
-				<input value=?target type="hidden" name="target" />
-				<input value="target2" type="hidden" name="cmd" />
+			<form class="button" method="POST">
+				<input type="submit" ?value_submit />
+				<input type="hidden" name="cmd" value="target2" />
+				<input type="hidden" name="target" ?value_target />
 			</form>
 			<form class="button" method="GET">
 				<input type="submit" value="戻る" />
-				<?invillage><input value=?villageid type="hidden" name="village" /></?invillage>
+				<?parameters/>
 			</form>
 		</div>
 	</body>

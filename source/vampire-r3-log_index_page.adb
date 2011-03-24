@@ -30,7 +30,7 @@ is
 				Parameters => Form.Parameters_To_Index_Page (
 					User_Id => "",
 					User_Password => ""));
-		elsif Tag = "list" then
+		elsif Tag = "log_list" then
 			Handle_Village_List (
 				Output,
 				Template,

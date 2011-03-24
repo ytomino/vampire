@@ -18,10 +18,10 @@ with Vampire.R3.Index_Page;
 with Vampire.R3.Message_Page;
 with Vampire.R3.Refresh_Page;
 with Vampire.R3.Register_Page;
+with Vampire.R3.Target_Page;
 with Vampire.R3.User_List_Page;
 with Vampire.R3.User_Page;
 with Vampire.Renderers.Preview_Page;
-with Vampire.Renderers.Target_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Renderers.Simple;
 with Vampire.Renderers.Log;
@@ -1115,9 +1115,12 @@ begin
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
-												Renderers.Target_Page(Renderer, Output,
-													Village_Id,
-													Village,
+												R3.Target_Page (
+													Output,
+													Form,
+													Configurations.Template_Names (Form.Template_Set).Template_Target_File_Name.all,
+													Village_Id => Village_Id,
+													Village => Village,
 													Player => Player,
 													Target => Target,
 													User_Id => User_Id,
