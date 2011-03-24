@@ -74,7 +74,7 @@ package Vampire.Villages is
 	subtype Vampire_Role is Person_Role range Vampire_K .. Vampire_J;
 	
 	type Role_Appearance is (None, Random, Force);
-	type Role_Appearances is array(Unfortunate_Inhabitant .. Lover) of Role_Appearance;
+	type Role_Appearances is array (Unfortunate_Inhabitant .. Lover) of Role_Appearance;
 	
 	-- 参加者
 	
@@ -250,7 +250,6 @@ package Vampire.Villages is
 	
 	-- 発言数
 	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts;
-	function Count_Total_Speech (Village : Village_Type; Day : Natural) return Natural;
 	
 	-- 更新予定時刻
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
@@ -370,6 +369,9 @@ package Vampire.Villages is
 		Process : not null access procedure (
 			Index : Person_Index;
 			Item : in Tabula.Villages.Person_Type'Class));
+	
+	overriding function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+		return Message_Range_Type;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

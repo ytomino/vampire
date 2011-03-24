@@ -26,6 +26,14 @@ package Tabula.Villages is
 	
 	function Same_Id_And_Figure (Left, Right : Person_Type'Class) return Boolean;
 	
+	-- メッセージ
+	
+	subtype Message_Index is Natural;
+	type Message_Range_Type is record
+	   First : Message_Index;
+	   Last : Message_Index'Base;
+	end record;
+	
 	-- オプション
 	
 	type Village_Type is tagged;
@@ -72,6 +80,9 @@ package Tabula.Villages is
 		Process : not null access procedure (
 			Index : Person_Index;
 			Item : in Person_Type'Class)) is abstract;
+	
+	function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+		return Message_Range_Type is abstract;
 	
 	procedure Iterate_Options (
 		Village : in Village_Type;

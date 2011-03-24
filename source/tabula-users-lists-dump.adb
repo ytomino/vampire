@@ -64,7 +64,7 @@ begin
 				pragma Warnings (On);
 				J : Item_Lists.Cursor := Next (I);
 			begin
-				while Has_Element(J) loop
+				while Has_Element (J) loop
 					declare
 						use Ada.Text_IO;
 						pragma Warnings (Off);
@@ -76,21 +76,21 @@ begin
 								I_Ref.Element.Remote_Host = J_Ref.Element.Remote_Host
 								and then J_Ref.Element.Remote_Host /= "")
 						then
-							Put(I_Ref.Element.Id.Constant_Reference.Element.all);
-							Put(',');
-							Put(I_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
-							Put(',');
-							Put(I_Ref.Element.Remote_Host.Constant_Reference.Element.all);
-							Put(',');
-							Put(Ada.Calendar.Formatting.Image (I_Ref.Element.Time));
+							Put (I_Ref.Element.Id.Constant_Reference.Element.all);
+							Put (',');
+							Put (I_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put (',');
+							Put (I_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put (',');
+							Put (Ada.Calendar.Formatting.Image (I_Ref.Element.Time));
 							New_Line;
-							Put(J_Ref.Element.Id.Constant_Reference.Element.all);
-							Put(',');
-							Put(J_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
-							Put(',');
-							Put(J_Ref.Element.Remote_Host.Constant_Reference.Element.all);
-							Put(',');
-							Put(Ada.Calendar.Formatting.Image (J_Ref.Element.Time));
+							Put (J_Ref.Element.Id.Constant_Reference.Element.all);
+							Put (',');
+							Put (J_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put (',');
+							Put (J_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put (',');
+							Put (Ada.Calendar.Formatting.Image (J_Ref.Element.Time));
 							New_Line;
 						end if;
 					end;

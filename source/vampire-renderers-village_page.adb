@@ -7,7 +7,6 @@ with Tabula.Calendar;
 with Tabula.Casts.Load;
 with Tabula.Users;
 with Vampire.Configurations;
-with Vampire.Forms.Mobile;
 with Vampire.Villages.Teaming;
 procedure Vampire.Renderers.Village_Page (
 	Object : in Renderer'Class;
@@ -898,39 +897,26 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Pos : Paging_Pos)
 	is
-		Speech_Count : constant Natural := Vampire.Villages.Count_Total_Speech (Village.all, Day);
-		F, L, R : Natural;
+		Message_Range : constant Tabula.Villages.Message_Range_Type := Village.Message_Range (Day, Recent_Only => False);
+		F, L : Natural;
 	begin
 		if Pos /= Tip then
-			if First < 0 then
-				F := 0;
-			else
-				F := First;
-			end if;
-			if Last < 0 then
-				L := Speech_Count;
-			else
-				L := Last;
-			end if;
-			if F = 0 and then L >= Speech_Count then
+			F := Integer'Max (Message_Range.First, First);
+			L := Integer'Min (Message_Range.Last, Last);
+			if F = Message_Range.First and then L = Message_Range.Last then
 				Write(Output, "<hr><div>全");
 			else
 				Write(Output, "<hr><div><a href=");
-				Link (Object, Output, Village_Id, Day, First => 0, Last => Speech_Count,
+				Link (Object, Output, Village_Id, Day, First => Message_Range.First, Last => Message_Range.Last + 1,
 					User_Id => User_Id, User_Password => User_Password);
 				Write(Output, ">全</a>");
 			end if;
-			for I in 0 .. (Speech_Count - 1) / Forms.Mobile.Speeches_By_Page loop
+			for I in 0 .. (Message_Range.Last - Message_Range.First) / Configurations.Speeches_Per_Page loop
 				declare
 					I_S : String renames To_String(I + 1);
-					I_F : constant Natural := I * Forms.Mobile.Speeches_By_Page;
-					I_L : Natural := I_F + (Forms.Mobile.Speeches_By_Page - 1);
+					I_F : constant Natural := I * Configurations.Speeches_Per_Page;
+					I_L : Natural := Natural'Min (Message_Range.Last, I_F + (Configurations.Speeches_Per_Page - 1));
 				begin
-					if Village.State = Closed or else Day /= Village.Today then
-						if I_L > Speech_Count then
-							I_L := Speech_Count;
-						end if;
-					end if;
 					if F = I_F and then L = I_L then
 						Write(Output, "|" & I_S);
 					else
@@ -943,18 +929,15 @@ is
 					end if;
 				end;
 			end loop;
-			if Speech_Count > Forms.Mobile.Speeches_By_Page then
-				R := Speech_Count - Forms.Mobile.Speeches_By_Page;
-			else
-				R := 0;
-			end if;
 			if Village.State = Closed or else Day /= Village.Today then
 				Write(Output, "|");
-			elsif F = R and then L = Speech_Count then
+			elsif F = Integer'Max (Message_Range.First, Message_Range.Last - (Configurations.Speeches_Per_Page - 1))
+				and then L = Message_Range.Last
+			then
 				Write(Output, "|新|");
 			else
 				Write(Output, "|<a href=");
-				Link (Object, Output, Village_Id, Day, Latest => Forms.Mobile.Speeches_By_Page,
+				Link (Object, Output, Village_Id, Day, Latest => Configurations.Speeches_Per_Page,
 					User_Id => User_Id, User_Password => User_Password);
 				Write(Output, ">新</a>|");
 			end if;
@@ -1272,7 +1255,7 @@ is
 						Message : Vampire.Villages.Message renames Village.Messages.Constant_Reference(Position).Element.all;
 					begin
 						if Message.Day = Day then
-							if (First < 0 or else First <= Speech_Count) and then (Last < 0 or else Speech_Count <= Last) then
+							if Speech_Count in First .. Last then
 								case Message.Kind is
 									when Vampire.Villages.Narration =>
 										Narration(+Message.Text);
@@ -1683,7 +1666,7 @@ is
 						end if;
 					end;
 				end loop;
-				if Last < 0 or else Speech_Count <= Last + 1 then
+				if Speech_Count <= Last + 1 then
 					Tip_Showed := True;
 					if Village.State >= Epilogue and then Day < Village.Today then
 						for I in Village.People.First_Index .. Village.People.Last_Index loop

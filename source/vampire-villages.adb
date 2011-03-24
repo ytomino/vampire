@@ -112,21 +112,6 @@ package body Vampire.Villages is
 		return Result;
 	end Count_Messages;
 	
-	function Count_Total_Speech (Village : Village_Type; Day : Natural) return Natural is
-		Result : Natural := 0;
-	begin
-		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
-			declare
-				Current : Message renames Village.Messages.Constant_Reference(Position).Element.all;
-			begin
-				if Current.Day = Day and then (Current.Kind = Speech or else Current.Kind = Escaped_Speech) then
-					Result := Result + 1;
-				end if;
-			end;
-		end loop;
-		return Result;
-	end Count_Total_Speech;
-	
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time is
 	begin
 		return Village.Dawn + Village.Night_Duration;
@@ -740,6 +725,63 @@ package body Vampire.Villages is
 			Process (I, Village.Escaped_People.Constant_Reference (I).Element.all);
 		end loop;
 	end Iterate_Escaped_People;
+	
+	overriding function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+		return Message_Range_Type
+	is
+		function Escaped (Village : Village_Type; Message : Villages.Message) return Boolean is
+		begin
+			case Message.Kind is
+				when Introduction | Narration =>
+					return True;
+				when Escaped_Join | Escaped_Speech | Escape =>
+					declare
+						Rejoined : Person_Index'Base := Village.Joined (
+							Village.Escaped_People.Constant_Reference (Message.Subject).Element.
+								Id.Constant_Reference.Element.all);
+					begin
+						return Rejoined = No_Person
+							or else not Same_Id_And_Figure (
+								Village.Escaped_People.Constant_Reference (Message.Subject).Element.all,
+								Village.People.Constant_Reference (Rejoined).Element.all);
+					end;
+				when others =>
+					return False;
+			end case;
+		end Escaped;
+		First : Natural := 0;
+		Last : Integer := -1;
+	begin
+		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				Current : Message renames Village.Messages.Constant_Reference (Position).Element.all;
+			begin
+				if Current.Day = Day and then (Current.Kind = Speech or else Current.Kind = Escaped_Speech) then
+					Last := Last + 1;
+				end if;
+			end;
+		end loop;
+		if Recent_Only and then Village.State = Prologue and then Day = 0 then
+			declare
+				Index : Natural := 0;
+			begin
+				while Index <= Village.Messages.Last_Index
+					and then Escaped (
+						Village,
+						Village.Messages.Constant_Reference (Index).Element.all)
+				loop
+					case Village.Messages.Constant_Reference (Index).Element.Kind is
+						when Speech | Escaped_Speech =>
+							First := First + 1;
+						when others =>
+							null;
+					end case;
+					Index := Index + 1;
+				end loop;
+			end;
+		end if;
+		return (First, Last);
+	end Message_Range;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

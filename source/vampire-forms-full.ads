@@ -23,7 +23,7 @@ package Vampire.Forms.Full is
 	
 	overriding function Parameters_To_Village_Page (
 		Form : Form_Type;
-		Village_Id : Tabula.Villages.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -42,6 +42,10 @@ package Vampire.Forms.Full is
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Form_Type;
 		Item : in String);
+	
+	overriding function Paging (Form : Form_Type) return Boolean;
+	
+	overriding function Speeches_Per_Page (Form : Form_Type) return Natural;
 	
 	overriding function Get_User_Id (
 		Form : Form_Type;
@@ -70,20 +74,20 @@ package Vampire.Forms.Full is
 	overriding function Get_Village_Id (
 		Form : Form_Type;
 		Query_Strings : Web.Query_Strings)
-		return Tabula.Villages.Village_Id;
+		return Villages.Village_Id;
 	
 	overriding function Get_Day (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Query_Strings : Web.Query_Strings)
 		return Natural;
 	
 	overriding function Get_Range (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Message_Range;
+		return Villages.Message_Range_Type;
 	
 	overriding function Get_New_Village_Name (
 		Form : Form_Type;

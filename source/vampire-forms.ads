@@ -1,12 +1,10 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Streams;
+with Ada.Strings.Unbounded;
 with Web;
 with Tabula.Casts;
 with Tabula.Villages;
-with Vampire.Villages;
 package Vampire.Forms is
-	
-	type Role_Images is array (Villages.Person_Role) of not null access constant String;
 	
 	type Base_Page is (Index_Page, User_Page, User_List_Page, Village_Page);
 	
@@ -37,7 +35,7 @@ package Vampire.Forms is
 	
 	function Parameters_To_Village_Page (
 		Form : Root_Form_Type;
-		Village_Id : Tabula.Villages.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -84,13 +82,16 @@ package Vampire.Forms is
 		Current_Directory : in String;
 		HTML_Directory : in String;
 		Log : in Boolean;
-		Village_Id : Tabula.Villages.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
 		Latest : Integer := -1;
 		User_Id : in String;
 		User_Password : in String);
+	
+	function Paging (Form : Root_Form_Type) return Boolean is abstract;
+	function Speeches_Per_Page (Form : Root_Form_Type) return Natural is abstract;
 	
 	-- ユーザー情報
 	
@@ -153,24 +154,20 @@ package Vampire.Forms is
 	function Get_Village_Id (
 		Form : Root_Form_Type;
 		Query_Strings : Web.Query_Strings)
-		return Tabula.Villages.Village_Id is abstract;
+		return Villages.Village_Id is abstract;
 	
 	function Get_Day (
 		Form : Root_Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Query_Strings : Web.Query_Strings)
 		return Natural is abstract;
 	
-	type Message_Range is record
-	   First, Last : Integer;
-	end record;
-	
 	function Get_Range (
 		Form : Root_Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Message_Range is abstract;
+		return Villages.Message_Range_Type is abstract;
 	
 	-- コマンド
 	
@@ -185,9 +182,9 @@ package Vampire.Forms is
 		return String is abstract;
 	
 	type Joining is record
-		Work_Index : Tabula.Casts.Works.Cursor; -- "既定"はNo_Element
-		Name_Index : Tabula.Casts.People.Cursor; -- No_Elementにはならない
-		Request : Villages.Requested_Role;
+		Work_Index : Casts.Works.Cursor; -- "既定"はNo_Element
+		Name_Index : Casts.People.Cursor; -- No_Elementにはならない
+		Request : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
 	function Get_Joining (
@@ -210,7 +207,7 @@ package Vampire.Forms is
 	function Get_Reedit_Kind (
 		Form : Root_Form_Type'Class;
 		Inputs : Web.Query_Strings)
-		return Villages.Message_Kind;
+		return String;
 	
 	function Get_Action (
 		Form : Root_Form_Type'Class;
@@ -220,7 +217,7 @@ package Vampire.Forms is
 	function Get_Target (
 		Form : Root_Form_Type'Class;
 		Inputs : Web.Query_Strings)
-		return Villages.People.Cursor;
+		return Villages.Person_Index'Base;
 	
 	function Get_Special (
 		Form : Root_Form_Type'Class;
@@ -229,7 +226,7 @@ package Vampire.Forms is
 	
 	procedure Set_Rule (
 		Form : in Root_Form_Type'Class;
-		Village : in out Villages.Village_Type;
+		Village : in out Villages.Village_Type'Class;
 		Inputs : in Web.Query_Strings);
 	
 end Vampire.Forms;

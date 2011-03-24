@@ -31,7 +31,7 @@ begin
 	begin
 		Ada.Debug.Put (Message);
 		Web.Header_Content_Type (Output, Web.Text_Plain);
-		Web.Header_Break(Output);
+		Web.Header_Break (Output);
 		String'Write (Output, Message);
 		Character'Write (Output, ASCII.LF);
 	end;

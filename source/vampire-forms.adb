@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories.Hierarchical_File_Names;
 package body Vampire.Forms is
+	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function Self return String is
 	begin
@@ -173,7 +174,7 @@ package body Vampire.Forms is
 		return (
 			Work_Index => Integer'Value (Web.Element (Inputs, "work")),
 			Name_Index => Natural'Value (Web.Element (Inputs, "name")),
-			Request => Villages.Requested_Role'Value (Web.Element (Inputs, "request")));
+			Request => +Web.Element (Inputs, "request"));
 	end Get_Joining;
 	
 	function Get_Answered (
@@ -199,9 +200,9 @@ package body Vampire.Forms is
 	function Get_Reedit_Kind (
 		Form : Root_Form_Type'Class;
 		Inputs : Web.Query_Strings)
-		return Villages.Message_Kind is
+		return String is
 	begin
-		return Villages.Message_Kind'Value (Web.Element (Inputs, "kind"));
+		return Web.Element (Inputs, "kind");
 	end Get_Reedit_Kind;
 	
 	function Get_Action (
@@ -215,7 +216,7 @@ package body Vampire.Forms is
 	function Get_Target (
 		Form : Root_Form_Type'Class;
 		Inputs : Web.Query_Strings)
-		return Villages.People.Cursor is
+		return Villages.Person_Index'Base is
 	begin
 		return Integer'Value (Web.Element (Inputs, "target"));
 	end Get_Target;
@@ -230,7 +231,7 @@ package body Vampire.Forms is
 	
 	procedure Set_Rule (
 		Form : in Root_Form_Type'Class;
-		Village : in out Villages.Village_Type;
+		Village : in out Tabula.Villages.Village_Type'Class;
 		Inputs : in Web.Query_Strings)
 	is
 		procedure Process (Item : in Tabula.Villages.Root_Option_Item'Class) is
@@ -238,7 +239,7 @@ package body Vampire.Forms is
 			Tabula.Villages.Change (Village, Item, Web.Element (Inputs, Item.Name));
 		end Process;
 	begin
-		Villages.Iterate_Options (Village, Process'Access);
+		Tabula.Villages.Iterate_Options (Village, Process'Access);
 	end Set_Rule;
 	
 end Vampire.Forms;

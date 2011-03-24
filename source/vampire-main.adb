@@ -98,7 +98,9 @@ begin
 		end Get_Renderer;
 		Renderer : Renderers.Renderer'Class renames Get_Renderer(Query_Strings);
 		pragma Warnings (Off); -- compiler...
-		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (Query_Strings);
+		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (
+		   Query_Strings,
+		   Speeches_Per_Page => Configurations.Speeches_Per_Page);
 		pragma Warnings (On);
 		procedure Refresh_Page is
 			Self_URI : constant String := Web.Request_URI;
@@ -623,7 +625,7 @@ begin
 								-- 村レンダリング
 								declare
 									Day : Natural := Form.Get_Day (Village, Query_Strings);
-									Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
+									Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
 								begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
@@ -710,7 +712,7 @@ begin
 																	User_Id,
 																	Person_Template,
 																	Selected_Work,
-																	Joining.Request,
+																	Villages.Requested_Role'Value (Joining.Request.Constant_Reference.Element.all),
 																	User_Info.Ignore_Request,
 																	Now);
 																Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -926,13 +928,13 @@ begin
 												Refresh_Page;
 											end if;
 										else -- "reedit"
-											case Form.Get_Reedit_Kind (Inputs) is
+											case Villages.Message_Kind'Value (Form.Get_Reedit_Kind (Inputs)) is
 												when Villages.Speech =>
 													if Speech_Check then
 														declare
 															Text : constant String := Form.Get_Text (Inputs);
 															Day : Natural := Form.Get_Day (Village, Query_Strings);
-															Message_Range : Forms.Message_Range := Form.Get_Range (Village, Day, Query_Strings);
+															Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
 														begin
 															Web.Header_Content_Type (Output, Web.Text_HTML);
 															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);

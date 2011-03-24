@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Vampire.Forms;
+with Vampire.R3;
 with Vampire.Villages;
 package Vampire.Configurations is
 	
@@ -36,7 +37,7 @@ package Vampire.Configurations is
 	
 	Relative_Background_Image_File_Name : aliased constant String := "background.png";
 	
-	Relative_Role_Image_File_Names : aliased constant Forms.Role_Images := (
+	Relative_Role_Image_File_Names : aliased constant R3.Role_Images := (
 		Villages.Gremlin =>
 			new String'("gremlin.png"),
 		Villages.Vampire_Role =>
@@ -62,7 +63,7 @@ package Vampire.Configurations is
 		Style_Sheet_File_Name : not null Static_String_Access;
 		Image_Directory : not null Static_String_Access;
 		Relative_Background_Image_File_Name : not null Static_String_Access;
-		Relative_Role_Image_File_Names : not null access constant Forms.Role_Images;
+		Relative_Role_Image_File_Names : not null access constant R3.Role_Images;
 		Template_Index_File_Name : not null access constant String;
 		Template_Register_File_Name : not null access constant String;
 		Template_User_File_Name : not null access constant String;
@@ -103,6 +104,9 @@ package Vampire.Configurations is
 			Template_Target_File_Name => new String'("template-target-simple.html"),
 			Template_Message_File_Name => new String'("template-message-simple.html"),
 			Template_Log_Index_File_Name => new String'("template-logindex-simple.html")));
+	
+	-- 携帯版で1ページに表示する発言数
+	Speeches_Per_Page : constant := 12;
 	
 	-- cookie有効期限
 	Cookie_Duration : constant Duration := 4 * 24 * 60 * 60 * 1.0;

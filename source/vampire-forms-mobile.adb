@@ -1,11 +1,13 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
 package body Vampire.Forms.Mobile is
-	use type Tabula.Villages.Village_State;
+	use type Villages.Village_State;
 	
-	function Create return Form_Type is
+	function Create (Speeches_Per_Page : Positive) return Form_Type is
 	begin
-		return (Encoding => iconv.Open (Encoded => "SJIS", Decoded => "UTF-8"));
+		return (
+			Encoding => iconv.Open (Encoded => "SJIS", Decoded => "UTF-8"),
+			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
 	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version is
@@ -51,7 +53,7 @@ package body Vampire.Forms.Mobile is
 	
 	overriding function Parameters_To_Village_Page (
 		Form : Form_Type;
-		Village_Id : Tabula.Villages.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -95,7 +97,17 @@ package body Vampire.Forms.Mobile is
 		Web.Write_In_Attribute (Stream, Web.HTML, iconv.Encode (Form.Encoding, Item));
 	end Write_In_Attribute;
 	
-	overriding function Get_User_Id(
+	overriding function Paging (Form : Form_Type) return Boolean is
+	begin
+		return True;
+	end Paging;
+	
+	overriding function Speeches_Per_Page (Form : Form_Type) return Natural is
+	begin
+		return Form.Speeches_Per_Page;
+	end Speeches_Per_Page;
+	
+	overriding function Get_User_Id (
 		Form : Form_Type;
 		Query_Strings : Web.Query_Strings;
 		Cookie : Web.Cookie)
@@ -104,7 +116,7 @@ package body Vampire.Forms.Mobile is
 		return Web.Element (Query_Strings, "i");
 	end Get_User_Id;
 	
-	overriding function Get_User_Password(
+	overriding function Get_User_Password (
 		Form : Form_Type;
 		Query_Strings : Web.Query_Strings;
 		Cookie : Web.Cookie)
@@ -140,51 +152,71 @@ package body Vampire.Forms.Mobile is
 	overriding function Get_Village_Id (
 		Form : Form_Type;
 		Query_Strings : Web.Query_Strings)
-		return Tabula.Villages.Village_Id
+		return Villages.Village_Id
 	is
 		S : constant String := Web.Element (Query_Strings, "v");
 	begin
-		if S'Length = Tabula.Villages.Village_Id'Length then
+		if S'Length = Villages.Village_Id'Length then
 			return S;
 		else
-			return Tabula.Villages.Invalid_Village_Id;
+			return Villages.Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 	
 	overriding function Get_Day (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Query_Strings : Web.Query_Strings)
 		return Natural
 	is
-		S : String renames Web.Element(Query_Strings, "d");
+		S : String renames Web.Element (Query_Strings, "d");
 	begin
 		return Natural'Value (S);
 	exception
 		when Constraint_Error =>
-			if Village.State /= Tabula.Villages.Closed then
-				return Village.Today;
-			else
-				return 0;
-			end if;
+			declare
+				State : Villages.Village_State;
+				Today : Natural;
+			begin
+				Village.Get_State (State, Today);
+				if State /= Villages.Closed then
+					return Today;
+				else
+					return 0;
+				end if;
+			end;
 	end Get_Day;
 	
 	overriding function Get_Range (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Message_Range
+		return Villages.Message_Range_Type
 	is
-		Range_Arg : constant String := Web.Element(Query_Strings, "r");
-		P : constant Natural := Ada.Strings.Fixed.Index(Range_Arg, "-");
+		function First_N (N : Natural) return Villages.Message_Range_Type is
+			Message_Range : Villages.Message_Range_Type := Village.Message_Range (
+				Day,
+				Recent_Only => False);
+		begin
+			return (
+				First => Message_Range.First,
+				Last => Integer'Min (Message_Range.Last, Message_Range.First + (N - 1)));
+		end First_N;
+		function Last_N (N : Natural) return Villages.Message_Range_Type is
+			Message_Range : Villages.Message_Range_Type := Village.Message_Range (
+				Day,
+				Recent_Only => False);
+		begin
+			return (
+				First => Integer'Max (Message_Range.First, Message_Range.Last - (N - 1)),
+				Last => Message_Range.Last);
+		end Last_N;
+		Range_Arg : constant String := Web.Element (Query_Strings, "r");
+		P : constant Natural := Ada.Strings.Fixed.Index (Range_Arg, "-");
 	begin
 		if P < Range_Arg'First then
-			declare
-				Total : constant Natural := Vampire.Villages.Count_Total_Speech (Village, Day);
-			begin
-				return (Total - Natural'Value (Range_Arg), Total);
-			end;
+			return Last_N (Natural'Value (Range_Arg));
 		else
 			return (
 				First => Natural'Value (Range_Arg (Range_Arg'First .. P - 1)),
@@ -192,15 +224,17 @@ package body Vampire.Forms.Mobile is
 		end if;
 	exception
 		when Constraint_Error =>
-			if Village.State /= Tabula.Villages.Closed and then Day = Village.Today then
-				declare
-					Total : constant Natural := Vampire.Villages.Count_Total_Speech (Village, Day);
-				begin
-					return (Total - Speeches_By_Page, Total);
-				end;
-			else
-				return (0, Speeches_By_Page - 1);
-			end if;
+			declare
+				State : Villages.Village_State;
+				Today : Natural;
+			begin
+				Village.Get_State (State, Today);
+				if State /= Villages.Closed and then Day = Today then
+					return Last_N (Form.Speeches_Per_Page);
+				else
+					return First_N (Form.Speeches_Per_Page);
+				end if;
+			end;
 	end Get_Range;
 	
 	overriding function Get_New_Village_Name (

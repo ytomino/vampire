@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
 package body Vampire.Forms.Full is
-	use type Tabula.Villages.Village_State;
+	use type Villages.Village_State;
 	
 	function Create return Form_Type is
 	begin
@@ -40,7 +40,7 @@ package body Vampire.Forms.Full is
 	
 	overriding function Parameters_To_Village_Page (
 		Form : Form_Type;
-		Village_Id : Tabula.Villages.Village_Id;
+		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
@@ -76,6 +76,16 @@ package body Vampire.Forms.Full is
 	begin
 		Web.Write_In_Attribute (Stream, Web.XHTML, Item);
 	end Write_In_Attribute;
+	
+	overriding function Paging (Form : Form_Type) return Boolean is
+	begin
+		return False;
+	end Paging;
+	
+	overriding function Speeches_Per_Page (Form : Form_Type) return Natural is
+	begin
+		return 0;
+	end Speeches_Per_Page;
 	
 	overriding function Get_User_Id (
 		Form : Form_Type;
@@ -123,20 +133,20 @@ package body Vampire.Forms.Full is
 	overriding function Get_Village_Id (
 		Form : Form_Type;
 		Query_Strings : Web.Query_Strings)
-		return Tabula.Villages.Village_Id
+		return Villages.Village_Id
 	is
 		S : constant String := Web.Element (Query_Strings, "village");
 	begin
-		if S'Length = Tabula.Villages.Village_Id'Length then
+		if S'Length = Villages.Village_Id'Length then
 			return S;
 		else
-			return Tabula.Villages.Invalid_Village_Id;
+			return Villages.Invalid_Village_Id;
 		end if;
 	end Get_Village_Id;
 	
 	overriding function Get_Day (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Query_Strings : Web.Query_Strings)
 		return Natural
 	is
@@ -145,74 +155,29 @@ package body Vampire.Forms.Full is
 		return Natural'Value (S);
 	exception
 		when Constraint_Error =>
-			if Village.State /= Tabula.Villages.Closed then
-				return Village.Today;
-			else
-				return 0;
-			end if;
+			declare
+				State : Villages.Village_State;
+				Today : Natural;
+			begin
+				Village.Get_State (State, Today);
+				if State /= Villages.Closed then
+					return Today;
+				else
+					return 0;
+				end if;
+			end;
 	end Get_Day;
 	
 	overriding function Get_Range (
 		Form : Form_Type;
-		Village : Villages.Village_Type;
+		Village : Villages.Village_Type'Class;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Message_Range
-	is
-		function Escaped (
-			Village : Villages.Village_Type;
-			Message : Villages.Message) return Boolean is
-		begin
-			case Message.Kind is
-				when Villages.Introduction
-					| Villages.Narration =>
-					return True;
-				when Villages.Escaped_Join
-					| Villages.Escaped_Speech
-					| Villages.Escape =>
-					declare
-						Rejoined : Tabula.Villages.Person_Index'Base := Village.Joined (
-							Village.Escaped_People.Constant_Reference (Message.Subject).Element.
-								Id.Constant_Reference.Element.all);
-					begin
-						return Rejoined = Tabula.Villages.No_Person
-							or else not Tabula.Villages.Same_Id_And_Figure (
-								Village.Escaped_People.Constant_Reference (Message.Subject).Element.all,
-								Village.People.Constant_Reference (Rejoined).Element.all);
-					end;
-				when others =>
-					return False;
-			end case;
-		end Escaped;
+		return Villages.Message_Range_Type is
 	begin
-		if Village.State = Tabula.Villages.Prologue
-			and then Day = 0
-			and then Web.Element (Query_Strings, "range") = ""
-		then
-			declare
-				First : Integer := 0;
-				Last : Integer := -1;
-				Index : Natural := 0;
-			begin
-				while Index <= Village.Messages.Last_Index
-					and then Escaped (
-						Village,
-						Village.Messages.Constant_Reference (Index).Element.all)
-				loop
-					case Village.Messages.Constant_Reference (Index).Element.Kind is
-						when Villages.Speech
-							| Villages.Escaped_Speech =>
-							First := First + 1;
-						when others =>
-							null;
-					end case;
-					Index := Index + 1;
-				end loop;
-				return (First, Last);
-			end;
-		else
-			return (-1, -1);
-		end if;
+		return Village.Message_Range (
+			Day,
+			Recent_Only => Web.Element (Query_Strings, "range") = "");
 	end Get_Range;
 	
 	overriding function Get_New_Village_Name (
