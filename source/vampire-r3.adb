@@ -2,6 +2,7 @@
 with Ada.Calendar;
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
+with Tabula.Users;
 package body Vampire.R3 is
 	use Tabula.Villages.Lists.Summary_Maps;
 	use type Ada.Calendar.Time;
@@ -79,6 +80,59 @@ package body Vampire.R3 is
 			return Image (Day) & "日目";
 		end if;
 	end Day_Name;
+	
+	procedure Handle_User_Panel (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Template : in Web.Producers.Template;
+		Form : in Forms.Root_Form_Type'Class;
+		User_Id : in String;
+		User_Password : in String)
+	is
+		procedure Handle (
+			Output : not null access Ada.Streams.Root_Stream_Type'Class;
+			Tag : in String;
+			Template : in Web.Producers.Template) is
+		begin
+			if Tag = "action_page" then
+				String'Write (Output, "action=");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Forms.Self,
+					Parameters => Form.Parameters_To_Index_Page (
+						User_Id => User_Id,
+						User_Password => User_Password));
+			elsif Tag = "administrator" then
+				if User_Id = Users.Administrator then
+					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				end if;
+			elsif Tag = "not_admin" then
+				if User_Id /= Users.Administrator then
+					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				end if;
+			elsif Tag = "id" then
+				Forms.Write_In_HTML (Output, Form, User_Id);
+			elsif Tag = "href_user" then
+				String'Write (Output, "href=");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Forms.Self,
+					Parameters => Form.Parameters_To_User_Page (
+						User_Id => User_Id,
+						User_Password => User_Password));
+			else
+				raise Program_Error with "Invalid template """ & Tag & """";
+			end if;
+		end Handle;
+		Extract : constant array (Boolean) of access constant String := (
+			new String'("logoff"),
+			new String'("logon"));
+	begin
+		Web.Producers.Produce (Output, Template, Extract (User_Id /= "").all, Handler => Handle'Access);
+	end Handle_User_Panel;
 	
 	procedure Handle_Village_List (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

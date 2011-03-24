@@ -1,32 +1,45 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
-procedure Vampire.Renderers.User_Page (
-	Object : in Renderer'Class;
+procedure Vampire.R3.User_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
+	Form : in Forms.Root_Form_Type'Class;
+	Template : in String;
 	Summaries : in Tabula.Villages.Lists.Summary_Maps.Map;
 	User_Id : in String;
 	User_Password : in String;
 	User_Info : in Users.User_Info)
 is
-	use type Ada.Strings.Unbounded.Unbounded_String;
-	use Tabula.Villages;
 	use Tabula.Villages.Lists.Summary_Maps;
 	use Tabula.Villages.Lists.User_Lists;
-	use Villages;
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	Joined : Ada.Strings.Unbounded.Unbounded_String;
-	Created : Ada.Strings.Unbounded.Unbounded_String;
-	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String; Template : in Web.Producers.Template) is
+	use type Ada.Strings.Unbounded.Unbounded_String;
+	use type Tabula.Villages.Village_State;
+	-- ユーザーの参加状況
+	Joined : aliased Ada.Strings.Unbounded.Unbounded_String;
+	Created : aliased Ada.Strings.Unbounded.Unbounded_String;
+	procedure Handle(
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template) is
 	begin
-		if Tag = "userpanel" then
-			User_Panel (Object, Output, Template, User_Id, User_Password, False);
-		elsif Tag = "back" then
-			Write(Output, "<a href=");
-			Link (Object, Output, User_Id => User_Id, User_Password => User_Password);
-			Write(Output, '>');
-			Web.Producers.Produce(Output, Template);
-			Write(Output, "</a>");
+		if Tag = "action_page" then
+			String'Write (Output, "action=");
+			Forms.Write_Link (
+				Output,
+				Form,
+				Current_Directory => ".",
+				Resource => Forms.Self,
+				Parameters => Form.Parameters_To_User_Page (
+					User_Id => User_Id,
+					User_Password => User_Password));
+		elsif Tag = "userpanel" then
+			Handle_User_Panel (
+				Output,
+				Template,
+				Form,
+				User_Id => User_Id,
+				User_Password => User_Password);
+		elsif Tag = "id" then
+			Forms.Write_In_HTML (Output, Form, User_Id);
 		elsif Tag = "joined" then
 			if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
@@ -46,33 +59,42 @@ is
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "activevillage" then
-			Web.Write_In_HTML (Output, Object.HTML_Version, +Joined);
+			Forms.Write_In_HTML (Output, Form, Joined.Constant_Reference.Element.all);
 		elsif Tag = "createdvillage" then
-			Web.Write_In_HTML (Output, Object.HTML_Version, +Created);
+			Forms.Write_In_HTML (Output, Form, Created.Constant_Reference.Element.all);
+		elsif Tag = "href_index" then
+			String'Write (Output, "href=");
+			Forms.Write_Link (
+				Output,
+				Form,
+				Current_Directory => ".",
+				Resource => Forms.Self,
+				Parameters => Form.Parameters_To_Index_Page (
+					User_Id => User_Id,
+					User_Password => User_Password));
 		else
-			Handle_Users(Output, Tag, Template, Object,
-				User_Id => User_Id, User_Password => User_Password);
+			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;
 	end Handle;
-	I : Lists.Summary_Maps.Cursor := Summaries.First;
+	I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 begin
 	while Has_Element (I) loop
 		declare
-			V : Lists.Village_Summary
+			V : Tabula.Villages.Lists.Village_Summary
 				renames Summaries.Constant_Reference (I).Element.all;
 		begin
-			if V.State < Epilogue then
+			if V.State < Tabula.Villages.Epilogue then
 				declare
-					J : Lists.User_Lists.Cursor := V.People.First;
+					J : Tabula.Villages.Lists.User_Lists.Cursor := V.People.First;
 				begin
 					while Has_Element (J) loop
-						if Element(J) = User_Id then
+						if Element (J) = User_Id then
 							if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
 								Ada.Strings.Unbounded.Append(Joined, "、");
 							end if;
 							Ada.Strings.Unbounded.Append(Joined, V.Name);
 						end if;
-						Next(J);
+						Next (J);
 					end loop;
 				end;
 				if V.By = User_Id then
@@ -82,5 +104,5 @@ begin
 		end;
 		Next (I);
 	end loop;
-	Produce (Object, Output, Object.Configuration.Template_User_File_Name.all, Handle'Access);
-end Vampire.Renderers.User_Page;
+	Produce (Output, Template, Handler => Handle'Access);
+end Vampire.R3.User_Page;

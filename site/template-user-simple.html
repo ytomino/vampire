@@ -6,24 +6,25 @@
 <body>
 <h1>The Village of Vampire</h1>
 <hr><div><?userpanel>
-<?logon>【<?id>ID</?id>】<br></?logon>
+<?logon>�y<?id>ID</?id>�z<br></?logon>
 </?userpanel>
-<?back>戻る</?back></div>
+<a ?href_index>�߂�</a></div>
 <?joined>
-<hr><div>あなたは現在<?activevillage>村</?activevillage>に参加しています。</div>
+<hr><div>���Ȃ��͌���<?activevillage>��</?activevillage>�ɎQ�����Ă��܂��B</div>
 </?joined>
 <?nojoined>
-<hr><div>あなたは現在村に参加していません。</div>
+<hr><div>���Ȃ��͌��ݑ��ɎQ�����Ă��܂���B</div>
 </?nojoined>
 <?created>
-<hr><div>あなたは現在<?createdvillage>村</?createdvillage>を作成しています。</div>
+<hr><div>���Ȃ��͌���<?createdvillage>��</?createdvillage>���쐬���Ă��܂��B</div>
 </?created>
 <?creatable>
-<hr><div>短期村を作成できます。村を作ると他の村には参加できなくなりますので注意ください。</div>
-<form action=?uri method="POST">
-村の名前 <input name="name" type="text" >
-<input class="button" type="submit" value="作成" >
-<input name="cmd" type="hidden" value="news" >
+<hr><div>�Z�������쐬�ł��܂��B �������Ƒ��̑��ɂ͎Q���ł��Ȃ��Ȃ�܂��̂Œ��ӂ��������B</div>
+<form method="POST" ?action_page>
+���̖��O
+<input type="text" name="name">
+<input class="button" type="submit" value="�쐬">
+<input type="hidden" name="cmd" value="news">
 </form>
 </?creatable>
 </body>

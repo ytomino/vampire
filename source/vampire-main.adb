@@ -14,14 +14,14 @@ with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
 with Vampire.Forms.Select_Form;
+with Vampire.R3.Index_Page;
 with Vampire.R3.Message_Page;
 with Vampire.R3.Refresh_Page;
 with Vampire.R3.Register_Page;
 with Vampire.R3.User_List_Page;
-with Vampire.Renderers.Index_Page;
+with Vampire.R3.User_Page;
 with Vampire.Renderers.Preview_Page;
 with Vampire.Renderers.Target_Page;
-with Vampire.Renderers.User_Page;
 with Vampire.Renderers.Village_Page;
 with Vampire.Renderers.Simple;
 with Vampire.Renderers.Log;
@@ -504,8 +504,10 @@ begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
-									Renderer.User_Page (
+									R3.User_Page (
 										Output,
+										Form,
+										Configurations.Template_Names (Form.Template_Set).Template_User_File_Name.all,
 										Summaries,
 										User_Id => User_Id,
 										User_Password => User_Password,
@@ -550,10 +552,13 @@ begin
 								Web.Header_Content_Type (Output, Web.Text_HTML);
 								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 								Web.Header_Break (Output);
-								Renderer.Index_Page (
+								R3.Index_Page (
 									Output,
-									Summaries,
-									Users.Lists.Muramura_Count (User_List, Now, Configurations.Muramura_Duration),
+									Form,
+									Configurations.Template_Names (Form.Template_Set).Template_Index_File_Name.all,
+									HTML_Directory => Configurations.Villages_HTML_Directory,
+									Summaries => Summaries,
+									Muramura => Users.Lists.Muramura_Count (User_List, Now, Configurations.Muramura_Duration),
 									User_Id => User_Id,
 									User_Password => User_Password);
 							end;

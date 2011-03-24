@@ -15,13 +15,13 @@
 					<?logoff>
 						<tr><td>
 							<div class="userpanel">
-								<form method="post" class="inner">
+								<form method="POST" class="inner">
 									<table>
-										<tr><td>ID</td><td><input name="id" type="text" /></td></tr>
-										<tr><td>PASSWORD</td><td><input name="password" type="password" /></td></tr>
+										<tr><td>ID</td><td><input type="text" name="id" /></td></tr>
+										<tr><td>PASSWORD</td><td><input type="password" name="password" /></td></tr>
 									</table>
 									<div class="right"><input class="button" type="submit" value="参加" /></div>
-									<input name="cmd" type="hidden" value="logon" />
+									<input type="hidden" name="cmd" value="logon" />
 								</form>
 							</div>
 						</td></tr>
@@ -29,64 +29,67 @@
 					<?logon>
 						<tr><td>
 							<div class="userpanel">
-								<form method="post" class="inner">
+								<form method="POST" class="inner">
 									<table>
-										<tr><td>【<?id>ID</?id>】</td></tr>
+										<tr><td>
+											<?not_admin>【<a ?href_user><?id>ID</?id></a>】</?not_admin>
+											<?administrator>【<?id>ID</?id>】</?administrator>
+										</td></tr>
 									</table>
 									<div class="right"><input class="button" type="submit" value="退出" /></div>
-									<input name="cmd" type="hidden" value="logoff" />
+									<input type="hidden" name="cmd" value="logoff" />
 								</form>
 								<?administrator>
-									<form method="post" class="inner">
+									<form method="POST" class="inner">
 										<table>
-											<tr><td>短期</td><td><input name="name" type="text" /></td></tr>
+											<tr><td>短期</td><td><input type="text" name="name" /></td></tr>
 										</table>
 										<div class="right"><input class="button" type="submit" value="作成" /></div>
-										<input name="cmd" type="hidden" value="news" />
+										<input type="hidden" name="cmd" value="news" />
 									</form>
-									<form method="post" class="inner">
+									<form method="POST" class="inner">
 										<table>
-											<tr><td>長期</td><td><input name="name" type="text" /></td></tr>
+											<tr><td>長期</td><td><input type="text" name="name" /></td></tr>
 										</table>
 										<div class="right"><input type="submit" value="作成" /></div>
-										<input name="cmd" type="hidden" value="newl" />
+										<input type="hidden" name="cmd" value="newl" />
 									</form>
-									<form method="post" class="inner">
+									<form method="POST" class="inner">
 										<table><tr><td>ログ再生成</td></tr></table>
 										<div class="right"><input type="submit" value="再生成" /></div>
-										<input name="cmd" type="hidden" value="remakelog" />
+										<input type="hidden" name="cmd" value="remakelog" />
 									</form>
 								</?administrator>
 							</div>
 						</td></tr>
 					</?logon>
 				</?userpanel>
-				<?villages>
+				<?active_list>
 					<tr><td>
 						<table class="villagelist" cellspacing="0">
-							<?village>
+							<?item>
 								<tr>
 									<td><?id>村番号</?id></td>
-									<td><?name>村名</?name></td>
+									<td><a ?href_village><?name>村名</?name></a></td>
 									<td class="people"><?people>人数</?people></td>
 									<td class="day"><?day>日</?day></td>
 								</tr>
-							</?village>
+							</?item>
 						</table>
 					</td></tr>
-				</?villages>
-				<?log>
+				</?active_list>
+				<?log_list>
 					<tr><td>
 						<table class="villagelist" cellspacing="0">
-							<?village>
+							<?item>
 								<tr>
 									<td><?id>村番号</?id></td>
-									<td><?name>村名</?name></td>
+									<td><a ?href_village><?name>村名</?name></a></td>
 								</tr>
-							</?village>
+							</?item>
 						</table>
 					</td></tr>
-				</?log>
+				</?log_list>
 				<tr><td><a href="./villages/">終了した村の記録</a></td></tr>
 				<tr><td><a href="?b=k">携帯</a></td></tr>
 				<tr><td><a href="http://jbbs.livedoor.jp/game/20558/">掲示板</a></td></tr>

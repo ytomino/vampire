@@ -5,38 +5,38 @@
 <title>The Village of Vampire</title></head>
 <body><h1>The Village of Vampire</h1><hr>
 <?userpanel>
-<?logoff><form action=?uri method="POST">
+<?logoff><form method="POST" ?action_page>
 ID<br><input name="id" type="text"><br>
 PASSWORD<br><input name="password" type="password"><br>
-<input type="submit" value="å‚åŠ ">
-<input name="cmd" type="hidden" value="logon">
+<input type="submit" value="Q‰Á">
+<input type="hidden" name="cmd" value="logon">
 </form></?logoff>
-<?logon><form action=?uri method="GET"><input name="b" type="hidden" value="k">
-ã€<?id>ID</?id>ã€‘<br>
-<input type="submit" value="é€€å‡º">
-<input type="hidden" name="i" value="">
-<input type="hidden" name="p" value="">
+<?logon><form method="POST" ?action_page>
+<?not_admin>y<a ?href_user><?id>ID</?id></a>z</?not_admin>
+<?administrator>y<?id>ID</?id>z</?administrator><br>
+<input type="submit" value="‘Şo">
+<input type="hidden" name="cmd" value="logoff">
 </form>
 <?administrator>
-<form action=?uri method="POST">
-çŸ­æœŸ<br>
-<input name="name" type="text">
-<input type="submit" value="ä½œæˆ">
-<input name="cmd" type="hidden" value="news">
+<form method="POST" ?action_page>
+’ZŠú<br>
+<input type="text" name="name">
+<input type="submit" value="ì¬">
+<input type="hidden" name="cmd" value="news">
 </form>
-<form action=?uri method="POST">
-é•·æœŸ<br>
-<input name="name" type="text">
-<input type="submit" value="ä½œæˆ">
-<input name="cmd" type="hidden" value="newl">
+<form method="POST" ?action_page>
+’·Šú<br>
+<input type="text" name="name">
+<input type="submit" value="ì¬">
+<input type="hidden" name="cmd" value="newl">
 </form>
-<form action=?uri method="POST">
-ãƒ­ã‚°å†ç”Ÿæˆ<br>
-<input type="submit" value="å†ç”Ÿæˆ">
-<input name="cmd" type="hidden" value="remakelog">
+<form method="POST" ?action_page>
+ƒƒOÄ¶¬<br>
+<input type="submit" value="Ä¶¬">
+<input type="hidden" name="cmd" value="remakelog">
 </form></?administrator></?logon>
 </?userpanel><hr>
-<?villages><?village><?id>æ‘ç•ªå·</?id> <?name>æ‘å</?name><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?people>äººæ•°</?people> <?day>æ—¥</?day><br></?village></?villages>
+<?active_list><?item><?id>‘º”Ô†</?id> <a ?href_village><?name>‘º–¼</?name></a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?people>l”</?people> <?day>“ú</?day><br></?item></?active_list>
 </body>
 </html>

@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+-- renderer ver.3
 with Ada.Streams;
 with Tabula.Villages.Lists;
 with Vampire.Forms;
@@ -24,6 +25,14 @@ private
 		Today : Natural;
 		State : Tabula.Villages.Village_State)
 		return String;
+	
+	-- ログインパネル
+	procedure Handle_User_Panel (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Template : in Web.Producers.Template;
+		Form : in Forms.Root_Form_Type'Class;
+		User_Id : in String;
+		User_Password : in String);
 	
 	-- 村リスト
 	procedure Handle_Village_List (
