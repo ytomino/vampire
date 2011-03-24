@@ -18,15 +18,17 @@ is
 	begin
 		if Tag = "href_index" then
 			String'Write (Output, "href=");
-			Forms.Write_Link_To_Index_Page (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => ".",
-				User_Id => User_Id,
-				User_Password => User_Password);
+				Resource => Forms.Self,
+				Parameters => Form.Parameters_To_Index_Page (
+					User_Id => User_Id,
+					User_Password => User_Password));
 		elsif Tag = "href_logindex" then
 			String'Write (Output, "href=");
-			Forms.Write_Link_To_Resource (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => ".",

@@ -15,19 +15,21 @@ is
 	begin
 		if Tag = "background" then
 			String'Write (Output, "background=");
-			Forms.Write_Link_To_Resource (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => HTML_Directory,
 				Resource => Background);
 		elsif Tag = "href_index" then
 			String'Write (Output, "href=");
-			Forms.Write_Link_To_Index_Page (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => HTML_Directory,
-				User_Id => "",
-				User_Password => "");
+				Resource => Forms.Self,
+				Parameters => Form.Parameters_To_Index_Page (
+					User_Id => "",
+					User_Password => ""));
 		elsif Tag = "list" then
 			Handle_Village_List (
 				Output,
@@ -42,7 +44,7 @@ is
 				User_Password => "");
 		elsif Tag = "href_stylesheet" then
 			String'Write (Output, "href=");
-			Forms.Write_Link_To_Resource (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => HTML_Directory,

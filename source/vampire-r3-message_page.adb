@@ -15,9 +15,9 @@ is
 		Tag : in String;
 		Contents : in Web.Producers.Template) is
 	begin
-		if Tag = "action_uri" then
+		if Tag = "action_cgi" then
 			String'Write (Output, "action=");
-			Forms.Write_Link_To_Resource (
+			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => ".",
@@ -25,32 +25,14 @@ is
 		elsif Tag = "message" then
 			Forms.Write_In_HTML (Output, Form, Message);
 		elsif Tag = "parameters" then
-			case Base_Page is
-				when Forms.Index_Page =>
-					Web.Write_Query_In_HTML (
-						Output,
-						Form.HTML_Version,
-						Form.Parameters_To_Index_Page (
-							User_Id => User_Id,
-							User_Password => User_Password));
-				when Forms.User_Page =>
-					Web.Write_Query_In_HTML (
-						Output,
-						Form.HTML_Version,
-						Form.Parameters_To_User_Page (
-							User_Id => User_Id,
-							User_Password => User_Password));
-				when Forms.User_List_Page =>
-					raise Program_Error with "unimplemented";
-				when Forms.Village_Page =>
-					Web.Write_Query_In_HTML (
-						Output,
-						Form.HTML_Version,
-						Form.Parameters_To_Village_Page (
-							Village_Id => Village_Id,
-							User_Id => User_Id,
-							User_Password => User_Password));
-			end case;
+			Web.Write_Query_In_HTML (
+				Output,
+				Form.HTML_Version,
+				Form.Parameters_To_Base_Page (
+					Base_Page => Base_Page,
+					Village_Id => Village_Id,
+					User_Id => User_Id,
+					User_Password => User_Password));
 		elsif Tag = "title" then
 			if Village /= null then
 				declare

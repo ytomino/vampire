@@ -14,15 +14,15 @@
 				登録にはパスワードを再入力してください。
 			</p>
 			<form class="button" method="POST">
-				<input name="password2" type="password" value="" />
+				<input type="password" name="password2" value="" />
 				<input type="submit" value="登録" />
 				<input type="hidden" name="cmd" value="register" />
-				<input value=?newid name="id" type="hidden" />
-				<input value=?newpassword name="password" type="hidden" />
+				<input type="hidden" name="id" ?value_newid />
+				<input type="hidden" name="password" ?value_newpassword />
 			</form>
 			<form class="button" method="GET">
 				<input type="submit" value="戻る" />
-				<?invillage><input value=?villageid type="hidden" name="village" /></?invillage>
+				<?parameters/>
 			</form>
 		</div>
 	</body>

@@ -2,17 +2,17 @@
 <head><meta http-equiv="CONTENT-TYPE" content="text/html; charset=SJIS"><title>The Village of Vampire</title></head>
 <body>
 <h1>The Village of Vampire</h1><hr>
-<div><?id>(-_-)</?id>は使われていないIDです。 登録しますか？<br>登録にはパスワードを再入力してください。</div><hr>
-<form action=?uri method="POST">
-<input name="password2" type="password" value="">
-<input type="submit" value="登録">
+<div><?id>(-_-)</?id>�͎g���Ă��Ȃ�ID�ł��B �o�^���܂����H<br>�o�^�ɂ̓p�X���[�h���ē��͂��Ă��������B</div><hr>
+<form ?action_page method="POST">
+<input type="password" name="password2" value="">
+<input type="submit" value="�o�^">
 <input type="hidden" name="cmd" value="register">
-<input value=?newid name="id" type="hidden">
-<input value=?newpassword name="password" type="hidden">
+<input type="hidden" name="id" ?value_newid>
+<input type="hidden" name="password" ?value_newpassword>
 </form>
-<form action=?uri method="GET"><input name="b" type="hidden" value="k">
-<?invillage><input value=?villageid name="v" type="hidden"></?invillage>
-<input type="submit" value="戻る">
+<form method="GET" ?action_cgi>
+<input type="submit" value="�߂�">
+<?parameters/>
 </form>
 </body>
 </html>

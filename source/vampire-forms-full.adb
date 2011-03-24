@@ -173,11 +173,15 @@ package body Vampire.Forms.Full is
 		Village : Villages.Village_Type'Class;
 		Day : Natural;
 		Query_Strings : Web.Query_Strings)
-		return Villages.Message_Range_Type is
-	begin
-		return Village.Message_Range (
+		return Villages.Message_Range_Type
+	is
+		Message_Range : Villages.Message_Range_Type := Village.Message_Range (
 			Day,
 			Recent_Only => Web.Element (Query_Strings, "range") = "");
+	begin
+		return (
+			First => Message_Range.First,
+			Last => Integer'Max (Message_Range.First, Message_Range.Last));
 	end Get_Range;
 	
 	overriding function Get_New_Village_Name (

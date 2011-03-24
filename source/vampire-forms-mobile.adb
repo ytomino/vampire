@@ -201,7 +201,8 @@ package body Vampire.Forms.Mobile is
 		begin
 			return (
 				First => Message_Range.First,
-				Last => Integer'Min (Message_Range.Last, Message_Range.First + (N - 1)));
+				Last => Integer'Max (Message_Range.First,
+					Integer'Min (Message_Range.Last, Message_Range.First + (N - 1))));
 		end First_N;
 		function Last_N (N : Natural) return Villages.Message_Range_Type is
 			Message_Range : Villages.Message_Range_Type := Village.Message_Range (
@@ -210,7 +211,7 @@ package body Vampire.Forms.Mobile is
 		begin
 			return (
 				First => Integer'Max (Message_Range.First, Message_Range.Last - (N - 1)),
-				Last => Message_Range.Last);
+				Last => Integer'Max (Message_Range.First, Message_Range.Last));
 		end Last_N;
 		Range_Arg : constant String := Web.Element (Query_Strings, "r");
 		P : constant Natural := Ada.Strings.Fixed.Index (Range_Arg, "-");

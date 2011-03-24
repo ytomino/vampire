@@ -10,7 +10,34 @@ package body Vampire.Forms is
 		return Ada.Directories.Simple_Name (Web.Request_Path);
 	end Self;
 	
-	procedure Write_Link_To_Resource (
+	function Parameters_To_Base_Page (
+		Form : Root_Form_Type'Class;
+		Base_Page : Forms.Base_Page;
+		Village_Id : Villages.Village_Id;
+		User_Id : String;
+		User_Password : String)
+		return Web.Query_Strings is
+	begin
+		case Base_Page is
+			when Index_Page =>
+				return  Form.Parameters_To_Index_Page (
+					User_Id => User_Id,
+					User_Password => User_Password);
+			when User_Page =>
+				return 	Form.Parameters_To_User_Page (
+					User_Id => User_Id,
+					User_Password => User_Password);
+			when Forms.User_List_Page =>
+				raise Program_Error with "unimplemented";
+			when Forms.Village_Page =>
+				return Form.Parameters_To_Village_Page (
+					Village_Id => Village_Id,
+					User_Id => User_Id,
+					User_Password => User_Password);
+		end case;
+	end Parameters_To_Base_Page;
+	
+	procedure Write_Link (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
@@ -37,37 +64,7 @@ package body Vampire.Forms is
 				Parameters); -- Parameters should contain ASCII only
 		end if;
 		Character'Write (Stream, '"');
-	end Write_Link_To_Resource;
-	
-	procedure Write_Link_To_Index_Page (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type'Class;
-		Current_Directory : in String;
-		User_Id : in String;
-		User_Password : in String) is
-	begin
-		Write_Link_To_Resource (
-			Stream,
-			Form,
-			Current_Directory => Current_Directory,
-			Resource => Self,
-			Parameters => Form.Parameters_To_Index_Page (User_Id, User_Password));
-	end Write_Link_To_Index_Page;
-	
-	procedure Write_Link_To_User_Page (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type'Class;
-		Current_Directory : in String;
-		User_Id : in String;
-		User_Password : in String) is
-	begin
-		Write_Link_To_Resource (
-			Stream,
-			Form,
-			Current_Directory => Current_Directory,
-			Resource => Self,
-			Parameters => Form.Parameters_To_User_Page (User_Id, User_Password));
-	end Write_Link_To_User_Page;
+	end Write_Link;
 	
 	procedure Write_Link_To_Village_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -84,7 +81,7 @@ package body Vampire.Forms is
 		User_Password : in String) is
 	begin
 		if Log then
-			Write_Link_To_Resource (
+			Write_Link (
 				Stream,
 				Form,
 				Current_Directory => Current_Directory,
@@ -93,7 +90,7 @@ package body Vampire.Forms is
 					Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
 					Extension => "html"));
 		else
-			Write_Link_To_Resource (
+			Write_Link (
 				Stream,
 				Form,
 				Current_Directory => Current_Directory,

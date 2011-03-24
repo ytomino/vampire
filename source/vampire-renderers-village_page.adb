@@ -898,7 +898,8 @@ is
 		Pos : Paging_Pos)
 	is
 		Message_Range : constant Tabula.Villages.Message_Range_Type := Village.Message_Range (Day, Recent_Only => False);
-		F, L : Natural;
+		F : Natural;
+		L : Integer;
 	begin
 		if Pos /= Tip then
 			F := Integer'Max (Message_Range.First, First);
@@ -915,7 +916,7 @@ is
 				declare
 					I_S : String renames To_String(I + 1);
 					I_F : constant Natural := I * Configurations.Speeches_Per_Page;
-					I_L : Natural := Natural'Min (Message_Range.Last, I_F + (Configurations.Speeches_Per_Page - 1));
+					I_L : Integer := Natural'Min (Message_Range.Last, I_F + (Configurations.Speeches_Per_Page - 1));
 				begin
 					if F = I_F and then L = I_L then
 						Write(Output, "|" & I_S);

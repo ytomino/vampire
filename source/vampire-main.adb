@@ -16,10 +16,10 @@ with Vampire.Configurations;
 with Vampire.Forms.Select_Form;
 with Vampire.R3.Message_Page;
 with Vampire.R3.Refresh_Page;
+with Vampire.R3.Register_Page;
 with Vampire.R3.User_List_Page;
 with Vampire.Renderers.Index_Page;
 with Vampire.Renderers.Preview_Page;
-with Vampire.Renderers.Register_Page;
 with Vampire.Renderers.Target_Page;
 with Vampire.Renderers.User_Page;
 with Vampire.Renderers.Village_Page;
@@ -159,9 +159,14 @@ begin
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 							Web.Header_Break (Output);
-							Renderer.Register_Page(Output,
+							R3.Register_Page(
+								Output,
+								Form,
+								Configurations.Template_Names (Form.Template_Set).Template_Register_File_Name.all,
+								Base_Page => Base_Page,
 								Village_Id => Village_Id,
-								New_User_Id => New_User_Id, New_User_Password => New_User_Password);
+								New_User_Id => New_User_Id,
+								New_User_Password => New_User_Password);
 						else
 							Web.Header_Content_Type (Output, Web.Text_HTML);
 							Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
@@ -297,7 +302,7 @@ begin
 							Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
 							Base_Page => Base_Page,
 							Village_Id => Village_Id,
-							Message => "再入力されたパスワードが異なります。",
+							Message => "登録に成功しました。",
 							User_Id => New_User_Id,
 							User_Password => New_User_Password);
 					else

@@ -44,6 +44,14 @@ package Vampire.Forms is
 		User_Password : String)
 		return Web.Query_Strings is abstract;
 	
+	function Parameters_To_Base_Page (
+		Form : Root_Form_Type'Class;
+		Base_Page : Forms.Base_Page;
+		Village_Id : Villages.Village_Id;
+		User_Id : String;
+		User_Password : String)
+		return Web.Query_Strings;
+	
 	procedure Write_In_HTML (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type;
@@ -55,26 +63,12 @@ package Vampire.Forms is
 		Form : in Root_Form_Type;
 		Item : in String) is abstract;
 	
-	procedure Write_Link_To_Resource (
+	procedure Write_Link (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
 		Current_Directory : in String;
 		Resource : in String;
 		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map);
-	
-	procedure Write_Link_To_Index_Page (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type'Class;
-		Current_Directory : in String;
-		User_Id : in String;
-		User_Password : in String);
-	
-	procedure Write_Link_To_User_Page (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
-		Form : in Root_Form_Type'Class;
-		Current_Directory : in String;
-		User_Id : in String;
-		User_Password : in String);
 	
 	procedure Write_Link_To_Village_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -82,7 +76,7 @@ package Vampire.Forms is
 		Current_Directory : in String;
 		HTML_Directory : in String;
 		Log : in Boolean;
-		Village_Id : Villages.Village_Id;
+		Village_Id : in Villages.Village_Id;
 		Day : Integer := -1;
 		First : Integer := -1;
 		Last : Integer := -1;
