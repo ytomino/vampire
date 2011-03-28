@@ -52,6 +52,7 @@ private
 	procedure Handle_Speech (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in Web.Producers.Template;
+		Tag : in String := "";
 		Form : in Forms.Root_Form_Type'Class;
 		Image_Directory : in String;
 		Subject : in Tabula.Villages.Person_Type'Class;

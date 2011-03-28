@@ -26,6 +26,7 @@ procedure Vampire.R3.Village_Page (
 	Showing_Range : in Tabula.Villages.Message_Range_Type := (
 		First => Tabula.Villages.Message_Index'First,
 		Last => Tabula.Villages.Message_Index'Last);
+	Editing : Villages.Message_Kind := Villages.Speech;
 	Editing_Text : String := "";
 	User_Id : in String;
 	User_Password : in String)
@@ -177,6 +178,17 @@ is
 						String'Write (Output, "</ul>");
 					end;
 				end if;
+			elsif Tag = "action_page" then
+				Forms.Write_Attribute_Name (Output, "action");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Forms.Self,
+					Parameters => Form.Parameters_To_Village_Page (
+						Village_Id => Village_Id,
+						User_Id => User_Id,
+						User_Password => User_Password));
 			else
 				raise Program_Error with "Invalid template """ & Tag & """";
 			end if;
@@ -745,6 +757,7 @@ is
 						Template : in Web.Producers.Template) is
 					begin
 						if Tag = "href_all" then
+							Forms.Write_Attribute_Name (Output, "href");
 							Forms.Write_Link (
 								Output,
 								Form,
@@ -776,19 +789,23 @@ is
 						Tag : in String;
 						Template : in Web.Producers.Template) is
 					begin
-						if Role /= Vampire.Villages.Inhabitant and then Form.Template_Set = Forms.For_Full then
-							String'Write (Output, "<img width=""16"" height=""16"" ");
-							Forms.Write_Attribute_Name (Output, "src");
-							Forms.Write_Link (
-								Output,
-								Form,
-								Current_Directory => Current_Directory,
-								Resource => Ada.Directories.Compose (
-									Containing_Directory => Image_Directory,
-									Name => Relative_Role_Images (Role).all));
-							String'Write (Output, " />");
+						if Tag = "text" then
+							if Role /= Vampire.Villages.Inhabitant and then Form.Template_Set = Forms.For_Full then
+								String'Write (Output, "<img width=""16"" height=""16"" ");
+								Forms.Write_Attribute_Name (Output, "src");
+								Forms.Write_Link (
+									Output,
+									Form,
+									Current_Directory => Current_Directory,
+									Resource => Ada.Directories.Compose (
+										Containing_Directory => Image_Directory,
+										Name => Relative_Role_Images (Role).all));
+								String'Write (Output, " />");
+							end if;
+							Forms.Write_In_HTML (Output, Form, Message);
+						else
+							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
-						Forms.Write_In_HTML (Output, Form, Message);
 					end Handle_Narration;
 				begin
 					if Message'Length > 0 then
@@ -796,36 +813,35 @@ is
 					end if;
 				end Narration;
 				procedure Speech(Message : Vampire.Villages.Message; Class : String; Time : Ada.Calendar.Time; X : Integer := -1) is
-					procedure Handle_Speech (
-						Output : not null access Ada.Streams.Root_Stream_Type'Class;
-						Tag : in String;
-						Template : in Web.Producers.Template)
-					is
-						Filter : aliased Ada.Strings.Unbounded.Unbounded_String;
-					begin
-						if X >= 0 then
-							Ada.Strings.Unbounded.Append (Filter, "s");
-							Ada.Strings.Unbounded.Append (Filter, Image (X));
-							Ada.Strings.Unbounded.Append (Filter, ' ');
-						end if;
-						Ada.Strings.Unbounded.Append (Filter, "p");
-						if Message.Kind = Vampire.Villages.Ghost then
-							Ada.Strings.Unbounded.Append (Filter, "g");
-						else
-							Ada.Strings.Unbounded.Append (Filter, Image (Message.Subject));
-						end if;
-						R3.Handle_Speech (
-							Output,
-							Template,
-							Form,
-							Image_Directory => Image_Directory,
-							Subject => Village.People.Constant_Reference (Message.Subject).Element.all,
-							Time => Time,
-							Text => Message.Text.Constant_Reference.Element.all,
-							Filter => Filter.Constant_Reference.Element.all);
-					end Handle_Speech;
+					Filter : aliased Ada.Strings.Unbounded.Unbounded_String;
+					Subject : access constant Villages.Person_Type;
 				begin
-					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Speech'Access);
+					if Message.Kind = Escaped_Speech then
+						Subject := Village.Escaped_People.Constant_Reference (Message.Subject).Element;
+					else
+						Subject := Village.People.Constant_Reference (Message.Subject).Element;
+					end if;
+					if X >= 0 then
+						Ada.Strings.Unbounded.Append (Filter, "s");
+						Ada.Strings.Unbounded.Append (Filter, Image (X));
+						Ada.Strings.Unbounded.Append (Filter, ' ');
+					end if;
+					Ada.Strings.Unbounded.Append (Filter, "p");
+					if Message.Kind = Vampire.Villages.Ghost then
+						Ada.Strings.Unbounded.Append (Filter, "g");
+					else
+						Ada.Strings.Unbounded.Append (Filter, Image (Message.Subject));
+					end if;
+					R3.Handle_Speech (
+						Output,
+						Template,
+						Class,
+						Form,
+						Image_Directory => Image_Directory,
+						Subject => Subject.all,
+						Time => Time,
+						Text => Message.Text.Constant_Reference.Element.all,
+						Filter => Filter.Constant_Reference.Element.all);
 				end Speech;
 				procedure Note (Subject : Vampire.Villages.Person_Type; Note : Vampire.Villages.Person_Record; Class : String) is
 					procedure Handle_Note (
@@ -833,7 +849,8 @@ is
 						Tag : in String;
 						Template : in Web.Producers.Template) is
 					begin
-						if Tag = "image" then
+						if Tag = "src_image" then
+							Forms.Write_Attribute_Name (Output, "src");
 							Forms.Write_Link (
 								Output,
 								Form,
@@ -1334,6 +1351,10 @@ is
 													Forms.Write_In_HTML (Output, Form, Image (Rest));
 												elsif Tag = "rest" then
 													Web.Producers.Produce(Output, Template, Handler => Handle_Speech'Access);
+												elsif Tag = "edit" then
+													if Editing = Speech then
+														Forms.Write_In_HTML (Output, Form, Editing_Text);
+													end if;
 												else
 													Handle_Player(Output, Tag, Template);
 												end if;
@@ -1363,6 +1384,10 @@ is
 												Forms.Write_In_HTML (Output, Form, Image (Rest));
 											elsif Tag = "rest" then
 												Web.Producers.Produce(Output, Template, Handler => Handle_Monologue'Access);
+											elsif Tag = "edit" then
+												if Editing = Monologue then
+													Forms.Write_In_HTML (Output, Form, Editing_Text);
+												end if;
 											else
 												Handle_Player(Output, Tag, Template);
 											end if;
@@ -1388,6 +1413,10 @@ is
 												Forms.Write_In_HTML (Output, Form, Image (Rest));
 											elsif Tag = "rest" then
 												Web.Producers.Produce(Output, Template, Handler => Handle_Ghost'Access);
+											elsif Tag = "edit" then
+												if Editing = Ghost then
+													Forms.Write_In_HTML (Output, Form, Editing_Text);
+												end if;
 											else
 												Handle_Player(Output, Tag, Template);
 											end if;
@@ -1417,14 +1446,19 @@ is
 								then
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
-							elsif Tag = "edit" then
-								Forms.Write_In_HTML (Output, Form, Editing_Text);
 							elsif Tag = "note" then
-								Forms.Write_In_HTML (
-									Output,
-									Form,
-									Person.Records.Constant_Reference (Village.Target_Day).Element.
-										Note.Constant_Reference.Element.all);
+								if Editing = Howling then
+									Forms.Write_In_HTML (
+										Output,
+										Form,
+										Editing_Text);
+								else
+									Forms.Write_In_HTML (
+										Output,
+										Form,
+										Person.Records.Constant_Reference (Village.Target_Day).Element.
+											Note.Constant_Reference.Element.all);
+								end if;
 							elsif Tag = "rest" then
 								null;
 							elsif Tag = "zero" then
@@ -1658,16 +1692,29 @@ is
 										begin
 											if Tag = "x" then
 												Forms.Write_In_HTML (Output, Form, Image (X));
-											elsif Tag = "qx" then
+											elsif Tag = "value_x" then
+												Forms.Write_Attribute_Name (Output, "value");
 												Forms.Write_Attribute_Open (Output);
 												Forms.Write_In_Attribute (Output, Form, Image (X));
 												Forms.Write_Attribute_Close (Output);
 											elsif Tag = "y" then
 												Forms.Write_In_HTML (Output, Form, Image (Y));
-											elsif Tag = "qy" then
+											elsif Tag = "value_y" then
+												Forms.Write_Attribute_Name (Output, "value");
 												Forms.Write_Attribute_Open (Output);
 												Forms.Write_In_Attribute (Output, Form, Image (Y));
 												Forms.Write_Attribute_Close (Output);
+											elsif Tag = "action_page" then
+												Forms.Write_Attribute_Name (Output, "action");
+												Forms.Write_Link (
+													Output,
+													Form,
+													Current_Directory => ".",
+													Resource => Forms.Self,
+													Parameters => Form.Parameters_To_Village_Page (
+														Village_Id => Village_Id,
+														User_Id => User_Id,
+														User_Password => User_Password));
 											else
 												raise Program_Error with "Invalid template """ & Tag & """";
 											end if;
@@ -1684,6 +1731,17 @@ is
 								if Person.Commited then
 									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
 								end if;
+							elsif Tag = "action_page" then
+								Forms.Write_Attribute_Name (Output, "action");
+								Forms.Write_Link (
+									Output,
+									Form,
+									Current_Directory => ".",
+									Resource => Forms.Self,
+									Parameters => Form.Parameters_To_Village_Page (
+										Village_Id => Village_Id,
+										User_Id => User_Id,
+										User_Password => User_Password));
 							else
 								raise Program_Error with "Invalid template """ & Tag & """";
 							end if;

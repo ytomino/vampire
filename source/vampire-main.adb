@@ -879,7 +879,7 @@ begin
 											Message_Page ("未対応アクション(" & Action & ")を行おうとしました。");
 										end if;
 									end;
-								elsif Cmd = "speech" or else Cmd = "speech2" or else Cmd = "reedit" then
+								elsif Cmd = "speech" or else Cmd = "speech2" then
 									declare
 										function Speech_Check return Boolean is
 										begin
@@ -927,7 +927,7 @@ begin
 													end if;
 												end;
 											end if;
-										elsif Cmd = "speech2" then
+										else -- "speech2"
 											if Speech_Check then
 												declare
 													Text : constant String := Form.Get_Text (Inputs);
@@ -939,45 +939,40 @@ begin
 												end;
 												Refresh_Page;
 											end if;
-										else -- "reedit"
-											case Villages.Message_Kind'Value (Form.Get_Reedit_Kind (Inputs)) is
-												when Villages.Speech =>
-													if Speech_Check then
-														declare
-															Text : constant String := Form.Get_Text (Inputs);
-															Day : Natural := Form.Get_Day (Village, Query_Strings);
-															Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
-														begin
-															Web.Header_Content_Type (Output, Web.Text_HTML);
-															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-															Web.Header_Break (Output);
-															R3.Village_Page (
-																Output,
-																Form,
-																Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
-																Current_Directory => ".",
-																HTML_Directory => Configurations.Villages_HTML_Directory,
-																Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
-																Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
-																Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
-																Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
-																Cast_File_Name => Configurations.Cast_File_Name,
-																Log => False,
-																Village_Id => Village_Id,
-																Village => Village,
-																Day => Day,
-																Showing_Range => Message_Range,
-																Editing_Text => Text,
-																User_Id => User_Id,
-																User_Password => User_Password);
-														end;
-													end if;
-												when others =>
-													-- 通常発言以外の再編集は未実装……
-													Refresh_Page;
-											end case;
 										end if;
 									end;
+								elsif Cmd = "reedit" then
+									Reedit : declare
+										Reedit_Kind : constant Villages.Message_Kind :=
+											Villages.Message_Kind'Value (Form.Get_Reedit_Kind (Inputs));
+										Text : constant String := Form.Get_Text (Inputs);
+										Day : Natural := Form.Get_Day (Village, Query_Strings);
+										Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
+									begin
+										Web.Header_Content_Type (Output, Web.Text_HTML);
+										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+										Web.Header_Break (Output);
+										R3.Village_Page (
+											Output,
+											Form,
+											Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+											Current_Directory => ".",
+											HTML_Directory => Configurations.Villages_HTML_Directory,
+											Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+											Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+											Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+											Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+											Cast_File_Name => Configurations.Cast_File_Name,
+											Log => False,
+											Village_Id => Village_Id,
+											Village => Village,
+											Day => Day,
+											Showing_Range => Message_Range,
+											Editing => Reedit_Kind,
+											Editing_Text => Text,
+											User_Id => User_Id,
+											User_Password => User_Password);
+									end Reedit;
 								elsif Cmd = "monologue" then
 									if Village.State /= Tabula.Villages.Playing then
 										Message_Page ("プロローグ/エピローグでは独白は喋れません。");

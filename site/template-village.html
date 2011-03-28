@@ -223,7 +223,7 @@
 						<?ghost>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="ghost" rows="3"></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="ghost" rows="3"><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="呻く" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="ghost" />
@@ -232,7 +232,7 @@
 						<?monologue>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="monologue" rows="3"></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="monologue" rows="3"><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="独白" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="monologue" />
@@ -269,8 +269,8 @@
 								<input class="button" type="submit" value="旅に出る" />
 								<?x>x</?x> + <?y>y</?y> = 
 								<input class="answer" type="text" name="z" value="" />
-								<input type="hidden" name="x" ?value_qx />
-								<input type="hidden" name="y" ?value_qy />
+								<input type="hidden" name="x" ?value_x />
+								<input type="hidden" name="y" ?value_y />
 								<input type="hidden" name="cmd" value="escape" />
 							</form></?escape>
 							<?action><div>アクション</div></?action>

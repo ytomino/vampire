@@ -17,6 +17,7 @@ procedure Vampire.R3.Village_Page (
 	Showing_Range : in Tabula.Villages.Message_Range_Type := (
 		First => Tabula.Villages.Message_Index'First,
 		Last => Tabula.Villages.Message_Index'Last);
+	Editing : Villages.Message_Kind := Villages.Speech;
 	Editing_Text : String := "";
 	User_Id : in String;
 	User_Password : in String);
