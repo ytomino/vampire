@@ -1,7 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Calendar;
+with Ada.Calendar.Formatting;
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
+with Tabula.Calendar;
 with Tabula.Users;
 package body Vampire.R3 is
 	use Tabula.Villages.Lists.Summary_Maps;
@@ -81,7 +82,7 @@ package body Vampire.R3 is
 		end if;
 	end Day_Name;
 	
-	function Name (Person : Vampire.Villages.Person_Type) return String is
+	function Name (Person : Tabula.Villages.Person_Type'Class) return String is
 	begin
 		return Person.Work.Constant_Reference.Element.all &
 			Person.Name.Constant_Reference.Element.all;
@@ -100,7 +101,7 @@ package body Vampire.R3 is
 			Template : in Web.Producers.Template) is
 		begin
 			if Tag = "action_page" then
-				String'Write (Output, "action=");
+				Forms.Write_Attribute_Name (Output, "action");
 				Forms.Write_Link (
 					Output,
 					Form,
@@ -113,14 +114,14 @@ package body Vampire.R3 is
 				if User_Id = Users.Administrator then
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
-			elsif Tag = "not_admin" then
+			elsif Tag = "notadmin" then
 				if User_Id /= Users.Administrator then
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
 			elsif Tag = "id" then
 				Forms.Write_In_HTML (Output, Form, User_Id);
 			elsif Tag = "href_user" then
-				String'Write (Output, "href=");
+				Forms.Write_Attribute_Name (Output, "href");
 				Forms.Write_Link (
 					Output,
 					Form,
@@ -196,7 +197,7 @@ package body Vampire.R3 is
 											Element.Today,
 											Element.State));
 								elsif Tag = "href_village" then
-									String'Write (Output, "href=");
+									Forms.Write_Attribute_Name (Output, "href");
 									Forms.Write_Link_To_Village_Page (
 										Output,
 										Form,
@@ -260,5 +261,65 @@ package body Vampire.R3 is
 			Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 		end if;
 	end Handle_Village_List;
+	
+	procedure Handle_Speech (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Template : in Web.Producers.Template;
+		Form : in Forms.Root_Form_Type'Class;
+		Image_Directory : in String;
+		Subject : in Tabula.Villages.Person_Type'Class;
+		Text : in String;
+		Time : in Ada.Calendar.Time;
+		Filter : in String)
+	is
+		procedure Handle (
+			Output : not null access Ada.Streams.Root_Stream_Type'Class;
+			Tag : in String;
+			Template : in Web.Producers.Template) is
+		begin
+			if Tag = "src_image" then
+				Forms.Write_Attribute_Name (Output, "src");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Ada.Directories.Compose (
+						Containing_Directory => Image_Directory,
+						Name => Subject.Image.Constant_Reference.Element.all));
+			elsif Tag = "name" then
+				Forms.Write_In_HTML (Output, Form, Name (Subject));
+			elsif Tag = "time" then
+				Forms.Write_In_HTML (
+					Output,
+					Form,
+					Ada.Calendar.Formatting.Image(Time, Time_Zone => Calendar.Time_Offset));
+			elsif Tag = "text" then
+				if Text'Length > Villages.Max_Length_Of_Message then
+					declare
+						I : Natural := Villages.Max_Length_Of_Message;
+					begin
+						while I >= Text'First and then Character'Pos (Text (I + 1)) in 16#80# .. 16#bf# loop
+							I := I - 1;
+						end loop;
+						Forms.Write_In_HTML (Output, Form, Text (Text'First .. I));
+						String'Write (Output, "<b>");
+						Forms.Write_In_HTML (Output, Form, Text (I + 1 .. Text'Last));
+						String'Write (Output, "</b>");
+					end;
+				else
+					Forms.Write_In_HTML (Output, Form, Text);
+				end if;
+			elsif Tag = "class_filter" then
+				Forms.Write_Attribute_Name (Output, "class");
+				Forms.Write_Attribute_Open (Output);
+				Forms.Write_In_Attribute (Output, Form, Filter);
+				Forms.Write_Attribute_Close (Output);
+			else
+				raise Program_Error with "Invalid template """ & Tag & """";
+			end if;
+		end Handle;
+	begin
+		Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+	end Handle_Speech;
 	
 end Vampire.R3;

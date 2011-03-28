@@ -37,6 +37,24 @@ package body Vampire.Forms is
 		end case;
 	end Parameters_To_Base_Page;
 	
+	procedure Write_Attribute_Name (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Name : in String) is
+	begin
+		String'Write (Stream, Name);
+		Character'Write (Stream, '=');
+	end Write_Attribute_Name;
+	
+	procedure Write_Attribute_Open (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class) is
+	begin
+		Character'Write (Stream, '"');
+	end Write_Attribute_Open;
+	
+	procedure Write_Attribute_Close (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class)
+		renames Write_Attribute_Open;
+	
 	procedure Write_Link (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
@@ -49,13 +67,13 @@ package body Vampire.Forms is
 				Name => Resource,
 				From => Current_Directory);
 	begin
-		Character'Write (Stream, '"');
-		String'Write (Stream, Relative);
+		Write_Attribute_Open (Stream);
+		Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
 		if Parameters.Is_Empty then
 			if Relative'Length = 0
 				or else Ada.Directories.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
 			then
-				String'Write (Stream, "./");
+				Web.Write_In_Attribute (Stream, Form.HTML_Version, "./");
 			end if;
 		else
 			Web.Write_Query_In_Attribute (
@@ -63,7 +81,7 @@ package body Vampire.Forms is
 				Form.HTML_Version,
 				Parameters); -- Parameters should contain ASCII only
 		end if;
-		Character'Write (Stream, '"');
+		Write_Attribute_Close (Stream);
 	end Write_Link;
 	
 	procedure Write_Link_To_Village_Page (

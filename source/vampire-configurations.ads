@@ -35,7 +35,7 @@ package Vampire.Configurations is
 	Style_Sheet_File_Name : aliased constant String := "style.css";
 	Image_Directory : aliased constant String := "image";
 	
-	Relative_Background_Image_File_Name : aliased constant String := "background.png";
+	Background_Image_File_Name : aliased constant String := Image_Directory & "/" & "background.png";
 	
 	Relative_Role_Image_File_Names : aliased constant R3.Role_Images := (
 		Villages.Gremlin =>
@@ -62,7 +62,7 @@ package Vampire.Configurations is
 	type Template_Names_Type is record
 		Style_Sheet_File_Name : not null Static_String_Access;
 		Image_Directory : not null Static_String_Access;
-		Relative_Background_Image_File_Name : not null Static_String_Access;
+		Background_Image_File_Name : not null Static_String_Access;
 		Relative_Role_Image_File_Names : not null access constant R3.Role_Images;
 		Template_Index_File_Name : not null access constant String;
 		Template_Register_File_Name : not null access constant String;
@@ -79,7 +79,7 @@ package Vampire.Configurations is
 		Forms.For_Full => (
 			Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
 			Image_Directory => Image_Directory'Access,
-			Relative_Background_Image_File_Name => Relative_Background_Image_File_Name'Access,
+			Background_Image_File_Name => Background_Image_File_Name'Access,
 			Relative_Role_Image_File_Names => Relative_Role_Image_File_Names'Access,
 			Template_Index_File_Name => new String'("template-index.html"),
 			Template_Register_File_Name => new String'("template-register.html"),
@@ -93,7 +93,7 @@ package Vampire.Configurations is
 		Forms.For_Mobile => (
 			Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
 			Image_Directory => Image_Directory'Access,
-			Relative_Background_Image_File_Name => Relative_Background_Image_File_Name'Access,
+			Background_Image_File_Name => Background_Image_File_Name'Access,
 			Relative_Role_Image_File_Names => Relative_Role_Image_File_Names'Access,
 			Template_Index_File_Name => new String'("template-index-simple.html"),
 			Template_Register_File_Name => new String'("template-register-simple.html"),

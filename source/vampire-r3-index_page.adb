@@ -25,7 +25,7 @@ is
 			for I in 1 .. Muramura loop
 				Web.Producers.Produce (Output, Template);
 			end loop;
-		elsif Tag = "active_list" then
+		elsif Tag = "activelist" then
 			Handle_Village_List (
 				Output,
 				Template,
@@ -37,7 +37,7 @@ is
 				Limits => 9999,
 				User_Id => User_Id,
 				User_Password => User_Password);
-		elsif Tag = "log_list" then
+		elsif Tag = "loglist" then
 			Handle_Village_List (
 				Output,
 				Template,

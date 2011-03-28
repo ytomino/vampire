@@ -14,14 +14,14 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "background" then
-			String'Write (Output, "background=");
+			Forms.Write_Attribute_Name (Output, "background");
 			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => HTML_Directory,
 				Resource => Background);
 		elsif Tag = "href_index" then
-			String'Write (Output, "href=");
+			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -30,7 +30,7 @@ is
 				Parameters => Form.Parameters_To_Index_Page (
 					User_Id => "",
 					User_Password => ""));
-		elsif Tag = "log_list" then
+		elsif Tag = "loglist" then
 			Handle_Village_List (
 				Output,
 				Template,
@@ -43,7 +43,7 @@ is
 				User_Id => "",
 				User_Password => "");
 		elsif Tag = "href_stylesheet" then
-			String'Write (Output, "href=");
+			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,

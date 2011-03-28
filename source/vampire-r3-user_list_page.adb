@@ -17,7 +17,7 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "href_index" then
-			String'Write (Output, "href=");
+			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -27,7 +27,7 @@ is
 					User_Id => User_Id,
 					User_Password => User_Password));
 		elsif Tag = "href_logindex" then
-			String'Write (Output, "href=");
+			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -48,7 +48,7 @@ is
 							Output,
 							Form,
 							Key (I));
-					elsif Tag = "joined_count" then
+					elsif Tag = "joinedcount" then
 						Forms.Write_In_HTML (
 							Output,
 							Form,

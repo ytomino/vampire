@@ -22,7 +22,7 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -37,7 +37,7 @@ is
 					User_Id => User_Id,
 					User_Password => User_Password));
 		elsif Tag = "action_page" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -47,7 +47,7 @@ is
 					Village_Id => Village_Id,
 					User_Id => User_Id,
 					User_Password => User_Password));
-		elsif Tag = "village_name" then
+		elsif Tag = "villagename" then
 			Forms.Write_In_HTML (
 				Output,
 				Form,
@@ -74,7 +74,8 @@ is
 					raise Program_Error;
 			end case;
 		elsif Tag = "value_submit" then
-			String'Write (Output, "value=""");
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
 			case Person.Role is
 				when Villages.Doctor =>
 					Forms.Write_In_Attribute (Output, Form, "診察");
@@ -83,11 +84,12 @@ is
 				when others =>
 					raise Program_Error;
 			end case;
-			Character'Write (Output, '"');
+			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_target" then
-			String'Write (Output, "value=""");
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
 			Forms.Write_In_Attribute (Output, Form, Image (Target));
-			Character'Write (Output, '"');
+			Forms.Write_Attribute_Close (Output);
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;

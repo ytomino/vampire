@@ -1,39 +1,68 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings.Unbounded;
-procedure Vampire.Renderers.Preview_Page (
-	Object : in Renderer'Class;
+procedure Vampire.R3.Preview_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
+	Form : in Forms.Root_Form_Type'Class;
+	Template : in String;
+	Image_Directory : in String;
 	Village_Id : in Tabula.Villages.Village_Id;
-	Village : in Vampire.Villages.Village_Type; 
-	Message : in Vampire.Villages.Message;
+	Village : in Villages.Village_Type; 
+	Message : in Villages.Message;
 	User_Id : in String;
 	User_Password : in String)
 is
-	function "+" (S : Ada.Strings.Unbounded.Unbounded_String) return String renames Ada.Strings.Unbounded.To_String;
-	procedure Handle(Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String; Template : in Web.Producers.Template) is
+	procedure Handle (
+		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+		Tag : in String;
+		Template : in Web.Producers.Template) is
 	begin
-		if Tag = "kind" then
-			Write(Output, '"');
-			Web.Write_In_Attribute (Output, Object.HTML_Version, Vampire.Villages.Message_Kind'Image (Message.Kind));
-			Write(Output, '"');
-		elsif Tag = "value" then
-			Write(Output, '"');
-			Web.Write_In_Attribute (Output, Object.HTML_Version, +Message.Text);
-			Write(Output, '"');
+		if Tag = "action_page" then
+			Forms.Write_Attribute_Name (Output, "action");
+			Forms.Write_Link (
+				Output,
+				Form,
+				Current_Directory => ".",
+				Resource => Forms.Self,
+				Parameters => Form.Parameters_To_Village_Page (
+					Village_Id => Village_Id,
+					User_Id => User_Id,
+					User_Password => User_Password));
+		elsif Tag = "villagename" then
+			Forms.Write_In_HTML (
+				Output,
+				Form,
+				Village.Name.Constant_Reference.Element.all);
+		elsif Tag = "speech" then
+			Handle_Speech (
+				Output,
+				Template,
+				Form,
+				Image_Directory => Image_Directory,
+				Subject => Village.People.Constant_Reference (Message.Subject).Element.all,
+				Text => Message.Text.Constant_Reference.Element.all,
+				Time => Message.Time,
+				Filter => "");
+		elsif Tag = "value_kind" then
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
+			Forms.Write_In_Attribute (Output, Form, Villages.Message_Kind'Image (Message.Kind));
+			Forms.Write_Attribute_Close (Output);
+		elsif Tag = "value_text" then
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
+			Forms.Write_In_Attribute (Output, Form, Message.Text.Constant_Reference.Element.all);
+			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "longer" then
-			if Ada.Strings.Unbounded.Length(Message.Text) > Villages.Max_Length_Of_Message then
-				Web.Producers.Produce(Output, Template);
+			if Message.Text.Length > Villages.Max_Length_Of_Message then
+				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "ok" then
-			if Ada.Strings.Unbounded.Length(Message.Text) <= Villages.Max_Length_Of_Message then
-				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
+			if Message.Text.Length <= Villages.Max_Length_Of_Message then
+				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 			end if;
 		else
-			Handle_Messages(Output, Tag, Template, Object,
-				Village_Id, Village, Village.Today, Message, Message.Time, User_Id => User_Id, User_Password => User_Password);
+			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;
 	end Handle;
 begin
-	Produce (Object, Output, Object.Configuration.Template_Preview_File_Name.all, Handle'Access);
-end Vampire.Renderers.Preview_Page;
+	Produce (Output, Template, Handler => Handle'Access);
+end Vampire.R3.Preview_Page;

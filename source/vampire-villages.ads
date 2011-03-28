@@ -192,7 +192,7 @@ package Vampire.Villages is
 		Kind : Message_Kind;
 		Subject : Integer;
 		Target : Integer;
-		Text : Ada.Strings.Unbounded.Unbounded_String;
+		Text : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	
 	Default_Message : constant Message := (
@@ -203,7 +203,7 @@ package Vampire.Villages is
 		Target => No_Person,
 		Text => Ada.Strings.Unbounded.Null_Unbounded_String);
 	
-	package Messages is new Ada.Containers.Vectors (Natural, Message);
+	package Messages is new Ada.Containers.Vectors (Message_Index, Message);
 	
 	type Message_Count is record
 		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;

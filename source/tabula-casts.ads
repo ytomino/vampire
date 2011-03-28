@@ -26,7 +26,7 @@ package Tabula.Casts is
 	package People is new Ada.Containers.Vectors (Natural, Person);
 	
 	type Work is record
-		Name : Ada.Strings.Unbounded.Unbounded_String;
+		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
 		Sex : Neutralable_Sex;
 		Nominated : Boolean;
 	end record;

@@ -52,6 +52,14 @@ package Vampire.Forms is
 		User_Password : String)
 		return Web.Query_Strings;
 	
+	procedure Write_Attribute_Name (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
+		Name : in String);
+	procedure Write_Attribute_Open (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class);
+	procedure Write_Attribute_Close (
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class);
+	
 	procedure Write_In_HTML (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type;

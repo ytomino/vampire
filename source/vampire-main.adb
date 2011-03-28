@@ -14,17 +14,16 @@ with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
 with Vampire.Forms.Select_Form;
+with Vampire.Log;
 with Vampire.R3.Index_Page;
 with Vampire.R3.Message_Page;
+with Vampire.R3.Preview_Page;
 with Vampire.R3.Refresh_Page;
 with Vampire.R3.Register_Page;
 with Vampire.R3.Target_Page;
 with Vampire.R3.User_List_Page;
 with Vampire.R3.User_Page;
-with Vampire.Renderers.Preview_Page;
-with Vampire.Renderers.Village_Page;
-with Vampire.Renderers.Simple;
-with Vampire.Renderers.Log;
+with Vampire.R3.Village_Page;
 with Vampire.Villages.Advance;
 with Vampire.Villages.Load;
 with Vampire.Villages.Save;
@@ -69,12 +68,12 @@ procedure Vampire.Main is
 		HTML_Directory => Configurations.Villages_HTML_Directory'Access,
 		Blocking_Short_Term_File_Name => Configurations.Villages_Blocking_Short_Term_File_Name'Access,
 		Cache_File_Name => Configurations.Villages_Cache_File_Name'Access,
-		Create_Index => Renderers.Log.Create_Index'Access,
+		Create_Index => Log.Create_Index'Access,
 		Types => (
 			1 => (
-				Type_Code => Renderers.Log.Type_Code'Access,
-				Load_Summary => Renderers.Log.Load_Summary'Access,
-				Create_Log => Renderers.Log.Create_Log'Access)));
+				Type_Code => Log.Type_Code'Access,
+				Load_Summary => Log.Load_Summary'Access,
+				Create_Log => Log.Create_Log'Access)));
 	
 begin
 	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
@@ -88,15 +87,6 @@ begin
 		Query_Strings : Web.Query_Strings renames Web.Get_Query_Strings;
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
 		Post : Boolean renames Web.Post;
-		function Get_Renderer(Query_Strings : in Web.Query_Strings) return Renderers.Renderer'Class is
-		begin
-			if Web.Element (Query_Strings, "b") = "k" then
-				return Renderers.Simple.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Mobile)'Access);
-			else
-				return Renderers.Renderer'(Configuration => Configurations.Template_Names (Forms.For_Full)'Access);
-			end if;
-		end Get_Renderer;
-		Renderer : Renderers.Renderer'Class renames Get_Renderer(Query_Strings);
 		pragma Warnings (Off); -- compiler...
 		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (
 		   Query_Strings,
@@ -423,7 +413,7 @@ begin
 													Village_List,
 													New_Village_Id,
 													Tabula.Villages.Lists.Summary (
-														Renderers.Log.Type_Code,
+														Log.Type_Code,
 														New_Village));
 												Users.Lists.Update (User_List,
 													Id => User_Id,
@@ -628,7 +618,7 @@ begin
 											Village_List,
 											Village_Id,
 											Tabula.Villages.Lists.Summary (
-												Renderers.Log.Type_Code,
+												Log.Type_Code,
 												Village));
 									end if;
 								end;
@@ -640,14 +630,22 @@ begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 									Web.Header_Break (Output);
-									Renderers.Village_Page(
-										Renderer,
+									R3.Village_Page (
 										Output,
-										Village_Id,
-										Village'Access,
+										Form,
+										Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+										Current_Directory => ".",
+										HTML_Directory => Configurations.Villages_HTML_Directory,
+										Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+										Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+										Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+										Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+										Cast_File_Name => Configurations.Cast_File_Name,
+										Log => False,
+										Village_Id => Village_Id,
+										Village => Village,
 										Day => Day,
-										First => Message_Range.First,
-										Last => Message_Range.Last,
+										Showing_Range => Message_Range,
 										User_Id => User_Id,
 										User_Password => User_Password);
 								end;
@@ -730,7 +728,7 @@ begin
 																	Village_List,
 																	Village_Id,
 																	Tabula.Villages.Lists.Summary (
-																		Renderers.Log.Type_Code,
+																		Log.Type_Code,
 																		Village));
 																Message_Page ("村に参加しました。");
 															end if;
@@ -774,7 +772,7 @@ begin
 												Village_List,
 												Village_Id,
 												Tabula.Villages.Lists.Summary (
-													Renderers.Log.Type_Code,
+													Log.Type_Code,
 													Village));
 											Message_Page (Removed_Id & "を村から除名しました。");
 										end;
@@ -802,7 +800,7 @@ begin
 														Village_List,
 														Village_Id,
 														Tabula.Villages.Lists.Summary (
-															Renderers.Log.Type_Code,
+															Log.Type_Code,
 															Village));
 												end if;
 											end;
@@ -831,7 +829,7 @@ begin
 													Village_List,
 													Village_Id,
 													Tabula.Villages.Lists.Summary (
-														Renderers.Log.Type_Code,
+														Log.Type_Code,
 														Village));
 												Message_Page ("旅に出ました。");
 										end case;
@@ -908,10 +906,14 @@ begin
 														Web.Header_Content_Type (Output, Web.Text_HTML);
 														Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 														Web.Header_Break (Output);
-														Renderers.Preview_Page(Renderer, Output,
-															Village_Id,
-															Village,
-															Villages.Message'(
+														R3.Preview_Page (
+															Output,
+															Form,
+															Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
+															Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+															Village_Id => Village_Id,
+															Village => Village,
+															Message => Villages.Message'(
 																Day => Village.Today,
 																Time => Calendar.Null_Time,
 																Kind => Villages.Speech,
@@ -949,14 +951,22 @@ begin
 															Web.Header_Content_Type (Output, Web.Text_HTML);
 															Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 															Web.Header_Break (Output);
-															Renderers.Village_Page(
-																Renderer,
+															R3.Village_Page (
 																Output,
-																Village_Id,
-																Village'Access,
+																Form,
+																Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+																Current_Directory => ".",
+																HTML_Directory => Configurations.Villages_HTML_Directory,
+																Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+																Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+																Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+																Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+																Cast_File_Name => Configurations.Cast_File_Name,
+																Log => False,
+																Village_Id => Village_Id,
+																Village => Village,
 																Day => Day,
-																First => Message_Range.First,
-																Last => Message_Range.Last,
+																Showing_Range => Message_Range,
 																Editing_Text => Text,
 																User_Id => User_Id,
 																User_Password => User_Password);
@@ -979,10 +989,14 @@ begin
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
-												Renderer.Preview_Page(Output,
-													Village_Id,
-													Village,
-													Villages.Message'(
+												R3.Preview_Page(
+													Output,
+													Form,
+													Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
+													Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+													Village_Id => Village_Id,
+													Village => Village,
+													Message => Villages.Message'(
 														Day => Village.Today,
 														Time => Calendar.Null_Time,
 														Kind => Villages.Monologue,
@@ -1015,10 +1029,14 @@ begin
 												Web.Header_Content_Type (Output, Web.Text_HTML);
 												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 												Web.Header_Break (Output);
-												Renderer.Preview_Page(Output,
-													Village_Id,
-													Village,
-													Villages.Message'(
+												R3.Preview_Page (
+													Output,
+													Form,
+													Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
+													Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+													Village_Id => Village_Id,
+													Village => Village,
+													Message => Villages.Message'(
 														Day => Village.Today,
 														Time => Calendar.Null_Time,
 														Kind => Villages.Ghost,
@@ -1044,10 +1062,14 @@ begin
 											Web.Header_Content_Type (Output, Web.Text_HTML);
 											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
-											Renderers.Preview_Page(Renderer, Output,
-												Village_Id,
-												Village,
-												Villages.Message'(
+											R3.Preview_Page (
+												Output,
+												Form,
+												Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
+												Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+												Village_Id => Village_Id,
+												Village => Village,
+												Message => Villages.Message'(
 													Day => Village.Today,
 													Time => Calendar.Null_Time,
 													Kind => Villages.Howling,

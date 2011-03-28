@@ -6,9 +6,9 @@ with Web.RSS;
 with Vampire.Configurations;
 with Vampire.Forms.Full;
 with Vampire.R3.Log_Index_Page;
-with Vampire.Renderers.Village_Page;
+with Vampire.R3.Village_Page;
 with Vampire.Villages.Load;
-package body Vampire.Renderers.Log is
+package body Vampire.Log is
 	use Tabula.Villages;
 	use Tabula.Villages.Lists.Summary_Maps;
 	use Tabula.Villages.Lists.User_Lists;
@@ -30,23 +30,32 @@ package body Vampire.Renderers.Log is
 		List : Tabula.Villages.Lists.Village_List;
 		Id : in Tabula.Villages.Village_Id)
 	is
+		Form : Forms.Full.Form_Type := Forms.Full.Create;
 		Village : aliased Vampire.Villages.Village_Type;
 	begin
 		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => False);
 		for Day in 0 .. Village.Today loop
 			declare
-				Renderer : Log.Renderer(Configurations.Template_Names (Forms.For_Full)'Access);
 				Output : Ada.Streams.Stream_IO.File_Type;
 			begin
 				Ada.Streams.Stream_IO.Create (
 					Output,
 					Ada.Streams.Stream_IO.Out_File,
 					Lists.HTML_File_Name (List, Id, Day));
-				Village_Page (
-					Renderer,
+				R3.Village_Page (
 					Ada.Streams.Stream_IO.Stream(Output),
-					Id,
-					Village'Access, 
+					Form,
+					Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+					Current_Directory => Configurations.Villages_HTML_Directory,
+					HTML_Directory => Configurations.Villages_HTML_Directory,
+					Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+					Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+					Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+					Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+					Cast_File_Name => Configurations.Cast_File_Name,
+					Log => True,
+					Village_Id => Id,
+					Village => Village,
 					Day => Day, 
 					User_Id => "",
 					User_Password => "");
@@ -67,13 +76,10 @@ package body Vampire.Renderers.Log is
 			R3.Log_Index_Page (
 				Ada.Streams.Stream_IO.Stream (File),
 				Form,
-				Configurations.Template_Names (Forms.For_Full).Template_Log_Index_File_Name.all,
+				Configurations.Template_Names (Form.Template_Set).Template_Log_Index_File_Name.all,
 				HTML_Directory => Configurations.Villages_HTML_Directory,
 				Style_Sheet => Configurations.Style_Sheet_File_Name,
-				Background =>
-					Ada.Directories.Compose (
-						Containing_Directory => Configurations.Template_Names (Forms.For_Full).Image_Directory.all,
-						Name => Configurations.Template_Names (Forms.For_Full).Relative_Background_Image_File_Name.all),
+				Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
 				Summaries => Summaries);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_Log_Index;
@@ -123,62 +129,4 @@ package body Vampire.Renderers.Log is
 		end if;
 	end Create_Index;
 	
-	overriding procedure Link_Style_Sheet(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class) is
-	begin
-		Write(Output, """../");
-		Write(Output, Object.Configuration.Style_Sheet_File_Name.all);
-		Write(Output, '"');
-	end Link_Style_Sheet;
-	
-	overriding procedure User_Panel(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Template : in Web.Producers.Template;
-		User_Id : in String;
-		User_Password : in String;
-		Link_To_User_Page : Boolean) is
-	begin
-		null;
-	end User_Panel;
-	
-	overriding procedure Link(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Village_Id : Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
-		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
-		Log : Boolean := False;
-		User_Id : in String;
-		User_Password : in String;
-		User_Page : Boolean := False) is
-	begin
-		if User_Page then
-			raise Program_Error;
-		elsif Village_Id = Invalid_Village_Id then
-			Write(Output, """../""");
-		else
-			Write(Output, """./");
-			Write(Output, Village_Id);
-			Write(Output, "-");
-			Write(Output, To_String(Integer'Max(0, Day)));
-			Write(Output, ".html""");
-		end if;
-	end Link;
-	
-	overriding procedure Link_Image(
-		Object : in Renderer;
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		File_Name : in String) is
-	begin
-		Write(Output, """../");
-		Write(Output, Object.Configuration.Image_Directory.all);
-		Write(Output, "/");
-		Write(Output, File_Name);
-		Write(Output, '"');
-	end Link_Image;
-
-end Vampire.Renderers.Log;
+end Vampire.Log;

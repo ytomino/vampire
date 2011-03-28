@@ -14,14 +14,14 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => ".",
 				Resource => Forms.Self);
 		elsif Tag = "action_page" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -44,13 +44,15 @@ is
 					User_Id => "",
 					User_Password => ""));
 		elsif Tag = "value_newid" then
-			String'Write (Output, "value=""");
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
 			Forms.Write_In_Attribute (Output, Form, New_User_Id);
-			Character'Write (Output, '"');
+			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_newpassword" then
-			String'Write (Output, "value=""");
+			Forms.Write_Attribute_Name (Output, "value");
+			Forms.Write_Attribute_Open (Output);
 			Forms.Write_In_Attribute (Output, Form, New_User_Password);
-			Character'Write (Output, '"');
+			Forms.Write_Attribute_Close (Output);
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;

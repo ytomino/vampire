@@ -16,7 +16,7 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,

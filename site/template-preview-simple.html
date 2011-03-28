@@ -1,22 +1,22 @@
 <html>
 <head>
 <meta http-equiv="CONTENT-TYPE" content="text/html; charset=SJIS">
-<title><?title></?title>The Village of Vampire</title>
+<title><?villagename/> - The Village of Vampire</title>
 </head>
 <body>
-<h1><?title>譚大錐</?title></h1><hr>
-<?longer><p>髟ｷ縺吶℃縺ｾ縺吶�</p><hr></?longer>
-<div><u><?name>蜷榊燕</?name></u><br><?text>逋ｺ險</?text></div><hr>
-<?ok><form action=?uri method="POST">
-<input type="submit" value="逋ｺ險">
+<h1><?villagename>村名</?villagename></h1><hr>
+<?longer><div>長すぎます。</div><hr></?longer>
+<?speech><div><u><?name>名前</?name></u><br><?text>発言</?text></div><hr></?speech>
+<?ok><form method="POST" ?action_page>
+<input type="submit" value="発言">
 <input type="hidden" name="cmd" value="speech2">
-<input value=?value type="hidden" name="text">
+<input type="hidden" name="text" ?value_text>
 </form></?ok>
-<form action=?uri method="POST">
-<input type="submit" value="謌ｻ繧�">
+<form method="POST" ?action_page>
+<input type="submit" value="戻る">
 <input type="hidden" name="cmd" value="reedit">
-<input value=?kind type="hidden" name="kind" />
-<input value=?value type="hidden" name="text">
+<input type="hidden" name="kind" ?value_kind>
+<input type="hidden" name="text" ?value_text>
 </form>
 </body>
 </html>

@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja-JP">
 	<head>
 		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
-		<?stylesheet><link rel="stylesheet" type="text/css" href="style.css" /></?stylesheet>
-		<title><?title></?title>The Village of Vampire</title>
+		<link rel="stylesheet" type="text/css" ?href_stylesheet ?? href="style.css" />
+		<title><?villagename/> - The Village of Vampire</title>
 		<?styles/>
 		<script type="text/javascript">
 			function sync(n){
@@ -30,7 +30,7 @@
 			}
 		</script>
 	</head>
-	<body background=?background>
+	<body ?background>
 		<h1>The Village of Vampire</h1>
 		<div class="bar">
 			<table>
@@ -123,14 +123,14 @@
 					</td></tr>
 				</?rule>
 				<tr><td>
-					<?back>戻る</?back>
+					<a ?href_index>戻る</a>
 				</td></tr>
 			</table>
 		</div>
 		<div class="messages">
-			<h2 class="villagetitle"><?title>村名</?title></h2>
+			<h2 class="villagetitle"><?villagename>村名</?villagename></h2>
 			<?all>
-				<p class="narration"><a href=?uri>静かな村はかつての栄枯の名残をかすかに伝えています。</a></p>
+				<p class="narration"><a ?href_all>静かな村はかつての栄枯の名残をかすかに伝えています。</a></p>
 			</?all>
 			<?message>
 				<?narration>
@@ -146,10 +146,10 @@
 					<p class="narratione"><?text>本文</?text></p>
 				</?narratione>
 				<?speech>
-					<div class=?filter>
+					<div ?class_filter>
 						<div class="speech">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
@@ -159,20 +159,20 @@
 					<p class="escaped"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span><br/><?text>発言</?text></p>
 				</?escaped>
 				<?ghost>
-					<div class=?filter>
+					<div ?class_filter>
 						<div class="ghost">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
 					</div>
 				</?ghost>
 				<?monologue>
-					<div class=?filter>
+					<div ?class_filter>
 						<div class="monologue">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
@@ -181,7 +181,7 @@
 				<?vampire>
 					<div class="vampire">
 						<table cellspacing="0">
-							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
+							<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
 							<tr><td class="text"><?text>発言</?text></td></tr>
 						</table>
 					</div>
@@ -189,7 +189,7 @@
 				<?dying>
 					<div class="dying">
 						<table cellspacing="0">
-							<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
+							<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
 							<tr><td class="text"><?text>発言</?text></td></tr>
 						</table>
 					</div>
@@ -214,7 +214,7 @@
 						<?speech>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea id=?bottom name="text" class="speech" rows="3"><?edit></?edit></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="speech" rows="3"><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>20</?count></div></?rest><input type="submit" value="発言" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="speech" />
@@ -223,7 +223,7 @@
 						<?ghost>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea id=?bottom name="text" class="ghost" rows="3"></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="ghost" rows="3"></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="呻く" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="ghost" />
@@ -232,19 +232,19 @@
 						<?monologue>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea id=?bottom name="text" class="monologue" rows="3"></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="monologue" rows="3"></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="独白" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="monologue" />
 							</form>
 						</?monologue>
 						<?vote>処刑を選ばねばなりません…</?vote>
-						<?role><div><img src=?roleimg/><?roletext>あなたはたこ焼き名人です。</?roletext></div></?role>
+						<?role><div><img ?src_roleimg/><?roletext>あなたはたこ焼き名人です。</?roletext></div></?role>
 						<?zero><div>まずは発言してください。</div></?zero>
 						<?vampire>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea id=?bottom name="text" class="note" rows="3"><?note></?note></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="note" rows="3"><?note></?note></textarea></td>
 									<td class="button"><input type="submit" value="記す" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="note" />
@@ -253,7 +253,7 @@
 						<?dying>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea id=?bottom name="text" class="dying" rows="3"><?note></?note></textarea></td>
+									<td class="input"><textarea ?id_bottom name="text" class="dying" rows="3"><?note></?note></textarea></td>
 									<td class="button"><input type="submit" value="記す" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="note" />
@@ -269,8 +269,8 @@
 								<input class="button" type="submit" value="旅に出る" />
 								<?x>x</?x> + <?y>y</?y> = 
 								<input class="answer" type="text" name="z" value="" />
-								<input value=?qx type="hidden" name="x" />
-								<input value=?qy type="hidden" name="y" />
+								<input type="hidden" name="x" ?value_qx />
+								<input type="hidden" name="y" ?value_qy />
 								<input type="hidden" name="cmd" value="escape" />
 							</form></?escape>
 							<?action><div>アクション</div></?action>
@@ -304,7 +304,7 @@
 					<div class="box"><div class="villagepanel" id="bottom">これ以上は参加できません。</div></div>
 				</?over>
 			</?villagepanel>
-			<?next><p class="narration"><a href=?uri>こうして、その日は暮れてゆきました……。</a></p></?next>
+			<?next><p class="narration"><a ?href_next>こうして、その日は暮れてゆきました……。</a></p></?next>
 			<?scroll><script type="text/javascript">window.scroll(0, 999999); document.getElementById('bottom').focus();</script></?scroll>
 		</div>
 	</body>

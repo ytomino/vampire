@@ -22,7 +22,7 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "action_page" then
-			String'Write (Output, "action=");
+			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
@@ -63,7 +63,7 @@ is
 		elsif Tag = "createdvillage" then
 			Forms.Write_In_HTML (Output, Form, Created.Constant_Reference.Element.all);
 		elsif Tag = "href_index" then
-			String'Write (Output, "href=");
+			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,

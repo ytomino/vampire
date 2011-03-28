@@ -4,33 +4,35 @@
 	<head>
 		<meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" href="./style.css" />
-		<title><?title></?title>The Village of Vampire</title>
+		<title><?villagename/> - The Village of Vampire</title>
 	</head>
 	<body background="./image/background.png">
 		<h1>The Village of Vampire</h1>
-		<div class="center"><h2 class="villagetitle"><?title>村名</?title></h2></div>
+		<div class="center"><h2 class="villagetitle"><?villagename>村名</?villagename></h2></div>
 		<div class="center">
 			<?longer><p>長すぎます。</p></?longer>
-			<div class="s0">
-				<div class="speech">
-					<table cellspacing="0">
-						<tr><td rowspan="2"><img src=?image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span></td></tr>
-						<tr><td class="text"><?text>発言</?text></td></tr>
-					</table>
+			<?speech>
+				<div class="s0">
+					<div class="speech">
+						<table cellspacing="0">
+							<tr><td rowspan="2"><img width="64" height="80" alt="" ?src_image /></td><td class="name"><span class="name"><?name>名前</?name></span></td></tr>
+							<tr><td class="text"><?text>発言</?text></td></tr>
+						</table>
+					</div>
 				</div>
-			</div>
+			</?speech>
 			<?ok>
 				<form class="button" method="POST">
 					<input type="submit" value="発言" />
 					<input type="hidden" name="cmd" value="speech2" />
-					<input value=?value type="hidden" name="text" />
+					<input type="hidden" name="text" ?value_text />
 				</form>
 			</?ok>
 			<form class="button" method="POST">
 				<input type="submit" value="戻る" />
 				<input type="hidden" name="cmd" value="reedit" />
-				<input value=?kind type="hidden" name="kind" />
-				<input value=?value type="hidden" name="text" />
+				<input type="hidden" name="kind" ?value_kind />
+				<input type="hidden" name="text" ?value_text />
 			</form>
 		</div>
 	</body>
