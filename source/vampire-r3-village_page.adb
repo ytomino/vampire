@@ -879,31 +879,13 @@ is
 									when Vampire.Villages.Narration =>
 										Narration (Message.Text.Constant_Reference.Element.all);
 									when Vampire.Villages.Escape =>
-										declare
-											Subject : Vampire.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
-										begin
-											if Village.State >= Tabula.Villages.Epilogue then
-												Narration (
-													Villages.Text.Name (Subject) & "(" &
-													(Subject.Id.Constant_Reference.Element.all) &
-													")は人知れず華やいだ都会へと旅立ってゆきました。",
-													Class => "narratione");
-											else
-												Narration(Villages.Text.Name(Subject) & "は人知れず華やいだ都会へと旅立ってゆきました。", Class => "narratione");
-											end if;
-										end;
+										Narration (
+											Villages.Text.Escape (Village, Message),
+											Class => "narratione");
 									when Vampire.Villages.Join =>
-										declare
-											Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-										begin
-											Narration (Image (Message.Subject + 1) & "人目に" & Villages.Text.Name(Subject) & "が現れました。");
-										end;
+										Narration (Villages.Text.Join (Village, Message));
 									when Vampire.Villages.Escaped_Join =>
-										declare
-											Subject : Vampire.Villages.Person_Type renames Village.Escaped_People.Constant_Reference(Message.Subject).Element.all;
-										begin
-											Narration(Villages.Text.Name(Subject) & "が現れました。", Class => "narratione");
-										end;
+										Narration (Villages.Text.Escaped_Join (Village, Message));
 									when Vampire.Villages.Speech | Vampire.Villages.Escaped_Speech =>
 										declare
 											Subject : Person_Index'Base := Message.Subject;
@@ -972,49 +954,39 @@ is
 										if Village.State >= Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
 										then
-											declare
-												The_Unfortunate : constant Integer := Vampire.Villages.Find_Superman (Village, Vampire.Villages.Unfortunate_Inhabitant);
-											begin
-												Narration (
-													Villages.Text.Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) & "のせいで用事ができてしまい、今夜は相談ができません。",
-													"narrationi",
-													Vampire.Villages.Vampire_K);
-											end;
+											Narration (
+												Villages.Text.Howling_Blocked (Village),
+												"narrationi",
+												Vampire.Villages.Vampire_K);
 										end if;
-									when Vampire.Villages.Action_Message_Kind =>
-										declare
-											Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-											Target : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
-										begin
-											case Vampire.Villages.Action_Message_Kind(Message.Kind) is
-												when Vampire.Villages.Action_Wake =>
-													Narration(Villages.Text.Name(Subject) & "は" & Villages.Text.Name(Target) & "を起こした。");
-												when Vampire.Villages.Action_Encourage =>
-													Narration(Villages.Text.Name(Subject) & "は" & Villages.Text.Name(Target) & "に話の続きを促した。");
-												when Vampire.Villages.Action_Vampire_Gaze =>
-													if Village.State >= Epilogue
-														or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
-													then
-														Narration (
-															Villages.Text.Name (Subject) & "は" & Villages.Text.Name (Target) & "をこっそりと見つめた。",
-															"narrationi",
-															Vampire.Villages.Vampire_K);
-													end if;
-												when Vampire.Villages.Action_Vampire_Gaze_Blocked =>
-													if Village.State >= Epilogue
-														or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
-													then
-														declare
-															The_Unfortunate : constant Integer := Vampire.Villages.Find_Superman (Village, Vampire.Villages.Unfortunate_Inhabitant);
-														begin
-															Narration(
-																Villages.Text.Name (Subject) & "の視線は" & Villages.Text.Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) & "に遮られた。",
-																"narrationi",
-																Vampire.Villages.Vampire_K);
-														end;
-													end if;
-											end case;
-										end;
+									when Vampire.Villages.Action_Wake =>
+										Narration (Villages.Text.Action_Wake (Village, Message));
+									when Vampire.Villages.Action_Encourage =>
+										Narration (Villages.Text.Action_Encourage (Village, Message));
+									when Vampire.Villages.Action_Vampire_Gaze =>
+										if Village.State >= Epilogue
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Element.Role in
+													Vampire.Villages.Vampire_Role)
+										then
+											Narration (
+												Villages.Text.Action_Vampire_Gaze (Village, Message),
+												"narrationi",
+												Vampire.Villages.Vampire_K);
+										end if;
+									when Vampire.Villages.Action_Vampire_Gaze_Blocked =>
+										if Village.State >= Epilogue
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Element.Role in
+													Vampire.Villages.Vampire_Role)
+										then
+											Narration(
+												Villages.Text.Action_Vampire_Gaze_Blocked (Village, Message),
+												"narrationi",
+												Vampire.Villages.Vampire_K);
+										end if;
 									when Vampire.Villages.Servant_Message_Kind =>
 										if Village.State >= Epilogue or else Player_Index = Message.Subject then
 											Narration (
@@ -1077,14 +1049,10 @@ is
 										Executed := Message.Target;
 									when Vampire.Villages.Awareness =>
 										if Village.State >= Epilogue or else Player_Index = Message.Subject then
-											declare
-												Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-											begin
-												Narration (
-													Villages.Text.Name (Subject) & "は無性に闇が恋しくなり……夜空へと飛び立ちました。",
-													"narrationi",
-													Village.People.Constant_Reference (Message.Subject).Element.Role);
-											end;
+											Narration (
+												Villages.Text.Awareness (Village, Message),
+												"narrationi",
+												Village.People.Constant_Reference (Message.Subject).Element.Role);
 										end if;
 									when Vampire.Villages.Astronomer_Observation =>
 										if Village.State >= Epilogue or else Player_Index = Message.Subject then
@@ -1134,135 +1102,45 @@ is
 										end if;
 									when Vampire.Villages.Gremlin_Sense =>
 										if Village.State >= Epilogue or else (Player_Index = Message.Subject) then
-											declare
-												Vampire_Count : Natural := 0;
-											begin
-												for I in Village.People.First_Index .. Village.People.Last_Index loop
-													declare
-														P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-														R : Vampire.Villages.Person_Record renames P.Records.Constant_Reference(Message.Day).Element.all;
-													begin
-														if (R.State = Vampire.Villages.Normal and then P.Role in Vampire.Villages.Vampire_Role)
-															or else R.State = Vampire.Villages.Infected
-														then
-															Vampire_Count := Vampire_Count + 1;
-														end if;
-													end;
-												end loop;
-												Narration (
-													"残り吸血鬼の数は" & Image (Vampire_Count) & "匹……。",
-													"narrationi",
-													Vampire.Villages.Gremlin);
-											end;
+											Narration (
+												Villages.Text.Gremlin_Sense (Village, Message.Day),
+												"narrationi",
+												Vampire.Villages.Gremlin);
 										end if;
 									when Vampire.Villages.Sweetheart_Incongruity =>
 										if Village.State >= Epilogue or else (Player_Index = Message.Subject) then
-											declare
-												S : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-												T : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Target).Element.all;
-											begin
-												Narration (
-													Villages.Text.Name (S) & "は" & Villages.Text.Name (T) & "に違和感を感じました。",
-													"narrationi",
-													Vampire.Villages.Lover);
-											end;
+											Narration (
+												Villages.Text.Sweetheart_Incongruity (Village, Message),
+												"narrationi",
+												Vampire.Villages.Lover);
 										end if;
 									when Vampire.Villages.Sweetheart_Suicide =>
 										if Village.State >= Epilogue or else (Player_Index = Message.Subject) or else (Player_Index = Message.Target) then
-											declare
-												S : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(Message.Subject).Element.all;
-											begin
-												Narration(
-													Villages.Text.Name (S) & "は想い人の後を追いました。",
-													"narrationi",
-													Vampire.Villages.Lover);
-											end;
+											Narration(
+												Villages.Text.Sweetheart_Suicide (Village, Message),
+												"narrationi",
+												Vampire.Villages.Lover);
 										end if;
 									when Vampire.Villages.List =>
-										declare
-											Log : aliased Ada.Strings.Unbounded.Unbounded_String;
-										begin
-											if Village.Today = Message.Day and Village.State >= Epilogue then
-												declare
-													S : constant String := Villages.Text.Fatalities (Village, Message.Day, Executed);
-												begin
-													if S /= "" then
-														Narration(S);
-													end if;
-												end;
-												declare
-													Last_Day_Messages : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages (Village, Message.Day - 1);
-													G_Win : Boolean := False;
-													V_Win : Boolean := False;
-													Second : Boolean := False;
-												begin
-													for I in Village.People.First_Index .. Village.People.Last_Index loop
-														declare
-															P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
-															Speech_Count : constant Natural := Last_Day_Messages(I).Speech;
-														begin
-															if Second then
-																Ada.Strings.Unbounded.Append(Log, Line_Break);
-															end if;
-															Ada.Strings.Unbounded.Append (
-																Log,
-																Villages.Text.Name (P) & "(" & P.Id & ")は" & Villages.Text.Image (P.Role) & "でした。");
-															case P.Records.Constant_Reference(Message.Day).Element.State is
-																when Vampire.Villages.Normal =>
-																	Ada.Strings.Unbounded.Append(Log, "生存しました。");
-																	case P.Role is
-																		when Vampire.Villages.Vampire_Role =>
-																			if Speech_Count > 0 then
-																				V_Win := True;
-																			end if;
-																		when Vampire.Villages.Gremlin =>
-																			if Speech_Count > 0 then
-																				G_Win := True;
-																			end if;
-																		when others => null;
-																	end case;
-																	if Speech_Count = 0 then
-																		Ada.Strings.Unbounded.Append(Log, "蚊帳の外でした。");
-																	end if;
-																when Vampire.Villages.Infected =>
-																	Ada.Strings.Unbounded.Append(Log, "吸血鬼にされました。");
-																when Vampire.Villages.Died =>
-																	Ada.Strings.Unbounded.Append(Log, "死亡しました。");
-															end case;
-															Second := True;
-														end;
-													end loop;
-													Narration (Log.Constant_Reference.Element.all);
-													Log := Ada.Strings.Unbounded.Null_Unbounded_String;
-													if G_Win then
-														if V_Win then
-															Ada.Strings.Unbounded.Append(Log, "村は吸血鬼の手に落ちた……流石の吸血鬼も安堵したその油断を突き……妖魔は全てに勝利しました。");
-														else
-															Ada.Strings.Unbounded.Append(Log, "吸血鬼を退治した……その瞬間、彼奴を阻むものは何もなくなり……妖魔は全てに勝利しました。");
-														end if;
-													elsif V_Win then
-														Ada.Strings.Unbounded.Append(Log, "村は吸血鬼の手に落ちました。吸血鬼の勝利です！");
-													else
-														Ada.Strings.Unbounded.Append(Log, "吸血鬼を退治しました。村人の勝利です！");
-													end if;
-												end;
-												Narration (Log.Constant_Reference.Element.all);
-											else
-												declare
-													S : constant String := Villages.Text.Fatalities (Village, Message.Day, Executed);
-												begin
-													Ada.Strings.Unbounded.Append(Log, S);
-													if S /= "" then
-														Ada.Strings.Unbounded.Append(Log, Line_Break);
-													end if;
-												end;
+										if Village.Today = Message.Day and Village.State >= Epilogue then
+											Narration (Villages.Text.Fatalities (Village, Message.Day, Executed));
+											Narration (Villages.Text.People_In_Epilogure (Village));
+											Narration (Villages.Text.Result_In_Epilogure (Village));
+										else
+											declare
+												Log : aliased Ada.Strings.Unbounded.Unbounded_String;
+											begin
+												Ada.Strings.Unbounded.Append (Log, Villages.Text.Fatalities (Village, Message.Day, Executed));
+												if not Log.Is_Null then
+													Ada.Strings.Unbounded.Append (Log, Line_Break);
+												end if;
 												Ada.Strings.Unbounded.Append (Log, Villages.Text.Survivors (Village, Message.Day));
 												Narration (Log.Constant_Reference.Element.all);
-												if Message.Day = 2 then
-													Narration (Villages.Text.For_Execution_In_Second (Village));
-												end if;
+											end;
+											if Message.Day = 2 then
+												Narration (Villages.Text.For_Execution_In_Second (Village));
 											end if;
-										end;
+										end if;
 									when Vampire.Villages.Introduction =>
 										Narration (Villages.Text.Introduction (Village));
 									when Vampire.Villages.Breakdown =>

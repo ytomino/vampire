@@ -62,6 +62,39 @@ package body Vampire.Villages.Text is
 		end case;
 	end Short_Image;
 	
+	-- 参加
+	
+	function Join (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+	begin
+		return Image (Message.Subject + 1) & "人目に" & Name (Subject) & "が現れました。 ";
+	end Join;
+	
+	function Escaped_Join (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.Escaped_People.Constant_Reference (Message.Subject).Element.all;
+	begin
+		return Name (Subject) & "が現れました。 ";
+	end Escaped_Join;
+	
+	function Escape (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type
+			renames Village.Escaped_People.Constant_Reference (Message.Subject).Element.all;
+	begin
+		if Village.State >= Epilogue then
+			return Name (Subject) & "(" &
+				Subject.Id.Constant_Reference.Element.all &
+				")は人知れず華やいだ都会へと旅立ってゆきました。 ";
+		else
+			return Name (Subject) & "は人知れず華やいだ都会へと旅立ってゆきました。 ";
+		end if;
+	end Escape;
+	
 	-- 舞台
 	
 	type Stage_Kind is (A_Village, A_Castle);
@@ -451,6 +484,13 @@ package body Vampire.Villages.Text is
 		return Result.Constant_Reference.Element.all;
 	end Votes_Totaled;
 	
+	function Howling_Blocked (Village : Village_Type) return String is
+		The_Unfortunate : constant Person_Index := Find_Superman (Village, Unfortunate_Inhabitant);
+		P : Person_Type renames Village.People.Constant_Reference (The_Unfortunate).Element.all;
+	begin
+		return Name (P) & "のせいで用事ができてしまい、今夜は相談ができません。 ";
+	end Howling_Blocked;
+	
 	function Astronomer_Observation_Message (Village : Village_Type; Message : Villages.Message)
 		return String
 	is
@@ -558,6 +598,14 @@ package body Vampire.Villages.Text is
 		return Result.Constant_Reference.Element.all;
 	end Vampire_Murder_Message;
 	
+	function Awareness (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+	begin
+		return Name (Subject) & "は無性に闇が恋しくなり……夜空へと飛び立ちました。 ";
+	end Awareness;
+	
 	function Fatalities (Village : Village_Type; Day : Natural; Executed : Person_Index'Base)
 		return String
 	is
@@ -605,5 +653,157 @@ package body Vampire.Villages.Text is
 		Ada.Strings.Unbounded.Append (Result, "が生存者です。 ");
 		return Result.Constant_Reference.Element.all;
 	end Survivors;
+	
+	function Gremlin_Sense (Village : Village_Type; Day : Natural) return String is
+		Vampire_Count : Natural := 0;
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			declare
+				P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
+				R : Person_Record renames P.Records.Constant_Reference (Day).Element.all;
+			begin
+				if (R.State = Normal and then P.Role in Vampire_Role)
+					or else R.State = Infected
+				then
+					Vampire_Count := Vampire_Count + 1;
+				end if;
+			end;
+		end loop;
+		return "残り吸血鬼の数は" & Image (Vampire_Count) & "匹……。 ";
+	end Gremlin_Sense;
+	
+	function Sweetheart_Incongruity (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		S : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		T : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (S) & "は" & Name (T) & "に違和感を感じました。 ";
+	end Sweetheart_Incongruity;
+	
+	function Sweetheart_Suicide (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		S : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+	begin
+		return Name (S) & "は想い人の後を追いました。 ";
+	end Sweetheart_Suicide;
+	
+	-- アクション
+	
+	function Action_Wake (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (Subject) & "は" & Name (Target) & "を起こした。 ";
+	end Action_Wake;
+	
+	function Action_Encourage (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (Subject) & "は" & Name (Target) & "に話の続きを促した。 ";
+	end Action_Encourage;
+	
+	function Action_Vampire_Gaze (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (Subject) & "は" & Villages.Text.Name (Target) & "をこっそりと見つめた。 ";
+	end Action_Vampire_Gaze;
+	
+	function Action_Vampire_Gaze_Blocked (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		The_Unfortunate : constant Person_Index := Find_Superman (Village, Unfortunate_Inhabitant);
+	begin
+		return Name (Subject) & "の視線は" &
+		Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) &
+		"に遮られた。 ";
+	end Action_Vampire_Gaze_Blocked;
+	
+	-- 決着
+	
+	function People_In_Epilogure (Village : Village_Type) return String is
+		Log : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Last_Day_Messages : Message_Counts renames Count_Messages (Village, Village.Today - 1);
+		Second : Boolean := False;
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			declare
+				P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
+				Speech_Count : constant Natural := Last_Day_Messages (I).Speech;
+			begin
+				if Second then
+					Ada.Strings.Unbounded.Append (Log, Line_Break);
+				end if;
+				Ada.Strings.Unbounded.Append (
+					Log,
+					Name (P) & "(" & P.Id.Constant_Reference.Element.all & ")は" &
+					Image (P.Role) & "でした。 ");
+				case P.Records.Constant_Reference (Village.Today).Element.State is
+					when Normal =>
+						Ada.Strings.Unbounded.Append (Log, "生存しました。 ");
+						if Speech_Count = 0 then
+							Ada.Strings.Unbounded.Append (Log, "蚊帳の外でした。 ");
+						end if;
+					when Infected =>
+						Ada.Strings.Unbounded.Append (Log, "吸血鬼にされました。 ");
+					when Died =>
+						Ada.Strings.Unbounded.Append (Log, "死亡しました。 ");
+				end case;
+				Second := True;
+			end;
+		end loop;
+		return Log.Constant_Reference.Element.all;
+	end People_In_Epilogure;
+	
+	function Result_In_Epilogure (Village : Village_Type) return String is
+		Last_Day_Messages : constant Message_Counts := Count_Messages (Village, Village.Today - 1);
+		G_Win : Boolean := False;
+		V_Win : Boolean := False;
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			declare
+				P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
+				Speech_Count : constant Natural := Last_Day_Messages (I).Speech;
+			begin
+				case P.Records.Constant_Reference (Village.Today).Element.State is
+					when Normal =>
+						case P.Role is
+							when Vampire_Role =>
+								if Speech_Count > 0 then
+									V_Win := True;
+								end if;
+							when Gremlin =>
+								if Speech_Count > 0 then
+									G_Win := True;
+								end if;
+							when others => null;
+						end case;
+					when Infected | Died =>
+						null;
+				end case;
+			end;
+		end loop;
+		if G_Win then
+			if V_Win then
+				return "村は吸血鬼の手に落ちた……流石の吸血鬼も安堵したその油断を突き……妖魔は全てに勝利しました。 ";
+			else
+				return "吸血鬼を退治した……その瞬間、彼奴を阻むものは何もなくなり……妖魔は全てに勝利しました。 ";
+			end if;
+		elsif V_Win then
+			return "村は吸血鬼の手に落ちました。吸血鬼の勝利です！ ";
+		else
+			return "吸血鬼を退治しました。村人の勝利です！ ";
+		end if;
+	end Result_In_Epilogure;
 	
 end Vampire.Villages.Text;

@@ -10,6 +10,17 @@ package Vampire.Villages.Text is
 	function Image (Role : Person_Role) return String;
 	function Short_Image (Role : Person_Role) return String; -- 漢字一文字
 	
+	-- 参加
+	
+	function Join (Village : Village_Type; Message : Villages.Message)
+		return String;
+	function Escaped_Join (Village : Village_Type; Message : Villages.Message)
+		return String;
+	
+	-- 村抜け
+	function Escape (Village : Village_Type; Message : Villages.Message)
+		return String;
+	
 	-- 舞台
 	
 	-- プロローグのメッセージ
@@ -55,6 +66,9 @@ package Vampire.Villages.Text is
 		Executed: Person_Index'Base)
 		return String;
 	
+	-- 夜間の会話が数奇な運命の村人に妨害された
+	function Howling_Blocked (Village : Village_Type) return String;
+	
 	-- 観測結果
 	function Astronomer_Observation_Message (Village : Village_Type; Message : Villages.Message)
 		return String;
@@ -69,10 +83,43 @@ package Vampire.Villages.Text is
 		Executed : Person_Index'Base)
 		return String;
 	
+	-- 感染自覚
+	function Awareness (Village : Village_Type; Message : Villages.Message)
+		return String;
+	
 	-- 遺体の一覧
 	function Fatalities (Village : Village_Type; Day : Natural; Executed : Person_Index'Base)
 		return String;
 	-- 生存者の一覧
 	function Survivors (Village : Village_Type; Day : Natural) return String;
+	
+	-- 妖魔の吸血鬼数感知
+	function Gremlin_Sense (Village : Village_Type; Day : Natural) return String;
+	
+	-- 違和感
+	function Sweetheart_Incongruity (Village : Village_Type; Message : Villages.Message)
+		return String;
+	-- 後追い
+	function Sweetheart_Suicide (Village : Village_Type; Message : Villages.Message)
+		return String;
+	
+	-- アクション
+	
+	function Action_Wake (Village : Village_Type; Message : Villages.Message)
+		return String;
+	function Action_Encourage (Village : Village_Type; Message : Villages.Message)
+		return String;
+	function Action_Vampire_Gaze (Village : Village_Type; Message : Villages.Message)
+		return String;
+	function Action_Vampire_Gaze_Blocked (Village : Village_Type; Message : Villages.Message)
+		return String;
+	
+	-- 決着
+	
+	-- 役とID公開
+	function People_In_Epilogure (Village : Village_Type) return String;
+	
+	-- 勝利陣営
+	function Result_In_Epilogure (Village : Village_Type) return String;
 	
 end Vampire.Villages.Text;
