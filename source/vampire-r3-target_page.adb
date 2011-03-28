@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Unbounded;
+with Vampire.Villages.Text;
 procedure Vampire.R3.Target_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
 	Form : in Forms.Root_Form_Type'Class;
@@ -58,7 +59,7 @@ is
 					Forms.Write_In_HTML (
 						Output,
 						Form,
-						Name (Target_Person) & "を診察しますか？");
+						Villages.Text.Name (Target_Person) & "を診察しますか？");
 				when Villages.Detective =>
 					if Target_Person.Records.Constant_Reference(Village.Today).Element.Note = "" then
 						Forms.Write_In_HTML (
@@ -69,7 +70,7 @@ is
 					Forms.Write_In_HTML (
 						Output,
 						Form,
-						Name(Target_Person) & "を調査しますか？");
+						Villages.Text.Name (Target_Person) & "を調査しますか？");
 				when others =>
 					raise Program_Error;
 			end case;

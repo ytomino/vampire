@@ -27,8 +27,6 @@ private
 		State : Tabula.Villages.Village_State)
 		return String;
 	
-	function Name (Person : Tabula.Villages.Person_Type'Class) return String;
-	
 	-- ログインパネル
 	procedure Handle_User_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

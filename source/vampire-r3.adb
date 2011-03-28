@@ -4,6 +4,7 @@ with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
 with Tabula.Users;
+with Vampire.Villages.Text;
 package body Vampire.R3 is
 	use Tabula.Villages.Lists.Summary_Maps;
 	use type Ada.Calendar.Time;
@@ -81,12 +82,6 @@ package body Vampire.R3 is
 			return Image (Day) & "日目";
 		end if;
 	end Day_Name;
-	
-	function Name (Person : Tabula.Villages.Person_Type'Class) return String is
-	begin
-		return Person.Work.Constant_Reference.Element.all &
-			Person.Name.Constant_Reference.Element.all;
-	end Name;
 	
 	procedure Handle_User_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -287,7 +282,7 @@ package body Vampire.R3 is
 						Containing_Directory => Image_Directory,
 						Name => Subject.Image.Constant_Reference.Element.all));
 			elsif Tag = "name" then
-				Forms.Write_In_HTML (Output, Form, Name (Subject));
+				Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Subject));
 			elsif Tag = "time" then
 				Forms.Write_In_HTML (
 					Output,
