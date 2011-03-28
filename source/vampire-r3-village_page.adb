@@ -1339,34 +1339,34 @@ is
 									and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
 									and then not Person.Commited)
 								then
-									if Village.State = Playing then
-										declare
-											Rest : constant Integer := Speech_Limit + Message_Counts(Player_Index).Encouraged * Encouraged_Speech_Limit - Message_Counts(Player_Index).Speech;
-											procedure Handle_Speech (
-												Output : not null access Ada.Streams.Root_Stream_Type'Class;
-												Tag : in String;
-												Template : in Web.Producers.Template) is
-											begin
-												if Tag = "count" then
-													Forms.Write_In_HTML (Output, Form, Image (Rest));
-												elsif Tag = "rest" then
-													Web.Producers.Produce(Output, Template, Handler => Handle_Speech'Access);
-												elsif Tag = "edit" then
-													if Editing = Speech then
-														Forms.Write_In_HTML (Output, Form, Editing_Text);
-													end if;
-												else
-													Handle_Player(Output, Tag, Template);
-												end if;
-											end Handle_Speech;
+									declare
+										Rest : constant Integer := Speech_Limit
+											+ Message_Counts (Player_Index).Encouraged * Encouraged_Speech_Limit
+											- Message_Counts (Player_Index).Speech;
+										procedure Handle_Speech (
+											Output : not null access Ada.Streams.Root_Stream_Type'Class;
+											Tag : in String;
+											Template : in Web.Producers.Template) is
 										begin
-											if Rest > 0 then
-												Web.Producers.Produce(Output, Template, Handler => Handle_Speech'Access);
+											if Tag = "count" then
+												Forms.Write_In_HTML (Output, Form, Image (Rest));
+											elsif Tag = "rest" then
+												if Village.State = Playing then
+													Web.Producers.Produce(Output, Template, Handler => Handle_Speech'Access);
+												end if;
+											elsif Tag = "edit" then
+												if Editing = Speech then
+													Forms.Write_In_HTML (Output, Form, Editing_Text);
+												end if;
+											else
+												Handle_Player(Output, Tag, Template);
 											end if;
-										end;
-									else
-										Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
-									end if;
+										end Handle_Speech;
+									begin
+										if Village.State /= Playing or else Rest > 0 then
+											Web.Producers.Produce (Output, Template, Handler => Handle_Speech'Access);
+										end if;
+									end;
 								end if;
 							elsif Tag = "monologue" then
 								if Village.State = Playing
@@ -1459,8 +1459,6 @@ is
 										Person.Records.Constant_Reference (Village.Target_Day).Element.
 											Note.Constant_Reference.Element.all);
 								end if;
-							elsif Tag = "rest" then
-								null;
 							elsif Tag = "zero" then
 								if Village.State = Playing
 									and then Village.Time /= Night
@@ -1835,6 +1833,17 @@ is
 									String'Write(Output, "</option>");
 								end loop;
 								String'Write(Output, "</select>");
+							elsif Tag = "action_page" then
+								Forms.Write_Attribute_Name (Output, "action");
+								Forms.Write_Link (
+									Output,
+									Form,
+									Current_Directory => ".",
+									Resource => Forms.Self,
+									Parameters => Form.Parameters_To_Village_Page (
+										Village_Id => Village_Id,
+										User_Id => User_Id,
+										User_Password => User_Password));
 							else
 								raise Program_Error with "Invalid template """ & Tag & """";
 							end if;
