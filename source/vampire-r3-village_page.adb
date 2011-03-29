@@ -1361,7 +1361,7 @@ is
 												end if;
 											elsif Tag = "edit" then
 												if Editing = Speech then
-													Forms.Write_In_HTML (Output, Form, Editing_Text);
+													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
 												end if;
 											else
 												Handle_Player(Output, Tag, Template);
@@ -1391,7 +1391,7 @@ is
 												Web.Producers.Produce(Output, Template, Handler => Handle_Monologue'Access);
 											elsif Tag = "edit" then
 												if Editing = Monologue then
-													Forms.Write_In_HTML (Output, Form, Editing_Text);
+													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
 												end if;
 											else
 												Handle_Player(Output, Tag, Template);
@@ -1420,7 +1420,7 @@ is
 												Web.Producers.Produce(Output, Template, Handler => Handle_Ghost'Access);
 											elsif Tag = "edit" then
 												if Editing = Ghost then
-													Forms.Write_In_HTML (Output, Form, Editing_Text);
+													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
 												end if;
 											else
 												Handle_Player(Output, Tag, Template);
@@ -1453,10 +1453,7 @@ is
 								end if;
 							elsif Tag = "note" then
 								if Editing = Howling then
-									Forms.Write_In_HTML (
-										Output,
-										Form,
-										Editing_Text);
+									Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
 								else
 									Forms.Write_In_HTML (
 										Output,
