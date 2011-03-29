@@ -68,14 +68,16 @@ package body Vampire.Forms is
 				From => Current_Directory);
 	begin
 		Write_Attribute_Open (Stream);
-		Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
 		if Parameters.Is_Empty then
 			if Relative'Length = 0
 				or else Ada.Directories.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
 			then
 				Web.Write_In_Attribute (Stream, Form.HTML_Version, "./");
+			else
+				Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
 			end if;
 		else
+			Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
 			Web.Write_Query_In_Attribute (
 				Stream,
 				Form.HTML_Version,

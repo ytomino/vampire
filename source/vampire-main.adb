@@ -537,8 +537,10 @@ begin
 						else -- index page
 							declare
 								Summaries : Tabula.Villages.Lists.Summary_Maps.Map;
+								Muramura_Count : Natural;
 							begin
 								Tabula.Villages.Lists.Get_Summaries (Village_List, Summaries);
+								Users.Lists.Muramura_Count (User_List, Now, Configurations.Muramura_Duration, Muramura_Count);
 								Web.Header_Content_Type (Output, Web.Text_HTML);
 								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 								Web.Header_Break (Output);
@@ -548,7 +550,7 @@ begin
 									Configurations.Template_Names (Form.Template_Set).Template_Index_File_Name.all,
 									HTML_Directory => Configurations.Villages_HTML_Directory,
 									Summaries => Summaries,
-									Muramura => Users.Lists.Muramura_Count (User_List, Now, Configurations.Muramura_Duration),
+									Muramura => Muramura_Count,
 									User_Id => User_Id,
 									User_Password => User_Password);
 							end;

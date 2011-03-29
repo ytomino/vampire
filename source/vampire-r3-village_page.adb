@@ -183,7 +183,7 @@ is
 				Forms.Write_Link (
 					Output,
 					Form,
-					Current_Directory => ".",
+					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
 					Parameters => Form.Parameters_To_Village_Page (
 						Village_Id => Village_Id,
@@ -746,7 +746,7 @@ is
 			Forms.Write_Link (
 				Output,
 				Form,
-				Current_Directory => ".",
+				Current_Directory => Current_Directory,
 				Resource => Forms.Self,
 				Parameters => Form.Parameters_To_Index_Page (
 					User_Id => User_Id,
@@ -1709,7 +1709,7 @@ is
 												Forms.Write_Link (
 													Output,
 													Form,
-													Current_Directory => ".",
+													Current_Directory => Current_Directory,
 													Resource => Forms.Self,
 													Parameters => Form.Parameters_To_Village_Page (
 														Village_Id => Village_Id,
@@ -1736,7 +1736,7 @@ is
 								Forms.Write_Link (
 									Output,
 									Form,
-									Current_Directory => ".",
+									Current_Directory => Current_Directory,
 									Resource => Forms.Self,
 									Parameters => Form.Parameters_To_Village_Page (
 										Village_Id => Village_Id,
@@ -1840,7 +1840,7 @@ is
 								Forms.Write_Link (
 									Output,
 									Form,
-									Current_Directory => ".",
+									Current_Directory => Current_Directory,
 									Resource => Forms.Self,
 									Parameters => Form.Parameters_To_Village_Page (
 										Village_Id => Village_Id,

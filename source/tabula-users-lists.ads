@@ -1,5 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Containers.Indefinite_Ordered_Maps;
+private with Ada.Containers.Ordered_Maps;
+private with Ada.Strings.Unbounded;
 package Tabula.Users.Lists is
 	
 	type User_List (<>) is limited private;
@@ -16,7 +18,7 @@ package Tabula.Users.Lists is
 	type User_State is (Unknown, Invalid, Log_Off, Valid);
 	
 	procedure Query (
-		List : in User_List;
+		List : in out User_List;
 		Id : in String;
 		Password : in String;
 		Remote_Addr : in String;
@@ -50,24 +52,36 @@ package Tabula.Users.Lists is
 	
 	-- ムラムラスカウター(仮)
 	
-	function Muramura_Count (
-		List : User_List;
+	procedure Muramura_Count (
+		List : in out User_List;
 		Now : Ada.Calendar.Time;
-		Muramura_Duration : Duration)
-		return Natural;
+		Muramura_Duration : Duration;
+		Result : out Natural);
 	
 private
+	use type Ada.Calendar.Time;
+	
+	type User_Log_Item is record
+		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Addr : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Remote_Host : aliased Ada.Strings.Unbounded.Unbounded_String;
+	end record;
+	
+	function "<" (Left, Right : User_Log_Item) return Boolean;
+	
+	package Users_Log is new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
 	
 	type User_List is limited record
 		Directory : not null Static_String_Access;
 		Log_File_Name : not null Static_String_Access;
-		Log_Read_Count : Natural := 0; -- for performance check
+		Log_Read : Boolean;
+		Log : aliased Users_Log.Map;
 	end record;
 	
 	-- log
 	
 	procedure Iterate_Log (
-		List : in User_List;
+		List : in out User_List;
 		Process : not null access procedure (
 			Id : in String;
 			Remote_Addr : in String;

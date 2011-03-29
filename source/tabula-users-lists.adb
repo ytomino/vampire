@@ -1,77 +1,48 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Containers.Ordered_Maps;
 with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
-with Ada.Strings.Unbounded;
 with Tabula.Users.Load;
 with Tabula.Users.Save;
 package body Tabula.Users.Lists is
-	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	-- local
 	
-	type User_Log_Item is record
-		Id : aliased Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Addr : aliased Ada.Strings.Unbounded.Unbounded_String;
-		Remote_Host : aliased Ada.Strings.Unbounded.Unbounded_String;
-	end record;
-	
-	function "<" (Left, Right : User_Log_Item) return Boolean is
+	procedure Load_Users_Log (List : in out User_List) is
 	begin
-		if Left.Id < Right.Id then
-			return True;
-		elsif Left.Id > Right.Id then
-			return False;
-		elsif Left.Remote_Addr < Right.Remote_Addr then
-			return True;
-		elsif Left.Remote_Addr > Right.Remote_Addr then
-			return False;
-		else
-			return Left.Remote_Host < Right.Remote_Host;
-		end if;
-	end "<";
-	
-	package Users_Log is new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
-	
-	function Load_Users_Log (List : not null access User_List) return Users_Log.Map is
-	begin
-		return Result : Users_Log.Map do
-			List.Log_Read_Count := List.Log_Read_Count + 1;
-			if List.Log_Read_Count > 1 then
-				Ada.Debug.Put ("load " & List.Log_File_Name.all & " at" & Natural'Image (List.Log_Read_Count) & " times.");
-			end if;
+		if not List.Log_Read then
 			begin
 				declare
 					File : Ada.Streams.Stream_IO.File_Type :=
 						Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, List.Log_File_Name.all);
 				begin
-					Users_Log.Map'Read (Ada.Streams.Stream_IO.Stream (File), Result);
+					Users_Log.Map'Read (Ada.Streams.Stream_IO.Stream (File), List.Log);
 					Ada.Streams.Stream_IO.Close (File);
 				end;
 			exception
 				when Ada.IO_Exceptions.Name_Error => null;
 			end;
-		end return;
+			List.Log_Read := True;
+		end if;
 	end Load_Users_Log;
 	
 	procedure Add_To_Users_Log (
-		List : in User_List;
+		List : in out User_List;
 		Id : in String;
 		Remote_Addr : in String;
 		Remote_Host : in String;
 		Now : in Ada.Calendar.Time)
 	is
-		Log : Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
 		Item : User_Log_Item := (+Id, +Remote_Addr, +Remote_Host);
 	begin
-		Users_Log.Include (Log, Item, Now);
+		Load_Users_Log (List);
+		Users_Log.Include (List.Log, Item, Now);
 		declare
 			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Log_File_Name.all);
 		begin
-			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), Log);
+			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Log);
 			Ada.Streams.Stream_IO.Close (File);
 		end;
 	end Add_To_Users_Log;
@@ -83,7 +54,11 @@ package body Tabula.Users.Lists is
 		Log_File_Name : not null Static_String_Access)
 		return User_List is
 	begin
-		return (Directory => Directory, Log_File_Name => Log_File_Name, Log_Read_Count => 0);
+		return (
+			Directory => Directory,
+			Log_File_Name => Log_File_Name,
+			Log_Read => False,
+			Log => Users_Log.Empty_Map);
 	end Create;
 	
 	function Exists (List : User_List; Id : String) return Boolean is
@@ -92,7 +67,7 @@ package body Tabula.Users.Lists is
 	end Exists;
 	
 	procedure Query (
-		List : in User_List;
+		List : in out User_List;
 		Id : in String;
 		Password : in String;
 		Remote_Addr : in String;
@@ -211,13 +186,12 @@ package body Tabula.Users.Lists is
 		end return;
 	end All_Users;
 	
-	function Muramura_Count (
-		List : User_List;
+	procedure Muramura_Count (
+		List : in out User_List;
 		Now : Ada.Calendar.Time;
-		Muramura_Duration : Duration)
-		return Natural
+		Muramura_Duration : Duration;
+		Result : out Natural)
 	is
-		Log : Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
 		Muramura_Set : Users_Log.Map;
 		procedure Process (Position : Users_Log.Cursor) is
 		begin
@@ -232,24 +206,37 @@ package body Tabula.Users.Lists is
 			end if;
 		end Process;
 	begin
-		Users_Log.Iterate (Log, Process'Access);
-		return Muramura_Set.Length;
+		Load_Users_Log (List);
+		Users_Log.Iterate (List.Log, Process'Access);
+		Result := Muramura_Set.Length;
 	end Muramura_Count;
 	
+	function "<" (Left, Right : User_Log_Item) return Boolean is
+	begin
+		if Left.Id < Right.Id then
+			return True;
+		elsif Left.Id > Right.Id then
+			return False;
+		elsif Left.Remote_Addr < Right.Remote_Addr then
+			return True;
+		elsif Left.Remote_Addr > Right.Remote_Addr then
+			return False;
+		else
+			return Left.Remote_Host < Right.Remote_Host;
+		end if;
+	end "<";
+	
 	procedure Iterate_Log (
-		List : in User_List;
+		List : in out User_List;
 		Process : not null access procedure (
 			Id : in String;
 			Remote_Addr : in String;
 			Remote_Host : in String;
 			Time : in Ada.Calendar.Time))
 	is
-		Log : aliased Users_Log.Map := Load_Users_Log (List'Unrestricted_Access);
 		procedure Thunk (Position : in Users_Log.Cursor) is
-			pragma Warnings (Off); -- compiler's bug "warning: constant "Ref" is not referenced"
 			Ref : constant Users_Log.Constant_Reference_Type :=
-				Log.Constant_Reference (Position);
-			pragma Warnings (On);
+				List.Log.Constant_Reference (Position);
 		begin
 			Process (
 				Id => Ref.Key.Id.Constant_Reference.Element.all,
@@ -258,7 +245,8 @@ package body Tabula.Users.Lists is
 				Time => Ref.Element.all);
 		end Thunk;
 	begin
-		Users_Log.Iterate (Log, Thunk'Access);
+		Load_Users_Log (List);
+		Users_Log.Iterate (List.Log, Thunk'Access);
 	end Iterate_Log;
 	
 end Tabula.Users.Lists;
