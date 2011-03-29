@@ -612,26 +612,28 @@ is
 						Tag : in String;
 						Template : in Web.Producers.Template) is
 					begin
-						if Tag = "day" then
-							if I /= Day then
-								String'Write(Output, "<a ");
-								Forms.Write_Attribute_Name (Output, "href");
-								Forms.Write_Link (
-									Output,
-									Form,
-									Current_Directory => Current_Directory,
-									Resource => Forms.Self,
-									Parameters => Form.Parameters_To_Village_Page (
-										Village_Id => Village_Id,
-										Day => I,
-										User_Id => User_Id,
-										User_Password => User_Password));
-								Character'Write (Output, '>');
+						if Tag = "today" then
+							if I = Day then
+								Web.Producers.Produce (Output, Template, Handler => Handle_Days'Access);
 							end if;
+						elsif Tag = "otherday" then
+							if I /= Day then
+								Web.Producers.Produce (Output, Template, Handler => Handle_Days'Access);
+							end if;
+						elsif Tag = "day" then
 							Forms.Write_In_HTML (Output, Form, Day_Name (I, Village.Today, Village.State));
-							if I /= Day then
-								String'Write(Output, "</a>");
-							end if;
+						elsif Tag = "href_day" then
+							Forms.Write_Attribute_Name (Output, "href");
+							Forms.Write_Link (
+								Output,
+								Form,
+								Current_Directory => Current_Directory,
+								Resource => Forms.Self,
+								Parameters => Form.Parameters_To_Village_Page (
+									Village_Id => Village_Id,
+									Day => I,
+									User_Id => User_Id,
+									User_Password => User_Password));
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
@@ -656,12 +658,23 @@ is
 									Tag : in String;
 									Template : in Web.Producers.Template) is
 								begin
-									if Tag = "name" then
-										String'Write (Output,
-											"<label for=""c" & Image (I) & """>" &
-											"<input id=""c" & Image (I) & """ type=""checkbox"" checked=""checked"" onClick=""javascript:sync(" & Image (I) & ")"" />");
+									if Tag = "for_cn" then
+										Forms.Write_Attribute_Name (Output, "for");
+										Forms.Write_Attribute_Open (Output);
+										Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
+										Forms.Write_Attribute_Close (Output);
+									elsif Tag = "id_cn" then
+										Forms.Write_Attribute_Name (Output, "id");
+										Forms.Write_Attribute_Open (Output);
+										Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
+										Forms.Write_Attribute_Close (Output);
+									elsif Tag = "onclick" then
+										Forms.Write_Attribute_Name (Output, "onclick");
+										Forms.Write_Attribute_Open (Output);
+										Forms.Write_In_Attribute (Output, Form, "javascript:sync(" & Image (I) & ")");
+										Forms.Write_Attribute_Close (Output);
+									elsif Tag = "name" then
 										Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
-										String'Write (Output, "</label>");
 									elsif Tag = "speech" then
 										Forms.Write_In_HTML (Output, Form, Image (Message_Counts(I).Speech));
 										if Message_Counts(I).Encouraged > 0 then
@@ -679,13 +692,11 @@ is
 										if Village.State = Prologue then
 											Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
 										end if;
-									elsif Tag = "htarget" then
-										String'Write (Output, "<input type=""hidden"" name=""target"" ");
+									elsif Tag = "value_target" then
 										Forms.Write_Attribute_Name (Output, "value");
 										Forms.Write_Attribute_Open (Output);
 										Forms.Write_In_Attribute (Output, Form, Image (I));
 										Forms.Write_Attribute_Close (Output);
-										String'Write (Output, "/>");
 									else
 										raise Program_Error with "Invalid template """ & Tag & """";
 									end if;
@@ -699,25 +710,17 @@ is
 							end;
 						end loop;
 					elsif Tag = "ghost-filter" then
-						declare
-							Ghost_Existing : Boolean := False;
-						begin
-							for I in Village.People.First_Index .. Village.People.Last_Index loop
-								Ghost_Existing := Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Day).Element.State = Vampire.Villages.Died;
-								exit when Ghost_Existing;
-							end loop;
-							if Ghost_Existing and then
-								(Village.State < Epilogue or else Day < Village.Today) and then (
-									Village.State >= Epilogue or else
-									(Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died))
-							then
-								String'Write (Output,
-									"<label for=""cg"">" &
-									"<input id=""cg"" type=""checkbox"" checked=""checked"" onClick=""javascript:sync('g')"" />");
-								Forms.Write_In_HTML (Output, Form, "幽霊");
-								String'Write (Output, "</label> ");
-							end if;
-						end;
+						if Village.Is_Anyone_Died (Day)
+							and then (Village.State < Epilogue or else Day < Village.Today)
+							and then (
+								Village.State >= Epilogue
+								or else (
+									Player_Index /= No_Person
+									and then Village.People.Constant_Reference(Player_Index).Element.
+										Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died))
+						then
+							Web.Producers.Produce(Output, Template);
+						end if;
 					else
 						raise Program_Error with "Invalid template """ & Tag & """";
 					end if;
@@ -790,19 +793,21 @@ is
 						Template : in Web.Producers.Template) is
 					begin
 						if Tag = "text" then
-							if Role /= Vampire.Villages.Inhabitant and then Form.Template_Set = Forms.For_Full then
-								String'Write (Output, "<img width=""16"" height=""16"" ");
-								Forms.Write_Attribute_Name (Output, "src");
-								Forms.Write_Link (
-									Output,
-									Form,
-									Current_Directory => Current_Directory,
-									Resource => Ada.Directories.Compose (
-										Containing_Directory => Image_Directory,
-										Name => Relative_Role_Images (Role).all));
-								String'Write (Output, " />");
-							end if;
 							Forms.Write_In_HTML (Output, Form, Message);
+						elsif Tag = "roleimg" then
+							if Role /= Inhabitant then
+								pragma Assert (Class = "narrationi");
+								Web.Producers.Produce (Output, Template, Handler => Handle_Narration'Access);
+							end if;
+						elsif Tag = "src_roleimg" then
+							Forms.Write_Attribute_Name (Output, "src");
+							Forms.Write_Link (
+								Output,
+								Form,
+								Current_Directory => Current_Directory,
+								Resource => Ada.Directories.Compose (
+									Containing_Directory => Image_Directory,
+									Name => Relative_Role_Images (Role).all));
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
@@ -1553,21 +1558,18 @@ is
 											end if;
 										when Vampire.Villages.Detective =>
 											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
-												for I in Village.People.First_Index .. Village.People.Last_Index loop
-													if Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died then
-														Vote_Form (Output, Player_Index, Vampire.Villages.Detective, False,
-															Person.Records.Constant_Reference(Village.Today).Element.Target, False, "どの被害者を調べますか……", "調査");
-														goto Exit_Detective_Target;
-													end if;
-												end loop;
-												String'Write (Output, "<div>");
-												if Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and Day <= 1 then
-													Forms.Write_In_HTML (Output, Form, "地主さんを調査しています。");
+												if Village.Is_Anyone_Died (Village.Today) then
+													Vote_Form (Output, Player_Index, Vampire.Villages.Detective, False,
+														Person.Records.Constant_Reference(Village.Today).Element.Target, False, "どの被害者を調べますか……", "調査");
 												else
-													Forms.Write_In_HTML (Output, Form, "まだ村人に被害者はいません。");
+													String'Write (Output, "<div>");
+													if Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and Day <= 1 then
+														Forms.Write_In_HTML (Output, Form, "地主さんを調査しています。");
+													else
+														Forms.Write_In_HTML (Output, Form, "まだ村人に被害者はいません。");
+													end if;
+													String'Write (Output, "</div>");
 												end if;
-												String'Write (Output, "</div>");
-												<<Exit_Detective_Target>> null;
 											end if;
 										when Vampire.Villages.Astronomer =>
 											Vote_Form (

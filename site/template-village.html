@@ -65,7 +65,10 @@
 				</?userpanel>
 				<tr><td>
 					<table class="daylist" cellspacing="0">
-						<?days><tr><td><?day>今日はなんの日</?day></td></tr></?days>
+						<?days>
+							<?today><tr><td><?day>今日はなんの日</?day></td></tr></?today>
+							<?otherday><tr><td><a ?href_day><?day>明日はなんの日</?day></a></td></tr></?otherday>
+						</?days>
 					</table>
 				</td></tr>
 				<?summary>
@@ -73,7 +76,12 @@
 						<table class="summary" cellspacing="0" >
 							<?person>
 								<tr>
-									<td class="name"><?name>名前</?name></td>
+									<td class="name">
+										<label ?for_cn>
+											<input ?id_cn type="checkbox" checked="checked" ?onclick />
+											<?name>名前</?name>
+										</label>
+									</td>
 									<td class="count"><?speech>発言数</?speech></td>
 									<?administrator>
 										<td class="control">
@@ -82,14 +90,17 @@
 												<form class="button" method="POST" >
 													<input type="submit" value="除名" />
 													<input type="hidden" name="cmd" value="remove" />
-													<?htarget/>
+													<input type="hidden" name="target" ?value_target />
 												</form>
 											</?remove>
 										</td>
 									</?administrator>
 								</tr>
 							</?person>
-							<tr><td colspan="2" class="checkall"><?ghost-filter/><input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" /></td></tr>
+							<tr><td colspan="2" class="checkall">
+								<?ghost-filter/><label for="cg"><input id="cg" type="checkbox" checked="checked" onClick="javascript:sync('g')" />幽霊</label></?ghost-filter>
+								<input class="checkall" type="button" value="全て表示" onclick="javascript:checkall(true)" /><input class="checkall" type="button" value="全て隠す" onclick="javascript:checkall(false)" />
+							</td></tr>
 						</table>
 					</td></tr>
 				</?summary>
@@ -137,11 +148,11 @@
 					<p class="narration"><?text>本文</?text></p>
 				</?narration>
 				<?narrationi>
-					<p class="narrationi"><?text>本文</?text></p>
+					<p class="narrationi">
+						<?roleimg><img width="16" height="16" alt="" ?src_roleimg /></?roleimg>
+						<?text>本文</?text>
+					</p>
 				</?narrationi>
-				<?narrationg>
-					<p class="narrationg"><?text>本文</?text></p>
-				</?narrationg>
 				<?narratione>
 					<p class="narratione"><?text>本文</?text></p>
 				</?narratione>

@@ -513,6 +513,16 @@ package body Vampire.Villages is
 		return False;
 	end Already_Used_Special;
 	
+	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean is
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Day).Element.State = Died then
+				return True;
+			end if;
+		end loop;
+		return False;
+	end Is_Anyone_Died;
+	
 	procedure Select_Target (
 		Village : in out Village_Type;
 		Subject : in Person_Index;

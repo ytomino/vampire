@@ -10,12 +10,14 @@
 <?logoff>ログオンしていません。<br></?logoff>
 <?logon>【<?id>ID</?id>】<br></?logon>
 </?userpanel>
-<a ?href_index>戻る</a></div>
-<hr><div><?days><?day>今日はなんの日</?day><br></?days></div>
+<a ?href_index>戻る</a></div><hr>
+<div><?days>
+	<?today><?day>今日はなんの日</?day><br></?today>
+	<?otherday><a ?href_day><?day>明日はなんの日</?day><a><br></?otherday>
+</?days></div>
 <?message>
 	<?narration><hr><div><?text>本文</?text></div></?narration>
 	<?narrationi><hr><div><font color="purple"><?text>本文</?text></font></div></?narrationi>
-	<?narrationg><hr><div><font color="blue"><?text>本文</?text></font></div></?narrationg>
 	<?narratione><hr><div><font color="silver"><?text>本文</?text></font></div></?narratione>
 	<?speech><hr><div><u><?name>名前</?name></u> <font color="gray"><?time>時間</?time></font><br><?text>発言</?text></div></?speech>
 	<?escaped><hr><div><font color="silver"><u><?name>名前</?name></u> <font color="gray"><?time>時間</?time></font><br><?text>発言</?text></font></div></?escaped>

@@ -314,6 +314,7 @@ package Vampire.Villages is
 	function Unfortunate (Village : Village_Type) return Boolean;
 	function Target_Day (Village : Village_Type) return Integer;
 	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean;
+	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;

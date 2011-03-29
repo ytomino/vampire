@@ -101,7 +101,7 @@ em {
 	margin-right:10%;
 }
 
-.narration, .narrationi, .narrationg, .narratione {
+.narration, .narrationi, .narratione {
 	margin-right:4%;
 }
 
@@ -223,8 +223,7 @@ td.text {
 }
 
 div.ghost td.name,
-div.ghost td.text,
-.narrationg {
+div.ghost td.text {
 	color:#8888ff;
 }
 
