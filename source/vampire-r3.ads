@@ -4,11 +4,8 @@ with Ada.Calendar;
 with Ada.Streams;
 with Tabula.Villages.Lists;
 with Vampire.Forms;
-with Vampire.Villages;
 private with Web.Producers;
 package Vampire.R3 is
-	
-	type Role_Images is array (Villages.Person_Role) of not null access constant String;
 	
 private
 	

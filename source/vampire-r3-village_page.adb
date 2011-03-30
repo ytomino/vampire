@@ -17,7 +17,7 @@ procedure Vampire.R3.Village_Page (
 	Image_Directory : in String;
 	Style_Sheet : in String;
 	Background : in String;
-	Relative_Role_Images : in Role_Images;
+	Relative_Role_Images : in Villages.Role_Images;
 	Cast_File_Name : in String;
 	Log : in Boolean;
 	Village_Id : in Tabula.Villages.Village_Id;

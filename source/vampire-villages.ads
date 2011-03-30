@@ -76,6 +76,8 @@ package Vampire.Villages is
 	type Role_Appearance is (None, Random, Force);
 	type Role_Appearances is array (Unfortunate_Inhabitant .. Lover) of Role_Appearance;
 	
+	type Role_Images is array (Villages.Person_Role) of not null access constant String;
+	
 	-- 参加者
 	
 	type Requested_Role is (Random, Rest,
