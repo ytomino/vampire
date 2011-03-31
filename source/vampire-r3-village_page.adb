@@ -83,7 +83,7 @@ is
 											end if;
 											Forms.Write_In_HTML (Output, Form, Message);
 											if Village.State /= Closed and then Unrecommended then
-												Forms.Write_In_HTML (Output, Form, " お薦めしません。");
+												Forms.Write_In_HTML (Output, Form, " (非推奨)");
 											end if;
 											if Item.Changed and then Village.State /= Closed then
 												String'Write (Output, "</em>");
@@ -122,7 +122,7 @@ is
 										Character'Write (Output, '>');
 										Forms.Write_In_HTML (Output, Form, Message);
 										if Unrecommended then
-											Forms.Write_In_HTML (Output, Form, " お薦めしません。");
+											Forms.Write_In_HTML (Output, Form, " (非推奨)");
 										end if;
 										if Selected then
 											Forms.Write_In_HTML (Output, Form, " *");
@@ -164,18 +164,39 @@ is
 								Teaming => Village.Teaming,
 								Unfortunate => Village.Unfortunate,
 								Monster_Side => Village.Monster_Side);
-					begin
-						String'Write (Output, "<ul>");
-						for I in Sets'Range loop
-							String'Write (Output, "<li>");
-							for J in Vampire.Villages.Person_Role loop
-								for K in 1 .. Sets (I)(J) loop
-									Forms.Write_In_HTML (Output, Form, Villages.Text.Short_Image (J));
+						procedure Handle_Role_Set (
+							Output : not null access Ada.Streams.Root_Stream_Type'Class;
+							Tag : in String;
+							Template : in Web.Producers.Template) is
+						begin
+							if Tag = "items" then
+								for I in Sets'Range loop
+									declare
+										procedure Handle_Item (
+											Output : not null access Ada.Streams.Root_Stream_Type'Class;
+											Tag : in String;
+											Template : in Web.Producers.Template) is
+										begin
+											if Tag = "set" then
+												for J in Vampire.Villages.Person_Role loop
+													for K in 1 .. Sets (I)(J) loop
+														Forms.Write_In_HTML (Output, Form, Villages.Text.Short_Image (J));
+													end loop;
+												end loop;
+											else
+												raise Program_Error with "Invalid template """ & Tag & """";
+											end if;
+										end Handle_Item;
+									begin
+										Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
+									end;
 								end loop;
-							end loop;
-							String'Write (Output, "</li>");
-						end loop;
-						String'Write (Output, "</ul>");
+							else
+								raise Program_Error with "Invalid template """ & Tag & """";
+							end if;
+						end Handle_Role_Set;
+					begin
+						Web.Producers.Produce (Output, Template, Handler => Handle_Role_Set'Access);
 					end;
 				end if;
 			elsif Tag = "action_page" then

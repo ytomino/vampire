@@ -369,6 +369,22 @@ input.change {
 	margin-right:0.5em;
 }
 
+ul.roleset {
+	list-style-type:none;
+	padding-left:0;
+}
+
+ul.roleset li {
+}
+
+ul.roleset li:before {
+	content:"〚";
+}
+
+ul.roleset li:after {
+	content:"〛";
+}
+
 hr.speech {
 	margin-left:9%;
 	margin-right:30%;
