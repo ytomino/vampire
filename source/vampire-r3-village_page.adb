@@ -902,7 +902,7 @@ is
 				subtype X_Type is Integer range 1 .. 3;
 				package Random_X is new Ada.Numerics.MT19937.Discrete_Random(X_Type);
 				Executed : Integer := -1;
-				Speech_Count : Natural := 0;
+				Speech_Index : Tabula.Villages.Message_Index := Tabula.Villages.Message_Index'First;
 				X : X_Type := 2;
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
@@ -917,7 +917,7 @@ is
 						Message : Vampire.Villages.Message renames Village.Messages.Constant_Reference(Position).Element.all;
 					begin
 						if Message.Day = Day then
-							if Speech_Count in Showing_Range.First .. Showing_Range.Last then
+							if Speech_Index in Showing_Range.First .. Showing_Range.Last + 1 then
 								case Message.Kind is
 									when Vampire.Villages.Narration =>
 										Narration (Message.Text.Constant_Reference.Element.all);
@@ -930,6 +930,7 @@ is
 									when Vampire.Villages.Escaped_Join =>
 										Narration (Villages.Text.Escaped_Join (Village, Message));
 									when Vampire.Villages.Speech | Vampire.Villages.Escaped_Speech =>
+										exit when Speech_Index > Showing_Range.Last;
 										declare
 											Subject : Person_Index'Base := Message.Subject;
 										begin
@@ -1200,12 +1201,12 @@ is
 								end case;
 							end if;
 							if Message.Kind = Vampire.Villages.Speech or else Message.Kind = Vampire.Villages.Escaped_Speech then
-								Speech_Count := Speech_Count + 1;
+								Speech_Index := Speech_Index + 1;
 							end if;
 						end if;
 					end;
 				end loop;
-				if Speech_Count <= Showing_Range.Last + 1 then
+				if Speech_Index <= Showing_Range.Last + 1 then
 					Tip_Showed := True;
 					if Village.State >= Epilogue and then Day < Village.Today then
 						for I in Village.People.First_Index .. Village.People.Last_Index loop
