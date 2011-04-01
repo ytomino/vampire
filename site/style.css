@@ -204,8 +204,7 @@ div.ghost img,
 div.dying img,
 div.vampire img,
 div.monologue img {
-	filter:alpha(opacity=50);
-	-moz-opacity:0.5;
+	-ms-filter:alpha(opacity=50);
 	opacity:0.5;
 }
 
@@ -220,6 +219,8 @@ td.text {
 	vertical-align:top;
 	color:#000000;
 	padding-left:4px;
+	word-wrap:break-word;
+	word-break:break-word;
 }
 
 div.ghost td.name,
