@@ -19,6 +19,7 @@ div.box {
 	margin-left:2%;
 	margin-bottom:1em;
 	width:30em;
+	clear:right;
 }
 
 form.inner {
@@ -148,7 +149,7 @@ div.monologue {
 	margin-right:4%;
 	margin-bottom:1em;
 	padding:2px;
-	overflow:hidden;
+	overflow-x:hidden;
 	position:relative;
 }
 

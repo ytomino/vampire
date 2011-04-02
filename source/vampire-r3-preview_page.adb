@@ -36,6 +36,7 @@ is
 				Output,
 				Template,
 				Form => Form,
+				Current_Directory => ".",
 				Image_Directory => Image_Directory,
 				Subject => Village.People.Constant_Reference (Message.Subject).Element.all,
 				Text => Message.Text.Constant_Reference.Element.all,
@@ -64,5 +65,5 @@ is
 		end if;
 	end Handle;
 begin
-	Produce (Output, Template, Handler => Handle'Access);
+	Web.Producers.Produce (Output, Read (Template), Handler => Handle'Access);
 end Vampire.R3.Preview_Page;

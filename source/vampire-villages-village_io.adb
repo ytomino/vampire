@@ -88,6 +88,7 @@ package body Vampire.Villages.Village_IO is
 		use Calendar.Time_IO;
 		use Tabula.Villages.Village_IO.Village_State_IO;
 		use Village_Time_IO;
+		use Vote_IO;
 		use Execution_IO;
 		use Attack_IO;
 		use Servant_Knowing_IO;
@@ -115,6 +116,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "dawn", Village.Dawn);
 			IO (Serializer, "day-duration", Village.Day_Duration);
 			IO (Serializer, "night-duration", Village.Night_Duration);
+			IO (Serializer, "vote", Village.Vote, Default => Unsigned);
 			IO (Serializer, "execution", Village.Execution, Default => From_First);
 			IO (Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
 			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);

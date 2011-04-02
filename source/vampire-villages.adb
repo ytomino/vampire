@@ -8,6 +8,8 @@ package body Vampire.Villages is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
 	
+	-- local
+	
 	function Equivalent_Messages (Left, Right : Message) return Boolean is
 	begin
 		return Left.Day = Right.Day
@@ -18,15 +20,7 @@ package body Vampire.Villages is
 			and then Left.Text = Right.Text;
 	end Equivalent_Messages;
 	
-	function Provisional_Voting (Mode : Execution_Mode) return Boolean is
-	begin
-		case Mode is
-			when Provisional_Voting_From_First | Provisional_Voting_From_Second =>
-				return True;
-			when Dummy_Killed_And_From_First | From_First | From_Second =>
-				return False;
-		end case;
-	end Provisional_Voting;
+	-- bodies
 	
 	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
 		return Village_Type
@@ -46,6 +40,7 @@ package body Vampire.Villages is
 			Dawn => Time,
 			Day_Duration => Day_Duration,
 			Night_Duration => Default_Night_Duration,
+			Vote => Initial_Vote,
 			Execution => Initial_Execution,
 			Teaming => Initial_Teaming,
 			Monster_Side => Initial_Monster_Side,
@@ -119,7 +114,10 @@ package body Vampire.Villages is
 	
 	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
 	begin
-		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+		if Village.Today = 1
+			and then Village.Vote = Preliminary_And_Final
+			and then Village.For_Voting (1)
+		then
 			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
 		else
 			return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
@@ -128,7 +126,10 @@ package body Vampire.Villages is
 	
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time is
 	begin
-		if Village.Today = 1 and then Village.Execution = Provisional_Voting_From_First then
+		if Village.Today = 1
+			and then Village.Vote = Preliminary_And_Final
+			and then Village.For_Voting (1)
+		then
 			return Village.Night_To_Daytime + Village.Day_Duration * 3 / 2; -- 72h
 		else
 			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
@@ -250,19 +251,19 @@ package body Vampire.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Escape;
 	
-	function Be_Voting (Village : Village_Type) return Boolean is
+	function For_Voting (Village : Village_Type; Day : Natural) return Boolean is
 	begin
-		if Village.State = Playing then
-			case Village.Execution is
-				when Dummy_Killed_And_From_First | From_First | Provisional_Voting_From_First =>
-					return True;
-				when From_Second | Provisional_Voting_From_Second =>
-					return Village.Today >= 2;
-			end case;
-		else
+		if Village.State >= Epilogue and then Day = Village.Today then
 			return False;
+		else
+			case Village.Execution is
+				when Dummy_Killed_And_From_First | From_First =>
+					return Day >= 1;
+				when From_Second =>
+					return Day >= 2;
+			end case;
 		end if;
-	end Be_Voting;
+	end For_Voting;
 	
 	function Provisional_Voted (Village : Village_Type) return Boolean is
 	begin
@@ -460,6 +461,16 @@ package body Vampire.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Gaze;
 	
+	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean is
+	begin
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Day).Element.State = Died then
+				return True;
+			end if;
+		end loop;
+		return False;
+	end Is_Anyone_Died;
+	
 	function Find_Superman(Village : Village_Type; Role : Person_Role) return Person_Index'Base is
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
@@ -469,6 +480,71 @@ package body Vampire.Villages is
 		end loop;
 		return No_Person;
 	end Find_Superman;
+	
+	function Target_Day (Village : Village_Type) return Integer is
+	begin
+		if Village.Time = Night then
+			return Village.Today - 1; -- 夜の能力は前日分を使用する
+		else
+			return Village.Today;
+		end if;
+	end Target_Day;
+	
+	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean is
+	begin
+		for I in 1 .. Village.Target_Day - 1 loop -- 今日の設定は変えられるので昨日の分まで
+			if Village.People.Constant_Reference (Subject).Element.Records.Constant_Reference (I).Element.Special then
+				return True;
+			end if;
+		end loop;
+		return False;
+	end Already_Used_Special;
+	
+	function Detective_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
+		pragma Assert (Subject_Person.Role = Detective);
+	begin
+		if Village.Daytime_Preview /= None
+			and then Subject_Person.Records.Constant_Reference (Village.Today).Element.Target /= No_Person
+		then
+			return Already_Used;
+		elsif Village.Time /= Night and then Village.Is_Anyone_Died (Village.Today) then
+			return Allowed;
+		else
+			return Disallowed;
+		end if;
+	end Detective_Status;
+	
+	function Doctor_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
+		pragma Assert (Subject_Person.Role = Doctor);
+	begin
+		if Village.Daytime_Preview /= None
+			and then Subject_Person.Records.Constant_Reference (Village.Today).Element.Target /= No_Person
+		then
+			return Already_Used;
+		elsif Village.Time /= Night and then Village.Today >= 2 then
+			return Allowed;
+		else
+			return Disallowed;
+		end if;
+	end Doctor_Status;
+	
+	function Superman_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
+	begin
+		case Subject_Person.Role is
+			when Detective => return Village.Detective_Status (Subject);
+			when Doctor => return Village.Doctor_Status (Subject);
+			when others => return Allowed;
+		end case;
+	end Superman_Status;
+	
+	function Can_Use_Silver_Bullet (Village : Village_Type; Subject : Person_Index) return Boolean is
+		pragma Assert (Village.People.Constant_Reference (Subject).Element.Role = Hunter);
+	begin
+		return not Village.Already_Used_Special (Subject);
+	end Can_Use_Silver_Bullet;
 	
 	function Unfortunate (Village : Village_Type) return Boolean is
 		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
@@ -493,35 +569,6 @@ package body Vampire.Villages is
 			return True;
 		end if;
 	end Unfortunate;
-	
-	function Target_Day (Village : Village_Type) return Integer is
-	begin
-		if Village.Time = Night then
-			return Village.Today - 1; -- 夜の能力は前日分を使用する
-		else
-			return Village.Today;
-		end if;
-	end Target_Day;
-	
-	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean is
-	begin
-		for I in 1 .. Village.Target_Day - 1 loop -- 今日の設定は変えられるので昨日の分まで
-			if Village.People.Constant_Reference (Subject).Element.Records.Constant_Reference (I).Element.Special then
-				return True;
-			end if;
-		end loop;
-		return False;
-	end Already_Used_Special;
-	
-	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean is
-	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Day).Element.State = Died then
-				return True;
-			end if;
-		end loop;
-		return False;
-	end Is_Anyone_Died;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;
@@ -799,6 +846,7 @@ package body Vampire.Villages is
 	begin
 		Process (Options.Day_Duration.Option_Item'(Village => Village'Access));
 		Process (Options.Night_Duration.Option_Item'(Village => Village'Access));
+		Process (Options.Vote.Option_Item'(Village => Village'Access));
 		Process (Options.Execution.Option_Item'(Village => Village'Access));
 		Process (Options.Teaming.Option_Item'(Village => Village'Access));
 		Process (Options.Monster_Side.Option_Item'(Village => Village'Access));
@@ -926,6 +974,56 @@ package body Vampire.Villages is
 			
 		end Night_Duration;
 		
+		package body Vote is
+			
+			overriding function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			overriding function Name (Item : Option_Item) return String is
+			begin
+				return "vote";
+			end Name;
+			
+			overriding function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Vote /= Initial_Vote;
+			end Changed;
+			
+			overriding procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Vote_Mode'Image (Unsigned),
+					Item.Village.Vote = Unsigned,
+					"無記名投票で処刑を行います。",
+					False);
+				Process (
+					Vote_Mode'Image (Preliminary_And_Final),
+					Item.Village.Vote = Preliminary_And_Final,
+					"仮投票と本投票で処刑を行います。",
+					False);
+			end Iterate;
+			
+			overriding procedure Change (
+				Village : in out Tabula.Villages.Village_Type'Class;
+				Item : in Option_Item;
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
+			begin
+				pragma Assert (V'Access = Item.Village);
+				V.Vote := Vote_Mode'Value (Value);
+			end Change;
+			
+		end Vote;
+		
 		package body Execution is
 			
 			overriding function Available (Item : Option_Item) return Boolean is
@@ -954,27 +1052,17 @@ package body Vampire.Villages is
 				Process (
 					Execution_Mode'Image (Dummy_Killed_And_From_First),
 					Item.Village.Execution = Dummy_Killed_And_From_First,
-					"能力者が死亡済みの可能性があり、無記名投票で処刑を行います。",
+					"能力者が死亡済みの可能性があります。",
 					False);
 				Process (
 					Execution_Mode'Image (From_First),
 					Item.Village.Execution = From_First,
-					"初日から無記名投票で処刑を行います。",
-					False);
-				Process (
-					Execution_Mode'Image (Provisional_Voting_From_First),
-					Item.Village.Execution = Provisional_Voting_From_First,
-					"初日から仮投票と本投票で処刑を行います。",
+					"初日から処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (From_Second),
 					Item.Village.Execution = From_Second,
-					"2日目から無記名投票で処刑を行います。",
-					False);
-				Process (
-					Execution_Mode'Image (Provisional_Voting_From_Second),
-					Item.Village.Execution = Provisional_Voting_From_Second,
-					"2日目から仮投票と本投票で処刑を行います。",
+					"2日目から処刑を行います。",
 					False);
 			end Iterate;
 			

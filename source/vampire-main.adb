@@ -635,7 +635,7 @@ begin
 									R3.Village_Page (
 										Output,
 										Form,
-										Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+										R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
 										Current_Directory => ".",
 										HTML_Directory => Configurations.Villages_HTML_Directory,
 										Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
@@ -957,7 +957,7 @@ begin
 										R3.Village_Page (
 											Output,
 											Form,
-											Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+											R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
 											Current_Directory => ".",
 											HTML_Directory => Configurations.Villages_HTML_Directory,
 											Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
@@ -1117,34 +1117,36 @@ begin
 										Target : constant Integer := Form.Get_Target (Inputs);
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
-										Special_Used : constant Boolean := Village.Already_Used_Special (Player);
 									begin
-										if Special_Used and Special then
+										if Special and then not Village.Can_Use_Silver_Bullet (Player) then
 											Message_Page ("銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
 											and then Village.People.Constant_Reference(Player).Element.Role in Villages.Daytime_Role
 										then
-											if Village.Time = Villages.Night then
-												Message_Page ("医者と探偵は、夜に能力を使えません。");
-											elsif Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target >= 0 then
-												Message_Page ("医者と探偵の行動選択は一日に一度しかできません。");
-											elsif Target < 0 then
-												Refresh_Page;
-											else
-												Web.Header_Content_Type (Output, Web.Text_HTML);
-												Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
-												Web.Header_Break (Output);
-												R3.Target_Page (
-													Output,
-													Form,
-													Configurations.Template_Names (Form.Template_Set).Template_Target_File_Name.all,
-													Village_Id => Village_Id,
-													Village => Village,
-													Player => Player,
-													Target => Target,
-													User_Id => User_Id,
-													User_Password => User_Password);
-											end if;
+											case Village.Superman_Status (Player) is
+												when Villages.Disallowed =>
+													Message_Page ("医者と探偵は、夜に能力を使えません。");
+												when Villages.Already_Used =>
+													Message_Page ("医者と探偵の行動選択は一日に一度しかできません。");
+												when Villages.Allowed =>
+													if Target < 0 then
+														Refresh_Page;
+													else
+														Web.Header_Content_Type (Output, Web.Text_HTML);
+														Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
+														Web.Header_Break (Output);
+														R3.Target_Page (
+															Output,
+															Form,
+															Configurations.Template_Names (Form.Template_Set).Template_Target_File_Name.all,
+															Village_Id => Village_Id,
+															Village => Village,
+															Player => Player,
+															Target => Target,
+															User_Id => User_Id,
+															User_Password => User_Password);
+													end if;
+											end case;
 										else
 											if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target
 												or else Special /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Special

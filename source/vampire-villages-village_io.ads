@@ -11,6 +11,7 @@ package Vampire.Villages.Village_IO is
 	package Person_Role_IO is new Serialization.IO_Enumeration (Person_Role);
 	package Person_State_IO is new Serialization.IO_Enumeration (Person_State);
 	package Message_Kind_IO is new Serialization.IO_Enumeration (Message_Kind);
+	package Vote_IO is new Serialization.IO_Enumeration (Vote_Mode);
 	package Execution_IO is new Serialization.IO_Enumeration (Execution_Mode);
 	package Attack_IO is new Serialization.IO_Enumeration (Attack_Mode);
 	package Servant_Knowing_IO is new Serialization.IO_Enumeration (Servant_Knowing_Mode);

@@ -19,8 +19,6 @@ package body Vampire.Villages.Teaming is
 		subtype Servant_Count_Type is Natural range 0 .. 1;
 		subtype Gremlin_Count_Type is Natural range 0 .. 1;
 		
-		People_Count_2 : Ada.Containers.Count_Type := People_Count;
-		
 		procedure Add (Set : in Role_Set) is
 		begin
 			Last := Last + 1;
@@ -29,15 +27,17 @@ package body Vampire.Villages.Teaming is
 		
 		procedure Process_Inhabitants (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
 		is
 			Set_2 : Role_Set := Set;
 			Count : Ada.Containers.Count_Type := 0;
 		begin
-			if Village_Side_Superman_Count = 0 or else (
-				Village_Side_Superman_Count = 1 and then
-				People_Count_2 >= 8 and then
-				Unfortunate /= None)
+			if Village_Side_Superman_Count = 0
+				or else (
+					Village_Side_Superman_Count = 1
+					and then Total_Village_Side_Superman_Count >= 3
+					and then Unfortunate /= None)
 			then
 				if Village_Side_Superman_Count = 1 then
 					Set_2 (Unfortunate_Inhabitant) := 1;
@@ -53,26 +53,27 @@ package body Vampire.Villages.Teaming is
 		
 		procedure Process_Lovers (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type) is
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type) is
 		begin
-			Process_Inhabitants (Set, Village_Side_Superman_Count);
+			Process_Inhabitants (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			if Male_And_Female then
-				if Village_Side_Superman_Count >= 1 and then People_Count_2 >= 8 then
+				if Village_Side_Superman_Count >= 1 and then Total_Village_Side_Superman_Count >= 3 then
 					declare
 						Set_2 : Role_Set := Set;
 					begin
 						Set_2 (Lover) := 1;
 						Set_2 (Loved_Inhabitant) := 1;
-						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 1);
+						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 					end;
 				end if;
-				if Village_Side_Superman_Count >= 2 and then People_Count_2 >= 13 then
+				if Village_Side_Superman_Count >= 2 and then Total_Village_Side_Superman_Count >= 4 then
 					declare
 						Set_2 : Role_Set := Set;
 					begin
 						Set_2 (Sweetheart_M) := 1;
 						Set_2 (Sweetheart_F) := 1;
-						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 2);
+						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 2, Total_Village_Side_Superman_Count);
 					end;
 				end if;
 			end if;
@@ -80,65 +81,71 @@ package body Vampire.Villages.Teaming is
 		
 		procedure Process_Detective (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			Process_Lovers (Set, Village_Side_Superman_Count);
+			Process_Lovers (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Detective) := 1;
-				Process_Lovers (Set_2, Village_Side_Superman_Count - 1);
+				Process_Lovers (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Detective;
 		
 		procedure Process_Doctor (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			Process_Detective (Set, Village_Side_Superman_Count);
+			Process_Detective (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Doctor) := 1;
-				Process_Detective (Set_2, Village_Side_Superman_Count - 1);
+				Process_Detective (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Doctor;
 		
 		procedure Process_Hunter (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			if Village_Side_Superman_Count = 0 or else (
-				Set (Astronomer) >= 1 and then (
-				Set (Gremlin) = 0 or else Monster_Side /= Gremlin))
+			if Village_Side_Superman_Count = 0
+				or else (
+					Set (Astronomer) >= 1
+					and then (Set (Gremlin) = 0 or else Monster_Side /= Gremlin))
 			then
-				Process_Doctor (Set, Village_Side_Superman_Count);
+				Process_Doctor (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			end if;
-			if Village_Side_Superman_Count > 0 and then (
-				Set (Astronomer) = 0 or else
-				Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) >= 3)
+			if Village_Side_Superman_Count > 0
+				and then (
+					Set (Astronomer) = 0
+					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) >= 3)
 			then
 				Set_2 (Hunter) := 1;
-				Process_Doctor (Set_2, Village_Side_Superman_Count - 1);
+				Process_Doctor (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Hunter;
 		
 		procedure Process_Astronomer (
 			Set : in Role_Set;
-			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
+			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
+			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type)
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			if Village_Side_Superman_Count = 0 or else
-				Teaming not in Hidings
+			if Village_Side_Superman_Count = 0
+				or else Teaming not in Hidings
 			then
-				Process_Hunter (Set, Village_Side_Superman_Count);
+				Process_Hunter (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Astronomer) := 1;
-				Process_Hunter (Set_2, Village_Side_Superman_Count - 1);
+				Process_Hunter (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Astronomer;
 		
@@ -158,7 +165,7 @@ package body Vampire.Villages.Teaming is
 					end if;
 				end if;
 			end if;
-			Process_Astronomer (Set_2, Village_Side_Superman_Count);
+			Process_Astronomer (Set_2, Village_Side_Superman_Count, Village_Side_Superman_Count);
 		end Process_Vampires;
 		
 		procedure Process_Servant (
@@ -210,14 +217,19 @@ package body Vampire.Villages.Teaming is
 				Servant_Count);
 		end Process_Gremlin;
 		
+		People_Count_2 : Ada.Containers.Count_Type := People_Count;
+		
 		Village_Side_Superman_Count : Village_Side_Superman_Count_Type;
 		Vampire_Count : Vampire_Count_Type;
 		Servant_Count : Servant_Count_Type := 0;
 		Gremlin_Count : Gremlin_Count_Type := 0;
 	begin
-		if Execution in From_Seconds then
-			People_Count_2 := People_Count_2 - 1;
-		end if;
+		case Execution is
+			when Dummy_Killed_And_From_First | From_First =>
+				null;
+			when From_Second =>
+				People_Count_2 := People_Count_2 - 1;
+		end case;
 		case Teaming is
 			when Low_Density =>
 				if People_Count_2 >= 16 then
@@ -389,8 +401,8 @@ package body Vampire.Villages.Teaming is
 	begin
 		Index := Random.Random (Generator);
 		-- 片想いと数奇な運命の村人の出現率を少し下げる
-		if Sets (Index)(Lover) > 0 or else
-			Sets (Index)(Unfortunate_Inhabitant) > 0
+		if Sets (Index)(Lover) > 0
+			or else Sets (Index)(Unfortunate_Inhabitant) > 0
 		then
 			Index := Random.Random (Generator);
 		end if;
@@ -528,8 +540,8 @@ package body Vampire.Villages.Teaming is
 				declare
 					S : constant Casts.Person_Sex := People.Constant_Reference(I).Element.Sex;
 				begin
-					if (S = Casts.Male and Candidacy(I) = Sweetheart_F) or else
-						(S = Casts.Female and Candidacy(I) = Sweetheart_M)
+					if (S = Casts.Male and Candidacy (I) = Sweetheart_F)
+						or else (S = Casts.Female and Candidacy (I) = Sweetheart_M)
 					then
 						return Bad;
 					elsif Candidacy(I) = Lover then

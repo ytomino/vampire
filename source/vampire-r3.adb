@@ -11,62 +11,59 @@ package body Vampire.R3 is
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Term;
 	
-	procedure Produce (
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+	function Read (
 		Template_Source : in String;
-		Template_Cache : in String := "";
-		Handler : not null access procedure (
-			Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String;
-			Contents : Web.Producers.Template))
+		Template_Cache : in String := "")
+		return Web.Producers.Template
 	is
 		File : Ada.Streams.Stream_IO.File_Type :=
 			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Template_Source);
-		Template : Web.Producers.Template := Web.Producers.Read (
+	begin
+		return Template : Web.Producers.Template := Web.Producers.Read (
 			Ada.Streams.Stream_IO.Stream (File),
 			Ada.Streams.Stream_IO.Size(File),
-			Parsing => False);
-	begin
-		if Template_Cache'Length > 0 then
-			if Ada.Directories.Exists (Template_Cache)
-				and then Ada.Directories.Modification_Time (Template_Cache) >
-					Ada.Directories.Modification_Time (Template_Source)
-			then
-				-- read parsed-structure from cache file
-				declare
-					Cache_File : Ada.Streams.Stream_IO.File_Type;
-				begin
-					Ada.Streams.Stream_IO.Open (
-						Cache_File,
-						Ada.Streams.Stream_IO.In_File,
-						Name => Template_Cache);
-					Web.Producers.Read_Parsed_Information (
-						Ada.Streams.Stream_IO.Stream (Cache_File),
-						Template);
-					Ada.Streams.Stream_IO.Close (Cache_File);
-				end;
+			Parsing => False)
+		do
+			if Template_Cache'Length > 0 then
+				if Ada.Directories.Exists (Template_Cache)
+					and then Ada.Directories.Modification_Time (Template_Cache) >
+						Ada.Directories.Modification_Time (Template_Source)
+				then
+					-- read parsed-structure from cache file
+					declare
+						Cache_File : Ada.Streams.Stream_IO.File_Type;
+					begin
+						Ada.Streams.Stream_IO.Open (
+							Cache_File,
+							Ada.Streams.Stream_IO.In_File,
+							Name => Template_Cache);
+						Web.Producers.Read_Parsed_Information (
+							Ada.Streams.Stream_IO.Stream (Cache_File),
+							Template);
+						Ada.Streams.Stream_IO.Close (Cache_File);
+					end;
+				else
+					Web.Producers.Parse (Template);
+					-- save parsed-structure to cache file
+					declare
+						Cache_File : Ada.Streams.Stream_IO.File_Type;
+					begin
+						Ada.Streams.Stream_IO.Create (
+							Cache_File,
+							Ada.Streams.Stream_IO.Out_File,
+							Name => Template_Cache);
+						Web.Producers.Write_Parsed_Information (
+							Ada.Streams.Stream_IO.Stream (Cache_File),
+							Template);
+						Ada.Streams.Stream_IO.Close (Cache_File);
+					end;
+				end if;
 			else
 				Web.Producers.Parse (Template);
-				-- save parsed-structure to cache file
-				declare
-					Cache_File : Ada.Streams.Stream_IO.File_Type;
-				begin
-					Ada.Streams.Stream_IO.Create (
-						Cache_File,
-						Ada.Streams.Stream_IO.Out_File,
-						Name => Template_Cache);
-					Web.Producers.Write_Parsed_Information (
-						Ada.Streams.Stream_IO.Stream (Cache_File),
-						Template);
-					Ada.Streams.Stream_IO.Close (Cache_File);
-				end;
 			end if;
-		else
-			Web.Producers.Parse (Template);
-		end if;
-		Web.Producers.Produce (Output, Template, Handler => Handler);
-		Ada.Streams.Stream_IO.Close(File);
-	end Produce;
+			Ada.Streams.Stream_IO.Close(File);
+		end return;
+	end Read;
 	
 	function Day_Name (
 		Day : Natural;
@@ -262,6 +259,7 @@ package body Vampire.R3 is
 		Template : in Web.Producers.Template;
 		Tag : in String := "";
 		Form : in Forms.Root_Form_Type'Class;
+		Current_Directory : in String;
 		Image_Directory : in String;
 		Subject : in Tabula.Villages.Person_Type'Class;
 		Text : in String;
@@ -278,7 +276,7 @@ package body Vampire.R3 is
 				Forms.Write_Link (
 					Output,
 					Form,
-					Current_Directory => ".",
+					Current_Directory => Current_Directory,
 					Resource => Ada.Directories.Compose (
 						Containing_Directory => Image_Directory,
 						Name => Subject.Image.Constant_Reference.Element.all));

@@ -11,7 +11,7 @@ with Vampire.Villages.Text;
 procedure Vampire.R3.Village_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
 	Form : in Forms.Root_Form_Type'Class;
-	Template : in String;
+	Template : in Web.Producers.Template;
 	Current_Directory : in String;
 	HTML_Directory : in String;
 	Image_Directory : in String;
@@ -25,7 +25,7 @@ procedure Vampire.R3.Village_Page (
 	Day : in Natural;
 	Showing_Range : in Tabula.Villages.Message_Range_Type := (
 		First => Tabula.Villages.Message_Index'First,
-		Last => Tabula.Villages.Message_Index'Last);
+		Last => Tabula.Villages.Message_Index'Last - 2);
 	Editing : Villages.Message_Kind := Villages.Speech;
 	Editing_Text : String := "";
 	User_Id : in String;
@@ -541,12 +541,14 @@ is
 		Template : in Web.Producers.Template) is
 	begin
 		if Tag = "userpanel" then
-			Handle_User_Panel (
-				Output,
-				Template,
-				Form,
-				User_Id => User_Id,
-				User_Password => User_Password);
+			if not Log then
+				Handle_User_Panel (
+					Output,
+					Template,
+					Form,
+					User_Id => User_Id,
+					User_Password => User_Password);
+			end if;
 		elsif Tag = "href_stylesheet" then
 			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
@@ -645,16 +647,16 @@ is
 							Forms.Write_In_HTML (Output, Form, Day_Name (I, Village.Today, Village.State));
 						elsif Tag = "href_day" then
 							Forms.Write_Attribute_Name (Output, "href");
-							Forms.Write_Link (
+							Forms.Write_Link_To_Village_Page (
 								Output,
 								Form,
 								Current_Directory => Current_Directory,
-								Resource => Forms.Self,
-								Parameters => Form.Parameters_To_Village_Page (
-									Village_Id => Village_Id,
-									Day => I,
-									User_Id => User_Id,
-									User_Password => User_Password));
+								HTML_Directory => HTML_Directory,
+								Log => Log,
+								Village_Id => Village_Id,
+								Day => I,
+								User_Id => User_Id,
+								User_Password => User_Password);
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
@@ -838,33 +840,40 @@ is
 						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
 					end if;
 				end Narration;
-				procedure Speech(Message : Vampire.Villages.Message; Class : String; Time : Ada.Calendar.Time; X : Integer := -1) is
+				procedure Speech (
+					Message : Vampire.Villages.Message;
+					Subject : Person_Index'Base;
+					Time : Ada.Calendar.Time;
+					Class : String;
+					X : Integer := -1)
+				is
 					Filter : aliased Ada.Strings.Unbounded.Unbounded_String;
-					Subject : access constant Villages.Person_Type;
+					Subject_Ref : access constant Villages.Person_Type;
 				begin
 					if Message.Kind = Escaped_Speech then
-						Subject := Village.Escaped_People.Constant_Reference (Message.Subject).Element;
+						Subject_Ref := Village.Escaped_People.Constant_Reference (Message.Subject).Element;
 					else
-						Subject := Village.People.Constant_Reference (Message.Subject).Element;
+						Subject_Ref := Village.People.Constant_Reference (Message.Subject).Element;
 					end if;
 					if X >= 0 then
 						Ada.Strings.Unbounded.Append (Filter, "s");
 						Ada.Strings.Unbounded.Append (Filter, Image (X));
 						Ada.Strings.Unbounded.Append (Filter, ' ');
 					end if;
-					Ada.Strings.Unbounded.Append (Filter, "p");
 					if Message.Kind = Vampire.Villages.Ghost then
-						Ada.Strings.Unbounded.Append (Filter, "g");
-					else
-						Ada.Strings.Unbounded.Append (Filter, Image (Message.Subject));
+						Ada.Strings.Unbounded.Append (Filter, "pg");
+					elsif Subject /= No_Person then
+						Ada.Strings.Unbounded.Append (Filter, "p");
+						Ada.Strings.Unbounded.Append (Filter, Image (Subject));
 					end if;
 					R3.Handle_Speech (
 						Output,
 						Template,
 						Class,
 						Form,
+						Current_Directory => Current_Directory,
 						Image_Directory => Image_Directory,
-						Subject => Subject.all,
+						Subject => Subject_Ref.all,
 						Time => Time,
 						Text => Message.Text.Constant_Reference.Element.all,
 						Filter => Filter.Constant_Reference.Element.all);
@@ -971,28 +980,28 @@ is
 												else
 													Last_Speech_Time := Message.Time;
 												end if;
-												Speech (Message, "speech", Last_Speech_Time, X => X);
+												Speech (Message, Subject, Last_Speech_Time, "speech", X => X);
 											else
-												Speech(Message, "escaped", Message.Time);
+												Speech (Message, No_Person, Message.Time, "escaped");
 											end if;
 										end;
 									when Vampire.Villages.Monologue =>
 										if Village.State >= Epilogue
 											or else Message.Subject = Player_Index
 										then
-											Speech(Message, "monologue", Message.Time);
+											Speech (Message, Message.Subject, Message.Time, "monologue");
 										end if;
 									when Vampire.Villages.Ghost =>
 										if Village.State >= Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State = Vampire.Villages.Died)
 										then
-											Speech(Message, "ghost", Message.Time);
+											Speech (Message, Message.Subject, Message.Time, "ghost");
 										end if;
 									when Vampire.Villages.Howling =>
 										if Village.State >= Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
 										then
-											Speech(Message, "vampire", Message.Time);
+											Speech (Message, Message.Subject, Message.Time, "vampire");
 										end if;
 									when Vampire.Villages.Howling_Blocked =>
 										if Village.State >= Epilogue
@@ -1057,7 +1066,7 @@ is
 													or else Village.Daytime_Preview = Vampire.Villages.Message_Only
 													or else Message.Kind /= Vampire.Villages.Detective_Survey_Preview)
 											then
-												Speech(Message, "dying", Message.Time);
+												Speech (Message, Message.Subject, Message.Time, "dying");
 											end if;
 										end if;
 									when Vampire.Villages.Provisional_Vote =>
@@ -1072,19 +1081,23 @@ is
 											Provisional => True,
 											Executed => -1));
 									when Vampire.Villages.Execution =>
-										if Vampire.Villages.Provisional_Voting (Village.Execution) then
-											Narration (Villages.Text.Votes (
-												Village,
-												Day => Message.Day - 1,
-												Provisional => False,
-												Player_Index => -1));
-										else
-											Narration (Villages.Text.Votes (
-												Village,
-												Day => Message.Day - 1,
-												Provisional => False,
-												Player_Index => Player_Index), "narrationi");
-										end if;
+										case Village.Vote is
+											when Unsigned =>
+												Narration (
+													Villages.Text.Votes (
+														Village,
+														Day => Message.Day - 1,
+														Provisional => False,
+														Player_Index => Player_Index),
+													"narrationi");
+											when Preliminary_And_Final =>
+												Narration (
+													Villages.Text.Votes (
+														Village,
+														Day => Message.Day - 1,
+														Provisional => False,
+														Player_Index => -1));
+										end case;
 										Narration (Villages.Text.Votes_Totaled (
 											Village,
 											Day => Message.Day - 1,
@@ -1260,9 +1273,9 @@ is
 									when Playing =>
 										case Village.Time is
 											when Daytime =>
-												if Village.Be_Voting and then
-													Vampire.Villages.Provisional_Voting (Village.Execution) and then
-													not Village.Provisional_Voted
+												if Village.For_Voting (Village.Today)
+													and then Village.Vote = Preliminary_And_Final
+													and then not Village.Provisional_Voted
 												then
 													declare
 														Open_Time : constant Ada.Calendar.Time := Village.Provisional_Voting_Time;
@@ -1515,7 +1528,7 @@ is
 							elsif Tag = "vote" then
 								if Village.State = Playing
 									and then Message_Counts(Player_Index).Speech > 0
-									and then Village.Be_Voting
+									and then Village.For_Voting (Village.Today)
 								then
 									if Person.Commited then
 										declare
@@ -1563,33 +1576,53 @@ is
 											| Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F
 											| Vampire.Villages.Servant | Vampire.Villages.Gremlin => null;
 										when Vampire.Villages.Doctor =>
-											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
-												if (Village.Today = 2 and then Village.Time /= Night) -- 2日目の昼以降
-													or else Village.Today > 2
-												then
-													Vote_Form (Output, Player_Index, Vampire.Villages.Doctor, False,
-														Person.Records.Constant_Reference(Village.Today).Element.Target, False, "貴重な薬を誰に……", "診察");
-												else
+											case Village.Doctor_Status (Player_Index) is
+												when Disallowed =>
 													String'Write (Output, "<div>");
-													Forms.Write_In_HTML (Output, Form, "今は他に犠牲者がいないと信じましょう。");
+													if Village.Time = Night then
+														Forms.Write_In_HTML (Output, Form, "夜は行動できません。");
+													else
+														Forms.Write_In_HTML (Output, Form, "今は他に犠牲者がいないと信じましょう。");
+													end if;
 													String'Write (Output, "</div>");
-												end if;
-											end if;
+												when Allowed =>
+													Vote_Form (
+														Output,
+														Player_Index,
+														Vampire.Villages.Doctor,
+														False,
+														Person.Records.Constant_Reference (Village.Today).Element.Target,
+														False,
+														"貴重な薬を誰に……",
+														"診察");
+												when Already_Used =>
+													null;
+											end case;
 										when Vampire.Villages.Detective =>
-											if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.Target < 0 then
-												if Village.Is_Anyone_Died (Village.Today) then
-													Vote_Form (Output, Player_Index, Vampire.Villages.Detective, False,
-														Person.Records.Constant_Reference(Village.Today).Element.Target, False, "どの被害者を調べますか……", "調査");
-												else
+											case Village.Detective_Status (Player_Index) is
+												when Disallowed =>
 													String'Write (Output, "<div>");
-													if Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and Day <= 1 then
+													if Village.Time = Night then
+														Forms.Write_In_HTML (Output, Form, "夜は行動できません。");
+													elsif Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and Day <= 1 then
 														Forms.Write_In_HTML (Output, Form, "地主さんを調査しています。");
 													else
 														Forms.Write_In_HTML (Output, Form, "まだ村人に被害者はいません。");
 													end if;
 													String'Write (Output, "</div>");
-												end if;
-											end if;
+												when Allowed =>
+													Vote_Form (
+														Output,
+														Player_Index,
+														Vampire.Villages.Detective,
+														False,
+														Person.Records.Constant_Reference (Village.Today).Element.Target,
+														False,
+														"どの被害者を調べますか……",
+														"調査");
+												when Already_Used =>
+													null;
+											end case;
 										when Vampire.Villages.Astronomer =>
 											Vote_Form (
 												Output,
@@ -1601,17 +1634,15 @@ is
 												"どの家の上空の星が奇麗……",
 												"観測");
 										when Vampire.Villages.Hunter =>
-											declare
-												Has_Silver_Bullet : Boolean := True;
-											begin
-												for I in 0 .. Village.Target_Day - 1 loop
-													if Person.Records.Constant_Reference(I).Element.Special then
-														Has_Silver_Bullet := False;
-													end if;
-												end loop;
-												Vote_Form (Output, Player_Index, Vampire.Villages.Hunter, Has_Silver_Bullet,
-													Person.Records.Constant_Reference (Village.Target_Day).Element.Target, Person.Records.Constant_Reference (Village.Target_Day).Element.Special, "誰を守りますか……", "護衛");
-											end;
+											Vote_Form (
+												Output,
+												Player_Index,
+												Vampire.Villages.Hunter,
+												Village.Can_Use_Silver_Bullet (Player_Index),
+												Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
+												Person.Records.Constant_Reference (Village.Target_Day).Element.Special,
+												"誰を守りますか……",
+												"護衛");
 										when Vampire.Villages.Vampire_Role =>
 											Vote_Form (Output, Player_Index, Vampire.Villages.Vampire_K, False,
 												Person.Records.Constant_Reference (Village.Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");
@@ -1619,15 +1650,15 @@ is
 								end if;
 							elsif Tag = "action" then
 								if Village.State = Playing and then (
-									Message_Counts(Player_Index).Wake = 0
-									or else Message_Counts(Player_Index).Encourage = 0
-									or else ((Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
-										and then Message_Counts(Player_Index).Vampire_Gaze = 0))
+									Message_Counts (Player_Index).Wake = 0
+									or else Message_Counts (Player_Index).Encourage = 0
+									or else ((Village.People.Constant_Reference (Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
+										and then Message_Counts (Player_Index).Vampire_Gaze = 0))
 								then
 									if Form.Template_Set = Forms.For_Full then
-										String'Write(Output, "<form method=""POST"" class=""inner"">" & Line_Break);
+										String'Write (Output, "<form method=""POST"" class=""inner"">" & Line_Break);
 									else
-										String'Write(Output, "<form method=""POST"" action=");
+										String'Write (Output, "<form method=""POST"" action=");
 										Forms.Write_Link (
 											Output,
 											Form,
@@ -1639,18 +1670,18 @@ is
 												User_Password => User_Password));
 										Character'Write (Output, '>');
 									end if;
-									String'Write(Output, "<select name=""target"">" & Line_Break);
-									String'Write(Output, "<option value=""-1"" selected=""selected""></option>" & Line_Break);
+									String'Write (Output, "<select name=""target"">" & Line_Break);
+									String'Write (Output, "<option value=""-1"" selected=""selected""></option>" & Line_Break);
 									for I in Village.People.First_Index .. Village.People.Last_Index loop
 										if I /= Player_Index
-											and then Village.People.Constant_Reference(I).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
+											and then Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.State /= Vampire.Villages.Died
 										then
 											declare
-												Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I).Element.all;
+												Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference (I).Element.all;
 											begin
-												String'Write(Output, "<option value=""" & Image (I) & """>");
+												String'Write (Output, "<option value=""" & Image (I) & """>");
 												Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
-												String'Write(Output, "</option>");
+												String'Write (Output, "</option>");
 											end;
 										end if;
 									end loop;
@@ -1687,13 +1718,14 @@ is
 							elsif Tag = "active" then
 								if not Person.Commited
 									and then Village.State /= Epilogue
-									and then (Message_Counts(Player_Index).Speech > 0 or else Village.State = Prologue)
+									and then (Message_Counts (Player_Index).Speech > 0 or else Village.State = Prologue)
 								then
 									declare
-										Setting : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today).Element.all;
+										Setting : Vampire.Villages.Person_Record
+											renames Person.Records.Constant_Reference (Village.Today).Element.all;
 									begin
 										if Setting.State /= Vampire.Villages.Died then
-											Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
+											Web.Producers.Produce (Output, Template, Handler => Handle_Player'Access);
 										end if;
 									end;
 								end if;
@@ -1701,7 +1733,7 @@ is
 								if Village.State = Prologue then
 									declare
 										subtype Arg is Integer range 1000 .. 4999;
-										package Random_Arg is new Ada.Numerics.MT19937.Discrete_Random(Arg);
+										package Random_Arg is new Ada.Numerics.MT19937.Discrete_Random (Arg);
 										X : Arg;
 										Y : Arg;
 										procedure Handle_Escape (
@@ -1741,14 +1773,14 @@ is
 										Seed : aliased Ada.Numerics.MT19937.Generator :=
 											Ada.Numerics.MT19937.Initialize;
 									begin
-										X := Random_Arg.Random(Seed'Access);
-										Y := Random_Arg.Random(Seed'Access);
-										Web.Producers.Produce(Output, Template, Handler => Handle_Escape'Access);
+										X := Random_Arg.Random (Seed'Access);
+										Y := Random_Arg.Random (Seed'Access);
+										Web.Producers.Produce (Output, Template, Handler => Handle_Escape'Access);
 									end;
 								end if;
 							elsif Tag = "commited" then
 								if Person.Commited then
-									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
+									Web.Producers.Produce (Output, Template, Handler => Handle_Player'Access);
 								end if;
 							elsif Tag = "action_page" then
 								Forms.Write_Attribute_Name (Output, "action");
@@ -1766,14 +1798,14 @@ is
 							end if;
 						end Handle_Player;
 					begin
-						Web.Producers.Produce(Output, Template, "player", Handler => Handle_Player'Access);
+						Web.Producers.Produce (Output, Template, "player", Handler => Handle_Player'Access);
 					end;
 				elsif User_Id = Tabula.Users.Administrator then
-					Web.Producers.Produce(Output, Template, "administrator", Handler=> Handle'Access);
+					Web.Producers.Produce (Output, Template, "administrator", Handler=> Handle'Access);
 				elsif Village.State > Prologue then
-					Web.Producers.Produce(Output, Template, "opened");
+					Web.Producers.Produce (Output, Template, "opened");
 				elsif Village.People.Length >= Maximum_Number_Of_Persons then
-					Web.Producers.Produce(Output, Template, "over");
+					Web.Producers.Produce (Output, Template, "over");
 				else
 					declare
 						Cast : Casts.Cast_Collection := Casts.Load (Cast_File_Name);
@@ -1783,16 +1815,16 @@ is
 							Template : in Web.Producers.Template) is
 						begin
 							if Tag = "works" then
-								String'Write(Output, "<select id=""work"" name=""work"">" &
+								String'Write (Output, "<select id=""work"" name=""work"">" &
 									"<option value=""-1"" selected=""selected"">");
 								Forms.Write_In_HTML (Output, Form, "(既定)");
-								String'Write(Output, "</option>");
+								String'Write (Output, "</option>");
 								for Position in Cast.Works.First_Index .. Cast.Works.Last_Index loop
 									declare
-										Item : Casts.Work renames Cast.Works.Constant_Reference(Position).Element.all;
+										Item : Casts.Work renames Cast.Works.Constant_Reference (Position).Element.all;
 									begin
 										if not Casts.Is_Empty (Item) then
-											String'Write(Output, "<option ");
+											String'Write (Output, "<option ");
 											Forms.Write_Attribute_Name (Output, "value");
 											Forms.Write_Attribute_Open (Output);
 											Forms.Write_In_Attribute (Output, Form, Image (Position));
@@ -1810,23 +1842,23 @@ is
 											if Item.Nominated then
 												Forms.Write_In_HTML (Output, Form, " (指名職)");
 											end if;
-											String'Write(Output, "</option>");
+											String'Write (Output, "</option>");
 										end if;
 									end;
 								end loop;
-								String'Write(Output, "</select>");
+								String'Write (Output, "</select>");
 							elsif Tag = "names" then
-								String'Write(Output, "<select id=""name"" name=""name"">");
+								String'Write (Output, "<select id=""name"" name=""name"">");
 								declare
-									type Sex_To_String is array(Casts.Person_Sex) of String(1 .. 9);
+									type Sex_To_String is array (Casts.Person_Sex) of String (1 .. 9);
 									Sex_Name : constant Sex_To_String := (" (男性)", " (女性)");
 								begin
 									for Position in Cast.People.First_Index .. Cast.People.Last_Index loop
 										declare
-											Item : Casts.Person renames Cast.People.Constant_Reference(Position).Element.all;
+											Item : Casts.Person renames Cast.People.Constant_Reference (Position).Element.all;
 										begin
 											if not Casts.Is_Empty (Item) then
-												String'Write(Output, "<option ");
+												String'Write (Output, "<option ");
 												Forms.Write_Attribute_Name (Output, "value");
 												Forms.Write_Attribute_Open (Output);
 												Forms.Write_In_Attribute (Output, Form, Image (Position));
@@ -1835,25 +1867,25 @@ is
 												Forms.Write_In_HTML (Output, Form,
 													Item.Name.Constant_Reference.Element.all &
 													Sex_Name (Item.Sex));
-												String'Write(Output, "</option>");
+												String'Write (Output, "</option>");
 											end if;
 										end;
 									end loop;
 								end;
-								String'Write(Output, "</select>");
+								String'Write (Output, "</select>");
 							elsif Tag = "request" then
-								String'Write(Output, "<select id=""request"" name=""request"">");
+								String'Write (Output, "<select id=""request"" name=""request"">");
 								for I in Vampire.Villages.Requested_Role loop
-									String'Write(Output, "<option ");
+									String'Write (Output, "<option ");
 									Forms.Write_Attribute_Name (Output, "value");
 									Forms.Write_Attribute_Open (Output);
-									Forms.Write_In_Attribute (Output, Form, Vampire.Villages.Requested_Role'Image(I));
+									Forms.Write_In_Attribute (Output, Form, Vampire.Villages.Requested_Role'Image (I));
 									Forms.Write_Attribute_Close (Output);
 									Character'Write (Output, '>');
 									Forms.Write_In_HTML (Output, Form, Villages.Text.Image (I));
-									String'Write(Output, "</option>");
+									String'Write (Output, "</option>");
 								end loop;
-								String'Write(Output, "</select>");
+								String'Write (Output, "</select>");
 							elsif Tag = "action_page" then
 								Forms.Write_Attribute_Name (Output, "action");
 								Forms.Write_Link (
@@ -1871,7 +1903,7 @@ is
 						end Handle_Entry;
 					begin
 						Vampire.Villages.Exclude_Taken (Cast, Village);
-						Web.Producers.Produce(Output, Template, "entry", Handler => Handle_Entry'Access);
+						Web.Producers.Produce (Output, Template, "entry", Handler => Handle_Entry'Access);
 					end;
 				end if;
 			end if;
@@ -1900,7 +1932,7 @@ is
 						end if;
 					end Handle_Next;
 				begin
-					Web.Producers.Produce(Output, Template, Handler => Handle_Next'Access);
+					Web.Producers.Produce (Output, Template, Handler => Handle_Next'Access);
 				end;
 			end if;
 		elsif Tag = "scroll" then
@@ -1908,12 +1940,12 @@ is
 				and then Day = Village.Today
 				and then Player_Index >= 0
 			then
-				Web.Producers.Produce(Output, Template);
+				Web.Producers.Produce (Output, Template);
 			end if;
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;
 	end Handle;
 begin
-	Produce (Output, Template, Handler => Handle'Access);
+	Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 end Vampire.R3.Village_Page;

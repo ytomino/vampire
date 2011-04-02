@@ -27,13 +27,8 @@ package Vampire.Villages is
 	
 	-- オプションルール
 	
-	type Execution_Mode is (
-		Dummy_Killed_And_From_First,
-		From_First,
-		Provisional_Voting_From_First,
-		From_Second,
-		Provisional_Voting_From_Second);
-	
+	type Vote_Mode is (Unsigned, Preliminary_And_Final);
+	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second);
 	type Teaming_Mode is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
@@ -43,10 +38,9 @@ package Vampire.Villages is
 	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
-	subtype From_Seconds is Execution_Mode range From_Second .. Provisional_Voting_From_Second;
-	function Provisional_Voting (Mode : Execution_Mode) return Boolean;
 	subtype Hidings is Teaming_Mode range Hiding .. Hiding_Gremlin;
 	
+	Initial_Vote                 : constant Vote_Mode                 := Unsigned;
 	Initial_Execution            : constant Execution_Mode            := From_First;
 	Initial_Teaming              : constant Teaming_Mode              := Shuffling;
 	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
@@ -60,13 +54,13 @@ package Vampire.Villages is
 	-- 配役
 	
 	type Person_Role is (
-		Gremlin,
 		Vampire_K, Vampire_Q, Vampire_J, Servant,
 		Inhabitant,
 		Loved_Inhabitant,
 		Unfortunate_Inhabitant,
 		Detective, Doctor, Astronomer, Hunter,
-		Lover, Sweetheart_M, Sweetheart_F);
+		Lover, Sweetheart_M, Sweetheart_F,
+		Gremlin);
 	
 	subtype Matrix_Role is Person_Role range Detective .. Hunter;
 	subtype Night_Role is Person_Role range Astronomer .. Hunter;
@@ -77,6 +71,8 @@ package Vampire.Villages is
 	type Role_Appearances is array (Unfortunate_Inhabitant .. Lover) of Role_Appearance;
 	
 	type Role_Images is array (Villages.Person_Role) of not null access constant String;
+	
+	type Ability_Status is (Disallowed, Allowed, Already_Used);
 	
 	-- 参加者
 	
@@ -230,6 +226,7 @@ package Vampire.Villages is
 		Today : Integer := 0;
 		Time : Village_Time := Daytime;
 		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新時刻(1日目は夜を飛ばすため調整)
+		Vote : Vote_Mode := Unsigned;
 		Execution : Execution_Mode := From_First;
 		Teaming : Teaming_Mode := Shuffling_Headless;
 		Monster_Side : Monster_Side_Mode := Fixed;
@@ -280,7 +277,7 @@ package Vampire.Villages is
 		Time : in Ada.Calendar.Time);
 	
 	-- 投票
-	function Be_Voting (Village : Village_Type) return Boolean; -- 本日投票を行うかどうか
+	function For_Voting (Village : Village_Type; Day : Natural) return Boolean; -- 投票を行うかどうか
 	function Provisional_Voted (Village : Village_Type) return Boolean;
 	function Vote_Finished (Village : Village_Type) return Boolean;
 	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
@@ -312,11 +309,16 @@ package Vampire.Villages is
 		Time : in Ada.Calendar.Time);
 	
 	-- 能力者
+	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
 	function Find_Superman (Village : Village_Type; Role : Person_Role) return Person_Index'Base;
-	function Unfortunate (Village : Village_Type) return Boolean;
 	function Target_Day (Village : Village_Type) return Integer;
 	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean;
-	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
+	
+	function Detective_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
+	function Doctor_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
+	function Superman_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
+	function Can_Use_Silver_Bullet (Village : Village_Type; Subject : Person_Index) return Boolean;
+	function Unfortunate (Village : Village_Type) return Boolean;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;
@@ -420,6 +422,25 @@ package Vampire.Villages is
 				Item : in Option_Item;
 				Value : in String);
 		end Night_Duration;
+		
+		package Vote is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			overriding procedure Change (
+				Village : in out Tabula.Villages.Village_Type'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Vote;
 		
 		package Execution is
 			type Option_Item (Village : not null access constant Village_Type) is

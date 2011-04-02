@@ -2,6 +2,7 @@
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
 with Ada.Strings.Unbounded;
+with Web.Producers;
 with Web.RSS;
 with Vampire.Configurations;
 with Vampire.Forms.Full;
@@ -31,6 +32,8 @@ package body Vampire.Log is
 		Id : in Tabula.Villages.Village_Id)
 	is
 		Form : Forms.Full.Form_Type := Forms.Full.Create;
+		Template : Web.Producers.Template :=
+			R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all);
 		Village : aliased Vampire.Villages.Village_Type;
 	begin
 		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => False);
@@ -45,7 +48,7 @@ package body Vampire.Log is
 				R3.Village_Page (
 					Ada.Streams.Stream_IO.Stream(Output),
 					Form,
-					Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all,
+					Template,
 					Current_Directory => Configurations.Villages_HTML_Directory,
 					HTML_Directory => Configurations.Villages_HTML_Directory,
 					Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,

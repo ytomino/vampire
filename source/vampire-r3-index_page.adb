@@ -54,5 +54,5 @@ is
 		end if;
 	end Handle;
 begin
-	Produce (Output, Template, Handler => Handle'Access);
+	Web.Producers.Produce (Output, Read (Template), Handler => Handle'Access);
 end Vampire.R3.Index_Page;

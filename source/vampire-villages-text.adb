@@ -152,20 +152,22 @@ package body Vampire.Villages.Text is
 	
 	function Breakdown (Village : Village_Type) return String is
 	begin
-		if Village.Execution not in From_Seconds then
-			return Stages (Stage (Village)).Breakdown.all & Line_Break & For_Execution_Message;
-		else
-			return Stages (Stage (Village)).Breakdown.all;
-		end if;
+		case Village.Execution is
+			when Dummy_Killed_And_From_First | From_First =>
+				return Stages (Stage (Village)).Breakdown.all & Line_Break & For_Execution_Message;
+			when From_Second =>
+				return Stages (Stage (Village)).Breakdown.all;
+		end case;
 	end Breakdown;
 	
 	function For_Execution_In_Second (Village : Village_Type) return String is
 	begin
-		if Village.Execution in From_Seconds then
-			return For_Execution_Message;
-		else
-			return "";
-		end if;
+		case Village.Execution is
+			when Dummy_Killed_And_From_First | From_First =>
+				return "";
+			when From_Second =>
+				return For_Execution_Message;
+		end case;
 	end For_Execution_In_Second;
 	
 	-- 進行
@@ -408,10 +410,11 @@ package body Vampire.Villages.Text is
 				else
 					V := P.Records.Constant_Reference (Day).Element.Vote;
 				end if;
-				if V in Village.People.First_Index .. Village.People.Last_Index and then (
-					Village.State >= Epilogue or else
-					Player_Index = I or else
-					Provisional_Voting (Village.Execution))
+				if V in Village.People.First_Index .. Village.People.Last_Index
+					and then (
+						Village.State >= Epilogue
+						or else Player_Index = I
+						or else Village.Vote = Preliminary_And_Final)
 				then
 					declare
 						T : Person_Type renames Village.People.Constant_Reference (V).Element.all;

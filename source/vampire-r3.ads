@@ -2,21 +2,17 @@
 -- renderer ver.3
 with Ada.Calendar;
 with Ada.Streams;
+with Web.Producers;
 with Tabula.Villages.Lists;
 with Vampire.Forms;
-private with Web.Producers;
 package Vampire.R3 is
 	
-private
-	
-	procedure Produce (
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
+	function Read (
 		Template_Source : in String;
-		Template_Cache : in String := "";
-		Handler : not null access procedure (
-			Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String;
-			Contents : Web.Producers.Template));
+		Template_Cache : in String := "")
+		return Web.Producers.Template;
+	
+private
 	
 	function Day_Name (
 		Day : Natural;
@@ -51,6 +47,7 @@ private
 		Template : in Web.Producers.Template;
 		Tag : in String := "";
 		Form : in Forms.Root_Form_Type'Class;
+		Current_Directory : in String;
 		Image_Directory : in String;
 		Subject : in Tabula.Villages.Person_Type'Class;
 		Text : in String;

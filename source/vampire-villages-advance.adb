@@ -247,16 +247,16 @@ begin
 							Daytime_To_Vote := True;
 							if Village.Day_Duration >= 24 * 60 * 60.0
 								or else Vote_Finished (Village)
-								or else not Village.Be_Voting
+								or else not Village.For_Voting (Village.Today)
 							then
 								Vote_To_Night := True;
 								if Village.Night_Duration = 0.0 then
 									Night_To_Daytime := True;
 								end if;
 							end if;
-						elsif Villages.Provisional_Voting (Village.Execution) and then
-							Now >= Village.Provisional_Voting_Time and then
-							not Village.Provisional_Voted
+						elsif Village.Vote = Preliminary_And_Final
+							and then Now >= Village.Provisional_Voting_Time
+							and then not Village.Provisional_Voted
 						then
 							Provisional_Voting := True;
 						end if;
