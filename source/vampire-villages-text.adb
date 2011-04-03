@@ -153,7 +153,7 @@ package body Vampire.Villages.Text is
 	function Breakdown (Village : Village_Type) return String is
 	begin
 		case Village.Execution is
-			when Dummy_Killed_And_From_First | From_First =>
+			when Dummy_Killed_And_From_First | Infection_And_From_First | From_First =>
 				return Stages (Stage (Village)).Breakdown.all & Line_Break & For_Execution_Message;
 			when From_Second =>
 				return Stages (Stage (Village)).Breakdown.all;
@@ -163,7 +163,7 @@ package body Vampire.Villages.Text is
 	function For_Execution_In_Second (Village : Village_Type) return String is
 	begin
 		case Village.Execution is
-			when Dummy_Killed_And_From_First | From_First =>
+			when Dummy_Killed_And_From_First | Infection_And_From_First | From_First =>
 				return "";
 			when From_Second =>
 				return For_Execution_Message;
@@ -531,6 +531,8 @@ package body Vampire.Villages.Text is
 					Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
 				begin
 					case Hunter_Message_Kind (Message.Kind) is
+						when Hunter_Guard_No_Response =>
+							return "以前、" & Name (Subject) & "は" & Name (Target) & "を守っていました。";
 						when Hunter_Guard =>
 							return Name (Subject) & "は" & Name (Target) & "を吸血鬼から守り抜きました。 ";
 						when Hunter_Guard_With_Silver =>
@@ -583,8 +585,18 @@ package body Vampire.Villages.Text is
 		else
 			Ada.Strings.Unbounded.Append (Result, Name (Subject) & "は" & Name (Target) & "に目をつけました。 " & Line_Break);
 		end if;
+		case Vampire_Message_Kind (Message.Kind) is
+			when Vampire_Infection_In_First | Vampire_Failed_In_First =>
+				Ada.Strings.Unbounded.Append (Result, "以前、");
+			when others =>
+				null;
+		end case;
 		Ada.Strings.Unbounded.Append (Result, "吸血鬼は" & Name (Target) & "を");
 		case Vampire_Message_Kind (Message.Kind) is
+			when Vampire_Infection_In_First =>
+				Ada.Strings.Unbounded.Append (Result, "感染させています。 ");
+			when Vampire_Failed_In_First =>
+				Ada.Strings.Unbounded.Append (Result, "襲おうとしましたが、何者かに妨げられています。 ");
 			when Vampire_Murder =>
 				Ada.Strings.Unbounded.Append (Result, "襲いました。 ");
 			when Vampire_Murder_And_Killed =>
@@ -600,6 +612,11 @@ package body Vampire.Villages.Text is
 		end case;
 		return Result.Constant_Reference.Element.all;
 	end Vampire_Murder_Message;
+	
+	function Vampire_Infection_In_First_Public_Message (Village : Village_Type) return String is
+	begin
+		return "不穏な予感がします。 他にも吸血鬼に襲われた人がいないでしょうか？ ";
+	end Vampire_Infection_In_First_Public_Message;
 	
 	function Awareness (Village : Village_Type; Message : Villages.Message)
 		return String

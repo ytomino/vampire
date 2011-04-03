@@ -225,12 +225,9 @@ package body Vampire.Villages.Teaming is
 		Servant_Count : Servant_Count_Type := 0;
 		Gremlin_Count : Gremlin_Count_Type := 0;
 	begin
-		case Execution is
-			when Dummy_Killed_And_From_First | From_First =>
-				null;
-			when From_Second =>
-				People_Count_2 := People_Count_2 - 1;
-		end case;
+		if Execution = From_Second then
+			People_Count_2 := People_Count_2 - 1;
+		end if;
 		case Teaming is
 			when Low_Density =>
 				if People_Count_2 >= 16 then

@@ -28,7 +28,7 @@ package Vampire.Villages is
 	-- オプションルール
 	
 	type Vote_Mode is (Unsigned, Preliminary_And_Final);
-	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second);
+	type Execution_Mode is (Dummy_Killed_And_From_First, Infection_And_From_First, From_First, From_Second);
 	type Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
@@ -154,12 +154,15 @@ package Vampire.Villages is
 		Awareness,                        -- 自覚
 		Astronomer_Observation,           -- 観測
 		Meeting,                          -- 吸血鬼の会話
+		Vampire_Infection_In_First,       -- 初日の感染
+		Vampire_Failed_In_First,          -- 初日の感染に失敗
 		Vampire_Murder,                   -- 襲撃
 		Vampire_Murder_And_Killed,        -- 襲撃に成功し相打ちで銀の弾丸を撃ちこまれた
 		Vampire_Infection,                -- 感染
 		Vampire_Infection_And_Killed,     -- 感染に成功し相打ちで銀の弾丸を撃ちこまれた
 		Vampire_Failed,                   -- 襲撃に失敗
 		Vampire_Failed_And_Killed,        -- 襲撃に失敗し銀の弾丸を撃ちこまれた
+		Hunter_Guard_No_Response,         -- 護衛していた(手応えなし)
 		Hunter_Guard,                     -- 護衛に成功した
 		Hunter_Guard_With_Silver,         -- 護衛に成功し銀の弾丸を撃ちこんだ
 		Hunter_Nothing_With_Silver,       -- 銀の弾丸を込めていたが何も無かった
@@ -180,8 +183,8 @@ package Vampire.Villages is
 	
 	subtype Doctor_Message_Kind is Message_Kind range Doctor_Cure .. Doctor_Found_Gremlin_Preview;
 	subtype Detective_Message_Kind is Message_Kind range Detective_Survey .. Detective_Survey_Victim;
-	subtype Hunter_Message_Kind is Message_Kind range Hunter_Guard .. Hunter_Failed_With_Silver;
-	subtype Vampire_Message_Kind is Message_Kind range Vampire_Murder .. Vampire_Failed_And_Killed;
+	subtype Hunter_Message_Kind is Message_Kind range Hunter_Guard_No_Response .. Hunter_Failed_With_Silver;
+	subtype Vampire_Message_Kind is Message_Kind range Vampire_Infection_In_First .. Vampire_Failed_And_Killed;
 	subtype Servant_Message_Kind is Message_Kind range Servant_Knew_Vampire_K .. Servant_Knew_Vampires;
 	
 	type Message is record
@@ -252,6 +255,7 @@ package Vampire.Villages is
 	
 	-- 更新予定時刻
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
+	function Infection_In_First_Time (Village : Village_Type) return Ada.Calendar.Time;
 	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time;
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
 	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
@@ -309,6 +313,7 @@ package Vampire.Villages is
 		Time : in Ada.Calendar.Time);
 	
 	-- 能力者
+	function Infected_In_First (Village : Village_Type) return Boolean;
 	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
 	function Find_Superman (Village : Village_Type; Role : Person_Role) return Person_Index'Base;
 	function Target_Day (Village : Village_Type) return Integer;
@@ -317,8 +322,7 @@ package Vampire.Villages is
 	function Detective_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
 	function Doctor_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
 	function Superman_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
-	function Can_Use_Silver_Bullet (Village : Village_Type; Subject : Person_Index) return Boolean;
-	function Unfortunate (Village : Village_Type) return Boolean;
+	function Silver_Bullet_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;

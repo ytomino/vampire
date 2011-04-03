@@ -36,6 +36,7 @@ procedure Vampire.Main is
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Term;
 	use type Forms.Base_Page;
+	use type Villages.Ability_Status;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -1118,7 +1119,7 @@ begin
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 									begin
-										if Special and then not Village.Can_Use_Silver_Bullet (Player) then
+										if Special and then Village.Silver_Bullet_Status (Player) /= Villages.Allowed then
 											Message_Page ("銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
 											and then Village.People.Constant_Reference(Player).Element.Role in Villages.Daytime_Role

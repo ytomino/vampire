@@ -83,6 +83,8 @@ package Vampire.Villages.Text is
 		Executed : Person_Index'Base)
 		return String;
 	
+	function Vampire_Infection_In_First_Public_Message (Village : Village_Type) return String;
+	
 	-- 感染自覚
 	function Awareness (Village : Village_Type; Message : Villages.Message)
 		return String;

@@ -1148,9 +1148,14 @@ is
 											end loop;
 										end if;
 									when Vampire.Villages.Vampire_Message_Kind =>
-										if Village.State >= Epilogue or else (Player_Index >= 0 and then (Message.Subject = Player_Index or else (
-											Village.People.Constant_Reference(Message.Subject).Element.Role in Vampire.Villages.Vampire_Role
-											and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role)))
+										if Message.Kind in Vampire_Infection_In_First .. Vampire_Failed_In_First then
+											Narration (Villages.Text.Vampire_Infection_In_First_Public_Message (Village));
+										end if;
+										if Village.State >= Epilogue
+											or else (Player_Index /= No_Person
+												and then (Message.Subject = Player_Index
+													or else (Village.People.Constant_Reference (Message.Subject).Element.Role in Vampire_Role
+														and then Village.People.Constant_Reference (Player_Index).Element.Role in Vampire_Role)))
 										then
 											Narration (
 												Villages.Text.Vampire_Murder_Message (Village, Message, Executed),
@@ -1634,15 +1639,24 @@ is
 												"どの家の上空の星が奇麗……",
 												"観測");
 										when Vampire.Villages.Hunter =>
-											Vote_Form (
-												Output,
-												Player_Index,
-												Vampire.Villages.Hunter,
-												Village.Can_Use_Silver_Bullet (Player_Index),
-												Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
-												Person.Records.Constant_Reference (Village.Target_Day).Element.Special,
-												"誰を守りますか……",
-												"護衛");
+											declare
+												Silver_Bullet_Status : constant Ability_Status := Village.Silver_Bullet_Status (Player_Index);
+											begin
+												Vote_Form (
+													Output,
+													Player_Index,
+													Vampire.Villages.Hunter,
+													Silver_Bullet_Status = Allowed,
+													Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
+													Person.Records.Constant_Reference (Village.Target_Day).Element.Special,
+													"誰を守りますか……",
+													"護衛");
+												if Silver_Bullet_Status = Disallowed then
+													String'Write (Output, "<div>");
+													Forms.Write_In_HTML (Output, Form, "銀の弾丸はまだとっておきましょう。");
+													String'Write (Output, "</div>");
+												end if;
+											end;
 										when Vampire.Villages.Vampire_Role =>
 											Vote_Form (Output, Player_Index, Vampire.Villages.Vampire_K, False,
 												Person.Records.Constant_Reference (Village.Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");

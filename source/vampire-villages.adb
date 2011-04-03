@@ -20,6 +20,30 @@ package body Vampire.Villages is
 			and then Left.Text = Right.Text;
 	end Equivalent_Messages;
 	
+	function Unfortunate (Village : Village_Type) return Boolean is
+		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
+	begin
+		if The_Unfortunate_Inhabitant < 0 then
+			return False;
+		else
+			for I in 1 .. Village.Today loop
+				if Village.People.Constant_Reference(The_Unfortunate_Inhabitant).Element.Records.Constant_Reference(I).Element.State /= Normal then
+					return False;
+				end if;
+			end loop;
+			if Village.Today > 1 then
+				declare
+					Counts : Message_Counts renames Count_Messages(Village, Village.Today - 1);
+				begin
+					if Counts(The_Unfortunate_Inhabitant).Speech = 0 then
+						return False;
+					end if;
+				end;
+			end if;
+			return True;
+		end if;
+	end Unfortunate;
+	
 	-- bodies
 	
 	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
@@ -111,6 +135,11 @@ package body Vampire.Villages is
 	begin
 		return Village.Dawn + Village.Night_Duration;
 	end Night_To_Daytime;
+	
+	function Infection_In_First_Time (Village : Village_Type) return Ada.Calendar.Time is
+	begin
+		return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
+	end Infection_In_First_Time;
 	
 	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
 	begin
@@ -257,7 +286,7 @@ package body Vampire.Villages is
 			return False;
 		else
 			case Village.Execution is
-				when Dummy_Killed_And_From_First | From_First =>
+				when Dummy_Killed_And_From_First | Infection_And_From_First | From_First =>
 					return Day >= 1;
 				when From_Second =>
 					return Day >= 2;
@@ -461,6 +490,22 @@ package body Vampire.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Gaze;
 	
+	function Infected_In_First (Village : Village_Type) return Boolean is
+		pragma Assert (Village.Today = 1);
+	begin
+		for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
+			begin
+				exit when It.Day /= Village.Today;
+				if It.Kind in Vampire_Infection_In_First .. Vampire_Failed_In_First then
+					return True;
+				end if;
+			end;
+		end loop;
+		return False;
+	end Infected_In_First;
+	
 	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean is
 	begin
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
@@ -523,7 +568,10 @@ package body Vampire.Villages is
 			and then Subject_Person.Records.Constant_Reference (Village.Today).Element.Target /= No_Person
 		then
 			return Already_Used;
-		elsif Village.Time /= Night and then Village.Today >= 2 then
+		elsif Village.Time /= Night
+			and then (Village.Today >= 2
+				or else (Village.Today = 1 and then Village.Infected_In_First))
+		then
 			return Allowed;
 		else
 			return Disallowed;
@@ -540,35 +588,20 @@ package body Vampire.Villages is
 		end case;
 	end Superman_Status;
 	
-	function Can_Use_Silver_Bullet (Village : Village_Type; Subject : Person_Index) return Boolean is
+	function Silver_Bullet_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
 		pragma Assert (Village.People.Constant_Reference (Subject).Element.Role = Hunter);
 	begin
-		return not Village.Already_Used_Special (Subject);
-	end Can_Use_Silver_Bullet;
-	
-	function Unfortunate (Village : Village_Type) return Boolean is
-		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
-	begin
-		if The_Unfortunate_Inhabitant < 0 then
-			return False;
+		if Village.Already_Used_Special (Subject) then
+			return Already_Used;
+		elsif Village.Execution = Infection_And_From_First
+			and then Village.Today = 1
+			and then not Village.Infected_In_First
+		then
+			return Disallowed;
 		else
-			for I in 1 .. Village.Today loop
-				if Village.People.Constant_Reference(The_Unfortunate_Inhabitant).Element.Records.Constant_Reference(I).Element.State /= Normal then
-					return False;
-				end if;
-			end loop;
-			if Village.Today > 1 then
-				declare
-					Counts : Message_Counts renames Count_Messages(Village, Village.Today - 1);
-				begin
-					if Counts(The_Unfortunate_Inhabitant).Speech = 0 then
-						return False;
-					end if;
-				end;
-			end if;
-			return True;
+			return Allowed;
 		end if;
-	end Unfortunate;
+	end Silver_Bullet_Status;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;
@@ -1053,6 +1086,11 @@ package body Vampire.Villages is
 					Execution_Mode'Image (Dummy_Killed_And_From_First),
 					Item.Village.Execution = Dummy_Killed_And_From_First,
 					"能力者が死亡済みの可能性があります。",
+					False);
+				Process (
+					Execution_Mode'Image (Infection_And_From_First),
+					Item.Village.Execution = Infection_And_From_First,
+					"誰かが感染させられ、初日から処刑を行います。",
 					False);
 				Process (
 					Execution_Mode'Image (From_First),
