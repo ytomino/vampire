@@ -1110,6 +1110,11 @@ package body Vampire.Villages is
 					"能力者の密度を線形にします。",
 					False);
 				Process (
+					Teaming_Mode'Image (Liner_2),
+					Item.Village.Teaming = Liner_2,
+					"線形Mk.Ⅱ(初日感染者用暫定)",
+					False);
+				Process (
 					Teaming_Mode'Image (Shuffling_Headless),
 					Item.Village.Teaming = Shuffling_Headless,
 					"村側能力者を増やします(首無し騎士に似せます)。",

@@ -9,7 +9,8 @@ package body Vampire.Villages.Teaming is
 		Execution : Execution_Mode;
 		Teaming : Teaming_Mode;
 		Unfortunate : Unfortunate_Mode;
-		Monster_Side : Monster_Side_Mode) return Role_Set_Array
+		Monster_Side : Monster_Side_Mode)
+		return Role_Set_Array
 	is
 		Result : Role_Set_Array (1 .. 2 ** (Role_Set'Length - 2));
 		Last : Natural := 0;
@@ -124,7 +125,7 @@ package body Vampire.Villages.Teaming is
 			if Village_Side_Superman_Count > 0
 				and then (
 					Set (Astronomer) = 0
-					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) >= 3)
+					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 3)
 			then
 				Set_2 (Hunter) := 1;
 				Process_Doctor (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
@@ -259,6 +260,35 @@ package body Vampire.Villages.Teaming is
 				if People_Count_2 >= 16 then
 					Gremlin_Count := 1;
 				end if;
+			when Liner_2 =>
+				if People_Count_2 >= 15 then
+					Village_Side_Superman_Count := 5;
+				elsif People_Count_2 >= 13 then
+					Village_Side_Superman_Count := 4;
+				elsif People_Count_2 >= 11 then
+					Village_Side_Superman_Count := 3;
+				elsif People_Count_2 >= 9 then
+					Village_Side_Superman_Count := 2;
+				else
+					Village_Side_Superman_Count := 1;
+				end if;
+				if People_Count_2 >= 14 then
+					Vampire_Count := 3;
+					Servant_Count := 1;
+				elsif People_Count_2 >= 12 then
+					Vampire_Count := 3;
+				elsif People_Count_2 >= 10 then
+					Vampire_Count := 2;
+					Servant_Count := 1;
+				elsif People_Count_2 >= 8 then
+					Vampire_Count := 2;
+				else
+					Vampire_Count := 1;
+					Servant_Count := 1;
+				end if;
+				if People_Count_2 >= 16 then
+					Gremlin_Count := 1;
+				end if;
 			when Shuffling_Headless =>
 				if People_Count_2 >= 15 then
 					Village_Side_Superman_Count := 6;
@@ -377,10 +407,19 @@ package body Vampire.Villages.Teaming is
 		if Teaming in Hidings then
 			Village_Side_Superman_Count := Village_Side_Superman_Count + 1;
 		end if;
+		if Monster_Side = Gremlin then
+			declare
+				T : constant Natural := Servant_Count;
+			begin
+				Servant_Count := Gremlin_Count;
+				Gremlin_Count := T;
+			end;
+		end if;
 		declare
 			Zero_Set : constant Role_Set := (others => 0);
 		begin
-			Process_Gremlin (Zero_Set,
+			Process_Gremlin (
+				Zero_Set,
 				Village_Side_Superman_Count,
 				Vampire_Count,
 				Servant_Count,

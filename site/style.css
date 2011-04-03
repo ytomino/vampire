@@ -112,6 +112,7 @@ table.rule input, table.rule select {
 	color:white;
 }
 
+table.rule select option,
 form.narration option,
 form.rule option {
 	background-color:black;

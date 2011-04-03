@@ -29,7 +29,7 @@ package Vampire.Villages is
 	
 	type Vote_Mode is (Unsigned, Preliminary_And_Final);
 	type Execution_Mode is (Dummy_Killed_And_From_First, From_First, From_Second);
-	type Teaming_Mode is (Low_Density, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
 	type Monster_Side_Mode is (Fixed, Shuffling, Gremlin);

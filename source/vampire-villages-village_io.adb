@@ -118,7 +118,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "night-duration", Village.Night_Duration);
 			IO (Serializer, "vote", Village.Vote, Default => Unsigned);
 			IO (Serializer, "execution", Village.Execution, Default => From_First);
-			IO (Serializer, "teaming", Village.Teaming, Default => Shuffling_Headless);
+			IO (Serializer, "teaming", Village.Teaming);
 			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
 			IO (Serializer, "attack", Village.Attack, Default => Two);
 			IO (Serializer, "servant-knowing", Village.Servant_Knowing, Default => None);
