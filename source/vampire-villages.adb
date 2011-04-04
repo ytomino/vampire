@@ -80,7 +80,7 @@ package body Vampire.Villages is
 			Night_Duration => Default_Night_Duration,
 			Vote => Initial_Vote,
 			Execution => Initial_Execution,
-			Teaming => Initial_Teaming,
+			Formation => Initial_Formation,
 			Monster_Side => Initial_Monster_Side,
 			Attack => Initial_Attack,
 			Servant_Knowing => Initial_Servant_Knowing,
@@ -88,6 +88,7 @@ package body Vampire.Villages is
 			Doctor_Infected => Initial_Doctor_Infected,
 			Hunter_Silver_Bullet => Initial_Hunter_Silver_Bullet,
 			Unfortunate => Initial_Unfortunate,
+			Obsolete_Teaming => Initial_Obsolete_Teaming,
 			Appearance => (others => Random),
 			Dummy_Role => Inhabitant,
 			People => People.Empty_Vector,
@@ -843,7 +844,7 @@ package body Vampire.Villages is
 		Process (Options.Night_Duration.Option_Item'(Village => Village'Access));
 		Process (Options.Vote.Option_Item'(Village => Village'Access));
 		Process (Options.Execution.Option_Item'(Village => Village'Access));
-		Process (Options.Teaming.Option_Item'(Village => Village'Access));
+		Process (Options.Formation.Option_Item'(Village => Village'Access));
 		Process (Options.Monster_Side.Option_Item'(Village => Village'Access));
 		Process (Options.Attack.Option_Item'(Village => Village'Access));
 		Process (Options.Servant_Knowing.Option_Item'(Village => Village'Access));
@@ -1075,11 +1076,18 @@ package body Vampire.Villages is
 			begin
 				pragma Assert (V'Access = Item.Village);
 				V.Execution := Execution_Mode'Value (Value);
+				-- 記録用
+				case V.Execution is
+					when Dummy_Killed_And_From_First | From_First | From_Second =>
+						V.Obsolete_Teaming := Shuffling;
+					when Infection_And_From_First =>
+						V.Obsolete_Teaming := Liner_2;
+				end case;
 			end Change;
 			
 		end Execution;
 		
-		package body Teaming is
+		package body Formation is
 			
 			overriding function Available (Item : Option_Item) return Boolean is
 			begin
@@ -1093,7 +1101,7 @@ package body Vampire.Villages is
 			
 			overriding function Changed (Item : Option_Item) return Boolean is
 			begin
-				return Item.Village.Teaming /= Initial_Teaming;
+				return Item.Village.Formation /= Initial_Formation;
 			end Changed;
 			
 			overriding procedure Iterate (
@@ -1105,44 +1113,14 @@ package body Vampire.Villages is
 					Unrecommended : in Boolean)) is
 			begin
 				Process (
-					Teaming_Mode'Image (Low_Density),
-					Item.Village.Teaming = Low_Density,
-					"能力者の密度を線形にします。",
+					Formation_Mode'Image (Public),
+					Item.Village.Formation = Public,
+					"村側能力者の構成を公開します。",
 					False);
 				Process (
-					Teaming_Mode'Image (Liner_2),
-					Item.Village.Teaming = Liner_2,
-					"線形Mk.Ⅱ(初日感染者用暫定)",
-					False);
-				Process (
-					Teaming_Mode'Image (Shuffling_Headless),
-					Item.Village.Teaming = Shuffling_Headless,
-					"村側能力者を増やします(首無し騎士に似せます)。",
-					Unrecommended => True);
-				Process (
-					Teaming_Mode'Image (Shuffling_Euro),
-					Item.Village.Teaming = Shuffling_Euro,
-					"妖魔が早く出ます(欧州に似せます)。",
-					False);
-				Process (
-					Teaming_Mode'Image (Shuffling),
-					Item.Village.Teaming = Shuffling,
-					"基本的な編成です。",
-					False);
-				Process (
-					Teaming_Mode'Image (Shuffling_Gremlin),
-					Item.Village.Teaming = Shuffling_Gremlin,
-					"基本的な編成に加え、妖魔が早く出ます。",
-					False);
-				Process (
-					Teaming_Mode'Image (Hiding),
-					Item.Village.Teaming = Hiding,
+					Formation_Mode'Image (Hidden),
+					Item.Village.Formation = Hidden,
 					"村側能力者の構成はわかりません。",
-					False);
-				Process (
-					Teaming_Mode'Image (Hiding_Gremlin),
-					Item.Village.Teaming = Hiding_Gremlin,
-					"村側能力者の構成はわからず、妖魔が早く出ます。",
 					False);
 			end Iterate;
 			
@@ -1154,10 +1132,10 @@ package body Vampire.Villages is
 				V : Village_Type renames Village_Type (Village);
 			begin
 				pragma Assert (V'Access = Item.Village);
-				V.Teaming := Teaming_Mode'Value (Value);
+				V.Formation := Formation_Mode'Value (Value);
 			end Change;
 			
-		end Teaming;
+		end Formation;
 		
 		package body Monster_Side is
 			

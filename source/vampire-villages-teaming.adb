@@ -7,7 +7,7 @@ package body Vampire.Villages.Teaming is
 		People_Count : Ada.Containers.Count_Type;
 		Male_And_Female : Boolean;
 		Execution : Execution_Mode;
-		Teaming : Teaming_Mode;
+		Formation : Formation_Mode;
 		Unfortunate : Unfortunate_Mode;
 		Monster_Side : Monster_Side_Mode)
 		return Role_Set_Array
@@ -140,7 +140,7 @@ package body Vampire.Villages.Teaming is
 			Set_2 : Role_Set := Set;
 		begin
 			if Village_Side_Superman_Count = 0
-				or else Teaming not in Hidings
+				or else Formation /= Hidden
 			then
 				Process_Hunter (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			end if;
@@ -228,39 +228,9 @@ package body Vampire.Villages.Teaming is
 		if Execution = From_Second then
 			People_Count_2 := People_Count_2 - 1;
 		end if;
-		case Teaming is
-			when Low_Density =>
-				if People_Count_2 >= 16 then
-					Village_Side_Superman_Count := 6;
-				elsif People_Count_2 >= 14 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 12 then
-					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 10 then
-					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 8 then
-					Village_Side_Superman_Count := 2;
-				else
-					Village_Side_Superman_Count := 1;
-				end if;
+		case Execution is
+			when Infection_And_From_First =>
 				if People_Count_2 >= 15 then
-					Vampire_Count := 3;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 11 then
-					Vampire_Count := 2;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 7 then
-					Vampire_Count := 2;
-				else
-					Vampire_Count := 1;
-				end if;
-				if People_Count_2 >= 16 then
-					Gremlin_Count := 1;
-				end if;
-			when Liner_2 =>
-				if People_Count_2 >= 15 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 13 then
 					Village_Side_Superman_Count := 4;
 				elsif People_Count_2 >= 11 then
 					Village_Side_Superman_Count := 3;
@@ -286,59 +256,7 @@ package body Vampire.Villages.Teaming is
 				if People_Count_2 >= 16 then
 					Gremlin_Count := 1;
 				end if;
-			when Shuffling_Headless =>
-				if People_Count_2 >= 15 then
-					Village_Side_Superman_Count := 6;
-				elsif People_Count_2 >= 12 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 10 then
-					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 8 then
-					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 = 7 then
-					Village_Side_Superman_Count := 2;
-				else
-					Village_Side_Superman_Count := 1;
-				end if;
-				if People_Count_2 >= 14 then
-					Vampire_Count := 3;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 9 then
-					Vampire_Count := 2;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 7 then
-					Vampire_Count := 2;
-				else
-					Vampire_Count := 1;
-				end if;
-				if People_Count_2 >= 16 then
-					Gremlin_Count := 1;
-				end if;
-			when Shuffling_Euro =>
-				if People_Count_2 >= 16 then
-					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 10 then
-					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 8 then
-					Village_Side_Superman_Count := 2;
-				else
-					Village_Side_Superman_Count := 1;
-				end if;
-				if People_Count_2 >= 15 then
-					Vampire_Count := 3;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 9 then
-					Vampire_Count := 2;
-					Servant_Count := 1;
-				elsif People_Count_2 >= 7 then
-					Vampire_Count := 2;
-				else
-					Vampire_Count := 1;
-				end if;
-				if People_Count_2 >= 11 then
-					Gremlin_Count := 1;
-				end if;
-			when Shuffling | Hiding =>
+			when Dummy_Killed_And_From_First | From_First | From_Second =>
 				if People_Count_2 >= 15 then
 					Village_Side_Superman_Count := 5;
 				elsif People_Count_2 >= 13 then
@@ -367,42 +285,11 @@ package body Vampire.Villages.Teaming is
 					Vampire_Count := 1;
 				end if;
 				if People_Count_2 >= 16 then
-					Gremlin_Count := 1;
-				end if;
-			when Shuffling_Gremlin | Hiding_Gremlin =>
-				if People_Count_2 >= 15 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 13 then
-					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 10 then
-					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 8 then
-					Village_Side_Superman_Count := 2;
-				else
-					Village_Side_Superman_Count := 1;
-				end if;
-				if People_Count_2 >= 14 then
-					Vampire_Count := 3;
-					Servant_Count := 1;
-				elsif People_Count_2 = 13 then
-					Vampire_Count := 3;
-				elsif People_Count_2 >= 9 then
-					Vampire_Count := 2;
-					Servant_Count := 1;
-				elsif People_Count_2 = 8 then
-					Vampire_Count := 2;
-				elsif People_Count_2 = 7 then
-					Vampire_Count := 1;
-					Servant_Count := 1;
-				else
-					Vampire_Count := 1;
-				end if;
-				if People_Count_2 >= 11 then
 					Gremlin_Count := 1;
 				end if;
 		end case;
 		-- 編成隠し時能力者+1
-		if Teaming in Hidings then
+		if Formation = Hidden then
 			Village_Side_Superman_Count := Village_Side_Superman_Count + 1;
 		end if;
 		-- カップル作成不可能の場合は能力者の種類が足りなくなる

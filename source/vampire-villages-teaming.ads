@@ -9,7 +9,7 @@ package Vampire.Villages.Teaming is
 		People_Count : Ada.Containers.Count_Type;
 		Male_And_Female : Boolean;
 		Execution : Execution_Mode;
-		Teaming : Teaming_Mode;
+		Formation : Formation_Mode;
 		Unfortunate : Unfortunate_Mode;
 		Monster_Side : Monster_Side_Mode) return Role_Set_Array;
 	

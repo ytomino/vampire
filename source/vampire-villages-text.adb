@@ -62,6 +62,20 @@ package body Vampire.Villages.Text is
 		end case;
 	end Short_Image;
 	
+	function Image (Teaming : Obsolete_Teaming_Mode) return String is
+	begin
+		case Teaming is
+			when Low_Density =>        return "線形Mk.Ⅰ(旧標準ver.1)";
+			when Liner_2 =>            return "線形Mk.Ⅱ(初日感染者用)";
+			when Shuffling_Headless => return "首なし騎士似(旧標準ver.2)";
+			when Shuffling_Euro =>     return "欧州似";
+			when Shuffling =>          return "標準ver.3";
+			when Shuffling_Gremlin =>  return "標準ver.3+妖魔早め";
+			when Hiding =>             return "標準ver.3+構成非公開";
+			when Hiding_Gremlin =>     return "標準ver.3+構成非公開+妖魔早め";
+		end case;
+	end Image;
+	
 	-- 参加
 	
 	function Join (Village : Village_Type; Message : Villages.Message)
@@ -244,32 +258,33 @@ package body Vampire.Villages.Text is
 		for Position in Village.People.First_Index .. Village.People.Last_Index loop
 			Countup (Village.People.Constant_Reference (Position).Element.Role);
 		end loop;
-		if Village.Teaming in Hidings then
-			Ada.Strings.Unbounded.Append (Result, Image (Village_Side_Capabilityperson));
-			Ada.Strings.Unbounded.Append (Result, "人の能力者");
-		else
-			if Detective then
-				Ada.Strings.Unbounded.Append (Result, "、探偵");
-			end if;
-			if Astronomer then
-				Ada.Strings.Unbounded.Append (Result, "、天文家");
-			end if;
-			if Doctor then
-				Ada.Strings.Unbounded.Append (Result, "、医者");
-			end if;
-			if Hunter then
-				Ada.Strings.Unbounded.Append (Result, "、猟師");
-			end if;
-			if Lover then
-				Ada.Strings.Unbounded.Append (Result, "、片想い");
-			end if;
-			if Sweetheart then
-				Ada.Strings.Unbounded.Append (Result, "、恋人");
-			end if;
-			if Unfortunate then
-				Ada.Strings.Unbounded.Append (Result, "、数奇な運命の村人");
-			end if;
-		end if;
+		case Village.Formation is
+			when Hidden =>
+				Ada.Strings.Unbounded.Append (Result, Image (Village_Side_Capabilityperson));
+				Ada.Strings.Unbounded.Append (Result, "人の能力者");
+			when Public =>
+				if Detective then
+					Ada.Strings.Unbounded.Append (Result, "、探偵");
+				end if;
+				if Astronomer then
+					Ada.Strings.Unbounded.Append (Result, "、天文家");
+				end if;
+				if Doctor then
+					Ada.Strings.Unbounded.Append (Result, "、医者");
+				end if;
+				if Hunter then
+					Ada.Strings.Unbounded.Append (Result, "、猟師");
+				end if;
+				if Lover then
+					Ada.Strings.Unbounded.Append (Result, "、片想い");
+				end if;
+				if Sweetheart then
+					Ada.Strings.Unbounded.Append (Result, "、恋人");
+				end if;
+				if Unfortunate then
+					Ada.Strings.Unbounded.Append (Result, "、数奇な運命の村人");
+				end if;
+		end case;
 		Ada.Strings.Unbounded.Append (Result, "がいます。 ");
 		if Village.Monster_Side = Shuffling then
 			Ada.Strings.Unbounded.Append (Result, "吸血鬼の全貌はわかりません……。 ");

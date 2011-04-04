@@ -60,7 +60,7 @@ div.bar {
 	float:right;
 	min-width:10%;
 	max-width:50%;
-	margin-left:2em;
+	margin-left:32px;
 	margin-bottom:2em;
 	z-index:0;
 	position:relative;

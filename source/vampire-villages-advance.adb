@@ -383,7 +383,7 @@ begin
 						People_Count => Village.People.Length,
 						Male_And_Female => Village.Male_And_Female,
 						Execution => Village.Execution,
-						Teaming => Village.Teaming,
+						Formation => Village.Formation,
 						Unfortunate => Village.Unfortunate,
 						Monster_Side => Village.Monster_Side);
 					Set : Teaming.Role_Set renames Teaming.Select_Set (

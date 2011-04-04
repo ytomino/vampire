@@ -10,6 +10,8 @@ package Vampire.Villages.Text is
 	function Image (Role : Person_Role) return String;
 	function Short_Image (Role : Person_Role) return String; -- 漢字一文字
 	
+	function Image (Teaming : Obsolete_Teaming_Mode) return String;
+	
 	-- 参加
 	
 	function Join (Village : Village_Type; Message : Villages.Message)

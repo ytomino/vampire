@@ -144,6 +144,23 @@ is
 					end Process;
 				begin
 					Villages.Iterate_Options (Village, Process'Access);
+					if Is_Obsolete_Teaming (Village.Obsolete_Teaming) then
+						declare
+							procedure Handle_Item (
+								Output : not null access Ada.Streams.Root_Stream_Type'Class;
+								Tag : in String;
+								Template : in Web.Producers.Template) is
+							begin
+								if Tag = "current" then
+									Forms.Write_In_HTML (Output, Form, "旧編成「" & Villages.Text.Image (Village.Obsolete_Teaming) & "」です。");
+								else
+									raise Program_Error with "Invalid template """ & Tag & """";
+								end if;
+							end Handle_Item;
+						begin
+							Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
+						end;
+					end if;
 				end;
 			elsif Tag = "changable" then
 				if Changable then
@@ -161,7 +178,7 @@ is
 								People_Count => Village.People.Length,
 								Male_And_Female => Village.Male_And_Female,
 								Execution => Village.Execution,
-								Teaming => Village.Teaming,
+								Formation => Village.Formation,
 								Unfortunate => Village.Unfortunate,
 								Monster_Side => Village.Monster_Side);
 						procedure Handle_Role_Set (

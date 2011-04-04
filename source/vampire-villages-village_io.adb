@@ -94,12 +94,13 @@ package body Vampire.Villages.Village_IO is
 		use Servant_Knowing_IO;
 		use Person_Role_IO;
 		use Monster_Side_IO;
-		use Teaming_IO;
 		use Role_Appearance_IO;
 		use Hunter_Silver_Bullet_IO;
 		use Unfortunate_IO;
 		use Daytime_Preview_IO;
 		use Doctor_Infected_IO;
+		use Formation_IO;
+		use Obsolete_Teaming_IO;
 		procedure Root_Callback is
 			procedure Appearance_Callback is
 			begin
@@ -118,7 +119,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "night-duration", Village.Night_Duration);
 			IO (Serializer, "vote", Village.Vote, Default => Unsigned);
 			IO (Serializer, "execution", Village.Execution, Default => From_First);
-			IO (Serializer, "teaming", Village.Teaming);
+			IO (Serializer, "formation", Village.Formation, Default => Public);
 			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
 			IO (Serializer, "attack", Village.Attack, Default => Two);
 			IO (Serializer, "servant-knowing", Village.Servant_Knowing, Default => None);
@@ -126,6 +127,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "doctor-infected", Village.Doctor_Infected, Default => Cure);
 			IO (Serializer, "hunter-silver-bullet", Village.Hunter_Silver_Bullet, Default => Target_And_Self);
 			IO (Serializer, "unfortunate", Village.Unfortunate, Default => None);
+			IO (Serializer, "teaming", Village.Obsolete_Teaming); -- 記録用
 			if Serializer.Direction = Reading or else Village.Appearance /= Role_Appearances'(others => Random) then
 				IO (Serializer, "appearance", Appearance_Callback'Access);
 			end if;

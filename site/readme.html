@@ -8,19 +8,17 @@
 			.option {display:none; color:#ffffdd}
 			.Duration_Long {display:block}
 			.Duration_Short {display:block}
+			.Vote_all {display:inline}
+			.Vote_Unsigned {display:block}
+			.Vote_Preliminary_And_Final {display:block}
+			.Execution_all {display:inline}
 			.Execution_Dummy_Killed_And_From_First {display:block}
+			.Execution_Infection_And_From_First {display:block}
 			.Execution_From_First {display:block}
-			.Execution_Provisional_Voting_From_First {display:block}
 			.Execution_From_Second {display:block}
-			.Execution_Provisional_Voting_From_Second {display:block}
-			.Teaming_all {display:inline}
-			.Teaming_Low_Density {display:block}
-			.Teaming_Shuffling_Headless {display:block}
-			.Teaming_Shuffling_Euro {display:block}
-			.Teaming_Shuffling {display:block}
-			.Teaming_Shuffling_Gremlin {display:block}
-			.Teaming_Hiding {display:block}
-			.Teaming_Hiding_Gremlin {display:block}
+			.Formation_all {display:inline}
+			.Formation_Public {display:block}
+			.Formation_Hidden {display:block}
 			.Monster_Side_all {display:inline}
 			.Monster_Side_Fixed {display:block}
 			.Monster_Side_Shuffling {display:block}
@@ -69,12 +67,29 @@
 					}
 				}
 			}
+			function floating(){
+				var panel_marginLeft = 32;
+				var panel = document.getElementById("panel");
+				var article = document.getElementById("article");
+				var checkbox = document.getElementById("floating");
+				if(checkbox.checked){
+					var aw = panel.offsetLeft - panel_marginLeft - article.offsetLeft;
+					var pr = window.innerWidth - (panel.offsetLeft + panel.offsetWidth) - 15;
+					panel.style.position = "fixed";
+					panel.style.right = pr + "px";
+					article.style.width = aw + "px";
+				}else{
+					panel.style.position = "relative";
+					panel.style.right = "0px";
+					article.style.width = "";
+				}
+			}
 		//]]>
 		</script>
 	</head>
 	<body background="./image/background.png">
 		<h1>The Village of Vampire</h1>
-		<div class="bar">
+		<div id="panel" class="bar">
 			<table>
 				<tr><td>村の設定に合った説明文のみを表示できます。</td></tr>
 				<tr><td><table class="rule">
@@ -86,25 +101,26 @@
 						</select>
 					</td></tr>
 					<tr><td>
-						<select id="Execution" onchange="sync('Execution')">
-							<option value="" selected="selected">≪処刑≫</option>
-							<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があり、無記名投票で処刑を行います。</option>
-							<option value="From_First">初日から無記名投票で処刑を行います。*</option>
-							<option value="Provisional_Voting_From_First">初日から仮投票と本投票で処刑を行います。</option>
-							<option value="From_Second">2日目から無記名投票で処刑を行います。</option>
-							<option value="Provisional_Voting_From_Second">2日目から仮投票と本投票で処刑を行います。</option>
+						<select id="Vote" onchange="sync('Vote')">
+							<option value="" selected="selected">≪投票≫</option>
+							<option value="Unsigned">無記名投票で処刑を行います。 *</option>
+							<option value="Preliminary_And_Final">仮投票と本投票で処刑を行います。</option>
 						</select>
 					</td></tr>
 					<tr><td>
-						<select id="Teaming" onchange="sync('Teaming')">
-							<option value="" selected="selected">≪編成≫</option>
-							<option value="Low_Density">能力者の密度を線形にします。</option>
-							<option value="Shuffling_Headless">村側能力者を増やします(首無し騎士に似せます)。</option>
-							<option value="Shuffling_Euro">妖魔が早く出ます(欧州に似せます)。</option>
-							<option value="Shuffling">基本的な編成です。*</option>
-							<option value="Shuffling_Gremlin">基本的な編成に加え、妖魔が早く出ます。</option>
-							<option value="Hiding">村側能力者の構成はわかりません。</option>
-							<option value="Hiding_Gremlin">村側能力者の構成はわからず、妖魔が早く出ます。</option>
+						<select id="Execution" onchange="sync('Execution')">
+							<option value="" selected="selected">≪処刑と襲撃の流れ≫</option>
+							<option value="Dummy_Killed_And_From_First">能力者が死亡済みの可能性があります。</option>
+							<option value="Infection_And_From_First">誰かが感染させられ、初日から処刑を行います。</option>
+							<option value="From_First">初日から処刑を行います。 *</option>
+							<option value="From_Second">2日目から処刑を行います。</option>
+						</select>
+					</td></tr>
+					<tr><td>
+						<select id="Formation" onchange="sync('Formation')">
+							<option value="" selected="selected">≪村側の編成≫</option>
+							<option value="Public">村側能力者の構成を公開します。</option>
+							<option value="Hidden">村側能力者の構成はわかりません。</option>
 						</select>
 					</td></tr>
 					<tr><td>
@@ -163,10 +179,11 @@
 						</select>
 					</td></tr>
 				</table></tr></td>
+				<tr><td><input id="floating" type="checkbox" onchange="floating()" /><label for="fixed">パネルを固定<label></td></tr>
 				<tr><td><a href="./">戻る</a></td></tr>
 			</table>
 		</div>
-		<div class="messages">
+		<div id="article" class="messages">
 			<ul class="readme">
 				<li>
 					概要
@@ -190,7 +207,7 @@
 					<ul>
 						<li><a href="#start">ゲーム開始</a></li>
 						<li><a href="#speech">発言</a></li>
-						<li><a href="#vote">投票</a></li>
+						<li><a href="#vote1">投票</a></li>
 						<li><a href="#action">アクション</a></li>
 						<li><a href="#ability">特殊な行動</a></li>
 						<li><a href="#commit">行動を終える</a></li>
@@ -219,8 +236,9 @@
 				<li>
 					オプションルール
 					<ul>
-						<li><a href="#execution">処刑</a></li>
-						<li><a href="#village-teaming">編成</a></li>
+						<li><a href="#vote2">投票</a></li>
+						<li><a href="#execution">処刑と襲撃の流れ</a></li>
+						<li><a href="#formation">村側の編成</a></li>
 						<li><a href="#monster-side">吸血鬼側の編成</a></li>
 						<li><a href="#attack">襲撃</a></li>
 						<li><a href="#servant-knowing">使徒が知っている吸血鬼</a></li>
@@ -279,9 +297,9 @@
 				参加いただいた皆様、ありがとうございます。
 			</p>
 			<p class="narratione">
-				ルールが複雑と思われているかもしれませんが、このルールは、むしろ、だらだらと進行することを目標にデザインしています。
+				このルールは、むしろ、だらだらと進行することを目標にデザインしています。
 				基本的に個人戦指向であり、潜伏指向です。
-				目標が達成できているかは別の話ですが……。
+				目標が達成できているかは別の話としまして……。
 			</p>
 			<h2 id="duration">参加に要する時間</h2>
 			<p>
@@ -425,7 +443,7 @@
 				人狼でたまに使われる、各種の発表を同時刻に行わせることで狂人の連携を断つ作戦を、使いにくくするための措置です。
 				ここでは使徒のみならず、吸血鬼同士も裏での会話ができないため、効果的と思われるかもしれませんが、そういうことをして勝つデザインにはなっていませんのでよろしくお願いします。
 			</p>
-			<h2 id="vote">投票</h2>
+			<h2 id="vote1">投票</h2>
 			<p>
 				毎日、誰を処刑するか、投票があります。
 				こいつが吸血鬼ではないか、という者に対して投票を行ってください。
@@ -433,13 +451,13 @@
 			<p>
 				同数1位が複数いる場合は、その中からランダムで決定されます。
 			</p>
-			<p class="Execution_Dummy_Killed_And_From_First Execution_From_First Execution_From_Second option">
-				投票結果は公開されますが、誰が誰に入れたのかはゲーム終了までわかりません。
+			<p class="Vote_Unsigned option">
+				無記名投票では、投票結果は公開されますが、誰が誰に入れたのかはゲーム終了までわかりません。
 				棄権することもでき、全員が棄権すれば処刑は行われませんが、誰かがこっそり一票でも入れたらそれが有効になりますので、あまり賢い選択ではありません。
 				そして、無記名投票のため、誰がその裏切り者なのかすらわからないのです。
 			</p>
-			<p class="Execution_Provisional_Voting_From_First Execution_Provisional_Voting_From_Second option">
-				オプションで仮投票と本投票の2回に分けて投票を行うようにしている場合は、強制更新時間の半分(通常は24時間、短期では設定によります)が経過すると一次開票が行われます。
+			<p class="Vote_Preliminary_And_Final option">
+				仮投票と本投票の2回に分けて投票を行うようにしている場合は、強制更新時間の半分(通常は24時間、短期では設定によります)が経過すると一次開票が行われます。
 				一次開票の結果、票を集めた上位2名が本投票の候補となり、その日はそれ以外の人に投票できなくなります。
 				候補以外の人に投票していた人は、投票先が棄権に戻っていますので候補の中から投票し直してください。
 				投票結果は誰が誰に入れたのかも含めて全て公開されます。
@@ -559,137 +577,107 @@
 			<p>
 				内訳はランダムですが、参加人数によって、村人が何人、能力者が何人、吸血鬼側が何人いるかは、固定されています。
 				また、人数次第で、第3勢力の妖魔が登場します。
-				編成オプションによって大きく変わりますので、そちらも参照ください。
+				オプションによっても変化します。
 			</p>
 			<p>
-				可能性のある組み合わせは、プロローグの一番下、オプションルールのところに表示されます。
+				可能性のある組み合わせは、プロローグのオプションルールのところに表示されます。
 			</p>
-			<p class="Teaming_Low_Density option">
-				<span class="Teaming_all option">オプション「能力者の密度を線形にします。」選択時の、</span>参加人数と内訳の関係です。
-			</p>
-			<table class="Teaming_Low_Density readmepersons option">
-				<thead>
-					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
-				</thead>
-				<tbody>
-					<tr><td> 7</td><td>4</td><td>1</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 9</td><td>5</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td>10</td><td>5</td><td>3</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>12</td><td>5</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>13</td><td>6</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>14</td><td>6</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>15</td><td>6</td><td>5</td><td>1</td><td>3</td><td>0</td></tr>
-					<tr><td>16</td><td>5</td><td>6</td><td>1</td><td>3</td><td>1</td></tr>
-				</tbody>
-			</table>
-			<p class="Teaming_Shuffling_Headless option">
-				<span class="Teaming_all option">オプション「村側能力者を増やします(首無し騎士に似せます)。」選択時の、</span>参加人数と内訳の関係です。
-			</p>
-			<table class="Teaming_Shuffling_Headless readmepersons option">
-				<thead>
-					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
-				</thead>
-				<tbody>
-					<tr><td> 7</td><td>3</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 8</td><td>3</td><td>3</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 9</td><td>3</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>10</td><td>3</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>11</td><td>4</td><td>4</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>12</td><td>4</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>13</td><td>5</td><td>5</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>14</td><td>5</td><td>5</td><td>1</td><td>3</td><td>0</td></tr>
-					<tr><td>15</td><td>5</td><td>6</td><td>1</td><td>3</td><td>0</td></tr>
-					<tr><td>16</td><td>5</td><td>6</td><td>1</td><td>3</td><td>1</td></tr>
-				</tbody>
-			</table>
-			<p class="Teaming_Shuffling_Euro option">
-				<span class="Teaming_all option">オプション「妖魔が早く出ます(欧州に似せます)。」選択時の、</span>参加人数と内訳の関係です。<br/>
-				<small><sup>*</sup>4人目能力者は本来欧州ではキューピット。</small>
-			</p>
-			<table class="Teaming_Shuffling_Euro readmepersons option">
-				<thead>
-					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td></tr>
-				</thead>
-				<tbody>
-					<tr><td> 7</td><td>4</td><td>1</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td></tr>
-					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td></tr>
-					<tr><td>11</td><td>4</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
-					<tr><td>12</td><td>5</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
-					<tr><td>13</td><td>6</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
-					<tr><td>14</td><td>7</td><td>3</td><td>1</td><td>2</td><td>1</td></tr>
-					<tr><td>15</td><td>7</td><td>3</td><td>1</td><td>3</td><td>1</td></tr>
-					<tr><td>16</td><td>7</td><td>4<sup>*</sup></td><td>1</td><td>3</td><td>1</td></tr>
-				</tbody>
-			</table>
-			<p class="Teaming_Shuffling Teaming_Hiding option">
-				<span class="Teaming_all option">オプション「基本的な編成です。」「村側能力者の構成はわかりません。」選択時の、</span>参加人数と内訳の関係です。<br/>
-				<span class="Teaming_Hiding option">「村側能力者の構成はわかりません。」時は、表から更に、村人がひとり能力者になります。</span>
-			</p>
-			<table class="Teaming_Shuffling Teaming_Hiding readmepersons option">
-				<thead>
-					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
-					<td class="desc">(編成隠し時)</td></tr>
-				</thead>
-				<tbody>
-					<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
-					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
-					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>12</td><td>6</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>13</td><td>6</td><td>4</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>14</td><td>6</td><td>4</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>15</td><td>6</td><td>5</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>16</td><td>6</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
-				</tbody>
-			</table>
-			<p class="Teaming_Shuffling_Gremlin Teaming_Hiding_Gremlin option">
-				<span class="Teaming_all option">オプション「基本的な編成に加え、妖魔が早く出ます。」「村側能力者の構成はわからず、妖魔が早く出ます。」選択時の、</span>参加人数と内訳の関係です。<br/>
-				<span class="Teaming_Hiding_Gremlin option">「村側能力者の構成はわからず、妖魔が早く出ます。」時は、表から更に、村人がひとり能力者になります。</span>
-			</p>
-			<table class="Teaming_Shuffling_Gremlin Teaming_Hiding_Gremlin readmepersons option">
-				<thead>
-					<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
-					<td class="desc">(編成隠し時)</td></tr>
-				</thead>
-				<tbody>
-					<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
-					<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
-					<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>11</td><td>4</td><td>3</td><td>1</td><td>2</td><td>1</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>12</td><td>5</td><td>3</td><td>1</td><td>2</td><td>1</td><td class="desc">天医探猟想運</td></tr>
-					<tr><td>13</td><td>5</td><td>4</td><td>0</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>14</td><td>5</td><td>4</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>15</td><td>5</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
-					<tr><td>16</td><td>6</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
-				</tbody>
-			</table>
+			<div class="Execution_Dummy_Killed_And_From_First Execution_From_First option">
+				<p>
+					<b>オプション「能力者が死亡済みの可能性があります。」「初日から処刑を行います。」選択時の編成</b>
+				</p>
+				<p>
+					通称「標準編成」です。
+				</p>
+				<table class="readmepersons">
+					<thead>
+						<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
+						<td class="desc">(編成隠し時)</td></tr>
+					</thead>
+					<tbody>
+						<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+						<tr><td> 8</td><td>4</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
+						<tr><td> 9</td><td>4</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+						<tr><td>10</td><td>4</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>12</td><td>6</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>13</td><td>6</td><td>4</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>14</td><td>6</td><td>4</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>15</td><td>6</td><td>5</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>16</td><td>6</td><td>5</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="Execution_Infection_And_From_First option">
+				<p>
+					<b>オプション「誰かが感染させられ、初日から処刑を行います。」選択時の編成</b>
+				</p>
+				<p>
+					初日に感染者がいる場合専用の編成になっています。
+				</p>
+				<table class="readmepersons">
+					<thead>
+						<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
+						<td class="desc">(編成隠し時)</td></tr>
+					</thead>
+					<tbody>
+						<tr><td> 7</td><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+						<tr><td> 8</td><td>5</td><td>1</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探</td></tr>
+						<tr><td> 9</td><td>5</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
+						<tr><td>10</td><td>5</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+						<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>12</td><td>6</td><td>3</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>13</td><td>7</td><td>3</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>14</td><td>7</td><td>3</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>15</td><td>7</td><td>4</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>16</td><td>7</td><td>4</td><td>1</td><td>3</td><td>1</td><td class="desc">天医探猟恋恋想運</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="Execution_From_Second option">
+				<p>
+					<b>オプション「2日目から処刑を行います。」選択時の編成</b>
+				</p>
+				<p>
+					標準編成に村人をひとり加えた編成になっています。
+				</p>
+				<table class="readmepersons">
+					<thead>
+						<tr><td>人数</td><td>村人</td><td>能力者</td><td>使徒</td><td>吸血鬼</td><td>妖魔</td>
+						<td class="desc">(編成隠し時)</td></tr>
+					</thead>
+					<tbody>
+						<tr><td> 7</td><td>5</td><td>1</td><td>0</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+						<tr><td> 8</td><td>5</td><td>1</td><td>1</td><td>1</td><td>0</td><td class="desc">天医探</td></tr>
+						<tr><td> 9</td><td>5</td><td>2</td><td>0</td><td>2</td><td>0</td><td class="desc">天医探想運</td></tr>
+						<tr><td>10</td><td>5</td><td>2</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟想運</td></tr>
+						<tr><td>11</td><td>5</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>12</td><td>6</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>13</td><td>7</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>14</td><td>7</td><td>4</td><td>0</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>15</td><td>7</td><td>4</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+						<tr><td>16</td><td>7</td><td>5</td><td>1</td><td>3</td><td>0</td><td class="desc">天医探猟恋恋想運</td></tr>
+					</tbody>
+				</table>
+			</div>
 			<p>
 				天文家と猟師のいずれかは必ず出現します。
 				ただし、吸血鬼と使徒の人数の合計が3人未満のときは、天文家と猟師が同時に出ることはありません。
 			</p>
-			<p class="Teaming_Hiding Teaming_Hiding_Gremlin option">
+			<p class="Formation_Hidden option">
 				村側の編成を隠していると、天文家は必ず出現します。
-				また、標準編成と比較して、ただの村人がひとり減って、村側の能力者がひとり増えます。
+				また、ただの村人がひとり減って、村側の能力者がひとり増えます。
+				(表を読み替えてください)
 			</p>
 			<p class="Monster_Side_Gremlin option">
 				使徒と妖魔の登場順を入れ替えていると、妖魔が現れた場合は猟師も必ず出現します。
 				欧州編成または標準編成の妖魔入りで妖魔が現れた場合は、猟師は必ず出現するわけではありません。
 			</p>
 			<p>
-				恋人は、片想いは8人から、ペアは13人以降に登場します。
+				恋人は、片想いは能力者3人以上から、ペアは4人以上から出現します。
 			</p>
 			<p class="Unfortunate_Mode_Appear Unfortunate_Mode_Infected_Only option">
-				数奇な運命の村人は、<span class="Unfortunate_Mode_all option">オプションで出現するようにしていれば、</span>8人から登場します。
-			</p>
-			<p class="Execution_From_Second Execution_Provisional_Voting_From_Second option">
-				処刑を2日目からにしていると、全ての登場順が一人分ずつ遅れます。
-				村人がひとり、表よりも多いことになります。
+				数奇な運命の村人は、<span class="Unfortunate_Mode_all option">オプションで出現するようにしていれば、</span>能力者3人から登場します。
 			</p>
 			<h2 id="inhabitant">村人</h2>
 			<p>
@@ -956,15 +944,33 @@
 				ただし感染とオリジナル吸血鬼の区別がつかないため、両方の人数の合計がわかります。
 			</p>
 			<hr class="speech" />
-			<h2 id="execution">オプションルール……<br />処刑</h2>
+			<h2 id="vote2">オプションルール……<br />投票</h2>
+			<div class="Vote_Unsigned option">
+				<p>
+					<b>無記名投票で処刑を行います。</b><br />
+					投票結果は、得票数のみ表示されます。<br />
+					<em>現在の初期値です。</em>
+				</p>
+			</div>
+			<div class="Vote_Preliminary_And_Final option">
+				<p>
+					<b>仮投票と本投票で処刑を行います。</b><br />
+					強制更新時間の半分が経過すると(長期村では24時間、ただし初日から投票を行う場合のみ<em>72時間に延長され</em>うち48時間が経過すると)一次開票が行われます。
+					一次開票の結果、票を集めた上位2名が本投票の候補となり、その日はそれ以外の人に投票できなくなります。
+					同率2位が複数いる場合、同率2位の全員が本投票の候補になります。
+					時間を過ぎても候補が2人に満たなかった場合、未投票の人が投票を行ったり誰かが投票先を変更したりして候補が2人になった時点で一次開票が行われます。
+					一次開票よりも早く、全員の行動終了によって日付を進める場合は、いきなり本投票が行われ、一次開票は行われません。
+					投票結果は、誰が誰に投票したのかも表示されます。
+				</p>
+			</div>
+			<h2 id="execution">処刑と襲撃の流れ</h2>
 			<div class="Execution_Dummy_Killed_And_From_First option">
 				<p>
-					<b>能力者が死亡済みの可能性があり、無記名投票で処刑を行います。</b><br/>
+					<b>能力者が死亡済みの可能性があります。</b><br/>
+					1日目から処刑投票を行います。<br/>
 					「地主さん」こと初日犠牲者が能力者の可能性もあるオプションです。
 					使徒の可能性もあります。
 					吸血鬼または妖魔の可能性はありません。<br />
-					1日目から処刑投票を行います。
-					投票結果は、得票数のみ表示されます。<br />
 					初日犠牲者以外の人が探偵の場合は、初日犠牲者の役を知ることができます。
 					初日犠牲者以外の人が天文家の場合は、1日目から誰か一人を観測しています。
 				</p>
@@ -974,105 +980,70 @@
 					天文家は誰か一人を観測した状態から始まりますので、情報量は2日目から処刑を行う場合と同じになります。
 				</p>
 			</div>
-			<p class="Execution_From_First option">
-				<b>初日から無記名投票で処刑を行います。</b><br/>
-				1日目から処刑投票を行います。
-				投票結果は、得票数のみ表示されます。<br />
-				初日犠牲者に相当するものはありません。
-				天文家は、1日目の段階では誰も観測していません。
-				<em>現在の初期値です。</em>
+			<div class="Execution_Infection_And_From_First option">
+				<p>
+					<b>誰かが感染させられ、初日から処刑を行います。</b><br/>
+					1日目の途中に吸血鬼は感染襲撃を行うことができます。
+					感染襲撃のタイミングは、強制更新時間の半分(長期では24時間)です。
+					処刑投票も1日目から行います。
+					ただし、感染襲撃が終わるまでは投票できない状態になっています。<br/>
+					初日犠牲者に相当するものはありません。
+					天文家は、1日目の段階では誰も観測していません。
+					猟師は1日目途中の感染襲撃と、1日目から2日目にかけての通常の襲撃を別々に護衛できます。
+					1日目途中の感染襲撃のときは銀の弾丸は使用できません。
+					また、護衛が成功したかどうかはわかりません。
+					医者は感染襲撃後に、1日目から能力が使用できるようになります。
+					吸血鬼は、感染襲撃と同時にメッセージの交換もできます。
+					また感染襲撃前と後で2回襲撃をセットするのを忘れないようにしてください。
+				</p>
+				<p class="narratione">
+					スケジュールがややこしくなりますが……。<br/>
+					1日目→
+					24時間(吸血鬼による襲撃とメッセージ、猟師による護衛先の設定)→
+					メッセージ交換と感染襲撃→
+					24時間(投票と通常の能力の使用)→
+					(仮投票を行う場合のみ、一次開票→24時間)→
+					投票、更新→
+					(短期で夜がある場合のみ、夜)→
+					2日目からは通常通り、となります。
+				</p>
 			</p>
-			<p class="Execution_Provisional_Voting_From_First option">
-				<b>初日から仮投票と本投票で処刑を行います。</b><br/>
-				1日目から処刑投票を行います。
-				また<em>1日目が72時間に延長されます。</em>
-				強制更新時間の半分(長期村では24時間、ただし1日目のみ48時間)が経過すると一次開票が行われます。
-				一次開票の結果、票を集めた上位2名が本投票の候補となり、その日はそれ以外の人に投票できなくなります。
-				同率2位が複数いる場合、同率2位の全員が本投票の候補になります。
-				時間を過ぎても候補が2人に満たなかった場合、未投票の人が投票を行ったり誰かが投票先を変更したりして候補が2人になった時点で一次開票が行われます。
-				一次開票よりも早く、全員の行動終了によって日付を進める場合は、いきなり本投票が行われ、一次開票は行われません。
-				投票結果は、誰が誰に投票したのかも表示されます。<br />
+			<p class="Execution_From_First option">
+				<b>初日から処刑を行います。</b><br/>
+				1日目から処刑投票を行います。<br/>
 				初日犠牲者に相当するものはありません。
-				天文家は、1日目の段階では誰も観測していません。
+				天文家は、1日目の段階では誰も観測していません。<br/>
+				<em>現在の初期値です。</em>
 			</p>
 			<div class="Execution_From_Second option">
 				<p>
-					<b>2日目から無記名投票で処刑を行います。</b><br/>
-					1日目は処刑投票を行いません。
-					投票結果は、得票数のみ表示されます。
-					また<em>全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。</em><br />
+					<b>2日目から処刑を行います。</b><br/>
+					1日目は処刑投票を行いません。<br/>
 					吸血鬼の襲撃や各能力者の能力は、通常どおり使用できます。
 					天文家は、1日目の段階では誰も観測していません。
+					<em>全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。</em>
 				</p>
 				<p class="narratione">
 					初日犠牲者をプレイヤーが担当するオプションです。
 				</p>
 			</div>
-			<p class="Execution_Provisional_Voting_From_Second option">
-				<b>2日目から仮投票と本投票で処刑を行います。</b><br/>
-				1日目は処刑投票を行いません。
-				2日目以降、強制更新時間の半分(長期村では24時間)が経過すると一次開票が行われます。
-				一次開票の結果、票を集めた上位2名が本投票の候補となり、その日はそれ以外の人に投票できなくなります。
-				同率2位が複数いる場合、同率2位の全員が本投票の候補になります。
-				時間を過ぎても候補が2人に満たなかった場合、未投票の人が投票を行ったり誰かが投票先を変更したりして候補が2人になった時点で一次開票が行われます。
-				一次開票よりも早く、全員の行動終了によって日付を進める場合は、いきなり本投票が行われ、一次開票は行われません。
-				投票結果は、誰が誰に投票したのかも表示されます。
-				また<em>全ての登場順が一人ずつ遅れ、村人が一人多い状態になります。</em><br />
-				吸血鬼の襲撃や各能力者の能力は、通常どおり使用できます。
-				天文家は、1日目の段階では誰も観測していません。
-			</p>
-			<h2 id="village-teaming">編成</h2>
-			<p class="Teaming_Low_Density option">
-				<b>能力者の密度を線形にします。</b><br/>
-				出現する能力者の数を、村側、吸血鬼側ともに減らすことができます。
-				村側の能力者は7人時は天文家のみ、8人中2人、10人中3人～と、参加者2人ごと、吸血鬼側は7人中2人、11人中3人、15人中4人と、参加者4人ごとの規則的な増加となります。
-				妖魔は16人で出現します。
-			</p>
-			<p class="Teaming_Shuffling_Headless option">
-				<b>村側能力者を増やします(首無し騎士に似せます)。</b><br/>
-				能力者の割合をThe Village of Headless Knightという人狼クローンに似せます。
-				正確に同じというわけではありません。
-				村側の能力者は7人中2人、8人中3人、10人中4人、12人中5人、15人中6人～と、吸血鬼側は7人中2人、9人中3人、14人中4人となります。
-				妖魔は16人で出現します。
-				村側がとても有利であるため、<em>推奨しません。</em>
-			</p>
-			<p class="Teaming_Shuffling_Euro option">
-				<b>妖魔が早く出ます(欧州に似せます)。</b><br/>
-				能力者の割合をおとぎの国の人狼という人狼クローンに似せます。
-				正確に同じというわけではありません。
-				村側の能力者が少ないのと、妖魔が比較的早くから出現します。
-				村側の能力者は、7人中1人、8人中2人、10人中3人、16人中4人～と、吸血鬼側は7人中2人、9人中3人、15人中4人となります。
-				妖魔は11人で出現します。
-				キューピット陣営は未実装のため、村側能力者として数えています。
-				The Village of Vampireの妖魔は占いで死なないため、妖魔がかなり有利になります。
-			</p>
-			<p class="Teaming_Shuffling option">
-				<b>基本的な編成です。</b><br/>
-				そこそこバランスが良いと思われる編成です。
+			<h2 id="formation">村側の編成</h2>
+			<p class="Formation_Public option">
+				<b>村側能力者の構成を公開します。</b><br/>
+				一日目の最初にどの能力者が出現したかを表示します。<br/>
 				<em>現在の初期値です。</em>
 			</p>
-			<p class="Teaming_Shuffling_Gremlin option">
-				<b>基本的な編成に加え、妖魔が早く出ます。</b><br/>
-				「基本的な編成です。」を元に、11人以上で妖魔が出現します。
-			</p>
-			<p class="Teaming_Hiding option">
+			<p class="Formation_Hidden option">
 				<b>村側能力者の構成はわかりません。</b><br/>
 				村側にどの能力者がいるかを最初に表示しません。
 				人数だけは表示されます。
-				どの能力者が出現したかがわからず、村は混乱の渦に巻き込まれるでしょう。
-				「基本的な編成です。」を元に、ただの村人がひとり減って、村側の能力者がひとり増えます。
-			</p>
-			<p class="Teaming_Hiding_Gremlin option">
-				<b>村側能力者の構成はわからず、妖魔が早く出ます。</b><br/>
-				村側にどの能力者がいるかを最初に表示しません。
-				人数だけは表示されます。
-				どの能力者が出現したかがわからず、村は混乱の渦に巻き込まれるでしょう。
-				「基本的な編成に加え、妖魔が早く出ます。」を元に、ただの村人がひとり減って、村側の能力者がひとり増えます。
+				村は混乱の渦に巻き込まれるでしょう。
+				<em>編成の表から、ただの村人がひとり減って、村側の能力者がひとり増えます。</em>
 			</p>
 			<h2 id="monster-side">吸血鬼側の編成</h2>
 			<p class="Monster_Side_Fixed option">
 				<b>吸血鬼が襲ってきます。</b><br/>
-				吸血鬼側の登場順は編成の表の通りに固定され、妖魔が一番最後です。
+				吸血鬼側の登場順は編成の表の通りに固定され、妖魔が一番最後です。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<p class="Monster_Side_Shuffling option">
@@ -1107,7 +1078,7 @@
 					能力を棄権していた場合や、処刑先を選んでいた場合はランダムで襲撃します。
 					感染者や吸血鬼を選んでいた場合は、区別が付かないまま相手を再度感染させる事になります。
 					吸血鬼の襲撃に参加するわけではないので、吸血鬼にも感染能力者の襲撃先はわかりません。
-					感染した能力者の襲撃が猟師や妖魔に防がれることや、感染した天文家が感染していない猟師に銀の弾丸で撃ち殺されることも有り得ます。
+					感染した能力者の襲撃が猟師や妖魔に防がれることや、感染した天文家が感染していない猟師に銀の弾丸で撃ち殺されることも有り得ます。<br/>
 					<em>現在の初期値です。</em>
 				</p>
 				<p class="narratione">
@@ -1135,7 +1106,7 @@
 			</div>
 			<p class="Servant_Knowing_Mode_Vampire_K option">
 				<b>使徒は吸血鬼の王を知っています。</b><br/>
-				使徒は吸血鬼Kのみを知っています。
+				使徒は吸血鬼Kのみを知っています。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<p class="Servant_Knowing_Mode_Vampires option">
@@ -1159,7 +1130,7 @@
 				<b>探偵は日中に遺言を調べ翌日までに正体を調べます。</b><br/>
 				探偵は、日中、能力を使用したその場で、死者の遺言を知ることができます。
 				ただし正体は、日付が変わるまで知ることができません。
-				吸血鬼側が、遺言に嘘を書くことに意味があるのは、このオプションの場合のみです。
+				吸血鬼側が、遺言に嘘を書くことに意味があるのは、このオプションの場合のみです。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<p class="Daytime_Preview_Mode_Role_And_Message option">
@@ -1177,7 +1148,7 @@
 			<p class="Doctor_Infected_Mode_Find_Infection option">
 				<b>感染した医者による治療は、効果を発揮しなくなります。</b><br/>
 				医者が感染した場合は、治療の効果が無くなります。
-				医者自身にはわかりませんし、診察先が感染しているかどうかを知ることはできます。
+				医者自身にはわかりませんし、診察先が感染しているかどうかを知ることはできます。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<h2 id="hunter-silver-bullet">銀の弾丸</h2>
@@ -1194,7 +1165,7 @@
 				護衛対象と猟師本人のどちらが襲われたのかは区別できません。
 				猟師本人が襲われた場合は護衛は失敗し吸血鬼の襲撃が通りますが、銀の弾丸は有効です。
 				その場合、吸血鬼の襲撃が感染になる条件では、吸血鬼が死亡し、猟師は感染させられます。
-				吸血鬼の襲撃が殺害になる条件では、死体がふたつ発見されることとなります。
+				吸血鬼の襲撃が殺害になる条件では、死体がふたつ発見されることとなります。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<h2 id="unfortunate">数奇な運命の村人の出現</h2>
@@ -1215,7 +1186,7 @@
 				<b>数奇な運命の村人は襲撃では殺されません。</b><br/>
 				数奇な運命の村人が登場する可能性があります。
 				襲撃では殺されず、感染止まりになります。
-				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。
+				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。<br/>
 				<em>現在の初期値です。</em>
 			</p>
 			<hr class="speech" />

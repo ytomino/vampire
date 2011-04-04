@@ -29,7 +29,7 @@ package Vampire.Villages is
 	
 	type Vote_Mode is (Unsigned, Preliminary_And_Final);
 	type Execution_Mode is (Dummy_Killed_And_From_First, Infection_And_From_First, From_First, From_Second);
-	type Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Formation_Mode is (Public, Hidden);
 	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
 	type Monster_Side_Mode is (Fixed, Shuffling, Gremlin);
@@ -38,11 +38,11 @@ package Vampire.Villages is
 	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
-	subtype Hidings is Teaming_Mode range Hiding .. Hiding_Gremlin;
+	type Obsolete_Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	
 	Initial_Vote                 : constant Vote_Mode                 := Unsigned;
 	Initial_Execution            : constant Execution_Mode            := From_First;
-	Initial_Teaming              : constant Teaming_Mode              := Shuffling;
+	Initial_Formation            : constant Formation_Mode            := Public;
 	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
 	Initial_Servant_Knowing      : constant Servant_Knowing_Mode      := Vampire_K;
@@ -50,6 +50,12 @@ package Vampire.Villages is
 	Initial_Doctor_Infected      : constant Doctor_Infected_Mode      := Find_Infection;
 	Initial_Hunter_Silver_Bullet : constant Hunter_Silver_Bullet_Mode := Target_And_Self;
 	Initial_Unfortunate          : constant Unfortunate_Mode          := Infected_Only;
+	
+	Initial_Obsolete_Teaming     : constant Obsolete_Teaming_Mode     := Shuffling;
+	
+	Is_Obsolete_Teaming : constant array (Obsolete_Teaming_Mode) of Boolean := (
+		Liner_2 | Shuffling | Hiding => False,
+		Low_Density | Shuffling_Headless | Shuffling_Euro | Shuffling_Gremlin | Hiding_Gremlin => True);
 	
 	-- 配役
 	
@@ -234,7 +240,7 @@ package Vampire.Villages is
 		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新時刻(1日目は夜を飛ばすため調整)
 		Vote : Vote_Mode := Unsigned;
 		Execution : Execution_Mode := From_First;
-		Teaming : Teaming_Mode := Shuffling_Headless;
+		Formation : Formation_Mode := Public;
 		Monster_Side : Monster_Side_Mode := Fixed;
 		Attack : Attack_Mode := Two;
 		Servant_Knowing : Servant_Knowing_Mode := None;
@@ -242,6 +248,7 @@ package Vampire.Villages is
 		Doctor_Infected : Doctor_Infected_Mode := Cure;
 		Hunter_Silver_Bullet : Hunter_Silver_Bullet_Mode := Target_And_Self;
 		Unfortunate : Unfortunate_Mode := None;
+		Obsolete_Teaming : Obsolete_Teaming_Mode := Shuffling_Headless;
 		Appearance : Role_Appearances := (others => Random);
 		Dummy_Role : aliased Person_Role := Inhabitant;
 		People : aliased Villages.People.Vector;
@@ -463,7 +470,7 @@ package Vampire.Villages is
 				Value : in String);
 		end Execution;
 		
-		package Teaming is
+		package Formation is
 			type Option_Item (Village : not null access constant Village_Type) is
 				new Root_Option_Item with null record;
 			overriding function Available (Item : Option_Item) return Boolean;
@@ -480,7 +487,7 @@ package Vampire.Villages is
 				Village : in out Tabula.Villages.Village_Type'Class;
 				Item : in Option_Item;
 				Value : in String);
-		end Teaming;
+		end Formation;
 		
 		package Monster_Side is
 			type Option_Item (Village : not null access constant Village_Type) is
