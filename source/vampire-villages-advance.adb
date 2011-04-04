@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
+with Ada.Containers.Generic_Array_Sort;
 with Ada.Strings.Unbounded;
 with Vampire.Villages.Teaming;
 procedure Vampire.Villages.Advance (
@@ -40,6 +41,74 @@ is
 		end loop;
 	end Increment_Today;
 	
+	-- 一次開票
+	procedure Preliminary_Vote (
+		Village : in out Village_Type;
+		Time : in Ada.Calendar.Time;
+		Changed : in out Boolean)
+	is
+		type Voted_Array is array (Natural range <>) of Natural;
+		procedure Sort is new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
+		Voted, Sort_Voted : Voted_Array (Village.People.First_Index .. Village.People.Last_Index) := (others => 0);
+		Candidates : Natural := 0;
+		Max : Natural := 0;
+		Limit : Natural := 0;
+	begin
+		-- 集計
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.State /= Died then
+				declare
+					Target : Integer := Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.Provisional_Vote;
+				begin
+					if Target in Village.People.First_Index .. Village.People.Last_Index then
+						if Voted (Target) = 0 then
+							Candidates := Candidates + 1;
+						end if;
+						Voted (Target) := Voted (Target) + 1;
+						if Voted (Target) > Max then
+							Max := Voted (Target);
+						end if;
+					end if;
+				end;
+			end if;
+		end loop;
+		-- 候補が2名以上いる場合に適用
+		if Candidates >= 2 then
+			-- 同率2位までを候補とする
+			Sort_Voted := Voted;
+			Sort (Sort_Voted);
+			Limit := Sort_Voted (Sort_Voted'Last - 1);
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				declare
+					The_Person : Person_Type renames Village.People.Reference (I).Element.all;
+					The_Record : Person_Record renames The_Person.Records.Reference (Village.Today).Element.all;
+				begin
+					if The_Record.State /= Died then
+						The_Record.Candidate := Voted (I) >= Limit;
+					end if;
+				end;
+			end loop;
+			-- 選ばれた候補以外に投票していた人は棄権に戻す
+			for I in Village.People.First_Index .. Village.People.Last_Index loop
+				declare
+					V : Integer renames Village.People.Reference (I).Element.Records.Reference (Village.Today).Element.Vote;
+				begin
+					if V >= 0 and then not Village.People.Constant_Reference (V).Element.Records.Constant_Reference (Village.Today).Element.Candidate then
+						V := -1;
+					end if;
+				end;
+			end loop;
+			Append (Village.Messages, Message'(
+				Kind => Provisional_Vote,
+				Day => Village.Today,
+				Time => Time,
+				Subject => No_Person,
+				Target => No_Person,
+				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+			Changed := True; -- 変更を保存
+		end if;
+	end Preliminary_Vote;
+	
 	-- 処刑対象
 	function Get_Execution (Execution_Day : Natural) return Integer is
 		Voted : array (People_Index) of Integer := (others => 0);
@@ -77,6 +146,7 @@ is
 	-- 全員会話(妨害を受ける)
 	procedure Night_Talk_All (
 		Village : in out Village_Type;
+		Target_Day : in Natural;
 		Time : in Ada.Calendar.Time) is
 	begin
 		for Rank in Vampire_Role loop
@@ -88,12 +158,12 @@ is
 						Vampire_Person : Person_Type renames Village.People.Constant_Reference (Vampire).Element.all;
 					begin
 						if Vampire_Person.Records.Constant_Reference (Village.Today).Element.State /= Died
-							and then not Vampire_Person.Records.Constant_Reference (Village.Today - 1).Element.Note.Is_Null
+							and then not Vampire_Person.Records.Constant_Reference (Target_Day).Element.Note.Is_Null
 						then
 							Night_Talk (
 								Village,
 								Vampire,
-								Vampire_Person.Records.Constant_Reference (Village.Today - 1).Element.Note.Constant_Reference.Element.all,
+								Vampire_Person.Records.Constant_Reference (Target_Day).Element.Note.Constant_Reference.Element.all,
 								Time);
 						end if;
 					end;
@@ -121,7 +191,7 @@ is
 			and then (Vampire_Person.Role in Vampire_Role or else Night_State = Infected)
 		then
 			declare
-				Target : Integer := Vampire_Person.Records.Constant_Reference (Village.Today - 1).Element.Target;
+				Target : Person_Index'Base := Vampire_Person.Records.Constant_Reference (Village.Today - 1).Element.Target;
 				Result : Vampire_Message_Kind := Vampire_Infection;
 				Hunter_Result : Message_Kind;
 			begin
@@ -136,7 +206,9 @@ is
 							and then Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.State = Normal;
 					end loop;
 				end if;
-				if Target >= 0 and then Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.State /= Died then
+				if Target /= No_Person
+					and then Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.State /= Died
+				then
 					Attacked := True;
 					if Vampire_Person.Role in Vampire_Role and then not Infection_Only_In_First then
 						-- 吸血鬼の襲撃タイプ選択
@@ -440,7 +512,7 @@ begin
 					return (Vampire_Count = 0) or (Inhabitant_Count <= Vampire_Count);
 				end Finished;
 				Daytime_To_Vote, Vote_To_Night, Night_To_Daytime : Boolean := False;
-				Infection_In_First, Provisional_Voting : Boolean := False;
+				Infection_In_First, Preliminary_Voting : Boolean := False;
 				Executed : Integer;
 			begin
 				case Village.Time is
@@ -453,6 +525,7 @@ begin
 						if Village.Execution = Infection_And_From_First
 							and then Village.Today = 1
 							and then Now >= Village.Infection_In_First_Time
+							and then not Village.Infected_In_First
 						then
 							Infection_In_First := True;
 						end if;
@@ -463,7 +536,7 @@ begin
 							Daytime_To_Vote := True;
 							if Village.Day_Duration >= 24 * 60 * 60.0
 								or else Vote_Finished (Village)
-								or else not Village.For_Voting (Village.Today)
+								or else Village.Vote_State = Disallowed
 							then
 								Vote_To_Night := True;
 								if Village.Night_Duration = 0.0 then
@@ -471,11 +544,10 @@ begin
 								end if;
 							end if;
 						elsif Village.Vote = Preliminary_And_Final
-							and then Now >= Village.Provisional_Voting_Time
-							and then not Village.Provisional_Voted
+							and then Now >= Village.Preliminary_Vote_Time
+							and then Village.Vote_State = Allowed_For_Preliminary
 						then
-							-- 一次開票はコミットされたら飛ばす
-							Provisional_Voting := True;
+							Preliminary_Voting := True; -- コミットで飛ぶ
 						end if;
 					when Vote =>
 						if Now >= Village.Vote_To_Night
@@ -491,7 +563,7 @@ begin
 				List_Changed := Vote_To_Night;
 				-- 初日感染
 				if Infection_In_First then
-					Night_Talk_All (Village, Now); -- 会話
+					Night_Talk_All (Village, Village.Today, Now); -- 会話
 					declare
 						The_Hunter : constant Person_Index'Base := Village.Find_Superman (Hunter);
 						Guard : Person_Index'Base := No_Person;
@@ -501,7 +573,7 @@ begin
 					begin
 						if The_Hunter /= No_Person then
 							pragma Assert (Village.People.Constant_Reference (The_Hunter).Element.Records.Constant_Reference (Village.Today).Element.State = Normal);
-							Guard := Village.People.Constant_Reference (The_Hunter).Element.Records.Constant_Reference (Village.Today).Element.Target;
+							Guard := Village.People.Constant_Reference (The_Hunter).Element.Records.Constant_Reference (Village.Today - 1).Element.Target;
 						end if;
 						for Rank in Vampire_Role loop
 							declare
@@ -509,7 +581,7 @@ begin
 							begin
 								if The_Vampire /= No_Person then
 									Attack (
-										Executed => Executed,
+										Executed => No_Person,
 										Infection_Only_In_First => True,
 										The_Vampire => The_Vampire,
 										Night_State => Infected,
@@ -534,12 +606,22 @@ begin
 									Target => Guard,
 									Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 						end if;
+						-- 初日感染時間が過ぎたことを記録
+						Append (
+							Village.Messages,
+							Message'(
+								Kind => Foreboding,
+								Day => Village.Today,
+								Time => Now,
+								Subject => No_Person,
+								Target => No_Person,
+								Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 					end;
 					Changed := True;
 				end if;
 				-- 一次開票
-				if Provisional_Voting then
-					Provisional_Vote (Village, Now, Changed);
+				if Preliminary_Voting then
+					Preliminary_Vote (Village, Now, Changed);
 				end if;
 				-- 昼から投票待ちへ
 				if Daytime_To_Vote then
@@ -634,7 +716,7 @@ begin
 					end if;
 					-- 吸血鬼の会話があらかじめセットされていたら転写
 					if not Night_To_Daytime then
-						Night_Talk_All (Village, Now);
+						Night_Talk_All (Village, Village.Today - 1, Now);
 					end if;
 				end if;
 				-- 夜から昼へ

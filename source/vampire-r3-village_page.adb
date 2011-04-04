@@ -222,14 +222,15 @@ is
 	
 	procedure Vote_Form (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Player : Integer;
-		Kind : Vampire.Villages.Person_Role;
-		Special: Boolean;
-		Current : Integer;
-		Current_Special : Boolean;
-		Message : String;
-		Button : String)
+		Player : in Integer;
+		Kind : in Vampire.Villages.Person_Role;
+		Special : in Ability_State;
+		Current : in Person_Index'Base;
+		Current_Special : in Boolean;
+		Message : in String;
+		Button : in String)
 	is
+		Keeping_Silver_Bullet : constant Boolean := Kind = Hunter and then Special = Disallowed;
 		Including : Boolean;
 	begin
 		case Form.Template_Set is
@@ -307,23 +308,36 @@ is
 		String'Write (Output, "</option>" & Line_Break & "</select>" & Line_Break);
 		case Kind is
 			when Vampire.Villages.Hunter =>
-				if Special then
-					String'Write(Output, " <input name=""special"" type=""checkbox"" ");
-					if Current_Special then
-						Forms.Write_Attribute_Name (Output, "checked");
-						Forms.Write_Attribute_Open (Output);
-						Forms.Write_In_Attribute (Output, Form, "checked");
-						Forms.Write_Attribute_Close (Output);
-					end if;
-					String'Write (Output, "/>");
-					Forms.Write_In_HTML (Output, Form, "銀の弾丸");
-				end if;
+				case Special is
+					when Allowed =>
+						case Form.Template_Set is
+							when Forms.For_Full =>
+								String'Write (Output, "<br />");
+							when Forms.For_Mobile =>
+								Character'Write (Output, ' ');
+						end case;
+						String'Write(Output, "<input name=""special"" type=""checkbox"" ");
+						if Current_Special then
+							Forms.Write_Attribute_Name (Output, "checked");
+							Forms.Write_Attribute_Open (Output);
+							Forms.Write_In_Attribute (Output, Form, "checked");
+							Forms.Write_Attribute_Close (Output);
+						end if;
+						String'Write (Output, "/>");
+						Forms.Write_In_HTML (Output, Form, "銀の弾丸 ");
+					when Disallowed | Already_Used =>
+						null;
+				end case;
 			when others =>
 				null;
 		end case;
 		case Form.Template_Set is
 			when Forms.For_Full =>
-				String'Write (Output, "</td>" & Line_Break & "<td class=""button"">");
+				String'Write (Output, "</td>" & Line_Break & "<td class=""button""");
+				if Keeping_Silver_Bullet then
+					String'Write (Output, " rowspan=""2""");
+				end if;
+				Character'Write (Output, '>');
 			when Forms.For_Mobile =>
 				null;
 		end case;
@@ -335,9 +349,19 @@ is
 		String'Write (Output, "/>");
 		case Form.Template_Set is
 			when Forms.For_Full =>
-				String'Write (Output, "</td>" & Line_Break & "</tr></table>" & Line_Break);
+				String'Write (Output, "</td>" & Line_Break & "</tr>");
+				if Keeping_Silver_Bullet then
+					String'Write (Output, "<tr><td>");
+					Forms.Write_In_HTML (Output, Form, "銀の弾丸はまだとっておきましょう。");
+					String'Write (Output, "</tr></td>");
+				end if;
+				String'Write (Output, "</table>" & Line_Break);
 			when Forms.For_Mobile =>
-				null;
+				if Keeping_Silver_Bullet then
+					String'Write (Output, "<div>");
+					Forms.Write_In_HTML (Output, Form, "銀の弾丸はまだとっておきましょう。");
+					String'Write (Output, "</div>");
+				end if;
 		end case;
 		String'Write (Output, "<input type=""hidden"" name=""cmd"" ");
 		Forms.Write_Attribute_Name (Output, "value");
@@ -1070,16 +1094,18 @@ is
 											end if;
 										end if;
 									when Vampire.Villages.Provisional_Vote =>
-										Narration (Villages.Text.Votes (
-											Village,
-											Day => Message.Day,
-											Provisional => True,
-											Player_Index => -1));
-										Narration (Villages.Text.Votes_Totaled (
-											Village,
-											Day => Message.Day,
-											Provisional => True,
-											Executed => -1));
+										Narration (
+											Villages.Text.Votes (
+												Village,
+												Day => Message.Day,
+												Preliminary => True,
+												Player_Index => -1));
+										Narration (
+											Villages.Text.Votes_Totaled (
+												Village,
+												Day => Message.Day,
+												Preliminary => True,
+												Executed => -1));
 									when Vampire.Villages.Execution =>
 										case Village.Vote is
 											when Unsigned =>
@@ -1087,7 +1113,7 @@ is
 													Villages.Text.Votes (
 														Village,
 														Day => Message.Day - 1,
-														Provisional => False,
+														Preliminary => False,
 														Player_Index => Player_Index),
 													"narrationi");
 											when Preliminary_And_Final =>
@@ -1095,14 +1121,15 @@ is
 													Villages.Text.Votes (
 														Village,
 														Day => Message.Day - 1,
-														Provisional => False,
+														Preliminary => False,
 														Player_Index => -1));
 										end case;
-										Narration (Villages.Text.Votes_Totaled (
-											Village,
-											Day => Message.Day - 1,
-											Provisional => False,
-											Executed => Message.Target));
+										Narration (
+											Villages.Text.Votes_Totaled (
+												Village,
+												Day => Message.Day - 1,
+												Preliminary => False,
+												Executed => Message.Target));
 										Executed := Message.Target;
 									when Vampire.Villages.Awareness =>
 										if Village.State >= Epilogue or else Player_Index = Message.Subject then
@@ -1148,9 +1175,6 @@ is
 											end loop;
 										end if;
 									when Vampire.Villages.Vampire_Message_Kind =>
-										if Message.Kind in Vampire_Infection_In_First .. Vampire_Failed_In_First then
-											Narration (Villages.Text.Vampire_Infection_In_First_Public_Message (Village));
-										end if;
 										if Village.State >= Epilogue
 											or else (Player_Index /= No_Person
 												and then (Message.Subject = Player_Index
@@ -1203,6 +1227,8 @@ is
 												Narration (Villages.Text.For_Execution_In_Second (Village));
 											end if;
 										end if;
+									when Foreboding =>
+										Narration (Villages.Text.Foreboding_About_Infection_In_First (Village));
 									when Vampire.Villages.Introduction =>
 										Narration (Villages.Text.Introduction (Village));
 									when Vampire.Villages.Breakdown =>
@@ -1263,7 +1289,7 @@ is
 											end;
 										end loop;
 										if Second then
-											Forms.Write_In_HTML (Output, Form, "が行動しています。");
+											Forms.Write_In_HTML (Output, Form, "が行動しています。 ");
 										end if;
 									end;
 								end if;
@@ -1278,41 +1304,49 @@ is
 									when Playing =>
 										case Village.Time is
 											when Daytime =>
-												if Village.For_Voting (Village.Today)
-													and then Village.Vote = Preliminary_And_Final
-													and then not Village.Provisional_Voted
-												then
-													declare
-														Open_Time : constant Ada.Calendar.Time := Village.Provisional_Voting_Time;
-													begin
-														Forms.Write_In_HTML (
-															Output,
-															Form,
-															Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset) &
-															"に一次開票します。");
-														if Ada.Calendar.Clock > Open_Time then
+												case Village.Vote_State is
+													when Disallowed =>
+														if Village.Execution = Infection_And_From_First and then Village.Today = 1 then
 															Forms.Write_In_HTML (
 																Output,
 																Form,
-																"開票時間を過ぎているため候補が出揃ったらすぐに開票します。");
+																Ada.Calendar.Formatting.Image (Village.Infection_In_First_Time, Time_Zone => Calendar.Time_Offset) &
+																"までは、とりあえず様子をうかがいましょう。 ");
 														end if;
-													end;
-												end if;
+													when Allowed_For_Preliminary =>
+														declare
+															Open_Time : constant Ada.Calendar.Time := Village.Preliminary_Vote_Time;
+														begin
+															Forms.Write_In_HTML (
+																Output,
+																Form,
+																Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset) &
+																"に一次開票します。 ");
+															if Ada.Calendar.Clock > Open_Time then
+																Forms.Write_In_HTML (
+																	Output,
+																	Form,
+																	"開票時間を過ぎているため候補が出揃ったらすぐに開票します。 ");
+															end if;
+														end;
+													when Allowed =>
+														null;
+												end case;
 												Forms.Write_In_HTML (
 													Output,
 													Form,
 													Ada.Calendar.Formatting.Image (Village.Daytime_To_Vote, Time_Zone => Calendar.Time_Offset) &
-													"までに行動を終えてください。");
+													"までに行動を終えてください。 ");
 											when Vote =>
 												Forms.Write_In_HTML (
 													Output,
 													Form,
-													"全員の投票を待っています。");
+													"全員の投票を待っています。 ");
 											when Night =>
 												Forms.Write_In_HTML (
 													Output,
 													Form,
-													"夜です。");
+													"夜です。 ");
 										end case;
 										if Village.Term = Short
 											and then Form.Template_Set = Forms.For_Full
@@ -1498,7 +1532,7 @@ is
 									Forms.Write_In_HTML (
 										Output,
 										Form,
-										Person.Records.Constant_Reference (Village.Target_Day).Element.
+										Person.Records.Constant_Reference (Village.Today).Element.
 											Note.Constant_Reference.Element.all);
 								end if;
 							elsif Tag = "zero" then
@@ -1520,20 +1554,20 @@ is
 								end if;
 							elsif Tag = "roletext" then
 								Forms.Write_In_HTML (Output, Form, Role_Text (Person));
-							elsif Tag = "roleimg" then
-								if Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died then
-									Forms.Write_Link (
-										Output,
-										Form,
-										Current_Directory => Current_Directory,
-										Resource => Ada.Directories.Compose (
-											Containing_Directory => Image_Directory,
-											Name => Relative_Role_Images (Person.Role).all));
-								end if;
+							elsif Tag = "src_roleimg" then
+								pragma Assert (Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Died);
+								Forms.Write_Attribute_Name (Output, "src");
+								Forms.Write_Link (
+									Output,
+									Form,
+									Current_Directory => Current_Directory,
+									Resource => Ada.Directories.Compose (
+										Containing_Directory => Image_Directory,
+										Name => Relative_Role_Images (Village.People.Constant_Reference (Player_Index).Element.Role).all));
 							elsif Tag = "vote" then
 								if Village.State = Playing
 									and then Message_Counts(Player_Index).Speech > 0
-									and then Village.For_Voting (Village.Today)
+									and then Village.Vote_State /= Disallowed
 								then
 									if Person.Commited then
 										declare
@@ -1560,7 +1594,7 @@ is
 										end;
 									else
 										Vote_Form (Output, Player_Index, Vampire.Villages.Inhabitant, 
-											Special => False,
+											Special => Disallowed,
 											Current => Person.Records.Constant_Reference(Village.Today).Element.Vote,
 											Current_Special => False,
 											Message => "誰を処刑に……",
@@ -1568,20 +1602,18 @@ is
 									end if;
 								end if;
 							elsif Tag = "ability" then
-								if Village.State = Playing and then
-									not Person.Commited and then (
-										Message_Counts(Player_Index).Speech > 0 or else (
-											Village.Time = Night and then
-											Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Vampire.Villages.Died
-										)
-									)
+								if Village.State = Playing
+									and then not Person.Commited
+									and then (Message_Counts(Player_Index).Speech > 0
+										or else (Village.Time = Night
+											and then Village.People.Constant_Reference(Player_Index).Element.Records.Constant_Reference(Village.Today).Element.State /= Died))
 								then
 									case Person.Role is
 										when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant
 											| Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F
 											| Vampire.Villages.Servant | Vampire.Villages.Gremlin => null;
 										when Vampire.Villages.Doctor =>
-											case Village.Doctor_Status (Player_Index) is
+											case Village.Doctor_State (Player_Index) is
 												when Disallowed =>
 													String'Write (Output, "<div>");
 													if Village.Time = Night then
@@ -1595,7 +1627,7 @@ is
 														Output,
 														Player_Index,
 														Vampire.Villages.Doctor,
-														False,
+														Disallowed,
 														Person.Records.Constant_Reference (Village.Today).Element.Target,
 														False,
 														"貴重な薬を誰に……",
@@ -1604,7 +1636,7 @@ is
 													null;
 											end case;
 										when Vampire.Villages.Detective =>
-											case Village.Detective_Status (Player_Index) is
+											case Village.Detective_State (Player_Index) is
 												when Disallowed =>
 													String'Write (Output, "<div>");
 													if Village.Time = Night then
@@ -1620,7 +1652,7 @@ is
 														Output,
 														Player_Index,
 														Vampire.Villages.Detective,
-														False,
+														Disallowed,
 														Person.Records.Constant_Reference (Village.Today).Element.Target,
 														False,
 														"どの被害者を調べますか……",
@@ -1633,33 +1665,31 @@ is
 												Output,
 												Player_Index,
 												Astronomer,
-												False,
-												Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
+												Disallowed,
+												Person.Records.Constant_Reference (Village.Astronomer_Target_Day).Element.Target,
 												False,
 												"どの家の上空の星が奇麗……",
 												"観測");
 										when Vampire.Villages.Hunter =>
-											declare
-												Silver_Bullet_Status : constant Ability_Status := Village.Silver_Bullet_Status (Player_Index);
-											begin
-												Vote_Form (
-													Output,
-													Player_Index,
-													Vampire.Villages.Hunter,
-													Silver_Bullet_Status = Allowed,
-													Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
-													Person.Records.Constant_Reference (Village.Target_Day).Element.Special,
-													"誰を守りますか……",
-													"護衛");
-												if Silver_Bullet_Status = Disallowed then
-													String'Write (Output, "<div>");
-													Forms.Write_In_HTML (Output, Form, "銀の弾丸はまだとっておきましょう。");
-													String'Write (Output, "</div>");
-												end if;
-											end;
+											Vote_Form (
+												Output,
+												Player_Index,
+												Vampire.Villages.Hunter,
+												Village.Silver_Bullet_State (Player_Index),
+												Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
+												Person.Records.Constant_Reference (Village.Target_Day).Element.Special,
+												"誰を守りますか……",
+												"護衛");
 										when Vampire.Villages.Vampire_Role =>
-											Vote_Form (Output, Player_Index, Vampire.Villages.Vampire_K, False,
-												Person.Records.Constant_Reference (Village.Target_Day).Element.Target, False, "誰の血が旨そうでしょうか……", "襲撃");
+											Vote_Form (
+												Output,
+												Player_Index,
+												Vampire.Villages.Vampire_K,
+												Disallowed,
+												Person.Records.Constant_Reference (Village.Target_Day).Element.Target,
+												False,
+												"誰の血が旨そうでしょうか……",
+												"襲撃");
 									end case;
 								end if;
 							elsif Tag = "action" then

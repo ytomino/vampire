@@ -133,7 +133,7 @@ package body Vampire.Villages.Text is
 				"改めて城内を探索しますと、古の領主が残した拷問や処刑を行うための悪趣味な道具がごろごろしています。 " &
 				"こうして、古城での日々がはじまりました……。 ")));
 	
-	For_Execution_Message : constant String := "誰かが古びた杭を持って来ました……これしかないのでしょうか……。 ";
+	For_Execution_Message : constant String := "誰かが古びた杭を持って来たことで、血塗られた日々が幕を開けました。 ";
 	
 	function Stage (Village : Village_Type) return Stage_Kind is
 		L : constant Natural := Village.Name.Length;
@@ -153,9 +153,9 @@ package body Vampire.Villages.Text is
 	function Breakdown (Village : Village_Type) return String is
 	begin
 		case Village.Execution is
-			when Dummy_Killed_And_From_First | Infection_And_From_First | From_First =>
+			when Dummy_Killed_And_From_First | From_First =>
 				return Stages (Stage (Village)).Breakdown.all & Line_Break & For_Execution_Message;
-			when From_Second =>
+			when Infection_And_From_First | From_Second =>
 				return Stages (Stage (Village)).Breakdown.all;
 		end case;
 	end Breakdown;
@@ -394,7 +394,7 @@ package body Vampire.Villages.Text is
 	function Votes (
 		Village : Village_Type;
 		Day : Natural;
-		Provisional : Boolean;
+		Preliminary : Boolean;
 		Player_Index : Person_Index'Base)
 		return String
 	is
@@ -405,7 +405,7 @@ package body Vampire.Villages.Text is
 				P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
 				V : Integer;
 			begin
-				if Provisional then
+				if Preliminary then
 					V := P.Records.Constant_Reference (Day).Element.Provisional_Vote;
 				else
 					V := P.Records.Constant_Reference (Day).Element.Vote;
@@ -432,12 +432,12 @@ package body Vampire.Villages.Text is
 	function Votes_Totaled (
 		Village : Village_Type;
 		Day : Natural;
-		Provisional : Boolean;
+		Preliminary : Boolean;
 		Executed: Person_Index'Base)
 		return String
 	is
 		Voted : constant Voted_Count_Info :=
-			Village.Voted_Count (Day => Day, Provisional => Provisional);
+			Village.Voted_Count (Day => Day, Preliminary => Preliminary);
 		Result : aliased Ada.Strings.Unbounded.Unbounded_String;
 	begin
 		for Count in reverse 1 .. Voted.Max loop
@@ -453,7 +453,7 @@ package body Vampire.Villages.Text is
 				end if;
 			end loop;
 		end loop;
-		if Provisional then
+		if Preliminary then
 			declare
 				First : Boolean := True;
 			begin
@@ -613,10 +613,11 @@ package body Vampire.Villages.Text is
 		return Result.Constant_Reference.Element.all;
 	end Vampire_Murder_Message;
 	
-	function Vampire_Infection_In_First_Public_Message (Village : Village_Type) return String is
+	function Foreboding_About_Infection_In_First (Village : Village_Type) return String is
 	begin
-		return "不穏な予感がします。 他にも吸血鬼に襲われた人がいないでしょうか？ ";
-	end Vampire_Infection_In_First_Public_Message;
+		return "不穏な予感がします。 他にも吸血鬼に襲われた人がいるのではないでしょうか？ " & Line_Break &
+			For_Execution_Message;
+	end Foreboding_About_Infection_In_First;
 	
 	function Awareness (Village : Village_Type; Message : Villages.Message)
 		return String

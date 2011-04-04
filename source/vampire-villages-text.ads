@@ -55,14 +55,14 @@ package Vampire.Villages.Text is
 	function Votes (
 		Village : Village_Type;
 		Day : Natural;
-		Provisional : Boolean;
+		Preliminary : Boolean;
 		Player_Index : Person_Index'Base)
 		return String;
 	-- 集計結果
 	function Votes_Totaled (
 		Village : Village_Type;
 		Day : Natural;
-		Provisional : Boolean;
+		Preliminary : Boolean;
 		Executed: Person_Index'Base)
 		return String;
 	
@@ -83,7 +83,7 @@ package Vampire.Villages.Text is
 		Executed : Person_Index'Base)
 		return String;
 	
-	function Vampire_Infection_In_First_Public_Message (Village : Village_Type) return String;
+	function Foreboding_About_Infection_In_First (Village : Village_Type) return String;
 	
 	-- 感染自覚
 	function Awareness (Village : Village_Type; Message : Villages.Message)

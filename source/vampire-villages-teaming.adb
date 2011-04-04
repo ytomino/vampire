@@ -15,8 +15,8 @@ package body Vampire.Villages.Teaming is
 		Result : Role_Set_Array (1 .. 2 ** (Role_Set'Length - 2));
 		Last : Natural := 0;
 		
-		subtype Village_Side_Superman_Count_Type is Natural range 0 .. 6;
-		subtype Vampire_Count_Type is Natural range 0 .. 4;
+		subtype Village_Side_Superman_Count_Type is Natural range 0 .. 7; -- 天猟探医数恋恋
+		subtype Vampire_Count_Type is Natural range 0 .. 4; -- KQJ + 一時的に使徒を計算に含める分
 		subtype Servant_Count_Type is Natural range 0 .. 1;
 		subtype Gremlin_Count_Type is Natural range 0 .. 1;
 		
@@ -401,9 +401,19 @@ package body Vampire.Villages.Teaming is
 					Gremlin_Count := 1;
 				end if;
 		end case;
+		-- 編成隠し時能力者+1
 		if Teaming in Hidings then
 			Village_Side_Superman_Count := Village_Side_Superman_Count + 1;
 		end if;
+		-- カップル作成不可能の場合は能力者の種類が足りなくなる
+		if not Male_And_Female then
+			if Unfortunate = None and then Village_Side_Superman_Count >= 5 then
+				Village_Side_Superman_Count := 4; -- 天猟探医
+			elsif Village_Side_Superman_Count >= 6 then
+				Village_Side_Superman_Count := 5; -- 天猟探医奇
+			end if;
+		end if;
+		-- 使徒妖魔交換
 		if Monster_Side = Gremlin then
 			declare
 				T : constant Natural := Servant_Count;
@@ -412,6 +422,7 @@ package body Vampire.Villages.Teaming is
 				Gremlin_Count := T;
 			end;
 		end if;
+		-- 組み合わせ探索
 		declare
 			Zero_Set : constant Role_Set := (others => 0);
 		begin

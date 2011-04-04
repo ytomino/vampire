@@ -36,7 +36,7 @@ procedure Vampire.Main is
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Term;
 	use type Forms.Base_Page;
-	use type Villages.Ability_Status;
+	use type Villages.Ability_State;
 	use type Villages.Attack_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
@@ -45,6 +45,7 @@ procedure Vampire.Main is
 	use type Villages.Message_Kind;
 	use type Villages.Message;
 	use type Villages.Village_Time;
+	use type Villages.Vote_State_Type;
 	
 	-- 現在時刻
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
@@ -1092,7 +1093,7 @@ begin
 										end if;
 									end;
 								elsif Cmd = "vote" then
-									if Village.Time = Villages.Night then
+									if Village.Vote_State = Villages.Disallowed then
 										Message_Page ("今は投票できない時間帯です。");
 									else
 										declare
@@ -1106,7 +1107,7 @@ begin
 												Message_Page ("仮投票が行われました。選ばれた候補以外に投票はできなくなります。");
 											else
 												if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Vote then
-													Villages.Vote(Village, Player, Target);
+													Villages.Vote (Village, Player, Target);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												end if;
 												Refresh_Page;
@@ -1119,12 +1120,14 @@ begin
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 									begin
-										if Special and then Village.Silver_Bullet_Status (Player) /= Villages.Allowed then
+										if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+											Message_Page ("あなたは死んでいます。");
+										elsif Special and then Village.Silver_Bullet_State (Player) /= Villages.Allowed then
 											Message_Page ("銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
 											and then Village.People.Constant_Reference(Player).Element.Role in Villages.Daytime_Role
 										then
-											case Village.Superman_Status (Player) is
+											case Village.Superman_State (Player) is
 												when Villages.Disallowed =>
 													Message_Page ("医者と探偵は、夜に能力を使えません。");
 												when Villages.Already_Used =>
@@ -1159,21 +1162,25 @@ begin
 										end if;
 									end;
 								elsif Cmd = "target2" then
-									if Village.Time = Villages.Night then
-										Message_Page ("医者と探偵は、夜に能力を使えません。");
-									else
-										declare
-											Target : constant Integer := Form.Get_Target (Inputs);
-										begin
-											case Village.People.Constant_Reference (Player).Element.Role is
-												when Villages.Doctor | Villages.Detective =>
+									if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+										Message_Page ("あなたは死んでいます。");
+									elsif Village.People.Constant_Reference (Player).Element.Role in Villages.Daytime_Role then
+										case Village.Superman_State (Player) is
+											when Villages.Disallowed =>
+												Message_Page ("医者と探偵は、夜に能力を使えません。");
+											when Villages.Already_Used =>
+												Message_Page ("医者と探偵の行動選択は一日に一度しかできません。");
+											when Villages.Allowed =>
+												declare
+													Target : constant Integer := Form.Get_Target (Inputs);
+												begin
 													Villages.Select_Target (Village, Player, Target, False, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 													Refresh_Page;
-												when others =>
-													Message_Page ("医者と探偵以外は、日中に能力を使えません。");
-											end case;
-										end;
+												end;
+										end case;
+									else
+										Message_Page ("医者と探偵以外は、日中に能力を使えません。");
 									end if;
 								elsif Cmd = "rule" then
 									if Village.Today > 0 then

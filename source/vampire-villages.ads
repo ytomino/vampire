@@ -72,7 +72,7 @@ package Vampire.Villages is
 	
 	type Role_Images is array (Villages.Person_Role) of not null access constant String;
 	
-	type Ability_Status is (Disallowed, Allowed, Already_Used);
+	type Ability_State is (Disallowed, Allowed, Already_Used);
 	
 	-- 参加者
 	
@@ -176,6 +176,7 @@ package Vampire.Villages is
 		Servant_Knew_Vampire_K,           -- Kを知る
 		Servant_Knew_Vampires,            -- 吸血鬼全員を知る
 		List,                             -- 一覧
+		Foreboding,                       -- 初日感染の公開メッセージ
 		Introduction,                     -- 序文
 		Breakdown);                       -- 開始
 	
@@ -218,6 +219,8 @@ package Vampire.Villages is
 		Counts : Voted_Counts (Person_Index'First .. Last);
 	end record;
 	
+	type Vote_State_Type is (Disallowed, Allowed_For_Preliminary, Allowed);
+	
 	-- 村
 	
 	type Village_Time is (Daytime, Vote, Night);
@@ -256,7 +259,7 @@ package Vampire.Villages is
 	-- 更新予定時刻
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
 	function Infection_In_First_Time (Village : Village_Type) return Ada.Calendar.Time;
-	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time;
+	function Preliminary_Vote_Time (Village : Village_Type) return Ada.Calendar.Time;
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
 	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
 	
@@ -281,19 +284,13 @@ package Vampire.Villages is
 		Time : in Ada.Calendar.Time);
 	
 	-- 投票
-	function For_Voting (Village : Village_Type; Day : Natural) return Boolean; -- 投票を行うかどうか
-	function Provisional_Voted (Village : Village_Type) return Boolean;
+	function Vote_State (Village : Village_Type) return Vote_State_Type;
 	function Vote_Finished (Village : Village_Type) return Boolean;
-	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info;
+	function Voted_Count (Village : Village_Type; Day : Natural; Preliminary : Boolean) return Voted_Count_Info;
 	procedure Vote (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
 		Target : in Person_Index'Base);
-	-- 一次開票の実行
-	procedure Provisional_Vote (
-		Village : in out Village_Type;
-		Time : in Ada.Calendar.Time;
-		Changed : in out Boolean);
 	
 	-- アクション
 	procedure Wake (
@@ -317,12 +314,13 @@ package Vampire.Villages is
 	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
 	function Find_Superman (Village : Village_Type; Role : Person_Role) return Person_Index'Base;
 	function Target_Day (Village : Village_Type) return Integer;
+	function Astronomer_Target_Day (Village : Village_Type) return Integer;
 	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean;
 	
-	function Detective_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
-	function Doctor_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
-	function Superman_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
-	function Silver_Bullet_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status;
+	function Detective_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
+	function Doctor_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
+	function Superman_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
+	function Silver_Bullet_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;

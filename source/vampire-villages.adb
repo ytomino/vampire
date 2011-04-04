@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Containers.Generic_Array_Sort;
 package body Vampire.Villages is
 	use Messages;
 	use Person_Records;
@@ -19,6 +18,21 @@ package body Vampire.Villages is
 			and then Left.Target = Right.Target
 			and then Left.Text = Right.Text;
 	end Equivalent_Messages;
+	
+	function Preliminary_Voted (Village : Village_Type) return Boolean is
+	begin
+		for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
+			begin
+				exit when It.Day /= Village.Today;
+				if It.Kind = Provisional_Vote then
+					return True;
+				end if;
+			end;
+		end loop;
+		return False;
+	end Preliminary_Voted;
 	
 	function Unfortunate (Village : Village_Type) return Boolean is
 		The_Unfortunate_Inhabitant : constant Integer := Find_Superman(Village, Unfortunate_Inhabitant);
@@ -141,23 +155,23 @@ package body Vampire.Villages is
 		return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
 	end Infection_In_First_Time;
 	
-	function Provisional_Voting_Time (Village : Village_Type) return Ada.Calendar.Time is
+	function Preliminary_Vote_Time (Village : Village_Type) return Ada.Calendar.Time is
 	begin
 		if Village.Today = 1
 			and then Village.Vote = Preliminary_And_Final
-			and then Village.For_Voting (1)
+			and then Village.Execution /= From_Second
 		then
 			return Village.Night_To_Daytime + Village.Day_Duration; -- 48h
 		else
 			return Village.Night_To_Daytime + Village.Day_Duration / 2; -- 24h
 		end if;
-	end Provisional_Voting_Time;
+	end Preliminary_Vote_Time;
 	
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time is
 	begin
 		if Village.Today = 1
 			and then Village.Vote = Preliminary_And_Final
-			and then Village.For_Voting (1)
+			and then Village.Execution /= From_Second
 		then
 			return Village.Night_To_Daytime + Village.Day_Duration * 3 / 2; -- 72h
 		else
@@ -280,34 +294,32 @@ package body Vampire.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Escape;
 	
-	function For_Voting (Village : Village_Type; Day : Natural) return Boolean is
+	function Vote_State (Village : Village_Type) return Vote_State_Type is
 	begin
-		if Village.State >= Epilogue and then Day = Village.Today then
-			return False;
+		if Village.State /= Playing then
+			return Disallowed;
 		else
 			case Village.Execution is
-				when Dummy_Killed_And_From_First | Infection_And_From_First | From_First =>
-					return Day >= 1;
+				when Dummy_Killed_And_From_First | From_First =>
+					null;
+				when Infection_And_From_First =>
+					if Village.Today = 1 and then not Village.Infected_In_First then
+						return Disallowed;
+					end if;
 				when From_Second =>
-					return Day >= 2;
+					if Village.Today < 2 then
+						return Disallowed;
+					end if;
 			end case;
+			if Village.Time = Night then
+				return Disallowed;
+			elsif Village.Vote = Preliminary_And_Final and then not Preliminary_Voted (Village) then
+				return Allowed_For_Preliminary;
+			else
+				return Allowed;
+			end if;
 		end if;
-	end For_Voting;
-	
-	function Provisional_Voted (Village : Village_Type) return Boolean is
-	begin
-		for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
-			declare
-				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
-			begin
-				exit when It.Day /= Village.Today;
-				if It.Kind = Provisional_Vote then
-					return True;
-				end if;
-			end;
-		end loop;
-		return False;
-	end Provisional_Voted;
+	end Vote_State;
 	
 	function Vote_Finished(Village : Village_Type) return Boolean is
 	begin
@@ -326,7 +338,7 @@ package body Vampire.Villages is
 		return True;
 	end Vote_Finished;
 	
-	function Voted_Count (Village : Village_Type; Day : Natural; Provisional : Boolean) return Voted_Count_Info is
+	function Voted_Count (Village : Village_Type; Day : Natural; Preliminary : Boolean) return Voted_Count_Info is
 	begin
 		return Result : Voted_Count_Info := (
 			Last => Village.People.Last_Index,
@@ -338,7 +350,7 @@ package body Vampire.Villages is
 					P : Person_Type renames Village.People.Constant_Reference (I).Element.all;
 					V : Integer;
 				begin
-					if Provisional then
+					if Preliminary then
 						V := P.Records.Constant_Reference (Day).Element.Provisional_Vote;
 					else
 						V := P.Records.Constant_Reference (Day).Element.Vote;
@@ -363,79 +375,12 @@ package body Vampire.Villages is
 	begin
 		pragma Assert(Target < 0 or else Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate);
 		Rec.Vote := Target;
-		if not Provisional_Voted(Village)
+		if not Preliminary_Voted (Village)
 			and then Village.Time = Daytime -- 短期の投票延長期間は仮投票は発生させない
 		then
 			Rec.Provisional_Vote := Target;
 		end if;
 	end Vote;
-	
-	procedure Provisional_Vote (
-		Village : in out Village_Type;
-		Time : in Ada.Calendar.Time;
-		Changed : in out Boolean)
-	is
-		type Voted_Array is array (Natural range <>) of Natural;
-		procedure Sort is new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
-		Voted, Sort_Voted : Voted_Array (Village.People.First_Index .. Village.People.Last_Index) := (others => 0);
-		Candidates : Natural := 0;
-		Max : Natural := 0;
-		Limit : Natural := 0;
-	begin
-		-- 集計
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			if Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.State /= Died then
-				declare
-					Target : Integer := Village.People.Constant_Reference (I).Element.Records.Constant_Reference (Village.Today).Element.Provisional_Vote;
-				begin
-					if Target in Village.People.First_Index .. Village.People.Last_Index then
-						if Voted (Target) = 0 then
-							Candidates := Candidates + 1;
-						end if;
-						Voted (Target) := Voted (Target) + 1;
-						if Voted (Target) > Max then
-							Max := Voted (Target);
-						end if;
-					end if;
-				end;
-			end if;
-		end loop;
-		-- 候補が2名以上いる場合に適用
-		if Candidates >= 2 then
-			-- 同率2位までを候補とする
-			Sort_Voted := Voted;
-			Sort (Sort_Voted);
-			Limit := Sort_Voted (Sort_Voted'Last - 1);
-			for I in Village.People.First_Index .. Village.People.Last_Index loop
-				declare
-					The_Person : Person_Type renames Village.People.Reference (I).Element.all;
-					The_Record : Person_Record renames The_Person.Records.Reference (Village.Today).Element.all;
-				begin
-					if The_Record.State /= Died then
-						The_Record.Candidate := Voted (I) >= Limit;
-					end if;
-				end;
-			end loop;
-			-- 選ばれた候補以外に投票していた人は棄権に戻す
-			for I in Village.People.First_Index .. Village.People.Last_Index loop
-				declare
-					V : Integer renames Village.People.Reference (I).Element.Records.Reference (Village.Today).Element.Vote;
-				begin
-					if V >= 0 and then not Village.People.Constant_Reference (V).Element.Records.Constant_Reference (Village.Today).Element.Candidate then
-						V := -1;
-					end if;
-				end;
-			end loop;
-			Append (Village.Messages, Message'(
-				Kind => Provisional_Vote,
-				Day => Village.Today,
-				Time => Time,
-				Subject => No_Person,
-				Target => No_Person,
-				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-			Changed := True; -- 変更を保存
-		end if;
-	end Provisional_Vote;
 	
 	procedure Wake (
 		Village : in out Village_Type;
@@ -498,7 +443,7 @@ package body Vampire.Villages is
 				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
 			begin
 				exit when It.Day /= Village.Today;
-				if It.Kind in Vampire_Infection_In_First .. Vampire_Failed_In_First then
+				if It.Kind = Foreboding then
 					return True;
 				end if;
 			end;
@@ -528,12 +473,26 @@ package body Vampire.Villages is
 	
 	function Target_Day (Village : Village_Type) return Integer is
 	begin
+		if Village.Time = Night
+			or else (Village.Execution = Infection_And_From_First
+				and then Village.Today = 1
+				and then not Village.Infected_In_First)
+		then
+			return Village.Today - 1; -- 夜(と初日感染用)の能力は前日分を使用する
+		else
+			return Village.Today;
+		end if;
+	end Target_Day;
+	
+	function Astronomer_Target_Day (Village : Village_Type) return Integer is
+	begin
+		-- 天文家は初日感染とか気にせず日課の観測をする
 		if Village.Time = Night then
 			return Village.Today - 1; -- 夜の能力は前日分を使用する
 		else
 			return Village.Today;
 		end if;
-	end Target_Day;
+	end Astronomer_Target_Day;
 	
 	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean is
 	begin
@@ -545,7 +504,7 @@ package body Vampire.Villages is
 		return False;
 	end Already_Used_Special;
 	
-	function Detective_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+	function Detective_State (Village : Village_Type; Subject : Person_Index) return Ability_State is
 		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
 		pragma Assert (Subject_Person.Role = Detective);
 	begin
@@ -558,9 +517,9 @@ package body Vampire.Villages is
 		else
 			return Disallowed;
 		end if;
-	end Detective_Status;
+	end Detective_State;
 	
-	function Doctor_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+	function Doctor_State (Village : Village_Type; Subject : Person_Index) return Ability_State is
 		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
 		pragma Assert (Subject_Person.Role = Doctor);
 	begin
@@ -576,19 +535,19 @@ package body Vampire.Villages is
 		else
 			return Disallowed;
 		end if;
-	end Doctor_Status;
+	end Doctor_State;
 	
-	function Superman_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+	function Superman_State (Village : Village_Type; Subject : Person_Index) return Ability_State is
 		Subject_Person : Person_Type renames Village.People.Constant_Reference (Subject).Element.all;
 	begin
 		case Subject_Person.Role is
-			when Detective => return Village.Detective_Status (Subject);
-			when Doctor => return Village.Doctor_Status (Subject);
+			when Detective => return Village.Detective_State (Subject);
+			when Doctor => return Village.Doctor_State (Subject);
 			when others => return Allowed;
 		end case;
-	end Superman_Status;
+	end Superman_State;
 	
-	function Silver_Bullet_Status (Village : Village_Type; Subject : Person_Index) return Ability_Status is
+	function Silver_Bullet_State (Village : Village_Type; Subject : Person_Index) return Ability_State is
 		pragma Assert (Village.People.Constant_Reference (Subject).Element.Role = Hunter);
 	begin
 		if Village.Already_Used_Special (Subject) then
@@ -601,7 +560,7 @@ package body Vampire.Villages is
 		else
 			return Allowed;
 		end if;
-	end Silver_Bullet_Status;
+	end Silver_Bullet_State;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;
@@ -613,7 +572,7 @@ package body Vampire.Villages is
 		Target_Day : Natural := Village.Target_Day;
 	begin
 		case Village.People.Constant_Reference (Subject).Element.Role is
-			when Villages.Doctor =>
+			when Doctor =>
 				if Village.Daytime_Preview /= None then
 					declare
 						Result : Message_Kind;
@@ -646,7 +605,7 @@ package body Vampire.Villages is
 					end;
 				end if;
 				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
-			when Villages.Detective =>
+			when Detective =>
 				if Village.Daytime_Preview /= None then
 					Append (Village.Messages, Message'(
 						Kind => Detective_Survey_Preview,
@@ -656,6 +615,9 @@ package body Vampire.Villages is
 						Target => Target,
 						Text => Village.People.Constant_Reference (Target).Element.Records.Constant_Reference (Village.Today).Element.Note));
 				end if;
+				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
+			when Astronomer =>
+				Target_Day := Village.Astronomer_Target_Day;
 				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
 			when others =>
 				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
