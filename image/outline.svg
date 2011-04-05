@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="600"
+   height="1460"
+   id="svg4309"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="outline.svg">
+  <title
+     id="title2983">Outline - The Village of Vampire</title>
+  <defs
+     id="defs4311">
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path5739"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="scale(0.8,0.8)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible">
+      <path
+         id="path5623"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="EmptyTriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="EmptyTriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path5757"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,-4.8,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path5599"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path5617"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <linearGradient
+       id="linearGradient5199"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#00ffff;stop-opacity:1;"
+         offset="0"
+         id="stop5201" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#202020"
+     bordercolor="#7f0000"
+     borderopacity="1"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:zoom="1"
+     inkscape:cx="333.91111"
+     inkscape:cy="1471.5133"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     showborder="true"
+     borderlayer="false"
+     inkscape:showpageshadow="false"
+     inkscape:window-width="1276"
+     inkscape:window-height="756"
+     inkscape:window-x="4"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     fit-margin-bottom="840"
+     gridtolerance="10">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4317"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       spacingx="10px"
+       spacingy="10px" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata4314">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Outline - The Village of Vampire</dc:title>
+        <cc:license
+           rdf:resource="http://www.kmonos.net/nysl/nysdl.html" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>yt</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,407.63783)">
+    <rect
+       y="-218"
+       x="10"
+       height="1160.3622"
+       width="580"
+       id="rect7648"
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1.08242977;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2985"
+       width="580"
+       height="99.999992"
+       x="10"
+       y="-368" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot5565"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(0,-2)"><flowRegion
+         id="flowRegion5567"><rect
+           id="rect5569"
+           width="3"
+           height="51"
+           x="122"
+           y="143" /></flowRegion><flowPara
+         id="flowPara5571" /></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="20"
+       y="-348"
+       id="text5573"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5575"
+         x="20"
+         y="-348">プロローグ</tspan></text>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot5577"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(0,-2)"><flowRegion
+         id="flowRegion5579"><rect
+           id="rect5581"
+           width="15"
+           height="32"
+           x="1"
+           y="33" /></flowRegion><flowPara
+         id="flowPara5583" /></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="-378"
+       id="text5573-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5575-7"
+         x="310"
+         y="-378">村に参加</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect7020"
+       width="480"
+       height="50.000004"
+       x="60"
+       y="-338" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="70"
+       y="-318"
+       id="text7402"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan7404"
+         x="70"
+         y="-318">全員：フリートーク、行動終了</tspan><tspan
+         sodipodi:role="line"
+         x="70"
+         y="-298"
+         id="tspan7406">　　　ルール変更(誰も行動終了していない時のみ)</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text7650"
+       y="-248"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="-248"
+         x="310"
+         id="tspan7652"
+         sodipodi:role="line">全員が行動終了</tspan><tspan
+         y="-228"
+         x="310"
+         sodipodi:role="line"
+         id="tspan7658">ゲームスタート</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="650"
+       y="222.36217"
+       id="text7654"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan7656"
+         x="650"
+         y="222.36217" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="20"
+       y="-198"
+       id="text7660"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan7662"
+         x="20"
+         y="-198">ゲーム進行</tspan></text>
+    <rect
+       y="-186"
+       x="40"
+       height="648.36218"
+       width="520"
+       id="rect7664"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text7666"
+       y="-168"
+       x="50"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="-168"
+         x="50"
+         id="tspan7668"
+         sodipodi:role="line">一日目の昼</tspan></text>
+    <path
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1"
+       d="m 302,-397.63783 0,40 8,0 -10,10 -10,-10 8,0 0,-40 z"
+       id="rect7676"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path7679"
+       d="m 302,-277.63783 0,100 8,0 -10,10 -10,-10 8,0 0,-100 z"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       y="-158"
+       x="50"
+       height="159.99997"
+       width="500"
+       id="rect7681"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text7683"
+       y="-138"
+       x="60"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan7687"
+         y="-138"
+         x="60"
+         sodipodi:role="line">「誰かが感染させられ、初日から処刑を行います。」のみ</tspan><tspan
+         y="-118"
+         x="60"
+         sodipodi:role="line"
+         id="tspan7699" /></text>
+    <rect
+       y="-128"
+       x="60"
+       height="69.999985"
+       width="480"
+       id="rect7715"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text7717"
+       y="-108"
+       x="70"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan7721"
+         y="-108"
+         x="70"
+         sodipodi:role="line">全員　：発言</tspan><tspan
+         y="-88"
+         x="70"
+         sodipodi:role="line"
+         id="tspan7725">猟師　：護衛先の設定(銀の弾丸は使用不可)</tspan><tspan
+         y="-66.760483"
+         x="70"
+         sodipodi:role="line"
+         id="tspan7727">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="-28"
+       id="text7744"
+       sodipodi:linespacing="125%"><tspan
+         id="tspan7748"
+         sodipodi:role="line"
+         x="310"
+         y="-28">24時間経過</tspan><tspan
+         sodipodi:role="line"
+         x="310"
+         y="-6.7604866"
+         id="tspan7752">誰かが感染</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect7754"
+       width="478.75394"
+       height="108.75396"
+       x="60.62302"
+       y="32.985168" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="70"
+       y="52"
+       id="text7756"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="70"
+         y="52"
+         id="tspan7780">全員　：発言と投票</tspan><tspan
+         sodipodi:role="line"
+         x="70"
+         y="72"
+         id="tspan7784">天文家：観測の設定</tspan><tspan
+         sodipodi:role="line"
+         x="70"
+         y="92"
+         id="tspan7786">猟師　：護衛先の設定</tspan><tspan
+         sodipodi:role="line"
+         x="70"
+         y="112"
+         id="tspan7788">医者　：治療(「誰かが感染させられ〜」のみ)</tspan><tspan
+         sodipodi:role="line"
+         x="70"
+         y="133.23952"
+         id="tspan7790">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <path
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 302,-47.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path7729"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <rect
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect7792"
+       width="498.61713"
+       height="139.30856"
+       x="50.691441"
+       y="163.05359" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path7794"
+       d="m 302,152.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text7796"
+       y="182"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan7800"
+         y="182"
+         x="310"
+         sodipodi:role="line">48時間経過</tspan><tspan
+         y="203.23952"
+         x="310"
+         sodipodi:role="line"
+         id="tspan7804">一次開票</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="60"
+       y="186"
+       id="text7806"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="60"
+         y="186"
+         id="tspan7808">「仮投票と本投票で</tspan><tspan
+         sodipodi:role="line"
+         x="60"
+         y="206"
+         id="tspan7812">　処刑を行います。」のみ</tspan><tspan
+         id="tspan7810"
+         sodipodi:role="line"
+         x="60"
+         y="226" /></text>
+    <rect
+       y="232"
+       x="60"
+       height="49.999996"
+       width="480"
+       id="rect7814"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text7816"
+       y="252"
+       x="70"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan7826"
+         y="252"
+         x="70"
+         sodipodi:role="line">全員　：発言と決戦投票</tspan><tspan
+         y="272"
+         x="70"
+         sodipodi:role="line"
+         id="tspan7839">能力者と吸血鬼は引き続き能力の設定/使用</tspan></text>
+    <rect
+       y="332.36218"
+       x="50"
+       height="119.99998"
+       width="498.61713"
+       id="rect3069"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="322.36218"
+       id="text3071"
+       sodipodi:linespacing="125%"><tspan
+         id="tspan3075"
+         sodipodi:role="line"
+         x="310"
+         y="322.36218">更新時間経過</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3081"
+       y="352.36218"
+       x="60"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="352.36218"
+         x="60"
+         sodipodi:role="line"
+         id="tspan3087">短期村かつ</tspan><tspan
+         y="372.36218"
+         x="60"
+         sodipodi:role="line"
+         id="tspan3094">未投票の人がいる時のみ</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3096"
+       width="480"
+       height="29.999985"
+       x="60"
+       y="382.36218" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="70"
+       y="402.36218"
+       id="text3098"
+       sodipodi:linespacing="125%"><tspan
+         id="tspan3102"
+         sodipodi:role="line"
+         x="70"
+         y="402.36218">全員：投票</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3108"
+       y="442.36218"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="442.36218"
+         x="310"
+         sodipodi:role="line"
+         id="tspan3110">全員が投票または5分経過</tspan></text>
+    <rect
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3112"
+       width="520"
+       height="179.99998"
+       x="40"
+       y="472.36218" />
+    <rect
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3114"
+       width="498.61713"
+       height="119.99998"
+       x="50"
+       y="502.36218" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3116"
+       y="492.36218"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="492.36218"
+         x="310"
+         sodipodi:role="line"
+         id="tspan3118">処刑</tspan></text>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3120"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(0,-149.63783)"><flowRegion
+         id="flowRegion3122"><rect
+           id="rect3124"
+           width="3"
+           height="26"
+           x="240"
+           y="886" /></flowRegion><flowPara
+         id="flowPara3126"></flowPara></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="50"
+       y="492.36218"
+       id="text3128"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3130"
+         x="50"
+         y="492.36218">一日目〜二日目の夜</tspan></text>
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path3106"
+       d="m 302,422.36217 0,110 8,0 -10,10 -10,-10 8,0 0,-110 z"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 302,292.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
+       id="path3079"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="60"
+       y="522.36218"
+       id="text3132"
+       sodipodi:linespacing="125%"><tspan
+         id="tspan3134"
+         sodipodi:role="line"
+         x="60"
+         y="522.36218">短期村かつ</tspan><tspan
+         sodipodi:role="line"
+         x="60"
+         y="542.36218"
+         id="tspan3138">夜の時間を取った場合のみ</tspan><tspan
+         id="tspan3136"
+         sodipodi:role="line"
+         x="60"
+         y="562.36218" /></text>
+    <rect
+       y="552.36224"
+       x="60"
+       height="49.999962"
+       width="480"
+       id="rect3140"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3142"
+       y="572.36218"
+       x="70"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="572.36218"
+         x="70"
+         sodipodi:role="line"
+         id="tspan3144">天文家と猟師：引き続き能力の設定</tspan><tspan
+         y="592.36218"
+         x="70"
+         sodipodi:role="line"
+         id="tspan3146">吸血鬼　　　：無制限に会話、引き続き襲撃先の設定</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="642.36218"
+       id="text3150"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="310"
+         y="642.36218"
+         id="tspan3156">観測、襲撃と護衛、各種自覚</tspan></text>
+    <rect
+       y="662.36218"
+       x="40"
+       height="189.99995"
+       width="520"
+       id="rect3162"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 302,612.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path3148"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccc" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3962"
+       y="682.36218"
+       x="50"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="682.36218"
+         x="50"
+         id="tspan3964"
+         sodipodi:role="line">二日目の昼</tspan></text>
+    <rect
+       y="692.36218"
+       x="60"
+       height="130.00005"
+       width="478.75394"
+       id="rect3966"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.0933249;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3968"
+       y="712.36218"
+       x="70"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan3970"
+         y="712.36218"
+         x="70"
+         sodipodi:role="line">全員　：発言と投票</tspan><tspan
+         id="tspan3972"
+         y="732.36218"
+         x="70"
+         sodipodi:role="line">天文家：観測の設定</tspan><tspan
+         id="tspan3974"
+         y="752.36218"
+         x="70"
+         sodipodi:role="line">猟師　：護衛先の設定</tspan><tspan
+         id="tspan3976"
+         y="772.36218"
+         x="70"
+         sodipodi:role="line">医者　：治療</tspan><tspan
+         y="792.36218"
+         x="70"
+         sodipodi:role="line"
+         id="tspan3984">探偵　：調査</tspan><tspan
+         id="tspan3978"
+         y="812.36218"
+         x="70"
+         sodipodi:role="line">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="636"
+       y="162.36217"
+       id="text3980"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3982"
+         x="636"
+         y="162.36217" /></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text3992"
+       y="842.36218"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan3994"
+         y="842.36218"
+         x="310"
+         sodipodi:role="line">投票は一日目同様……</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="310"
+       y="872.36218"
+       id="text4000"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         x="310"
+         y="872.36218"
+         id="tspan4002">繰り返し……</tspan></text>
+    <rect
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:0.52704602;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4004"
+       width="520"
+       height="49.999954"
+       x="40"
+       y="882.36218" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="50"
+       y="902.36218"
+       id="text4006"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4008"
+         x="50"
+         y="902.36218">最終日の夜</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4010"
+       y="902.36218"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan4012"
+         y="902.36218"
+         x="310"
+         sodipodi:role="line">最後の吸血鬼を処刑</tspan><tspan
+         y="922.36218"
+         x="310"
+         sodipodi:role="line"
+         id="tspan4014">または村人が吸血鬼以下に減る</tspan></text>
+    <text
+       sodipodi:linespacing="125%"
+       id="text4016"
+       y="962.36218"
+       x="310"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan4018"
+         y="962.36218"
+         x="310"
+         sodipodi:role="line">決着</tspan></text>
+    <rect
+       y="972.36218"
+       x="10"
+       height="69.999985"
+       width="580"
+       id="rect4020"
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:0.83665997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4022"
+       y="992.36218"
+       x="20"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         y="992.36218"
+         x="20"
+         id="tspan4024"
+         sodipodi:role="line">エピローグ</tspan></text>
+    <rect
+       y="1002.3622"
+       x="50"
+       height="29.99999"
+       width="480"
+       id="rect4026"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.77459651;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       inkscape:connector-curvature="0"
+       id="path3986"
+       d="m 302,832.3622 0,150 8,0 -10,10 -10,-10 8,0 0,-150 z"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text4028"
+       y="1022.3622"
+       x="60"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"><tspan
+         id="tspan4032"
+         y="1022.3622"
+         x="60"
+         sodipodi:role="line">全員：フリートーク</tspan></text>
+  </g>
+</svg>

@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.2"
+   width="600"
+   height="1460"
+   id="svg4309">
+  <title
+     id="title2983">Outline - The Village of Vampire</title>
+  <defs
+     id="defs4311">
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         transform="scale(0.8,0.8)"
+         id="path5739"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       id="Arrow2Mend"
+       style="overflow:visible">
+      <path
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)"
+         id="path5623"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       id="EmptyTriangleOutL"
+       style="overflow:visible">
+      <path
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         transform="matrix(0.8,0,0,0.8,-4.8,0)"
+         id="path5757"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         id="path5599"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none" />
+    </marker>
+    <marker
+       refX="0"
+       refY="0"
+       orient="auto"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         id="path5617"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round" />
+    </marker>
+    <linearGradient
+       id="linearGradient5199">
+      <stop
+         id="stop5201"
+         style="stop-color:#00ffff;stop-opacity:1"
+         offset="0" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata4314">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Outline - The Village of Vampire</dc:title>
+        <cc:license
+           rdf:resource="http://www.kmonos.net/nysl/nysdl.html" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>yt</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,407.63783)"
+     id="layer1">
+    <rect
+       width="580"
+       height="1160.3622"
+       x="10"
+       y="-218"
+       id="rect7648"
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1.08242977;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="580"
+       height="99.999992"
+       x="10"
+       y="-368"
+       id="rect2985"
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <flowRoot
+       transform="translate(0,-2)"
+       id="flowRoot5565"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion5567"><rect
+           width="3"
+           height="51"
+           x="122"
+           y="143"
+           id="rect5569" /></flowRegion><flowPara
+         id="flowPara5571" /></flowRoot>    <text
+       x="20"
+       y="-348"
+       id="text5573"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="20"
+         y="-348"
+         id="tspan5575">プロローグ</tspan></text>
+    <flowRoot
+       transform="translate(0,-2)"
+       id="flowRoot5577"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion5579"><rect
+           width="15"
+           height="32"
+           x="1"
+           y="33"
+           id="rect5581" /></flowRegion><flowPara
+         id="flowPara5583" /></flowRoot>    <text
+       x="310"
+       y="-378"
+       id="text5573-4"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="-378"
+         id="tspan5575-7">村に参加</tspan></text>
+    <rect
+       width="480"
+       height="50.000004"
+       x="60"
+       y="-338"
+       id="rect7020"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="-318"
+       id="text7402"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="-318"
+         id="tspan7404">全員：フリートーク、行動終了</tspan><tspan
+         x="70"
+         y="-298"
+         id="tspan7406">　　　ルール変更(誰も行動終了していない時のみ)</tspan></text>
+    <text
+       x="310"
+       y="-248"
+       id="text7650"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="-248"
+         id="tspan7652">全員が行動終了</tspan><tspan
+         x="310"
+         y="-228"
+         id="tspan7658">ゲームスタート</tspan></text>
+    <text
+       x="650"
+       y="222.36217"
+       id="text7654"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="650"
+         y="222.36217"
+         id="tspan7656" /></text>
+    <text
+       x="20"
+       y="-198"
+       id="text7660"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="20"
+         y="-198"
+         id="tspan7662">ゲーム進行</tspan></text>
+    <rect
+       width="520"
+       height="648.36218"
+       x="40"
+       y="-186"
+       id="rect7664"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="50"
+       y="-168"
+       id="text7666"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="50"
+         y="-168"
+         id="tspan7668">一日目の昼</tspan></text>
+    <path
+       d="m 302,-397.63783 0,40 8,0 -10,10 -10,-10 8,0 0,-40 z"
+       id="rect7676"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1" />
+    <path
+       d="m 302,-277.63783 0,100 8,0 -10,10 -10,-10 8,0 0,-100 z"
+       id="path7679"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="500"
+       height="159.99997"
+       x="50"
+       y="-158"
+       id="rect7681"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="60"
+       y="-138"
+       id="text7683"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="60"
+         y="-138"
+         id="tspan7687">「誰かが感染させられ、初日から処刑を行います。」のみ</tspan><tspan
+         x="60"
+         y="-118"
+         id="tspan7699" /></text>
+    <rect
+       width="480"
+       height="69.999985"
+       x="60"
+       y="-128"
+       id="rect7715"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="-108"
+       id="text7717"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="-108"
+         id="tspan7721">全員　：発言</tspan><tspan
+         x="70"
+         y="-88"
+         id="tspan7725">猟師　：護衛先の設定(銀の弾丸は使用不可)</tspan><tspan
+         x="70"
+         y="-66.760483"
+         id="tspan7727">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <text
+       x="310"
+       y="-28"
+       id="text7744"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="-28"
+         id="tspan7748">24時間経過</tspan><tspan
+         x="310"
+         y="-6.7604866"
+         id="tspan7752">誰かが感染</tspan></text>
+    <rect
+       width="478.75394"
+       height="108.75396"
+       x="60.62302"
+       y="32.985168"
+       id="rect7754"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="52"
+       id="text7756"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="52"
+         id="tspan7780">全員　：発言と投票</tspan><tspan
+         x="70"
+         y="72"
+         id="tspan7784">天文家：観測の設定</tspan><tspan
+         x="70"
+         y="92"
+         id="tspan7786">猟師　：護衛先の設定</tspan><tspan
+         x="70"
+         y="112"
+         id="tspan7788">医者　：治療(「誰かが感染させられ〜」のみ)</tspan><tspan
+         x="70"
+         y="133.23952"
+         id="tspan7790">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <path
+       d="m 302,-47.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path7729"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="498.61713"
+       height="139.30856"
+       x="50.691441"
+       y="163.05359"
+       id="rect7792"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,152.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path7794"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="310"
+       y="182"
+       id="text7796"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="182"
+         id="tspan7800">48時間経過</tspan><tspan
+         x="310"
+         y="203.23952"
+         id="tspan7804">一次開票</tspan></text>
+    <text
+       x="60"
+       y="186"
+       id="text7806"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="60"
+         y="186"
+         id="tspan7808">「仮投票と本投票で</tspan><tspan
+         x="60"
+         y="206"
+         id="tspan7812">　処刑を行います。」のみ</tspan><tspan
+         x="60"
+         y="226"
+         id="tspan7810" /></text>
+    <rect
+       width="480"
+       height="49.999996"
+       x="60"
+       y="232"
+       id="rect7814"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="252"
+       id="text7816"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="252"
+         id="tspan7826">全員　：発言と決戦投票</tspan><tspan
+         x="70"
+         y="272"
+         id="tspan7839">能力者と吸血鬼は引き続き能力の設定/使用</tspan></text>
+    <rect
+       width="498.61713"
+       height="119.99998"
+       x="50"
+       y="332.36218"
+       id="rect3069"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="310"
+       y="322.36218"
+       id="text3071"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="322.36218"
+         id="tspan3075">更新時間経過</tspan></text>
+    <text
+       x="60"
+       y="352.36218"
+       id="text3081"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="60"
+         y="352.36218"
+         id="tspan3087">短期村かつ</tspan><tspan
+         x="60"
+         y="372.36218"
+         id="tspan3094">未投票の人がいる時のみ</tspan></text>
+    <rect
+       width="480"
+       height="29.999985"
+       x="60"
+       y="382.36218"
+       id="rect3096"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="402.36218"
+       id="text3098"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="402.36218"
+         id="tspan3102">全員：投票</tspan></text>
+    <text
+       x="310"
+       y="442.36218"
+       id="text3108"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="442.36218"
+         id="tspan3110">全員が投票または5分経過</tspan></text>
+    <rect
+       width="520"
+       height="179.99998"
+       x="40"
+       y="472.36218"
+       id="rect3112"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <rect
+       width="498.61713"
+       height="119.99998"
+       x="50"
+       y="502.36218"
+       id="rect3114"
+       style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="310"
+       y="492.36218"
+       id="text3116"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="492.36218"
+         id="tspan3118">処刑</tspan></text>
+    <flowRoot
+       transform="translate(0,-149.63783)"
+       id="flowRoot3120"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion3122"><rect
+           width="3"
+           height="26"
+           x="240"
+           y="886"
+           id="rect3124" /></flowRegion><flowPara
+         id="flowPara3126" /></flowRoot>    <text
+       x="50"
+       y="492.36218"
+       id="text3128"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="50"
+         y="492.36218"
+         id="tspan3130">一日目〜二日目の夜</tspan></text>
+    <path
+       d="m 302,422.36217 0,110 8,0 -10,10 -10,-10 8,0 0,-110 z"
+       id="path3106"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,292.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
+       id="path3079"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="60"
+       y="522.36218"
+       id="text3132"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="60"
+         y="522.36218"
+         id="tspan3134">短期村かつ</tspan><tspan
+         x="60"
+         y="542.36218"
+         id="tspan3138">夜の時間を取った場合のみ</tspan><tspan
+         x="60"
+         y="562.36218"
+         id="tspan3136" /></text>
+    <rect
+       width="480"
+       height="49.999962"
+       x="60"
+       y="552.36224"
+       id="rect3140"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="572.36218"
+       id="text3142"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="572.36218"
+         id="tspan3144">天文家と猟師：引き続き能力の設定</tspan><tspan
+         x="70"
+         y="592.36218"
+         id="tspan3146">吸血鬼　　　：無制限に会話、引き続き襲撃先の設定</tspan></text>
+    <text
+       x="310"
+       y="642.36218"
+       id="text3150"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="642.36218"
+         id="tspan3156">観測、襲撃と護衛、各種自覚</tspan></text>
+    <rect
+       width="520"
+       height="189.99995"
+       x="40"
+       y="662.36218"
+       id="rect3162"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,612.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path3148"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="50"
+       y="682.36218"
+       id="text3962"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="50"
+         y="682.36218"
+         id="tspan3964">二日目の昼</tspan></text>
+    <rect
+       width="478.75394"
+       height="130.00005"
+       x="60"
+       y="692.36218"
+       id="rect3966"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.0933249;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="70"
+       y="712.36218"
+       id="text3968"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="70"
+         y="712.36218"
+         id="tspan3970">全員　：発言と投票</tspan><tspan
+         x="70"
+         y="732.36218"
+         id="tspan3972">天文家：観測の設定</tspan><tspan
+         x="70"
+         y="752.36218"
+         id="tspan3974">猟師　：護衛先の設定</tspan><tspan
+         x="70"
+         y="772.36218"
+         id="tspan3976">医者　：治療</tspan><tspan
+         x="70"
+         y="792.36218"
+         id="tspan3984">探偵　：調査</tspan><tspan
+         x="70"
+         y="812.36218"
+         id="tspan3978">吸血鬼：襲撃先とメッセージの設定</tspan></text>
+    <text
+       x="636"
+       y="162.36217"
+       id="text3980"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="636"
+         y="162.36217"
+         id="tspan3982" /></text>
+    <text
+       x="310"
+       y="842.36218"
+       id="text3992"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="842.36218"
+         id="tspan3994">投票は一日目同様……</tspan></text>
+    <text
+       x="310"
+       y="872.36218"
+       id="text4000"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="872.36218"
+         id="tspan4002">繰り返し……</tspan></text>
+    <rect
+       width="520"
+       height="49.999954"
+       x="40"
+       y="882.36218"
+       id="rect4004"
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:0.52704602;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="50"
+       y="902.36218"
+       id="text4006"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="50"
+         y="902.36218"
+         id="tspan4008">最終日の夜</tspan></text>
+    <text
+       x="310"
+       y="902.36218"
+       id="text4010"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="902.36218"
+         id="tspan4012">最後の吸血鬼を処刑</tspan><tspan
+         x="310"
+         y="922.36218"
+         id="tspan4014">または村人が吸血鬼以下に減る</tspan></text>
+    <text
+       x="310"
+       y="962.36218"
+       id="text4016"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="310"
+         y="962.36218"
+         id="tspan4018">決着</tspan></text>
+    <rect
+       width="580"
+       height="69.999985"
+       x="10"
+       y="972.36218"
+       id="rect4020"
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:0.83665997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="20"
+       y="992.36218"
+       id="text4022"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="20"
+         y="992.36218"
+         id="tspan4024">エピローグ</tspan></text>
+    <rect
+       width="480"
+       height="29.99999"
+       x="50"
+       y="1002.3622"
+       id="rect4026"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.77459651;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,832.3622 0,150 8,0 -10,10 -10,-10 8,0 0,-150 z"
+       id="path3986"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       x="60"
+       y="1022.3622"
+       id="text4028"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><tspan
+         x="60"
+         y="1022.3622"
+         id="tspan4032">全員：フリートーク</tspan></text>
+  </g>
+</svg>
