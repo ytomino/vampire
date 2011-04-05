@@ -124,7 +124,7 @@ package body Vampire.Villages.Text is
 				"今夜は地主さんもやって来ますので、出迎えの準備もしなければなりません……。 "),
 			Breakdown => new String'(
 				"昨夜ついに来ることはなかった地主さんの死体が、翌朝村の真ん中にありました。 " & Line_Break &
-				"死体は干乾び、首筋には牙のあとがありますが、これは獣のものではありません……。 " &
+				"死体は干乾び、首筋には牙のあとがありますが、これは獣のものではありません。 " &
 				"村人たちが不審がっていると、突如地主さんの死体が、赤い目を見開き牙を剥いて起き上がりました。 " &
 				"しかし山間から差し込む朝日を浴びてその身体は灰となり崩れ落ちてゆきます……。 " & Line_Break &
 				"疑う余地はありません。 " &
@@ -147,7 +147,7 @@ package body Vampire.Villages.Text is
 				"改めて城内を探索しますと、古の領主が残した拷問や処刑を行うための悪趣味な道具がごろごろしています。 " &
 				"こうして、古城での日々がはじまりました……。 ")));
 	
-	For_Execution_Message : constant String := "誰かが古びた杭を持って来たことで、血塗られた日々が幕を開けました。 ";
+	For_Execution_Message : constant String := "喧騒の中、誰かが古びた杭を持って来ました……。 ";
 	
 	function Stage (Village : Village_Type) return Stage_Kind is
 		L : constant Natural := Village.Name.Length;

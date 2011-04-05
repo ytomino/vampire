@@ -1328,7 +1328,7 @@ is
 																Output,
 																Form,
 																Ada.Calendar.Formatting.Image (Village.Infection_In_First_Time, Time_Zone => Calendar.Time_Offset) &
-																"までは、とりあえず様子をうかがいましょう。 ");
+																"まではとりあえず様子をうかがいましょう。 ");
 														end if;
 													when Allowed_For_Preliminary =>
 														declare
