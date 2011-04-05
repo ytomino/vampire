@@ -601,7 +601,8 @@ is
 			Forms.Write_In_HTML (
 				Output,
 				Form,
-				Village.Name.Constant_Reference.Element.all);
+				Village.Name.Constant_Reference.Element.all & ' ' &
+				Day_Name (Day, Village.Today, Village.State));
 		elsif Tag = "background" then
 			Forms.Write_Attribute_Name (Output, "background");
 			Forms.Write_Link (
@@ -883,7 +884,7 @@ is
 				end Narration;
 				procedure Speech (
 					Message : Vampire.Villages.Message;
-					Subject : Person_Index'Base;
+					Filter_Subject : Person_Index'Base;
 					Time : Ada.Calendar.Time;
 					Class : String;
 					X : Integer := -1)
@@ -893,6 +894,8 @@ is
 				begin
 					if Message.Kind = Escaped_Speech then
 						Subject_Ref := Village.Escaped_People.Constant_Reference (Message.Subject).Element;
+					elsif Message.Kind in Detective_Message_Kind then
+						Subject_Ref := Village.People.Constant_Reference (Message.Target).Element;
 					else
 						Subject_Ref := Village.People.Constant_Reference (Message.Subject).Element;
 					end if;
@@ -903,9 +906,9 @@ is
 					end if;
 					if Message.Kind = Vampire.Villages.Ghost then
 						Ada.Strings.Unbounded.Append (Filter, "pg");
-					elsif Subject /= No_Person then
+					elsif Filter_Subject /= No_Person then
 						Ada.Strings.Unbounded.Append (Filter, "p");
-						Ada.Strings.Unbounded.Append (Filter, Image (Subject));
+						Ada.Strings.Unbounded.Append (Filter, Image (Filter_Subject));
 					end if;
 					R3.Handle_Speech (
 						Output,
@@ -1107,7 +1110,7 @@ is
 													or else Village.Daytime_Preview = Vampire.Villages.Message_Only
 													or else Message.Kind /= Vampire.Villages.Detective_Survey_Preview)
 											then
-												Speech (Message, Message.Subject, Message.Time, "dying");
+												Speech (Message, No_Person, Message.Time, "dying");
 											end if;
 										end if;
 									when Vampire.Villages.Provisional_Vote =>
@@ -1549,8 +1552,8 @@ is
 									Forms.Write_In_HTML (
 										Output,
 										Form,
-										Person.Records.Constant_Reference (Village.Today).Element.
-											Note.Constant_Reference.Element.all);
+										Person.Records.Constant_Reference (Village.Today).Element.Note.Constant_Reference.Element.all,
+										Pre => True);
 								end if;
 							elsif Tag = "zero" then
 								if Village.State = Playing

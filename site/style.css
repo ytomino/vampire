@@ -207,6 +207,7 @@ div.dying img,
 div.vampire img,
 div.monologue img {
 	-ms-filter:alpha(opacity=50);
+	filter:alpha(opacity=50);
 	opacity:0.5;
 }
 
