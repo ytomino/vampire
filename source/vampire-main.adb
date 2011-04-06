@@ -78,7 +78,9 @@ procedure Vampire.Main is
 				Create_Log => Log.Create_Log'Access)));
 	
 begin
-	Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
+	if not Ada.Environment_Variables.Exists ("USE_STDERR") then
+		Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
+	end if;
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	Locked : declare
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
@@ -873,7 +875,9 @@ begin
 											elsif Said(Player).Vampire_Gaze > 0 then
 												Message_Page ("見つめられるのは一日一度です。");
 											elsif Village.Time = Villages.Night then
-												Message_Page ("今は夜です。アクションを消費せずに直接会話できます。");
+												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
+											elsif not Village.Can_Gaze then
+												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
 											else
 												Villages.Gaze (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -1104,7 +1108,7 @@ begin
 											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
 												Message_Page ("死者に投票はできません。");
 											elsif Target >= 0 and then not Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate then
-												Message_Page ("仮投票が行われました。選ばれた候補以外に投票はできなくなります。");
+												Message_Page ("仮投票が行われました。 選ばれた候補以外に投票はできなくなります。");
 											else
 												if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Vote then
 													Villages.Vote (Village, Player, Target);

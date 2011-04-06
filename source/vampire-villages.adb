@@ -414,6 +414,17 @@ package body Vampire.Villages is
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Encourage;
 	
+	function Can_Gaze (Village : Village_Type) return Boolean is
+	begin
+		if Village.Time = Night then
+			return False; -- 夜は直接会話できるので視線を使うまでもない
+		elsif Village.Today = 1 and then Village.Execution = Infection_And_From_First then
+			return Village.Infected_In_First; -- 初回感染後のみ
+		else
+			return True; -- 2日目以降はOK
+		end if;
+	end Can_Gaze;
+	
 	procedure Gaze (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
@@ -574,7 +585,7 @@ package body Vampire.Villages is
 	begin
 		case Village.People.Constant_Reference (Subject).Element.Role is
 			when Doctor =>
-				if Village.Daytime_Preview /= None then
+				if Village.Daytime_Preview /= None and then Target /= No_Person then
 					declare
 						Result : Message_Kind;
 					begin
@@ -607,7 +618,7 @@ package body Vampire.Villages is
 				end if;
 				Village.People.Reference (Subject).Element.Records.Reference (Target_Day).Element.Target := Target;
 			when Detective =>
-				if Village.Daytime_Preview /= None then
+				if Village.Daytime_Preview /= None and then Target /= No_Person then
 					Append (Village.Messages, Message'(
 						Kind => Detective_Survey_Preview,
 						Day => Village.Today,
@@ -642,8 +653,8 @@ package body Vampire.Villages is
 							Kind => Howling_Blocked,
 							Day => Village.Today,
 							Time => Time,
-							Subject => -1,
-							Target => -1,
+							Subject => No_Person,
+							Target => No_Person,
 							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 						exit;
 					end if;

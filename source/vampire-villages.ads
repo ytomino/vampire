@@ -300,6 +300,8 @@ package Vampire.Villages is
 		Target : in Person_Index'Base);
 	
 	-- アクション
+	function Can_Gaze (Village : Village_Type) return Boolean;
+	
 	procedure Wake (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
