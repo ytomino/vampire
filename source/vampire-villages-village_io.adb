@@ -109,8 +109,13 @@ package body Vampire.Villages.Village_IO is
 				end loop;
 			end Appearance_Callback;
 		begin
+			-- inherited
 			IO (Serializer, "name", Village.Name);
 			IO (Serializer, "by", Village.By, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
+			IO (Serializer, "face-group", Village.Face_Group);
+			IO (Serializer, "face-width", Village.Face_Width);
+			IO (Serializer, "face-height", Village.Face_Height);
+			-- additional
 			IO (Serializer, "state", Village.State);
 			IO (Serializer, "today", Village.Today);
 			IO (Serializer, "time", Village.Time);

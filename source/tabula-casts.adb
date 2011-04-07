@@ -3,6 +3,16 @@ package body Tabula.Casts is
 	use type Ada.Containers.Count_Type;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
+	function Find (Container : Groups.Vector; Group : Integer) return Groups.Cursor is
+	begin
+		for I in Container.First_Index .. Container.Last_Index loop
+			if Container.Constant_Reference (I).Element.Group = Group then
+				return I;
+			end if;
+		end loop;
+		return Groups.No_Element;
+	end Find;
+	
 	function Is_Empty (Item : Person) return Boolean is
 	begin
 		return Item.Name = Ada.Strings.Unbounded.Null_Unbounded_String;

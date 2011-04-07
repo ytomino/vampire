@@ -183,6 +183,11 @@ package Vampire.Forms is
 		Inputs : Web.Query_Strings)
 		return String is abstract;
 	
+	function Get_Group (
+		Form : Root_Form_Type;
+		Inputs : Web.Query_Strings)
+		return Integer;
+	
 	type Joining is record
 		Work_Index : Casts.Works.Cursor; -- "既定"はNo_Element
 		Name_Index : Casts.People.Cursor; -- No_Elementにはならない

@@ -261,6 +261,8 @@ package body Vampire.R3 is
 		Form : in Forms.Root_Form_Type'Class;
 		Current_Directory : in String;
 		Image_Directory : in String;
+		Face_Width : in Integer;
+		Face_Height : in Integer;
 		Subject : in Tabula.Villages.Person_Type'Class;
 		Text : in String;
 		Time : in Ada.Calendar.Time;
@@ -280,6 +282,20 @@ package body Vampire.R3 is
 					Resource => Ada.Directories.Compose (
 						Containing_Directory => Image_Directory,
 						Name => Subject.Image.Constant_Reference.Element.all));
+			elsif Tag = "width_image" then
+				if Face_Width /= 0 then
+					Forms.Write_Attribute_Name (Output, "width");
+					Forms.Write_Attribute_Open (Output);
+					Forms.Write_In_Attribute (Output, Form, Image (Face_Width));
+					Forms.Write_Attribute_Close (Output);
+				end if;
+			elsif Tag = "height_image" then
+				if Face_Height /= 0 then
+					Forms.Write_Attribute_Name (Output, "height");
+					Forms.Write_Attribute_Open (Output);
+					Forms.Write_In_Attribute (Output, Form, Image (Face_Height));
+					Forms.Write_Attribute_Close (Output);
+				end if;
 			elsif Tag = "name" then
 				Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Subject));
 			elsif Tag = "time" then

@@ -183,6 +183,14 @@ package body Vampire.Forms is
 		return Web.Element (Inputs, "cmd");
 	end Get_Command;
 	
+	function Get_Group (
+		Form : Root_Form_Type;
+		Inputs : Web.Query_Strings)
+		return Integer is
+	begin
+		return Integer'Value (Web.Element (Inputs, "group"));
+	end Get_Group;
+	
 	function Get_Joining (
 		Form : Root_Form_Type;
 		Inputs : Web.Query_Strings)

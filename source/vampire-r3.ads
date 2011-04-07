@@ -49,6 +49,8 @@ private
 		Form : in Forms.Root_Form_Type'Class;
 		Current_Directory : in String;
 		Image_Directory : in String;
+		Face_Width : in Integer;
+		Face_Height : in Integer;
 		Subject : in Tabula.Villages.Person_Type'Class;
 		Text : in String;
 		Time : in Ada.Calendar.Time; -- 時刻嘘表示用

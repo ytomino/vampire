@@ -22,6 +22,11 @@ div.box {
 	clear:right;
 }
 
+form.singleline select,
+form.singleline input {
+	vertical-align:middle;
+}
+
 form.inner {
 	margin:0;
 }
@@ -301,12 +306,13 @@ a:visited {
 	color:#ff44ff;
 }
 
-p.auther {
+p.author {
 	text-align:right; 
 	text-decoration:underline;
 	font-style:italic;
 	color:#888888;
 	font-size:smaller;
+	clear:both;
 }
 
 table.villagelist {
@@ -450,4 +456,16 @@ table.villagelist td.day {
 
 .say {
 	width:3.5em;
+}
+
+div.face {
+	float: left;
+	width: 80px;
+	white-space:nowrap;
+	text-align:center;
+	margin-bottom:1em;
+}
+
+div.face + hr.speech {
+	clear:both;
 }

@@ -111,7 +111,7 @@ package body Vampire.Villages.Text is
 	
 	-- 舞台
 	
-	type Stage_Kind is (A_Village, A_Castle);
+	type Stage_Kind is (A_Village, A_Castle, A_Palace);
 	type Stage_Type is record
 		Introduction, Breakdown : not null access constant String;
 	end record;
@@ -145,7 +145,25 @@ package body Vampire.Villages.Text is
 				"人々は広間に戻り、点呼を取り直しましたが、誰も欠けていません。 " &
 				"そもそも誰があの高い天窓から出入りできたというのでしょう。 " & Line_Break &
 				"改めて城内を探索しますと、古の領主が残した拷問や処刑を行うための悪趣味な道具がごろごろしています。 " &
-				"こうして、古城での日々がはじまりました……。 ")));
+				"こうして、古城での日々がはじまりました……。 ")),
+		A_Palace => (
+			Introduction => new String'(
+				"田舎町には似つかわしくないと評判の洋館、ついに落成を迎えました。 " &
+				"大地主の呼びかけのもと、身分の差別け隔てなく町の人達に招待状が配られました。 " & Line_Break &
+				"圧倒される招待客の前を給仕や芸者が忙しそうに横切っていきます。 " &
+				"さあ、今夜は晩餐会です。 "),
+			Breakdown => new String'(
+				"晩餐会が始まりました。 " &
+				"しかし、大地主はまだ姿を見せていません。 " & Line_Break &
+				"途中、外の空気を吸おうと席を立った者がコートを目深に被った者に止められました。 " &
+				"よく見ると大地主です。" &
+				"しかしその肌は青く、火傷のような痕もあります。 " & Line_Break &
+				"この館からは一歩も出てはならない、そうお達しがあったとのこと。 " & Line_Break &
+				"ざわめく招待客、お膳を取り落とす給仕。 " & Line_Break &
+				"大地主が言うには、この町には魔物が住み着いており、怪しい者が今夜は集められたのだそうです。 " &
+				"ある者が大地主に掴みかかりましたが、手応え無くその身体は灰となってこぼれ落ちていきました。 " & Line_Break &
+				"悲鳴、恐慌、そして静寂。 " &
+				"華やかな洋館は一夜にして闇へと包まれました。 ")));
 	
 	For_Execution_Message : constant String := "喧騒の中、誰かが古びた杭を持って来ました……。 ";
 	
@@ -154,6 +172,8 @@ package body Vampire.Villages.Text is
 	begin
 		if L >= 3 and then Ada.Strings.Unbounded.Slice (Village.Name, L - 2, L) = "城" then
 			return A_Castle;
+		elsif L >= 3 and then Ada.Strings.Unbounded.Slice (Village.Name, L - 2, L) = "館" then
+			return A_Palace;
 		else
 			return A_Village;
 		end if;

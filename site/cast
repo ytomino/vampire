@@ -1,4 +1,25 @@
 --- !vampire-cast
+groups:
+- name: 吸血鬼国
+  by: YT
+  group: 0
+  width: 64
+  height: 80
+- name: auther
+  by: auther
+  group: 1
+  width: 64
+  height: 80
+- name: 人狼審問α2.5
+  by: Juna
+  group: 2
+  width: 64
+  height: 98
+- name: 文明開化
+  by: sin
+  group: 3
+  width: 64
+  height: 98
 people:
 - name: アンブローズ
   work: 騎士
@@ -355,6 +376,141 @@ people:
   image: char25.png
   sex: female
   group: 2
+- name: オオコウチ
+  work: 文士
+  image: bunmei_000.png
+  sex: male
+  group: 3
+- name: ツバキ
+  work: 薬師
+  image: bunmei_001.png
+  sex: female
+  group: 3
+- name: マサキ
+  work: 軍人
+  image: bunmei_002.png
+  sex: male
+  group: 3
+- name: ベニヲ
+  work: ペラゴロ
+  image: bunmei_003.png
+  sex: female
+  group: 3
+- name: ヤマシナ
+  work: 華族
+  image: bunmei_004.png
+  sex: male
+  group: 3
+- name: エンジ
+  work: 芸者
+  image: bunmei_005.png
+  sex: female
+  group: 3
+- name: キジノメ
+  work: 絵師
+  image: bunmei_006.png
+  sex: male
+  group: 3
+- name: カスイ
+  work: 後家
+  image: bunmei_007.png
+  sex: female
+  group: 3
+- name: アオイ
+  work: 女給
+  image: bunmei_008.png
+  sex: female
+  group: 3
+- name: アンゴ
+  work: 給仕
+  image: bunmei_009.png
+  sex: male
+  group: 3
+- name: カヲル
+  work: 助手
+  image: bunmei_010.png
+  sex: male
+  group: 3
+- name: シノノメ
+  work: 役者
+  image: bunmei_011.png
+  sex: female
+  group: 3
+- name: ネコヤ
+  work: 物売り
+  image: bunmei_012.png
+  sex: male
+  group: 3
+- name: ユウナギ
+  work: 女郎
+  image: bunmei_013.png
+  sex: female
+  group: 3
+- name: イズミ
+  work: 髪結い
+  image: bunmei_014.png
+  sex: male
+  group: 3
+- name: セン
+  work: 煙草屋
+  image: bunmei_015.png
+  sex: female
+  group: 3
+- name: サクラ
+  work: 記者
+  image: bunmei_016.png
+  sex: male
+  group: 3
+- name: コノハ
+  work: 女流作家
+  image: bunmei_017.png
+  sex: female
+  group: 3
+- name: ヒビキ
+  work: 車屋
+  image: bunmei_018.png
+  sex: male
+  group: 3
+- name: チヱコ
+  work: 女学生
+  image: bunmei_019.png
+  sex: female
+  group: 3
+- name: ウエダ
+  work: 研究者
+  image: bunmei_020.png
+  sex: male
+  group: 3
+- name: タマ
+  work: 双生児
+  image: bunmei_021.png
+  sex: female
+  group: 3
+- name: ハナ
+  work: 双生児
+  image: bunmei_022.png
+  sex: female
+  group: 3
+- name: ミヤタ
+  work: 包帯
+  image: bunmei_023.png
+  sex: male
+  group: 3
+- name: スズ
+  work: 苦労人
+  image: bunmei_024.png
+  sex: female
+  group: 3
+- name: モチヅキ
+  work: 若旦那
+  image: bunmei_025.png
+  sex: male
+  group: 3
+- name: ワコ
+  work: 令嬢
+  image: bunmei_026.png
+  sex: female
+  group: 3
 works:
 - name: 騎士
   sex: neutral
@@ -498,12 +654,74 @@ works:
   sex: neutral
 - name: 教師の妹
   sex: female
-- name: 金貸しの若旦那
+- name: 文士
+  sex: neutral
+- name: 薬師
+  sex: neutral
+- name: 軍人
+  sex: neutral
+- name: ペラゴロ
+  nominated: true
+- name: 華族
+  sex: neutral
+- name: 芸者
+  sex: neutral
+- name: 絵師
+  sex: neutral
+- name: 後家
+  sex: female
+- name: 女給
+  sex: female
+- name: 給仕
+  sex: male
+- name: 助手
+  sex: neutral
+- name: 役者
+  sex: neutral
+- name: 物売り
+  sex: neutral
+- name: 女郎
+  sex: female
+- name: 髪結い
+  sex: neutral
+- name: 煙草屋
+  sex: neutral
+- name: 記者
+  sex: neutral
+- name: 女流作家
+  sex: female
+- name: 車屋
+  sex: neutral
+- name: 女学生
+  sex: female
+- name: 研究者
+  sex: neutral
+- name: 双生児
+  sex: neutral
+- name: 双生児
+  sex: neutral
+- name: 包帯
+  sex: neutral
+- name: 苦労人
+  sex: neutral
+- name: 若旦那
+  sex: male
+- name: 令嬢
+  sex: female
+- name: はいからさん
+  sex: neutral
+- name: 間男
+  sex: male
+- name: 快男児
+  sex: male
+- name: 義侠に生きる男
   sex: male
 - name: 糸紡ぎ
   sex: neutral
-- name: 床屋
-  sex: neutral
+- name: 助平親父
+  sex: male
+- name: 仮面の貴公子
+  sex: male
 - name: 船守
   sex: neutral
 - name: 山男
@@ -516,9 +734,7 @@ works:
   sex: male
 - name: 養蚕家
   sex: neutral
-- name: 大農園主
-  sex: neutral
-- name: 奴隷監督
+- name: 代言
   sex: neutral
 - name: 奴隷
   sex: neutral
@@ -547,10 +763,6 @@ works:
 - name: 楽天家
   sex: neutral
 - name: 守護者
-  sex: neutral
-- name: 双子の片割れ
-  sex: neutral
-- name: 双子の片割れ
   sex: neutral
 - name: 結社員
   sex: neutral

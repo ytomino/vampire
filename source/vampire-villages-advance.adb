@@ -98,13 +98,15 @@ is
 					end if;
 				end;
 			end loop;
-			Append (Village.Messages, Message'(
-				Kind => Provisional_Vote,
-				Day => Village.Today,
-				Time => Time,
-				Subject => No_Person,
-				Target => No_Person,
-				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+			Append (
+				Village.Messages,
+				Message'(
+					Kind => Preliminary_Vote,
+					Day => Village.Today,
+					Time => Time,
+					Subject => No_Person,
+					Target => No_Person,
+					Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 			Changed := True; -- 変更を保存
 		end if;
 	end Preliminary_Vote;
@@ -213,7 +215,7 @@ is
 					if Vampire_Person.Role in Vampire_Role and then not Infection_Only_In_First then
 						-- 吸血鬼の襲撃タイプ選択
 						case Village.Attack is
-							when Two | Mocturnal_Infecting =>
+							when Two | Nocturnal_Chain_Infecting =>
 								for Rank2 in Person_Role'Succ (Vampire_Person.Role) .. Vampire_J loop
 									declare
 										Vampire2 : constant Integer := Find_Superman (Village, Rank2);
@@ -836,7 +838,7 @@ begin
 							end;
 						end loop;
 						case Village.Attack is
-							when Mocturnal_Infecting =>
+							when Nocturnal_Chain_Infecting =>
 								-- 天文家の襲撃
 								if The_Astronomer /= No_Person then
 									Attack (

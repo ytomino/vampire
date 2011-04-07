@@ -38,6 +38,8 @@ is
 				Form => Form,
 				Current_Directory => ".",
 				Image_Directory => Image_Directory,
+				Face_Width => Village.Face_Width,
+				Face_Height => Village.Face_Height,
 				Subject => Village.People.Constant_Reference (Message.Subject).Element.all,
 				Text => Message.Text.Constant_Reference.Element.all,
 				Time => Message.Time,

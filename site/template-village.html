@@ -164,7 +164,7 @@
 					<div ?class_filter>
 						<div class="speech">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img alt="" ?src_image ?width_image ?height_image ?? width="64" height="80" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
@@ -177,7 +177,7 @@
 					<div ?class_filter>
 						<div class="ghost">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img alt="" ?src_image ?width_image ?height_image ?? width="64" height="80" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
@@ -187,7 +187,7 @@
 					<div ?class_filter>
 						<div class="monologue">
 							<table cellspacing="0">
-								<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
+								<tr><td rowspan="2"><img alt="" ?src_image ?width_image ?height_image ?? width="64" height="80" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"><?time>時間</?time></span></td></tr>
 								<tr><td class="text"><?text>発言</?text></td></tr>
 							</table>
 						</div>
@@ -196,7 +196,7 @@
 				<?vampire>
 					<div class="vampire">
 						<table cellspacing="0">
-							<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
+							<tr><td rowspan="2"><img alt="" ?src_image ?width_image ?height_image ?? width="64" height="80" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
 							<tr><td class="text"><?text>発言</?text></td></tr>
 						</table>
 					</div>
@@ -204,7 +204,7 @@
 				<?dying>
 					<div class="dying">
 						<table cellspacing="0">
-							<tr><td rowspan="2"><img ?src_image width="64" height="80" alt="" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
+							<tr><td rowspan="2"><img alt="" ?src_image ?width_image ?height_image ?? width="64" height="80" /></td><td class="name"><span class="name"><?name>名前</?name></span> <span class="time"></span></td></tr>
 							<tr><td class="text"><?text>発言</?text></td></tr>
 						</table>
 					</div>
@@ -215,12 +215,17 @@
 					<div class="box"><div class="villagepanel">
 						<form method="POST" class="inner">
 							<table>
-								<tr><td><?works><select></select></?works></td><td><?names><select></select></?names></td></tr>
-								<tr><td colspan="2">希望…<?request><select></select></?request></td></tr>
+								<tr><td><select id="work" name="work"><?works/></select></td><td><select id="name" name="name"><?names/></select></td></tr>
+								<tr><td colspan="2">希望…<select id="request" name="request"><?request/></select></td></tr>
 							</table>
 							<div class="right"><input class="button" type="submit" value="この村に登場" /></div>
 							<input type="hidden" name="cmd" value="join" />
 						</form>
+						<?facegroups><hr/><form method="POST" class="inner singleline">
+							<select name="group"><?groups/></select>
+							<input class="button" type="submit" value="顔絵セット変更" />
+							<input type="hidden" name="cmd" value="group" />
+						</form></?facegroups>
 					</div></div>
 				</?entry>
 				<?player>

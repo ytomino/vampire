@@ -29,12 +29,17 @@
 <?villagepanel>
 <?entry>
 	<hr><form method="POST" ?action_page>
-	<?works><select></select></?works><br>
-	<?names><select></select></?names><br>
-	希望…<?request><select></select></?request><br>
+	<select name="work"><?works/></select><br>
+	<select name="name"><?names/></select><br>
+	希望…<select name="request"><?request/></select><br>
 	<input type="submit" value="この村に登場">
 	<input type="hidden" name="cmd" value="join">
 	</form>
+	<?facegroups><hr><form method="POST" ?action_page>
+	<select name="group"><?groups/></select>
+	<input class="button" type="submit" value="顔絵セット変更">
+	<input type="hidden" name="cmd" value="group">
+	</form></?facegroups>
 </?entry>
 <?player>
 	<hr><div><u><?name>-_-</?name></u></div>

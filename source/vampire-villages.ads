@@ -30,7 +30,7 @@ package Vampire.Villages is
 	type Vote_Mode is (Unsigned, Preliminary_And_Final);
 	type Execution_Mode is (Dummy_Killed_And_From_First, Infection_And_From_First, From_First, From_Second);
 	type Formation_Mode is (Public, Hidden);
-	type Attack_Mode is (Two, Mocturnal_Infecting, Unanimity);
+	type Attack_Mode is (Two, Nocturnal_Chain_Infecting, Unanimity);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
 	type Monster_Side_Mode is (Fixed, Shuffling, Gremlin);
 	type Daytime_Preview_Mode is (None, Role_Only, Message_Only, Role_And_Message);
@@ -44,7 +44,7 @@ package Vampire.Villages is
 	Initial_Execution            : constant Execution_Mode            := From_First;
 	Initial_Formation            : constant Formation_Mode            := Public;
 	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
-	Initial_Attack               : constant Attack_Mode               := Mocturnal_Infecting;
+	Initial_Attack               : constant Attack_Mode               := Nocturnal_Chain_Infecting;
 	Initial_Servant_Knowing      : constant Servant_Knowing_Mode      := Vampire_K;
 	Initial_Daytime_Preview      : constant Daytime_Preview_Mode      := Message_Only;
 	Initial_Doctor_Infected      : constant Doctor_Infected_Mode      := Find_Infection;
@@ -155,7 +155,7 @@ package Vampire.Villages is
 		Detective_Survey,                 -- 調査
 		Detective_Survey_Preview,         -- 調査
 		Detective_Survey_Victim,          -- 初日犠牲者の調査
-		Provisional_Vote,                 -- 仮投票
+		Preliminary_Vote,                 -- 一次開票
 		Execution,                        -- 処刑
 		Awareness,                        -- 自覚
 		Astronomer_Observation,           -- 観測
@@ -277,6 +277,7 @@ package Vampire.Villages is
 	procedure Join (
 		Village : in out Village_Type;
 		Id : in String;
+		Group : in Casts.Group;
 		Figure : in Casts.Person;
 		Work : in Casts.Work;
 		Request : in Requested_Role;

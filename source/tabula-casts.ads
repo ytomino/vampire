@@ -3,6 +3,25 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 package Tabula.Casts is
 	
+	type Group is record
+		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
+		By : aliased Ada.Strings.Unbounded.Unbounded_String;
+		Width : Integer;
+		Height : Integer;
+		Group : Integer;
+	end record;
+	
+	Empty_Group : constant Group := (
+		Name => Ada.Strings.Unbounded.Null_Unbounded_String,
+		By => Ada.Strings.Unbounded.Null_Unbounded_String,
+		Width => 0,
+		Height => 0,
+		Group => 0);
+	
+	package Groups is new Ada.Containers.Vectors (Natural, Group);
+	
+	function Find (Container : Groups.Vector; Group : Integer) return Groups.Cursor;
+	
 	type Neutralable_Sex is (Neutral, Male, Female);
 	subtype Person_Sex is Neutralable_Sex range Male .. Female;
 	
@@ -43,6 +62,7 @@ package Tabula.Casts is
 	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor;
 	
 	type Cast_Collection is limited record
+		Groups : aliased Casts.Groups.Vector;
 		People : aliased Casts.People.Vector;
 		Works : aliased Casts.Works.Vector;
 	end record;

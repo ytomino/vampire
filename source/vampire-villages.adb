@@ -26,7 +26,7 @@ package body Vampire.Villages is
 				It : Message renames Village.Messages.Constant_Reference (I).Element.all;
 			begin
 				exit when It.Day /= Village.Today;
-				if It.Kind = Provisional_Vote then
+				if It.Kind = Preliminary_Vote then
 					return True;
 				end if;
 			end;
@@ -72,6 +72,9 @@ package body Vampire.Villages is
 		return (
 			Name => +Name,
 			By => +By,
+			Face_Group => 0,
+			Face_Width => 0,
+			Face_Height => 0,
 			State => Prologue,
 			Today => 0,
 			Time => Daytime,
@@ -216,12 +219,18 @@ package body Vampire.Villages is
 	procedure Join (
 		Village : in out Village_Type;
 		Id : in String;
+		Group : in Casts.Group;
 		Figure : in Casts.Person;
 		Work : in Casts.Work;
 		Request : in Requested_Role;
 		Ignore_Request : in Boolean;
-		Time : in Ada.Calendar.Time) is
+		Time : in Ada.Calendar.Time)
+	is
+		pragma Assert (Figure.Group = Group.Group);
 	begin
+		Village.Face_Group := Group.Group;
+		Village.Face_Width := Group.Width;
+		Village.Face_Height := Group.Height;
 		Append (
 			Village.People,
 			Villages.Person_Type'(
@@ -236,13 +245,15 @@ package body Vampire.Villages is
 				Id => +Id,
 				Commited => False,
 				Records => To_Vector (Default_Person_Record, Length => 1)));
-		Append (Village.Messages, Message'(
-			Kind => Join,
-			Day => Village.Today,
-			Time => Time,
-			Subject => Village.People.Last_Index,
-			Target => People.No_Index,
-			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+		Append (
+			Village.Messages,
+			Message'(
+				Kind => Join,
+				Day => Village.Today,
+				Time => Time,
+				Subject => Village.People.Last_Index,
+				Target => People.No_Index,
+				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 	end Join;
 	
 	function Escape_Duration(Village : Village_Type) return Duration is
@@ -1234,8 +1245,8 @@ package body Vampire.Villages is
 					"吸血鬼ふたり以上に襲われると死亡します。",
 					False);
 				Process (
-					Attack_Mode'Image (Mocturnal_Infecting),
-					Item.Village.Attack = Mocturnal_Infecting,
+					Attack_Mode'Image (Nocturnal_Chain_Infecting),
+					Item.Village.Attack = Nocturnal_Chain_Infecting,
 					"天文家と猟師は感染したら襲撃を行います。",
 					False);
 				Process (

@@ -84,14 +84,15 @@ site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)
 export QUERY_STRING=
 
 $(TESTDIR)/%: site/%
-	install $< $(TESTDIR)
+	install $< $(dir $@)
 
 install-test: \
 	$(TESTDIR)/vampire$(CGISUFFIX) \
 	$(TESTDIR)/unlock$(CGISUFFIX) \
 	$(TESTDIR)/cast \
 	$(TESTDIR)/style.css \
-	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html)))
+	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html))) \
+	$(addprefix $(TESTDIR)/image/,$(notdir $(wildcard site/image/*.png)))
 
 test-vampire: install-test
 	cd $(TESTDIR) && gdb .$(DIRSEP)vampire$(CGISUFFIX)

@@ -724,6 +724,7 @@ begin
 																Villages.Join (
 																	Village,
 																	User_Id,
+																	Cast.Groups.Constant_Reference (Casts.Find (Cast.Groups, Person_Template.Group)).Element.all,
 																	Person_Template,
 																	Selected_Work,
 																	Villages.Requested_Role'Value (Joining.Request.Constant_Reference.Element.all),
@@ -744,6 +745,18 @@ begin
 											end;
 										end if;
 									end Join;
+								elsif Cmd = "group" then
+									Group : declare
+										New_Group : constant Integer := Form.Get_Group (Inputs);
+									begin
+										if not Village.People.Is_Empty then
+											Message_Page ("既に他の人が参加されているため顔絵セットを変えられません。");
+										else
+											Village.Face_Group := New_Group;
+											Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+											Refresh_Page;
+										end if;
+									end Group;
 								elsif Cmd = "narration" then
 									if User_Id /= Tabula.Users.Administrator then
 										Message_Page ("administratorのみに許された操作です。");

@@ -917,40 +917,33 @@ is
 						Form,
 						Current_Directory => Current_Directory,
 						Image_Directory => Image_Directory,
+						Face_Width => Village.Face_Width,
+						Face_Height => Village.Face_Height,
 						Subject => Subject_Ref.all,
 						Time => Time,
 						Text => Message.Text.Constant_Reference.Element.all,
 						Filter => Filter.Constant_Reference.Element.all);
 				end Speech;
-				procedure Note (Subject : Vampire.Villages.Person_Type; Note : Vampire.Villages.Person_Record; Class : String) is
-					procedure Handle_Note (
-						Output : not null access Ada.Streams.Root_Stream_Type'Class;
-						Tag : in String;
-						Template : in Web.Producers.Template) is
-					begin
-						if Tag = "src_image" then
-							Forms.Write_Attribute_Name (Output, "src");
-							Forms.Write_Link (
-								Output,
-								Form,
-								Current_Directory => Current_Directory,
-								Resource => Ada.Directories.Compose (
-									Containing_Directory => Image_Directory,
-									Name => Subject.Image.Constant_Reference.Element.all));
-						elsif Tag = "name" then
-							Forms.Write_In_HTML (Output, Form, Villages.Text.Name(Subject));
-						elsif Tag = "text" then
-							if Note.Note.Is_Null then
-								Forms.Write_In_HTML (Output, Form, "……。");
-							else
-								Forms.Write_In_HTML (Output, Form, Note.Note.Constant_Reference.Element.all);
-							end if;
-						else
-							raise Program_Error with "Invalid template """ & Tag & """";
-						end if;
-					end Handle_Note;
+				procedure Note (Subject : Vampire.Villages.Person_Type; Rec : Vampire.Villages.Person_Record; Class : String) is
+					Silence : aliased constant String := "……。";
+					Text : access constant String := Rec.Note.Constant_Reference.Element;
 				begin
-					Web.Producers.Produce(Output, Template, Class, Handler => Handle_Note'Access);
+					if Text.all = "" then
+						Text := Silence'Access;
+					end if;
+					R3.Handle_Speech (
+						Output,
+						Template,
+						Class,
+						Form,
+						Current_Directory => Current_Directory,
+						Image_Directory => Image_Directory,
+						Face_Width => Village.Face_Width,
+						Face_Height => Village.Face_Height,
+						Subject => Subject,
+						Time => Tabula.Calendar.Null_Time,
+						Text => Text.all,
+						Filter => "");
 				end Note;
 				subtype X_Type is Integer range 1 .. 3;
 				package Random_X is new Ada.Numerics.MT19937.Discrete_Random(X_Type);
@@ -1113,7 +1106,7 @@ is
 												Speech (Message, No_Person, Message.Time, "dying");
 											end if;
 										end if;
-									when Vampire.Villages.Provisional_Vote =>
+									when Preliminary_Vote =>
 										Narration (
 											Villages.Text.Votes (
 												Village,
@@ -1879,8 +1872,7 @@ is
 							Template : in Web.Producers.Template) is
 						begin
 							if Tag = "works" then
-								String'Write (Output, "<select id=""work"" name=""work"">" &
-									"<option value=""-1"" selected=""selected"">");
+								String'Write (Output, "<option value=""-1"" selected=""selected"">");
 								Forms.Write_In_HTML (Output, Form, "(既定)");
 								String'Write (Output, "</option>");
 								for Position in Cast.Works.First_Index .. Cast.Works.Last_Index loop
@@ -1910,9 +1902,7 @@ is
 										end if;
 									end;
 								end loop;
-								String'Write (Output, "</select>");
 							elsif Tag = "names" then
-								String'Write (Output, "<select id=""name"" name=""name"">");
 								declare
 									type Sex_To_String is array (Casts.Person_Sex) of String (1 .. 9);
 									Sex_Name : constant Sex_To_String := (" (男性)", " (女性)");
@@ -1921,7 +1911,7 @@ is
 										declare
 											Item : Casts.Person renames Cast.People.Constant_Reference (Position).Element.all;
 										begin
-											if not Casts.Is_Empty (Item) then
+											if not Casts.Is_Empty (Item) and then Item.Group = Village.Face_Group then
 												String'Write (Output, "<option ");
 												Forms.Write_Attribute_Name (Output, "value");
 												Forms.Write_Attribute_Open (Output);
@@ -1936,9 +1926,7 @@ is
 										end;
 									end loop;
 								end;
-								String'Write (Output, "</select>");
 							elsif Tag = "request" then
-								String'Write (Output, "<select id=""request"" name=""request"">");
 								for I in Vampire.Villages.Requested_Role loop
 									String'Write (Output, "<option ");
 									Forms.Write_Attribute_Name (Output, "value");
@@ -1949,7 +1937,34 @@ is
 									Forms.Write_In_HTML (Output, Form, Villages.Text.Image (I));
 									String'Write (Output, "</option>");
 								end loop;
-								String'Write (Output, "</select>");
+							elsif Tag = "groups" then
+								for I in Cast.Groups.First_Index .. Cast.Groups.Last_Index loop
+									declare
+										Item : Casts.Group renames Cast.Groups.Constant_Reference (I).Element.all;
+									begin
+										String'Write (Output, "<option ");
+										Forms.Write_Attribute_Name (Output, "value");
+										Forms.Write_Attribute_Open (Output);
+										Forms.Write_In_Attribute (Output, Form, Image (Item.Group));
+										Forms.Write_Attribute_Close (Output);
+										if Item.Group = Village.Face_Group then
+											Forms.Write_Attribute_Name (Output, "selected");
+											Forms.Write_Attribute_Open (Output);
+											Forms.Write_In_Attribute (Output, Form, "selected");
+											Forms.Write_Attribute_Close (Output);
+										end if;
+										Character'Write (Output, '>');
+										Forms.Write_In_HTML (Output, Form, Item.Name.Constant_Reference.Element.all);
+										if Item.Group = Village.Face_Group then
+											Forms.Write_In_HTML (Output, Form, " *");
+										end if;
+										String'Write (Output, "</option>");
+									end;
+								end loop;
+							elsif Tag = "facegroups" then
+								if Village.People.Is_Empty then
+									Web.Producers.Produce (Output, Template, Handler => Handle_Entry'Access);
+								end if;
 							elsif Tag = "action_page" then
 								Forms.Write_Attribute_Name (Output, "action");
 								Forms.Write_Link (

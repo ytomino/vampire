@@ -60,6 +60,9 @@ package Tabula.Villages is
 	type Village_Type is abstract tagged limited record
 		Name : aliased Ada.Strings.Unbounded.Unbounded_String;
 		By : aliased Ada.Strings.Unbounded.Unbounded_String; -- 作成者
+		Face_Group : Integer := 0; -- 顔絵セット
+		Face_Width : Integer := 0;
+		Face_Height : Integer := 0;
 	end record;
 	
 	function Term (Village : Village_Type) return Village_Term is abstract;

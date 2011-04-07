@@ -12,6 +12,9 @@ package body Tabula.Casts.Cast_IO is
 		IO (Serializer, "group", Item.Group);
 	end IO;
 	
+	use Groups;
+	package Groups_IO is new Serialization.IO_List (Groups.Vector, Groups.Cursor, Group, Empty_Group);
+	
 	use People;
 	package People_IO is new Serialization.IO_List (People.Vector, People.Cursor, Person, Empty_Person);
 	
@@ -21,14 +24,27 @@ package body Tabula.Casts.Cast_IO is
 	procedure IO (Serializer: not null access Serialization.Serializer; Item : in out Cast_Collection) is
 		use Serialization;
 		use Neutralable_Sex_IO;
+		use Groups_IO;
 		use People_IO;
 		use Works_IO;
 		procedure Root_Callback is
+			procedure Groups_Callback (Item : in out Group) is
+				procedure Group_Callback is
+				begin
+					IO (Serializer, "name", Item.Name);
+					IO (Serializer, "by", Item.By);
+					IO (Serializer, "width", Item.Width);
+					IO (Serializer, "height", Item.Height);
+					IO (Serializer, "group", Item.Group);
+				end Group_Callback;
+			begin
+				IO (Serializer, Group_Callback'Access);
+			end Groups_Callback;
 			procedure People_Callback (Item : in out Person) is
 				procedure Person_Callback is
 				begin
 					IO (Serializer, Item);
-				end;
+				end Person_Callback;
 			begin
 				IO (Serializer, Person_Callback'Access);
 			end People_Callback;
@@ -43,6 +59,7 @@ package body Tabula.Casts.Cast_IO is
 				IO (Serializer, Work_Callback'Access);
 			end Works_Callback;
 		begin
+			IO (Serializer, "groups", Item.Groups, Groups_Callback'Access);
 			IO (Serializer, "people", Item.People, People_Callback'Access);
 			IO (Serializer, "works", Item.Works, Works_Callback'Access);
 		end Root_Callback;
