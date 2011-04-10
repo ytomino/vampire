@@ -7,7 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   version="1.2"
+   version="1.1"
    width="600"
    height="1800"
    id="svg4309">
@@ -48,21 +48,10 @@
        width="580"
        height="99.999992"
        x="10"
-       y="-698"
+       y="-697.63782"
        id="rect2985"
        style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <flowRoot
-       transform="translate(0,-2)"
-       id="flowRoot5565"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><flowRegion
-         id="flowRegion5567"><rect
-           width="3"
-           height="51"
-           x="122"
-           y="143"
-           id="rect5569" /></flowRegion><flowPara
-         id="flowPara5571" /></flowRoot>    <text
+    <text
        x="20"
        y="-678"
        id="text5573"
@@ -71,18 +60,7 @@
          x="20"
          y="-678"
          id="tspan5575">プロローグ</tspan></text>
-    <flowRoot
-       transform="translate(0,-2)"
-       id="flowRoot5577"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><flowRegion
-         id="flowRegion5579"><rect
-           width="15"
-           height="32"
-           x="1"
-           y="33"
-           id="rect5581" /></flowRegion><flowPara
-         id="flowPara5583" /></flowRoot>    <text
+    <text
        x="310"
        y="-708"
        id="text5573-4"
@@ -160,35 +138,13 @@
        d="m 302,-727.63783 0,40 8,0 -10,10 -10,-10 8,0 0,-40 z"
        id="rect7676"
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1" />
-    <path
-       d="m 302,-607.6378 0,169.99997 8,0 -10,10.00002 -10,-10.00002 8,0 0,-169.99997 z"
-       id="path7679"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <rect
        width="500"
-       height="199.6378"
+       height="199.99997"
        x="50"
-       y="-487.63782"
+       y="-487.63779"
        id="rect7681"
        style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:0.99999994;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <text
-       x="60"
-       y="-467.63782"
-       id="text7683"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
-         x="60"
-         y="-467.63782"
-         id="tspan7687">「誰かが感染させられ、</tspan><tspan
-         x="60"
-         y="-447.63782"
-         id="tspan4183">　初日から処刑を行います。」</tspan><tspan
-         x="60"
-         y="-427.63782"
-         id="tspan4193">　のみ</tspan><tspan
-         x="60"
-         y="-407.63782"
-         id="tspan7699" /></text>
     <rect
        width="480"
        height="69.999985"
@@ -251,10 +207,6 @@
          x="70"
          y="-158"
          id="tspan7790">吸血鬼：襲撃先とメッセージの設定</tspan></text>
-    <path
-       d="m 302,-337.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
-       id="path7729"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <rect
        width="498.61713"
        height="139.30856"
@@ -268,31 +220,16 @@
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="310"
-       y="-108"
+       y="-107.63783"
        id="text7796"
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
          x="310"
-         y="-108"
+         y="-107.63783"
          id="tspan7800">48時間経過</tspan><tspan
          x="310"
-         y="-88"
+         y="-87.637833"
          id="tspan7804">一次開票</tspan></text>
-    <text
-       x="60"
-       y="-104"
-       id="text7806"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
-         x="60"
-         y="-104"
-         id="tspan7808">「仮投票と本投票で</tspan><tspan
-         x="60"
-         y="-84"
-         id="tspan7812">　処刑を行います。」のみ</tspan><tspan
-         x="60"
-         y="-64"
-         id="tspan7810" /></text>
     <rect
        width="480"
        height="49.999996"
@@ -388,18 +325,7 @@
          x="310"
          y="202.36218"
          id="tspan3118">処刑</tspan></text>
-    <flowRoot
-       transform="translate(0,-149.63783)"
-       id="flowRoot3120"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><flowRegion
-         id="flowRegion3122"><rect
-           width="3"
-           height="26"
-           x="240"
-           y="886"
-           id="rect3124" /></flowRegion><flowPara
-         id="flowPara3126" /></flowRoot>    <text
+    <text
        x="50"
        y="202.36218"
        id="text3128"
@@ -485,7 +411,7 @@
        x="60"
        y="402.36218"
        id="rect3966"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.0933249;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="70"
        y="422.36218"
@@ -534,7 +460,7 @@
        x="40"
        y="882.36218"
        id="rect4004"
-       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:0.52704602;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="50"
        y="902.36218"
@@ -571,7 +497,7 @@
        x="10"
        y="972.36218"
        id="rect4020"
-       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:0.83665997;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#01ff01;fill-opacity:0.1254902;fill-rule:evenodd;stroke:#00ff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="20"
        y="992.36218"
@@ -587,9 +513,9 @@
        x="60"
        y="1002.3622"
        id="rect4026"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.77459651;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
-       d="m 302,812.36218 0,169.99999 8,0 -10,10.00004 -10,-11.25 8,1.24996 0,-169.99999 z"
+       d="m 302,812.36218 0,169.99999 8,0 -10,10.00004 -10,-10.00004 8,0 0,-169.99999 z"
        id="path3986"
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
@@ -610,31 +536,16 @@
        style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="310"
-       y="572"
+       y="572.36218"
        id="text3337"
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
          x="310"
-         y="572"
+         y="572.36218"
          id="tspan3339">24時間経過</tspan><tspan
          x="310"
-         y="592"
+         y="592.36218"
          id="tspan3341">一次開票</tspan></text>
-    <text
-       x="60"
-       y="576"
-       id="text3343"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
-         x="60"
-         y="576"
-         id="tspan3345">「仮投票と本投票で</tspan><tspan
-         x="60"
-         y="596"
-         id="tspan3347">　処刑を行います。」のみ</tspan><tspan
-         x="60"
-         y="616"
-         id="tspan3349" /></text>
     <rect
        width="480"
        height="49.999996"
@@ -715,16 +626,58 @@
        d="m 302,542.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
        id="path3383"
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <flowRoot
-       transform="translate(0,-407.63783)"
-       id="flowRoot4185"
+    <text
+       x="60"
+       y="-467.63782"
+       id="text3904"
        xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><flowRegion
-         id="flowRegion4187"><rect
-           width="752"
-           height="290"
-           x="-48"
-           y="-316"
-           id="rect4189" /></flowRegion><flowPara
-         id="flowPara4191" /></flowRoot>  </g>
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
+         x="60"
+         y="-467.63782"
+         id="tspan3908">「誰かが感染させられ、</tspan><tspan
+         x="60"
+         y="-447.63782"
+         id="tspan3917">　初日から処刑を行います。」</tspan><tspan
+         x="60"
+         y="-427.63782"
+         id="tspan3919">　のみ</tspan></text>
+    <text
+       x="60"
+       y="-107.63783"
+       id="text3921"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
+         x="60"
+         y="-107.63783"
+         id="tspan3925">「仮投票と本投票で</tspan><tspan
+         x="60"
+         y="-87.637833"
+         id="tspan3929">　処刑を行います。」のみ</tspan><tspan
+         x="60"
+         y="-67.637833"
+         id="tspan3931" /></text>
+    <text
+       x="60"
+       y="572.36218"
+       id="text3933"
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
+         x="60"
+         y="572.36218"
+         id="tspan3937">「仮投票と本投票で</tspan><tspan
+         x="60"
+         y="592.36218"
+         id="tspan3941">　処刑を行います。」のみ</tspan><tspan
+         x="60"
+         y="612.36218"
+         id="tspan3943" /></text>
+    <path
+       d="m 302,-607.6378 0,169.99997 8,0 -10,10.00002 -10,-10.00002 8,0 0,-169.99997 z"
+       id="path7679"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,-337.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path7729"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+  </g>
 </svg>
