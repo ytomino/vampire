@@ -387,7 +387,7 @@ package body Vampire.Villages.Text is
 			Doctor_Failed | Doctor_Failed_Preview =>
 				new String'("を診察しましたが、異常は見当たりませんでした。 "),
 			Doctor_Found_Gremlin | Doctor_Found_Gremlin_Preview =>
-				new String'("を診察しました。 " & Line_Break & "……妖魔だ！ "));
+				new String'("を診察しました。 " & Line_Break & "……妖魔だ！ " & Name (Subject) & "は死を予感しました。 "));
 	begin
 		return Name (Subject) & "は" & Name (Target) & Showing_Result (Message.Kind).all;
 	end Doctor_Cure_Message;

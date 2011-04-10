@@ -467,6 +467,8 @@ is
 	end Role_Text;
 	
 	Player_Index : constant Integer := Vampire.Villages.Joined (Village, User_Id);
+	
+	Message_Range : constant Tabula.Villages.Message_Range_Type := Village.Message_Range (Day, Recent_Only => False);
 	Message_Counts : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages (Village, Day);
 	Tip_Showed : Boolean := False;
 	
@@ -476,7 +478,6 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Pos : Paging_Pos)
 	is
-		Message_Range : constant Tabula.Villages.Message_Range_Type := Village.Message_Range (Day, Recent_Only => False);
 		F : Natural;
 		L : Integer;
 	begin
@@ -498,7 +499,7 @@ is
 						Village_Id => Village_Id,
 						Day => Day,
 						First => Message_Range.First,
-						Last => Message_Range.Last + 1, -- 余分
+						Last => Integer'Max (Message_Range.First, Message_Range.Last),
 						User_Id => User_Id,
 						User_Password => User_Password));
 				Character'Write (Output, '>');
@@ -1263,7 +1264,7 @@ is
 						end if;
 					end;
 				end loop;
-				if Speech_Index <= Showing_Range.Last + 1 then
+				if Speech_Index = Message_Range.Last + 1 then
 					Tip_Showed := True;
 					if Village.State >= Epilogue and then Day < Village.Today then
 						for I in Village.People.First_Index .. Village.People.Last_Index loop
