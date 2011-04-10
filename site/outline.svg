@@ -70,12 +70,12 @@
          y="-708"
          id="tspan5575-7">村に参加</tspan></text>
     <rect
-       width="480"
-       height="50.000004"
-       x="60"
-       y="-668"
+       width="480.00003"
+       height="49.99992"
+       x="59.999996"
+       y="-667.63776"
        id="rect7020"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.99999988;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="70"
        y="-648"
@@ -101,15 +101,6 @@
          y="-558"
          id="tspan7658">ゲームスタート</tspan></text>
     <text
-       x="650"
-       y="222.36217"
-       id="text7654"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
-         x="650"
-         y="222.36217"
-         id="tspan7656" /></text>
-    <text
        x="20"
        y="-528"
        id="text7660"
@@ -134,10 +125,6 @@
          x="50"
          y="-498"
          id="tspan7668">一日目の昼</tspan></text>
-    <path
-       d="m 302,-727.63783 0,40 8,0 -10,10 -10,-10 8,0 0,-40 z"
-       id="rect7676"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1" />
     <rect
        width="500"
        height="199.99997"
@@ -214,10 +201,6 @@
        y="-126.94641"
        id="rect7792"
        style="fill:#ffffe0;fill-opacity:0.1254902;stroke:#ffff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <path
-       d="m 302,-137.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
-       id="path7794"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="310"
        y="-107.63783"
@@ -334,14 +317,6 @@
          x="50"
          y="202.36218"
          id="tspan3130">一日目〜二日目の夜</tspan></text>
-    <path
-       d="m 302,132.36217 0,110 8,0 -10,10 -10,-10 8,0 0,-110 z"
-       id="path3106"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <path
-       d="m 302,2.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
-       id="path3079"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="60"
        y="232.36218"
@@ -353,10 +328,7 @@
          id="tspan3134">短期村かつ</tspan><tspan
          x="60"
          y="252.36218"
-         id="tspan3138">夜の時間を取った場合のみ</tspan><tspan
-         x="60"
-         y="272.36218"
-         id="tspan3136" /></text>
+         id="tspan3138">夜の時間を取った場合のみ</tspan></text>
     <rect
        width="480"
        height="49.999962"
@@ -392,10 +364,6 @@
        y="372.36218"
        id="rect3162"
        style="fill:#0101ff;fill-opacity:0.1254902;stroke:#0000ff;stroke-width:0.99999988;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <path
-       d="m 302,322.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
-       id="path3148"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="50"
        y="392.36218"
@@ -436,15 +404,6 @@
          x="70"
          y="522.36218"
          id="tspan3978">吸血鬼：襲撃先とメッセージの設定</tspan></text>
-    <text
-       x="636"
-       y="162.36217"
-       id="text3980"
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:IPAGothic"><tspan
-         x="636"
-         y="162.36217"
-         id="tspan3982" /></text>
     <text
        x="310"
        y="872.36218"
@@ -514,10 +473,6 @@
        y="1002.3622"
        id="rect4026"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <path
-       d="m 302,812.36218 0,169.99999 8,0 -10,10.00004 -10,-10.00004 8,0 0,-169.99999 z"
-       id="path3986"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="70"
        y="1022.3622"
@@ -618,14 +573,6 @@
          x="310"
          y="832.36218"
          id="tspan3379">全員が投票または5分経過</tspan></text>
-    <path
-       d="m 302,682.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
-       id="path3381"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <path
-       d="m 302,542.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
-       id="path3383"
-       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        x="60"
        y="-467.63782"
@@ -652,10 +599,7 @@
          id="tspan3925">「仮投票と本投票で</tspan><tspan
          x="60"
          y="-87.637833"
-         id="tspan3929">　処刑を行います。」のみ</tspan><tspan
-         x="60"
-         y="-67.637833"
-         id="tspan3931" /></text>
+         id="tspan3929">　処刑を行います。」のみ</tspan></text>
     <text
        x="60"
        y="572.36218"
@@ -667,17 +611,46 @@
          id="tspan3937">「仮投票と本投票で</tspan><tspan
          x="60"
          y="592.36218"
-         id="tspan3941">　処刑を行います。」のみ</tspan><tspan
-         x="60"
-         y="612.36218"
-         id="tspan3943" /></text>
+         id="tspan3941">　処刑を行います。」のみ</tspan></text>
     <path
-       d="m 302,-607.6378 0,169.99997 8,0 -10,10.00002 -10,-10.00002 8,0 0,-169.99997 z"
+       d="m 302,-727.63783 0,40 8,0 -10,10 -10,-10 8,0 0,-40 z"
+       id="rect7676"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1" />
+    <path
+       d="m 302,-607.6378 0,170 8,0 -10,10 -10,-10 8,0 0,-170 z"
        id="path7679"
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
        d="m 302,-337.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
        id="path7729"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,-137.63783 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path7794"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,2.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
+       id="path3079"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,132.36217 0,110 8,0 -10,10 -10,-10 8,0 0,-110 z"
+       id="path3106"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,322.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path3148"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,542.36217 0,60 8,0 -10,10 -10,-10 8,0 0,-60 z"
+       id="path3383"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,682.36217 0,70 8,0 -10,10 -10,-10 8,0 0,-70 z"
+       id="path3381"
+       style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <path
+       d="m 302,812.36218 0,170 8,0 -10,10 -10,-10 8,0 0,-170 z"
+       id="path3986"
        style="fill:#ffffff;fill-opacity:0.50196078;stroke:#ffffff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
 </svg>
