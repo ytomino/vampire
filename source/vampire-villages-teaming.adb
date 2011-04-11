@@ -234,7 +234,7 @@ package body Vampire.Villages.Teaming is
 					Village_Side_Superman_Count := 4;
 				elsif People_Count_2 >= 11 then
 					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 9 then
+				elsif People_Count_2 >= 8 then
 					Village_Side_Superman_Count := 2;
 				else
 					Village_Side_Superman_Count := 1;
