@@ -1,6 +1,7 @@
 The Village of Vampire by YT
 
-* 設置
+設置
+====
 
 root/
 	vampire.exe or vampire.cgi (実行可能属性)
@@ -23,7 +24,8 @@ root/
 それでログオンすると新しい村を作ることができます。
 また、進行中の村に地の文を書き込めます。"administrator"での参加はできません。
 
-* ビルドに必要なもの
+ビルドに必要なもの
+==================
 
 gcc 4.5.2を使わせていただいています。
 http://gcc.gnu.org/
@@ -46,7 +48,8 @@ http://panathenaia.halfmoon.jp/alang/headmaster/
 Adaの標準ライブラリには、gcc標準のものではなくdrake(拙作)を使用しています。
 https://github.com/ytomino/drake
 
-それ以外で私が書いたコードはNYSL 0.9982 ということにしてください。
+ライセンス
+==========
 
 autherさんの顔絵セット、Juna様の人狼審問α2.5セット、sinさんの文明開化セットは
 元々の配布条件に従ってください。
