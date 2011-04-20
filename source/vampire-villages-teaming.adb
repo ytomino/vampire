@@ -249,9 +249,11 @@ package body Vampire.Villages.Teaming is
 					Servant_Count := 1;
 				elsif People_Count_2 >= 8 then
 					Vampire_Count := 2;
-				else
+				elsif People_Count_2 >= 6 then
 					Vampire_Count := 1;
 					Servant_Count := 1;
+				else
+					Vampire_Count := 1;
 				end if;
 				if People_Count_2 >= 16 then
 					Gremlin_Count := 1;
