@@ -151,7 +151,7 @@ is
 								Tag : in String;
 								Template : in Web.Producers.Template) is
 							begin
-								if Tag = "current" then
+								if Tag = "current" or else Tag = "select" then
 									Forms.Write_In_HTML (Output, Form, "旧編成「" & Villages.Text.Image (Village.Obsolete_Teaming) & "」です。");
 								else
 									raise Program_Error with "Invalid template """ & Tag & """";
