@@ -125,6 +125,7 @@ package body Vampire.Villages.Teaming is
 			if Village_Side_Superman_Count > 0
 				and then (
 					Set (Astronomer) = 0
+					or else (Set (Gremlin) > 0 and then Monster_Side = Gremlin)
 					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 3)
 			then
 				Set_2 (Hunter) := 1;
