@@ -261,8 +261,6 @@ package body Vampire.Villages.Teaming is
 				end if;
 			when Dummy_Killed_And_From_First | From_First | From_Second =>
 				if People_Count_2 >= 15 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 13 then
 					Village_Side_Superman_Count := 4;
 				elsif People_Count_2 >= 10 then
 					Village_Side_Superman_Count := 3;

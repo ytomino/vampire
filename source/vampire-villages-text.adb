@@ -68,8 +68,9 @@ package body Vampire.Villages.Text is
 			when Low_Density =>        return "線形Mk.Ⅰ(旧標準ver.1)";
 			when Liner_2 =>            return "線形Mk.Ⅱ(初日感染者用)";
 			when Shuffling_Headless => return "首なし騎士似(旧標準ver.2)";
-			when Shuffling_Euro =>     return "欧州似";
 			when Shuffling =>          return "標準ver.3";
+			when Shuffling_4 =>        return "標準ver.4";
+			when Shuffling_Euro =>     return "欧州似";
 			when Shuffling_Gremlin =>  return "標準ver.3+妖魔早め";
 			when Hiding =>             return "標準ver.3+構成非公開";
 			when Hiding_Gremlin =>     return "標準ver.3+構成非公開+妖魔早め";

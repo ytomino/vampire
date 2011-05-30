@@ -1101,7 +1101,7 @@ package body Vampire.Villages is
 				-- 記録用
 				case V.Execution is
 					when Dummy_Killed_And_From_First | From_First | From_Second =>
-						V.Obsolete_Teaming := Shuffling;
+						V.Obsolete_Teaming := Shuffling_4;
 					when Infection_And_From_First =>
 						V.Obsolete_Teaming := Liner_2;
 				end case;
