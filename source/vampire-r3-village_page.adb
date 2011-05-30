@@ -51,7 +51,8 @@ is
 		Visible : constant Boolean :=
 			Player
 			or else Village.Term = Short
-			or else Village.Option_Changed;
+			or else Village.Option_Changed
+			or else Is_Obsolete_Teaming (Village.Obsolete_Teaming);
 		Changable : constant Boolean :=
 			Player
 			and then Village.Today = 0
