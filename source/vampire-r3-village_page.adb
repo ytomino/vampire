@@ -171,52 +171,6 @@ is
 				if not Changable then
 					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 				end if;
-			elsif Tag = "roleset" then
-				if Village.State <= Playing and then Village.People.Length >= 3 then
-					declare
-						Sets : constant Vampire.Villages.Teaming.Role_Set_Array :=
-							Vampire.Villages.Teaming.Possibilities (
-								People_Count => Village.People.Length,
-								Male_And_Female => Village.Male_And_Female,
-								Execution => Village.Execution,
-								Formation => Village.Formation,
-								Unfortunate => Village.Unfortunate,
-								Monster_Side => Village.Monster_Side);
-						procedure Handle_Role_Set (
-							Output : not null access Ada.Streams.Root_Stream_Type'Class;
-							Tag : in String;
-							Template : in Web.Producers.Template) is
-						begin
-							if Tag = "items" then
-								for I in Sets'Range loop
-									declare
-										procedure Handle_Item (
-											Output : not null access Ada.Streams.Root_Stream_Type'Class;
-											Tag : in String;
-											Template : in Web.Producers.Template) is
-										begin
-											if Tag = "set" then
-												for J in Vampire.Villages.Person_Role loop
-													for K in 1 .. Sets (I)(J) loop
-														Forms.Write_In_HTML (Output, Form, Villages.Text.Short_Image (J));
-													end loop;
-												end loop;
-											else
-												raise Program_Error with "Invalid template """ & Tag & """";
-											end if;
-										end Handle_Item;
-									begin
-										Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
-									end;
-								end loop;
-							else
-								raise Program_Error with "Invalid template """ & Tag & """";
-							end if;
-						end Handle_Role_Set;
-					begin
-						Web.Producers.Produce (Output, Template, Handler => Handle_Role_Set'Access);
-					end;
-				end if;
 			elsif Tag = "action_page" then
 				Forms.Write_Attribute_Name (Output, "action");
 				Forms.Write_Link (
@@ -807,6 +761,52 @@ is
 					Player => Player_Index >= 0,
 					User_Id => User_Id,
 					User_Password => User_Password);
+			end if;
+		elsif Tag = "roleset" then
+			if Village.State <= Playing and then Village.People.Length >= 3 then
+				declare
+					Sets : constant Vampire.Villages.Teaming.Role_Set_Array :=
+						Vampire.Villages.Teaming.Possibilities (
+							People_Count => Village.People.Length,
+							Male_And_Female => Village.Male_And_Female,
+							Execution => Village.Execution,
+							Formation => Village.Formation,
+							Unfortunate => Village.Unfortunate,
+							Monster_Side => Village.Monster_Side);
+					procedure Handle_Role_Set (
+						Output : not null access Ada.Streams.Root_Stream_Type'Class;
+						Tag : in String;
+						Template : in Web.Producers.Template) is
+					begin
+						if Tag = "items" then
+							for I in Sets'Range loop
+								declare
+									procedure Handle_Item (
+										Output : not null access Ada.Streams.Root_Stream_Type'Class;
+										Tag : in String;
+										Template : in Web.Producers.Template) is
+									begin
+										if Tag = "set" then
+											for J in Vampire.Villages.Person_Role loop
+												for K in 1 .. Sets (I)(J) loop
+													Forms.Write_In_HTML (Output, Form, Villages.Text.Short_Image (J));
+												end loop;
+											end loop;
+										else
+											raise Program_Error with "Invalid template """ & Tag & """";
+										end if;
+									end Handle_Item;
+								begin
+									Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
+								end;
+							end loop;
+						else
+							raise Program_Error with "Invalid template """ & Tag & """";
+						end if;
+					end Handle_Role_Set;
+				begin
+					Web.Producers.Produce (Output, Template, Handler => Handle_Role_Set'Access);
+				end;
 			end if;
 		elsif Tag = "href_index" then
 			Forms.Write_Attribute_Name (Output, "href");

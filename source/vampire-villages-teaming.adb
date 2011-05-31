@@ -88,7 +88,11 @@ package body Vampire.Villages.Teaming is
 			Set_2 : Role_Set := Set;
 		begin
 			Process_Lovers (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
-			if Village_Side_Superman_Count > 0 then
+			if Village_Side_Superman_Count > 0
+				and then (
+					Set (Astronomer) + Set (Hunter) + Set (Doctor) < 3
+					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 4)
+			then
 				Set_2 (Detective) := 1;
 				Process_Lovers (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
 			end if;
@@ -261,6 +265,8 @@ package body Vampire.Villages.Teaming is
 				end if;
 			when Dummy_Killed_And_From_First | From_First | From_Second =>
 				if People_Count_2 >= 15 then
+					Village_Side_Superman_Count := 5;
+				elsif People_Count_2 >= 13 then
 					Village_Side_Superman_Count := 4;
 				elsif People_Count_2 >= 10 then
 					Village_Side_Superman_Count := 3;

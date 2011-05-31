@@ -38,10 +38,7 @@ package Vampire.Villages is
 	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
-	type Obsolete_Teaming_Mode is (
-		Low_Density, Liner_2,
-		Shuffling_Headless, Shuffling, Shuffling_4,
-		Shuffling_Euro, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Obsolete_Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	
 	Initial_Vote                 : constant Vote_Mode                 := Unsigned;
 	Initial_Execution            : constant Execution_Mode            := From_First;
@@ -54,11 +51,11 @@ package Vampire.Villages is
 	Initial_Hunter_Silver_Bullet : constant Hunter_Silver_Bullet_Mode := Target_And_Self;
 	Initial_Unfortunate          : constant Unfortunate_Mode          := Infected_Only;
 	
-	Initial_Obsolete_Teaming     : constant Obsolete_Teaming_Mode     := Shuffling_4;
+	Initial_Obsolete_Teaming     : constant Obsolete_Teaming_Mode     := Shuffling;
 	
 	Is_Obsolete_Teaming : constant array (Obsolete_Teaming_Mode) of Boolean := (
-		Liner_2 | Shuffling_4 | Hiding => False,
-		Low_Density | Shuffling_Headless | Shuffling | Shuffling_Euro | Shuffling_Gremlin | Hiding_Gremlin => True);
+		Liner_2 | Shuffling | Hiding => False,
+		Low_Density | Shuffling_Headless | Shuffling_Euro | Shuffling_Gremlin | Hiding_Gremlin => True);
 	
 	-- 配役
 	
