@@ -763,7 +763,7 @@ is
 					User_Password => User_Password);
 			end if;
 		elsif Tag = "roleset" then
-			if Village.State <= Playing and then Village.People.Length >= 3 then
+			if Day = 0 and then Village.State <= Playing and then Village.People.Length >= 3 then
 				declare
 					Sets : constant Vampire.Villages.Teaming.Role_Set_Array :=
 						Vampire.Villages.Teaming.Possibilities (
