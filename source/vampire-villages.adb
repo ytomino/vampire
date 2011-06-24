@@ -101,7 +101,8 @@ package body Vampire.Villages is
 	
 	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts is
 		Result : Message_Counts(Village.Messages.First_Index .. Village.Messages.Last_Index) := (others => (
-			Speech => 0, Monologue => 0, Ghost => 0, Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0,
+			Speech => 0, Monologue => 0, Ghost => 0,
+			Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0, Vampire_Cancel => 0,
 			Last_Action_Time => Calendar.Null_Time));
 	begin
 		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
@@ -140,6 +141,8 @@ package body Vampire.Villages is
 							Result(Current.Target).Encouraged := Result(Current.Target).Encouraged + 1;
 						when Action_Vampire_Gaze | Action_Vampire_Gaze_Blocked =>
 							Result(Current.Subject).Vampire_Gaze := Result(Current.Subject).Vampire_Gaze + 1;
+						when Action_Vampire_Cancel =>
+							Result (Current.Subject).Vampire_Cancel := Result (Current.Subject).Vampire_Cancel + 1;
 						when others =>
 							null;
 					end case;
@@ -436,7 +439,7 @@ package body Vampire.Villages is
 		end if;
 	end Can_Gaze;
 	
-	procedure Gaze (
+	procedure Vampire_Gaze (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
 		Target : in Person_Index;
@@ -456,7 +459,41 @@ package body Vampire.Villages is
 			Subject => Subject,
 			Target => Target,
 			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-	end Gaze;
+	end Vampire_Gaze;
+	
+	procedure Vampire_Cancel (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time) is
+	begin
+		Append (Village.Messages, Message'(
+			Kind => Action_Vampire_Cancel,
+			Day => Village.Today,
+			Time => Time,
+			Subject => Subject,
+			Target => Target,
+			Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+		for I in Village.People.First_Index .. Village.People.Last_Index loop
+			declare
+				Person : Person_Type renames Village.People.Reference (I).Element.all;
+			begin
+				if Person.Role in Vampire_Role
+					and then I /= Subject -- 自分以外
+					and then Person.Records.Constant_Reference (Village.Today).Element.Target = Target
+				then
+					Person.Records.Reference (Village.Today).Element.Target := No_Person;
+					Append (Village.Messages, Message'(
+						Kind => Action_Vampire_Canceled,
+						Day => Village.Today,
+						Time => Time,
+						Subject => I,
+						Target => Target,
+						Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+				end if;
+			end;
+		end loop;
+	end Vampire_Cancel;
 	
 	function Infected_In_First (Village : Village_Type) return Boolean is
 		pragma Assert (Village.Today = 1);

@@ -1079,6 +1079,20 @@ is
 												"narrationi",
 												Vampire.Villages.Vampire_K);
 										end if;
+									when Action_Vampire_Cancel =>
+										if Village.State >= Epilogue or else Player_Index = Message.Subject then
+											Narration (
+												Villages.Text.Action_Vampire_Cancel (Village, Message),
+												"narrationi",
+												Vampire_K);
+										end if;
+									when Action_Vampire_Canceled =>
+										if Village.State >= Epilogue or else Player_Index = Message.Subject then
+											Narration (
+												Villages.Text.Action_Vampire_Canceled (Village, Message),
+												"narrationi",
+												Vampire_K);
+										end if;
 									when Vampire.Villages.Servant_Message_Kind =>
 										if Village.State >= Epilogue or else Player_Index = Message.Subject then
 											Narration (
@@ -1712,7 +1726,9 @@ is
 									Message_Counts (Player_Index).Wake = 0
 									or else Message_Counts (Player_Index).Encourage = 0
 									or else ((Village.People.Constant_Reference (Player_Index).Element.Role in Vampire.Villages.Vampire_Role)
-										and then Message_Counts (Player_Index).Vampire_Gaze = 0))
+										and then (
+											Message_Counts (Player_Index).Vampire_Gaze = 0
+											or else Message_Counts (Player_Index).Vampire_Cancel = 0)))
 								then
 									if Form.Template_Set = Forms.For_Full then
 										String'Write (Output, "<form method=""POST"" class=""inner"">" & Line_Break);
@@ -1762,6 +1778,13 @@ is
 									then
 										String'Write(Output, "<option value=""vampire_gaze"">");
 										Forms.Write_In_HTML (Output, Form, "をこっそり見つめる。");
+										String'Write(Output, "</option>" & Line_Break);
+									end if;
+									if Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
+										and then Message_Counts(Player_Index).Vampire_Cancel = 0
+									then
+										String'Write(Output, "<option value=""vampire_cancel"">");
+										Forms.Write_In_HTML (Output, Form, "を襲うのをやめさせる。");
 										String'Write(Output, "</option>" & Line_Break);
 									end if;
 									String'Write(Output, "</select>" & Line_Break);

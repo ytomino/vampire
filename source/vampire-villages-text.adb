@@ -618,7 +618,18 @@ package body Vampire.Villages.Text is
 				end loop;
 			end loop;
 		else
-			Ada.Strings.Unbounded.Append (Result, Name (Subject) & "は" & Name (Target) & "に目をつけました。 " & Line_Break);
+			-- 「目をつけました」部分は本来設定していた相手を表示(吸血鬼同様棄権は表示なし)
+			declare
+				Primary_Target_Index : Person_Index'Base := Subject.Records.Constant_Reference (Message.Day - 1).Element.Target;
+			begin
+				if Primary_Target_Index >= 0 then
+					declare
+						Primary_Target : Person_Type renames Village.People.Constant_Reference (Primary_Target_Index).Element.all;
+					begin
+						Ada.Strings.Unbounded.Append (Result, Name (Subject) & "は" & Name (Primary_Target) & "に目をつけました。 " & Line_Break);
+					end;
+				end if;
+			end;
 		end if;
 		case Vampire_Message_Kind (Message.Kind) is
 			when Vampire_Infection_In_First | Vampire_Failed_In_First =>
@@ -626,7 +637,13 @@ package body Vampire.Villages.Text is
 			when others =>
 				null;
 		end case;
-		Ada.Strings.Unbounded.Append (Result, "吸血鬼は" & Name (Target) & "を");
+		Ada.Strings.Unbounded.Append (Result, "吸血鬼は");
+		if Village.State >= Epilogue or else Subject.Role in Vampire_Role then
+			Ada.Strings.Unbounded.Append (Result, Name (Target));
+		else
+			Ada.Strings.Unbounded.Append (Result, "誰か");
+		end if;
+		Ada.Strings.Unbounded.Append (Result, "を");
 		case Vampire_Message_Kind (Message.Kind) is
 			when Vampire_Infection_In_First =>
 				Ada.Strings.Unbounded.Append (Result, "感染させています。 ");
@@ -781,9 +798,27 @@ package body Vampire.Villages.Text is
 		The_Unfortunate : constant Person_Index := Find_Superman (Village, Unfortunate_Inhabitant);
 	begin
 		return Name (Subject) & "の視線は" &
-		Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) &
-		"に遮られた。 ";
+			Name (Village.People.Constant_Reference (The_Unfortunate).Element.all) &
+			"に遮られた。 ";
 	end Action_Vampire_Gaze_Blocked;
+	
+	function Action_Vampire_Cancel (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (Subject) & "は" & Villages.Text.Name (Target) & "を襲わないよう念じた。 ";
+	end Action_Vampire_Cancel;
+	
+	function Action_Vampire_Canceled (Village : Village_Type; Message : Villages.Message)
+		return String
+	is
+		Subject : Person_Type renames Village.People.Constant_Reference (Message.Subject).Element.all;
+		Target : Person_Type renames Village.People.Constant_Reference (Message.Target).Element.all;
+	begin
+		return Name (Subject) & "は" & Villages.Text.Name (Target) & "を襲う予定を取りやめた。 ";
+	end Action_Vampire_Canceled;
 	
 	-- 決着
 	

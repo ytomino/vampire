@@ -892,7 +892,23 @@ begin
 											elsif not Village.Can_Gaze then
 												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
 											else
-												Villages.Gaze (Village, Player, Target, Now);
+												Villages.Vampire_Gaze (Village, Player, Target, Now);
+												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Refresh_Page;
+											end if;
+										elsif Action = "vampire_cancel" then
+											if Village.People.Constant_Reference (Player).Element.Role not in Villages.Vampire_Role then
+												Message_Page ("襲撃を取り消せるのは吸血鬼だけです。");
+											elsif Village.People.Constant_Reference (Target).Element.Role in Villages.Vampire_Role then
+												Message_Page ("相手は吸血鬼です、元々襲えません。");
+											elsif Said (Player).Vampire_Cancel > 0 then
+												Message_Page ("襲撃を取り消せるのは一日一度です。");
+											elsif Village.Time = Villages.Night then
+												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
+											elsif not Village.Can_Gaze then
+												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
+											else
+												Villages.Vampire_Cancel (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												Refresh_Page;
 											end if;

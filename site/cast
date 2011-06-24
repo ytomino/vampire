@@ -708,7 +708,7 @@ works:
   sex: male
 - name: 令嬢
   sex: female
-- name: はいからさん
+- name: フーテンの
   sex: neutral
 - name: 間男
   sex: male
@@ -718,7 +718,7 @@ works:
   sex: male
 - name: 糸紡ぎ
   sex: neutral
-- name: 助平親父
+- name: 若獅子童子
   sex: male
 - name: 仮面の貴公子
   sex: male
@@ -736,7 +736,7 @@ works:
   sex: neutral
 - name: 代言
   sex: neutral
-- name: 奴隷
+- name: 銀行強盗
   sex: neutral
 - name: 異郷の人
   sex: neutral

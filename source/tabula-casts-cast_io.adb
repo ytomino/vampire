@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package body Tabula.Casts.Cast_IO is
 	
-	procedure IO (Serializer : not null access Serialization.Serializer; Item : in out Person'Class) is
+	procedure IO_Partial (Serializer : not null access Serialization.Serializer; Item : in out Person'Class) is
 		use Serialization;
 		use Person_Sex_IO;
 	begin
@@ -10,16 +10,28 @@ package body Tabula.Casts.Cast_IO is
 		IO (Serializer, "image", Item.Image);
 		IO (Serializer, "sex", Item.Sex);
 		IO (Serializer, "group", Item.Group);
-	end IO;
+	end IO_Partial;
 	
 	use Groups;
-	package Groups_IO is new Serialization.IO_List (Groups.Vector, Groups.Cursor, Group, Empty_Group);
+	package Groups_IO is new Serialization.IO_List (
+		Cursor => Groups.Cursor,
+		Element_Type => Group,
+		Container_Type => Groups.Vector,
+		Default => Empty_Group);
 	
 	use People;
-	package People_IO is new Serialization.IO_List (People.Vector, People.Cursor, Person, Empty_Person);
+	package People_IO is new Serialization.IO_List (
+		Cursor => People.Cursor,
+		Element_Type => Person,
+		Container_Type => People.Vector,
+		Default => Empty_Person);
 	
 	use Works;
-	package Works_IO is new Serialization.IO_List (Works.Vector, Works.Cursor, Work, Empty_Work);
+	package Works_IO is new Serialization.IO_List (
+		Cursor => Works.Cursor,
+		Element_Type => Work,
+		Container_Type => Works.Vector,
+		Default => Empty_Work);
 	
 	procedure IO (Serializer: not null access Serialization.Serializer; Item : in out Cast_Collection) is
 		use Serialization;
@@ -28,7 +40,7 @@ package body Tabula.Casts.Cast_IO is
 		use People_IO;
 		use Works_IO;
 		procedure Root_Callback is
-			procedure Groups_Callback (Item : in out Group) is
+			procedure Groups_Callback (Serializer: not null access Serialization.Serializer; Item : in out Group) is
 				procedure Group_Callback is
 				begin
 					IO (Serializer, "name", Item.Name);
@@ -40,15 +52,15 @@ package body Tabula.Casts.Cast_IO is
 			begin
 				IO (Serializer, Group_Callback'Access);
 			end Groups_Callback;
-			procedure People_Callback (Item : in out Person) is
+			procedure People_Callback (Serializer: not null access Serialization.Serializer; Item : in out Person) is
 				procedure Person_Callback is
 				begin
-					IO (Serializer, Item);
+					IO_Partial (Serializer, Item);
 				end Person_Callback;
 			begin
 				IO (Serializer, Person_Callback'Access);
 			end People_Callback;
-			procedure Works_Callback (Item : in out Work) is
+			procedure Works_Callback (Serializer: not null access Serialization.Serializer; Item : in out Work) is
 				procedure Work_Callback is
 				begin
 					IO (Serializer, "name", Item.Name);

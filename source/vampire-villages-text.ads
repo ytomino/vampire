@@ -117,6 +117,10 @@ package Vampire.Villages.Text is
 		return String;
 	function Action_Vampire_Gaze_Blocked (Village : Village_Type; Message : Villages.Message)
 		return String;
+	function Action_Vampire_Cancel (Village : Village_Type; Message : Villages.Message)
+		return String;
+	function Action_Vampire_Canceled (Village : Village_Type; Message : Villages.Message)
+		return String;
 	
 	-- 決着
 	

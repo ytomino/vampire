@@ -144,6 +144,8 @@ package Vampire.Villages is
 		Action_Encourage,                 -- 促し
 		Action_Vampire_Gaze,              -- 視線
 		Action_Vampire_Gaze_Blocked,      -- 視線が妨害された
+		Action_Vampire_Cancel,            -- 襲撃取り消し
+		Action_Vampire_Canceled,          -- 自分の襲撃設定が取り消された
 		Doctor_Cure,                      -- 治療
 		Doctor_Cure_Preview,              -- 治療
 		Doctor_Found_Infection,           -- 感染を発見しただけ
@@ -214,7 +216,8 @@ package Vampire.Villages is
 	package Messages is new Ada.Containers.Vectors (Message_Index, Message);
 	
 	type Message_Count is record
-		Speech, Monologue, Ghost, Wake, Encourage, Encouraged, Vampire_Gaze : Natural;
+		Speech, Monologue, Ghost : Natural;
+		Wake, Encourage, Encouraged, Vampire_Gaze, Vampire_Cancel : Natural;
 		Last_Action_Time : Ada.Calendar.Time ;
 	end record;
 	type Message_Counts is array (Person_Index range <>) of Message_Count;
@@ -313,7 +316,12 @@ package Vampire.Villages is
 		Subject : in Person_Index;
 		Target : in Person_Index;
 		Time : in Ada.Calendar.Time);
-	procedure Gaze (
+	procedure Vampire_Gaze (
+		Village : in out Village_Type;
+		Subject : in Person_Index;
+		Target : in Person_Index;
+		Time : in Ada.Calendar.Time);
+	procedure Vampire_Cancel (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
 		Target : in Person_Index;

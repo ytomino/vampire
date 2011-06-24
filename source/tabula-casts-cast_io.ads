@@ -7,7 +7,7 @@ package Tabula.Casts.Cast_IO is
 	package Neutralable_Sex_IO is new Serialization.IO_Enumeration (Neutralable_Sex);
 	package Person_Sex_IO is new Serialization.IO_Enumeration (Person_Sex);
 	
-	procedure IO (
+	procedure IO_Partial (
 		Serializer : not null access Serialization.Serializer;
 		Item : in out Person'Class);
 	procedure IO (

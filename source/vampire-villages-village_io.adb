@@ -27,9 +27,9 @@ package body Vampire.Villages.Village_IO is
 		use People_IO;
 		use Calendar.Time_IO;
 		use Casts.Cast_IO;
-		procedure People_Callback (Item : in out Person_Type) is
+		procedure People_Callback (Serializer : not null access Serialization.Serializer; Item : in out Person_Type) is
 			procedure Person_Callback is
-				procedure Person_Records_Callback (Item : in out Person_Record) is
+				procedure Person_Records_Callback (Serializer : not null access Serialization.Serializer; Item : in out Person_Record) is
 					procedure Person_Record_Callback is
 					begin
 						IO (Serializer, "state", Item.State);
@@ -45,7 +45,7 @@ package body Vampire.Villages.Village_IO is
 				end Person_Records_Callback;
 			begin
 				IO (Serializer, "id", Item.Id);
-				IO (Serializer, Item);
+				IO_Partial (Serializer, Item);
 				IO (Serializer, "request", Item.Request);
 				IO (Serializer, "role", Item.Role);
 				IO (Serializer, "ignore-request", Item.Ignore_Request, Default => Empty_Person.Ignore_Request);
@@ -63,7 +63,7 @@ package body Vampire.Villages.Village_IO is
 		use Serialization;
 		use Message_Kind_IO;
 		use Calendar.Time_IO;
-		procedure Messages_Callback (Item : in out Message) is
+		procedure Messages_Callback (Serializer : not null access Serialization.Serializer; Item : in out Message) is
 			procedure Message_Callback is
 			begin
 				IO (Serializer, "day", Item.Day);
@@ -77,7 +77,11 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, Message_Callback'Access);
 		end Messages_Callback;
 		use Villages.Messages;
-		package Messages_IO is new Serialization.IO_List (Villages.Messages.Vector, Villages.Messages.Cursor, Message, Default_Message);
+		package Messages_IO is new Serialization.IO_List (
+			Cursor => Villages.Messages.Cursor,
+			Element_Type => Message,
+			Container_Type => Villages.Messages.Vector,
+			Default => Default_Message);
 		use Messages_IO;
 	begin
 		IO (Serializer, Name, Messages, Messages_Callback'Access);
