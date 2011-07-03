@@ -27,11 +27,8 @@ root/
 ビルドに必要なもの
 ==================
 
-gcc 4.5.2を使わせていただいています。
+gcc 4.6.1を使わせていただいています。
 http://gcc.gnu.org/
-
-乱数アルゴリズムにMT19937を使わせていただいています。
-http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/mt.html
 
 パスワードを保存するときのハッシュ関数にOpenSSLを使わせていただいています。
 http://www.openssl.org/
