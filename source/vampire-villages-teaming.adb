@@ -105,7 +105,9 @@ package body Vampire.Villages.Teaming is
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			Process_Detective (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			if not (Monster_Side = Gremlin and then Set (Gremlin) >= 1 and then Set (Astronomer) = 0) then
+				Process_Detective (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			end if;
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Doctor) := 1;
 				Process_Detective (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
@@ -120,16 +122,13 @@ package body Vampire.Villages.Teaming is
 			Set_2 : Role_Set := Set;
 		begin
 			if Village_Side_Superman_Count = 0
-				or else (
-					Set (Astronomer) >= 1
-					and then (Set (Gremlin) = 0 or else Monster_Side /= Gremlin))
+				or else Set (Astronomer) >= 1
 			then
 				Process_Doctor (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0
 				and then (
 					Set (Astronomer) = 0
-					or else (Set (Gremlin) > 0 and then Monster_Side = Gremlin)
 					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 3)
 			then
 				Set_2 (Hunter) := 1;
@@ -308,7 +307,7 @@ package body Vampire.Villages.Teaming is
 			end if;
 		end if;
 		-- 使徒妖魔交換
-		if Monster_Side = Gremlin then
+		if Monster_Side = Gremlin and then People_Count >= 11 then
 			declare
 				T : constant Natural := Servant_Count;
 			begin

@@ -4,7 +4,7 @@ space :=$(empty) $(empty)
 HOST=$(shell gcc -dumpmachine)
 export TARGET=$(HOST)
 
-ifeq ($(TARGET),i686-pc-mingw32)
+ifneq (,$(findstring mingw,$(TARGET)))
 DIRSEP=\$(empty)
 PATHLISTSEP=;
 EXESUFFIX=.exe
@@ -47,11 +47,15 @@ LARGS:=$(LARGS) -Xlinker --gc-sections -s
 endif
 else
 CARGS:=$(CARGS) -g -gnata
-BARGS:=-E
-LARGS:=-g
+BARGS:=$(BARGS) -E
+LARGS:=$(LARGS) -g
 endif
 ifneq ($(TARGET),$(HOST))
 LARGS:=$(LARGS) -lgcc_eh
+endif
+ifneq ($(LTO),)
+CARGS:=$(CARGS) -flto -fwhole-program
+LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
