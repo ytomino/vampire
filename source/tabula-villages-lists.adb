@@ -242,7 +242,7 @@ package body Tabula.Villages.Lists is
 				V : Village_Summary renames Summaries.Constant_Reference (I).Element.all;
 			begin
 				if V.State <= Playing and then V.By = User_Id
-					and then Summaries.Constant_Reference (I).Key.all /= Excluding
+					and then Summary_Maps.Key (I) /= Excluding
 				then
 					return True;
 				end if;
@@ -329,7 +329,7 @@ package body Tabula.Villages.Lists is
 		begin
 			while Has_Element (I) loop
 				declare
-					Id : String renames List.Map.Constant_Reference (I).Key.all;
+					Id : String renames Summary_Maps.Key (I);
 					Summary : Village_Summary renames List.Map.Constant_Reference (I).Element.all;
 				begin
 					if Summary.State = Closed then

@@ -737,7 +737,9 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
+		if Village.Messages.Is_Empty
+		   or else not Equivalent_Messages (New_Item, Village.Messages.Element (Village.Messages.Last))
+		then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Speech;
@@ -756,7 +758,9 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
+		if Village.Messages.Is_Empty
+			or else not Equivalent_Messages (New_Item, Village.Messages.Element (Village.Messages.Last))
+		then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Monologue;
@@ -775,7 +779,9 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
+		if Village.Messages.Is_Empty
+			or else not Equivalent_Messages (New_Item, Village.Messages.Element (Village.Messages.Last))
+		then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Ghost;
@@ -793,7 +799,9 @@ package body Vampire.Villages is
 			Target => No_Person,
 			Text => +Text);
 	begin
-		if Village.Messages.Is_Empty or else not Equivalent_Messages (New_Item, Village.Messages.Last_Element) then
+		if Village.Messages.Is_Empty
+			or else not Equivalent_Messages (New_Item, Village.Messages.Element (Village.Messages.Last))
+		then
 			Append (Village.Messages, New_Item);
 		end if;
 	end Narration;

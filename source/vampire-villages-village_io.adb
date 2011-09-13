@@ -10,15 +10,21 @@ package body Vampire.Villages.Village_IO is
 	
 	procedure IO (Serializer : not null access Serialization.Serializer; Name : in String; People : in out Villages.People.Vector) is
 		package Person_Records_IO is new Serialization.IO_List (
-			Container_Type => Villages.Person_Records.Vector,
 			Cursor => Villages.Person_Records.Cursor,
 			Element_Type => Person_Record,
-			Default => Default_Person_Record);
+			Container_Type => Villages.Person_Records.Vector,
+			Reference_Type => Villages.Person_Records.Reference_Type,
+			Default => Default_Person_Record,
+			Has_Element => Villages.Person_Records.Has_Element,
+			Next => Villages.Person_Records.Cursor'Succ);
 		package People_IO is new Serialization.IO_List (
-			Container_Type => Villages.People.Vector,
 			Cursor => Villages.People.Cursor,
 			Element_Type => Person_Type,
-			Default => Empty_Person);
+			Container_Type => Villages.People.Vector,
+			Reference_Type => Villages.People.Reference_Type,
+			Default => Empty_Person,
+			Has_Element => Villages.People.Has_Element,
+			Next => Villages.People.Cursor'Succ);
 		use Serialization;
 		use Person_Records_IO;
 		use Person_Role_IO;
@@ -81,7 +87,10 @@ package body Vampire.Villages.Village_IO is
 			Cursor => Villages.Messages.Cursor,
 			Element_Type => Message,
 			Container_Type => Villages.Messages.Vector,
-			Default => Default_Message);
+			Reference_Type => Villages.Messages.Reference_Type,
+			Default => Default_Message,
+			Has_Element => Villages.Messages.Has_Element,
+			Next => Villages.Messages.Cursor'Succ);
 		use Messages_IO;
 	begin
 		IO (Serializer, Name, Messages, Messages_Callback'Access);

@@ -235,14 +235,13 @@ package body Tabula.Users.Lists is
 			Time : in Ada.Calendar.Time))
 	is
 		procedure Thunk (Position : in Users_Log.Cursor) is
-			Ref : constant Users_Log.Constant_Reference_Type :=
-				List.Log.Constant_Reference (Position);
+			Key : User_Log_Item renames Users_Log.Key (Position);
 		begin
 			Process (
-				Id => Ref.Key.Id.Constant_Reference.Element.all,
-				Remote_Addr => Ref.Key.Remote_Addr.Constant_Reference.Element.all,
-				Remote_Host => Ref.Key.Remote_Host.Constant_Reference.Element.all,
-				Time => Ref.Element.all);
+				Id => Key.Id.Constant_Reference.Element.all,
+				Remote_Addr => Key.Remote_Addr.Constant_Reference.Element.all,
+				Remote_Host => Key.Remote_Host.Constant_Reference.Element.all,
+				Time => List.Log.Constant_Reference (Position).Element.all);
 		end Thunk;
 	begin
 		Load_Users_Log (List);

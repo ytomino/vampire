@@ -17,21 +17,29 @@ package body Tabula.Casts.Cast_IO is
 		Cursor => Groups.Cursor,
 		Element_Type => Group,
 		Container_Type => Groups.Vector,
-		Default => Empty_Group);
+		Reference_Type => Groups.Reference_Type,
+		Default => Empty_Group,
+		Next => Groups.Cursor'Succ);
 	
 	use People;
 	package People_IO is new Serialization.IO_List (
 		Cursor => People.Cursor,
 		Element_Type => Person,
 		Container_Type => People.Vector,
-		Default => Empty_Person);
+		Reference_Type => People.Reference_Type,
+		Default => Empty_Person,
+		Has_Element => People.Has_Element,
+		Next => People.Cursor'Succ);
 	
 	use Works;
 	package Works_IO is new Serialization.IO_List (
 		Cursor => Works.Cursor,
 		Element_Type => Work,
 		Container_Type => Works.Vector,
-		Default => Empty_Work);
+		Reference_Type => Works.Reference_Type,
+		Default => Empty_Work,
+		Has_Element => Works.Has_Element,
+		Next => Works.Cursor'Succ);
 	
 	procedure IO (Serializer: not null access Serialization.Serializer; Item : in out Cast_Collection) is
 		use Serialization;

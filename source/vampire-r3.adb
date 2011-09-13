@@ -174,7 +174,7 @@ package body Vampire.R3 is
 					while Has_Element (I) loop
 						declare
 							Key : Tabula.Villages.Village_Id
-								renames Summaries.Constant_Reference (I).Key.all;
+								renames Tabula.Villages.Lists.Summary_Maps.Key (I);
 							Element : Tabula.Villages.Lists.Village_Summary
 								renames Summaries.Constant_Reference (I).Element.all;
 							procedure Handle_Item (Output : not null access Ada.Streams.Root_Stream_Type'Class;

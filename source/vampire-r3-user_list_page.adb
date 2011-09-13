@@ -74,7 +74,7 @@ is
 				while Has_Element (I) loop
 					if Tabula.Villages.Lists.Count_Joined_By (
 						Summaries,
-						User_List.Constant_Reference (I).Key.all,
+						Key (I),
 						Filter => (
 							Tabula.Villages.Prologue | Tabula.Villages.Playing => False,
 							Tabula.Villages.Epilogue | Tabula.Villages.Closed => True),

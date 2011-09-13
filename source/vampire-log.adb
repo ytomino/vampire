@@ -105,7 +105,7 @@ package body Vampire.Log is
 				while Has_Element (I) loop
 					declare
 						Key : Village_Id
-							renames Summaries.Constant_Reference (I).Key.all;
+							renames Lists.Summary_Maps.Key (I);
 						Element : Lists.Village_Summary
 							renames Summaries.Constant_Reference (I).Element.all;
 					begin
