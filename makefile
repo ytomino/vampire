@@ -72,7 +72,7 @@ export ADA_PROJECT_PATH=
 export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*) $(wildcard lib/*/$(TARGET))))
 export ADA_OBJECTS_PATH=
 
-.PHONY: all clean test-vampire archive
+.PHONY: all clean test-vampire install-test find xref archive
 
 all: site/vampire$(CGISUFFIX)
 
@@ -112,6 +112,12 @@ endif
 clean:
 	-rm -rf build*
 	-rm -rf import*
+
+find:
+	gnatfind -f --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
+
+xref:
+	gnatfind -f -r --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
 
 archive:
 	-rm site/vampire.7z
