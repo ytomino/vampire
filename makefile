@@ -110,8 +110,7 @@ $(IMPORTDIR): lib/import.h
 endif
 
 clean:
-	-rm -rf build*
-	-rm -rf import*
+	-rm -rf build* import*
 
 find:
 	gnatfind -f --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
