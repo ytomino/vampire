@@ -7,8 +7,6 @@ package body Vampire.Villages is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
 	
-	-- local
-	
 	function Equivalent_Messages (Left, Right : Message) return Boolean is
 	begin
 		return Left.Day = Right.Day
@@ -58,7 +56,7 @@ package body Vampire.Villages is
 		end if;
 	end Unfortunate;
 	
-	-- bodies
+	-- implementation
 	
 	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
 		return Village_Type

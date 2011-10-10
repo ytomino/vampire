@@ -7,8 +7,6 @@ with Tabula.Users.Save;
 package body Tabula.Users.Lists is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
-	-- local
-	
 	procedure Load_Users_Log (List : in out User_List) is
 	begin
 		if not List.Log_Read then
@@ -47,7 +45,7 @@ package body Tabula.Users.Lists is
 		end;
 	end Add_To_Users_Log;
 	
-	-- bodies
+	-- implementation
 	
 	function Create (
 		Directory : not null Static_String_Access;
