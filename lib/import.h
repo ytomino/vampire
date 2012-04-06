@@ -1,3 +1,3 @@
-#include "iconv/import.h"
-#include "openssl/import.h"
-#include "yaml/import.h"
+#include "iconv-ada/import.h"
+#include "openssl-ada/import.h"
+#include "yaml-ada/import.h"
