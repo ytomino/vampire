@@ -9,7 +9,6 @@ package Tabula is
 	-- string of Natural without spacing
 	function Image is new Ada.Formatting.Integer_Image (
 		Natural,
-		Zero_Sign => Ada.Formatting.None,
-		Plus_Sign => Ada.Formatting.None);
+		Signs => Ada.Formatting.Triming_Sign_Marks);
 	
 end Tabula;
