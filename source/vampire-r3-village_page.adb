@@ -976,7 +976,9 @@ is
 									when Vampire.Villages.Join =>
 										Narration (Villages.Text.Join (Village, Message));
 									when Vampire.Villages.Escaped_Join =>
-										Narration (Villages.Text.Escaped_Join (Village, Message));
+										Narration (
+											Villages.Text.Escaped_Join (Village, Message),
+											Class => "narratione");
 									when Vampire.Villages.Speech | Vampire.Villages.Escaped_Speech =>
 										exit when Speech_Index > Showing_Range.Last;
 										declare
