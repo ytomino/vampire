@@ -119,12 +119,4 @@ xref:
 	gnatfind -f -r --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
 
 archive:
-	-rm site/vampire.7z
-	mkdir archive
-	svn export lib archive/lib
-	svn export site archive/site
-	svn export source archive/source
-	svn export makefile archive/makefile
-	svn export readme.txt archive/readme.txt
-	cd archive && 7za a -t7z ../site/vampire.7z *
-	rm -rf archive
+	git archive-all site/vampire.tar.bz2
