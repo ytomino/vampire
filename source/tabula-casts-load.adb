@@ -4,8 +4,9 @@ with Serialization.YAML;
 with YAML.Streams;
 with Tabula.Casts.Cast_IO;
 function Tabula.Casts.Load (Name : String) return Cast_Collection is
+	Result : Cast_Collection;
 begin
-	return Result : Cast_Collection do
+--	return Result : Cast_Collection do -- [gcc-4.7] bug of compiler
 		declare
 			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Name => Name);
@@ -22,5 +23,6 @@ begin
 			end;
 			Ada.Streams.Stream_IO.Close (File);
 		end;
-	end return;
+--	end return; -- [gcc-4.7] bug of compiler
+	return Result;
 end Tabula.Casts.Load;

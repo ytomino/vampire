@@ -61,7 +61,9 @@ package Tabula.Casts is
 	
 	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor;
 	
-	type Cast_Collection is limited record
+	type Cast_Collection is
+		-- limited -- see tabula-casts-load.adb
+	record
 		Groups : aliased Casts.Groups.Vector;
 		People : aliased Casts.People.Vector;
 		Works : aliased Casts.Works.Vector;

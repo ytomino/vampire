@@ -92,9 +92,11 @@ begin
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
 		Post : Boolean renames Web.Post;
 		pragma Warnings (Off); -- compiler...
-		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (
-		   Query_Strings,
-		   Speeches_Per_Page => Configurations.Speeches_Per_Page);
+--		Form : Forms.Root_Form_Type'Class := Forms.Select_Form ( -- [gcc-4.7]
+		Form_Access : not null access Forms.Root_Form_Type'Class := Forms.Select_Form (
+			Query_Strings,
+			Speeches_Per_Page => Configurations.Speeches_Per_Page);
+		Form : Forms.Root_Form_Type'Class renames Form_Access.all;
 		pragma Warnings (On);
 		procedure Refresh_Page is
 			Self_URI : constant String := Web.Request_URI;
