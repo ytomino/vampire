@@ -32,7 +32,7 @@ endif
 # http://kirika.la.coocan.jp/proj/sandtrip/
 TESTDIR=~/Sites/SandTrip/vampire
 
-CARGS:=-Os -momit-leaf-frame-pointer -gnatn -gnatwaIFK.R
+CARGS:=-Os -momit-leaf-frame-pointer -gnatn -gnat2012 -gnatwaIFK.R
 BARGS:=
 LARGS:=-lm
 ifeq ($(BUILD),release)

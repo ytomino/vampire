@@ -293,8 +293,11 @@ package body Vampire.Villages is
 					Village.Messages.Reference (I).Element.Kind := Escaped_Join;
 					Village.Messages.Reference (I).Element.Subject := Escaped_Index;
 				elsif Village.Messages.Constant_Reference (I).Element.Subject > Subject then
-					Village.Messages.Reference (I).Element.Subject :=
-						Village.Messages.Constant_Reference (I).Element.Subject - 1;
+					declare
+						Shifted_Subject : constant Integer := Village.Messages.Constant_Reference (I).Element.Subject - 1;
+					begin
+						Village.Messages.Reference (I).Element.Subject := Shifted_Subject;
+					end;
 				end if;
 			end;
 		end loop;
