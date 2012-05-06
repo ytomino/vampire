@@ -1,5 +1,5 @@
-empty :=
-space :=$(empty) $(empty)
+empty:=
+space:=$(empty) $(empty)
 
 HOST=$(shell gcc -dumpmachine)
 export TARGET=$(HOST)
@@ -28,6 +28,8 @@ BUILDDIR=$(abspath build)
 IMPORTDIR:=$(abspath import)
 endif
 
+LINK=gc
+
 # I'm using SandTrip :-)
 # http://kirika.la.coocan.jp/proj/sandtrip/
 TESTDIR=~/Sites/SandTrip/vampire
@@ -35,8 +37,9 @@ TESTDIR=~/Sites/SandTrip/vampire
 CARGS:=-Os -momit-leaf-frame-pointer -gnatn -gnat2012 -gnatwaIFK.R
 BARGS:=
 LARGS:=-lm
-ifeq ($(BUILD),release)
-ifneq ($(findstring apple-darwin,$(TARGET)),)
+
+ifeq ($(LINK),gc)
+ifneq ($(findstring darwin,$(TARGET)),)
 LARGS:=$(LARGS) -dead_strip
 ifneq ($(WHYLIVE),)
 LARGS:=$(LARGS) -Xlinker -why_live -Xlinker $(WHYLIVE)
@@ -45,17 +48,20 @@ else
 CARGS:=$(CARGS) -ffunction-sections -fdata-sections
 LARGS:=$(LARGS) -Xlinker --gc-sections -s
 endif
-else
+endif
+ifeq ($(LINK),lto)
+CARGS:=$(CARGS) -flto -fwhole-program
+LARGS:=$(LARGS) -flto -fwhole-program
+endif
+
+ifeq ($(BUILD),debug)
 CARGS:=$(CARGS) -g -gnata
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -g
 endif
+
 ifneq ($(TARGET),$(HOST))
 LARGS:=$(LARGS) -lgcc_eh
-endif
-ifneq ($(LTO),)
-CARGS:=$(CARGS) -flto -fwhole-program
-LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
@@ -65,7 +71,7 @@ DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)
 endif
 ifneq ($(DRAKE_RTSDIR),)
 IMPORTDIR:=
-MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS) -lm
+MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS)
 endif
 
 export ADA_PROJECT_PATH=
