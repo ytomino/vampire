@@ -72,7 +72,7 @@ people:
   sex: male
   group: 0
 - name: ケイン
-  work: 書生
+  work: 少年
   image: kane.png
   sex: male
   group: 0
@@ -511,6 +511,31 @@ people:
   image: bunmei_026.png
   sex: female
   group: 3
+- name: ヌカリヤ
+  work: 運転手
+  image: bunmei_027.png
+  sex: male
+  group: 3
+- name: ルリハ
+  work: 箱入り
+  image: bunmei_028.png
+  sex: female
+  group: 3
+- name: ニシノ
+  work: 書生
+  image: bunmei_029.png
+  sex: male
+  group: 3
+- name: フミ
+  work: 奉公人
+  image: bunmei_030.png
+  sex: female
+  group: 3
+- name: ムナカタ
+  work: 学者
+  image: bunmei_031.png
+  sex: male
+  group: 3
 works:
 - name: 騎士
   sex: neutral
@@ -532,8 +557,8 @@ works:
   sex: female
 - name: 旅人
   sex: neutral
-- name: 書生
-  sex: neutral
+- name: 少年
+  sex: male
 - name: 逃亡者
   sex: neutral
 - name: 小作人
@@ -708,11 +733,17 @@ works:
   sex: male
 - name: 令嬢
   sex: female
-- name: フーテンの
+- name: 運転手
+  sex: neutral
+- name: 箱入り
+  sex: neutral
+- name: 書生
+  sex: neutral
+- name: 奉公人
+  sex: neutral
+- name: 学者
   sex: neutral
 - name: 間男
-  sex: male
-- name: 快男児
   sex: male
 - name: 義侠に生きる男
   sex: male
@@ -736,8 +767,6 @@ works:
   sex: neutral
 - name: 代言
   sex: neutral
-- name: 銀行強盗
-  sex: neutral
 - name: 異郷の人
   sex: neutral
 - name: 舞台作家
@@ -746,13 +775,9 @@ works:
   sex: neutral
 - name: 記憶を失った男
   sex: male
-- name: 箱入り娘
-  sex: female
 - name: のんだくれ
   sex: neutral
 - name: 婿養子
-  sex: male
-- name: 少年
   sex: male
 - name: 木こり
   sex: neutral
