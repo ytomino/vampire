@@ -2023,16 +2023,16 @@ is
 					begin
 						if Tag = "href_next" then
 							Forms.Write_Attribute_Name (Output, "href");
-							Forms.Write_Link (
+							Forms.Write_Link_To_Village_Page (
 								Output,
 								Form,
 								Current_Directory => Current_Directory,
-								Resource => Forms.Self,
-								Parameters => Form.Parameters_To_Village_Page (
-									Village_Id => Village_Id,
-									Day => Day + 1,
-									User_Id => User_Id,
-									User_Password => User_Password));
+								HTML_Directory => HTML_Directory,
+								Log => Log,
+								Village_Id => Village_Id,
+								Day => Day + 1,
+								User_Id => User_Id,
+								User_Password => User_Password);
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
