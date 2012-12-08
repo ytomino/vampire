@@ -6,7 +6,10 @@ package body Vampire.Forms.Mobile is
 	function Create (Speeches_Per_Page : Positive) return Form_Type is
 	begin
 		return (
-			Encoding => iconv.Open (Encoded => "SJIS", Decoded => "UTF-8"),
+--			Encoding => iconv.Open ( -- [gcc-4.7]
+			Encoding => new iconv.Encoding'(iconv.Open (
+				Encoded => "SJIS",
+				Decoded => "UTF-8")),
 			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
@@ -86,7 +89,7 @@ package body Vampire.Forms.Mobile is
 		Item : in String;
 		Pre : in Boolean := False) is
 	begin
-		Web.Write_In_HTML (Stream, Web.HTML, iconv.Encode (Form.Encoding, Item), Pre);
+		Web.Write_In_HTML (Stream, Web.HTML, iconv.Encode (Form.Encoding.all, Item), Pre);
 	end Write_In_HTML;
 	
 	overriding procedure Write_In_Attribute (
@@ -94,7 +97,7 @@ package body Vampire.Forms.Mobile is
 		Form : in Form_Type;
 		Item : in String) is
 	begin
-		Web.Write_In_Attribute (Stream, Web.HTML, iconv.Encode (Form.Encoding, Item));
+		Web.Write_In_Attribute (Stream, Web.HTML, iconv.Encode (Form.Encoding.all, Item));
 	end Write_In_Attribute;
 	
 	overriding function Paging (Form : Form_Type) return Boolean is
@@ -244,7 +247,7 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			iconv.Decode (Form.Encoding, Web.Element (Inputs, "name")),
+			iconv.Decode (Form.Encoding.all, Web.Element (Inputs, "name")),
 			Ada.Strings.Both);
 	end Get_New_Village_Name;
 	
@@ -254,7 +257,7 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			iconv.Decode (Form.Encoding, Web.Element (Inputs, "text")),
+			iconv.Decode (Form.Encoding.all, Web.Element (Inputs, "text")),
 			Ada.Strings.Both);
 	end Get_Text;
 	

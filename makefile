@@ -30,11 +30,9 @@ endif
 
 LINK=gc
 
-# I'm using SandTrip :-)
-# http://kirika.la.coocan.jp/proj/sandtrip/
-TESTDIR=~/Sites/SandTrip/vampire
+TESTDIR=~/Sites/cgi/vampire
 
-CARGS:=-Os -momit-leaf-frame-pointer -gnatn -gnat2012 -gnatwaIFK.R
+CARGS:=-gnat2012 -gnatwaIFK.R
 BARGS:=
 LARGS:=-lm
 
@@ -55,9 +53,11 @@ LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 ifeq ($(BUILD),debug)
-CARGS:=$(CARGS) -g -gnata
+CARGS:=$(CARGS) -O1 -g -gnata
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -g
+else
+CARGS:=$(CARGS) -Os -momit-leaf-frame-pointer -gnatn
 endif
 
 ifneq ($(TARGET),$(HOST))
@@ -91,6 +91,7 @@ site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BU
 site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)
 	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
 
+DEBUGGER=gdb
 export QUERY_STRING=
 
 $(TESTDIR)/%: site/%
@@ -105,7 +106,7 @@ install-test: \
 	$(addprefix $(TESTDIR)/image/,$(notdir $(wildcard site/image/*.png)))
 
 test-vampire: install-test
-	cd $(TESTDIR) && gdb .$(DIRSEP)vampire$(CGISUFFIX)
+	cd $(TESTDIR) && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
 
 $(BUILDDIR):
 	mkdir $@
