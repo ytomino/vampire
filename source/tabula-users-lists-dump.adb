@@ -9,7 +9,6 @@ procedure Tabula.Users.Lists.Dump (
 	Users_Log_File_Name : in not null Static_String_Access)
 is
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	use type Ada.Calendar.Time;
 	Input_File_Name : aliased Ada.Strings.Unbounded.Unbounded_String :=
 		+Users_Log_File_Name.all;
 	type Item_Type is record
@@ -49,7 +48,7 @@ begin
 		end Process;
 		List : User_List := Create (
 			Directory => Users_Directory,
-			Log_File_Name => Static_String_Access (Input_File_Name.Constant_Reference.Element));
+			Log_File_Name => Input_File_Name.Constant_Reference.Element.all'Access);
 	begin
 		Iterate_Log (List, Process'Access);
 		New_Line;
