@@ -75,7 +75,7 @@ MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS)
 endif
 
 export ADA_PROJECT_PATH=
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET))))
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)) lib/iconv-ada/source/libiconv))
 export ADA_OBJECTS_PATH=
 
 .PHONY: all clean test-vampire install-test find xref archive
