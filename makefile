@@ -60,8 +60,8 @@ else
 CARGS:=$(CARGS) -Os -momit-leaf-frame-pointer -gnatn
 endif
 
-ifneq ($(TARGET),$(HOST))
-LARGS:=$(LARGS) -lgcc_eh
+ifneq ($(findstring freebsd,$(TARGET)),)
+LARGS:=$(LARGS) -lgcc_eh -lpthread
 endif
 
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
