@@ -2,7 +2,7 @@
 with Ada.Calendar;
 with Ada.Directories;
 with Ada.IO_Exceptions;
-with Ada.Streams.Stream_IO.Standards;
+with Ada.Streams.Stream_IO.Standard_Files;
 with Web;
 with Tabula.Debug;
 procedure Tabula.Unlock (
@@ -12,7 +12,7 @@ is
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
 	
 	Output : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standards.Standard_Output.all);
+		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
 	
 	Count : Natural := 0;
 begin

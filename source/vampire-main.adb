@@ -4,7 +4,7 @@ with Ada.Environment_Variables;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Numerics.MT19937;
-with Ada.Streams.Stream_IO.Standards;
+with Ada.Streams.Stream_IO.Standard_Files;
 with Ada.Strings.Unbounded;
 with Web.Lock_Files;
 with Tabula.Calendar;
@@ -52,9 +52,9 @@ procedure Vampire.Main is
 	
 	-- 標準入出力
 	Input : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standards.Standard_Input.all);
+		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Input.all);
 	Output : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standards.Standard_Output.all);
+		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
 	
 	-- 乱数シード
 	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
