@@ -53,7 +53,7 @@ LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 ifeq ($(BUILD),debug)
-CARGS:=$(CARGS) -O1 -g -gnata
+CARGS:=$(CARGS) -Og -g -gnata
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -g
 else
