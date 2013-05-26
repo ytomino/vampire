@@ -1,4 +1,13 @@
 ﻿
+/* @import url(http://fonts.googleapis.com/css?family=Ruthie); */
+@import url(http://fonts.googleapis.com/css?family=Lovers+Quarrel);
+/* @import url(http://fonts.googleapis.com/css?family=Monsieur+La+Doulaise); */
+/* @import url(http://fonts.googleapis.com/css?family=Italianno); */
+/* @import url(http://fonts.googleapis.com/css?family=Alex+Brush); */
+/* @import url(http://fonts.googleapis.com/css?family=Herr+Von+Muellerhoff); */
+/* @import url(http://fonts.googleapis.com/css?family=Pinyon+Script); */
+/* @import url(http://fonts.googleapis.com/css?family=Jim+Nightshade); */
+
 body {
 	/* background-image:url(./image/background.png); */
 	background-color:black;
@@ -11,8 +20,9 @@ body {
 h1 {
 	color:red;
 	text-align:center;
-	font-family:"Typewriter New Roman", "Love Letter Typewriter", "Love LetterTW", 
-		"The Quest", "Mom´sTypewriter", "Ghostwriter", "1942 report", "Y.OzOTW", Sylfaen, fantasy;
+	font-family:'Lovers Quarrel', cursive;
+	font-size:3em;
+	margin-top:0.25em;
 }
 
 div.box {
