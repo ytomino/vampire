@@ -1,6 +1,3 @@
-[submodule "lib/iconv-ada"]
-	path = lib/iconv-ada
-	url = git://github.com/ytomino/iconv-ada.git
 [submodule "lib/openssl-ada"]
 	path = lib/openssl-ada
 	url = git://github.com/ytomino/openssl-ada.git

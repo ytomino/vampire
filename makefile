@@ -35,6 +35,12 @@ TESTDIR=~/Sites/cgi/vampire
 CARGS:=-gnat2012 -gnatwaIFK.R
 BARGS:=
 LARGS:=-lm
+ifneq ($(findstring darwin,$(TARGET)),)
+LARGS:=$(LARGS) -licucore
+endif
+ifneq ($(findstring freebsd,$(TARGET)),)
+LARGS:=$(LARGS) -liconv
+endif
 
 ifeq ($(LINK),gc)
 ifneq ($(findstring darwin,$(TARGET)),)

@@ -1,15 +1,19 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
+with System.Native_Encoding.Names;
 package body Vampire.Forms.Mobile is
 	use type Villages.Village_State;
+	
+	Encoding : constant System.Native_Encoding.Encoding_Id :=
+		System.Native_Encoding.Names.Windows_31J;
 	
 	function Create (Speeches_Per_Page : Positive) return Form_Type is
 	begin
 		return (
---			Encoding => iconv.Open ( -- [gcc-4.7]
-			Encoding => new iconv.Encoding'(iconv.Open (
-				Encoded => "SJIS",
-				Decoded => "UTF-8")),
+			Encoder => new System.Native_Encoding.Strings.Encoder'(
+				System.Native_Encoding.Strings.To (Encoding)),
+			Decoder => new System.Native_Encoding.Strings.Decoder'(
+				System.Native_Encoding.Strings.From (Encoding)),
 			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
@@ -87,17 +91,38 @@ package body Vampire.Forms.Mobile is
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Form_Type;
 		Item : in String;
-		Pre : in Boolean := False) is
+		Pre : in Boolean := False)
+	is
+		Encoded_Item_SEA : Ada.Streams.Stream_Element_Array
+			renames System.Native_Encoding.Strings.Encode (
+				Form.Encoder.all,
+				Item);
+		Encoded_Item_String : String (1 .. Encoded_Item_SEA'Length);
+		for Encoded_Item_String'Address use Encoded_Item_SEA'Address;
 	begin
-		Web.Write_In_HTML (Stream, Web.HTML, iconv.Encode (Form.Encoding.all, Item), Pre);
+		Web.Write_In_HTML (
+			Stream,
+			Web.HTML,
+			Encoded_Item_String,
+			Pre);
 	end Write_In_HTML;
 	
 	overriding procedure Write_In_Attribute (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Form_Type;
-		Item : in String) is
+		Item : in String)
+	is
+		Encoded_Item_SEA : Ada.Streams.Stream_Element_Array
+			renames System.Native_Encoding.Strings.Encode (
+				Form.Encoder.all,
+				Item);
+		Encoded_Item_String : String (1 .. Encoded_Item_SEA'Length);
+		for Encoded_Item_String'Address use Encoded_Item_SEA'Address;
 	begin
-		Web.Write_In_Attribute (Stream, Web.HTML, iconv.Encode (Form.Encoding.all, Item));
+		Web.Write_In_Attribute (
+			Stream,
+			Web.HTML,
+			Encoded_Item_String);
 	end Write_In_Attribute;
 	
 	overriding function Paging (Form : Form_Type) return Boolean is
@@ -247,7 +272,9 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			iconv.Decode (Form.Encoding.all, Web.Element (Inputs, "name")),
+			System.Native_Encoding.Strings.Decode (
+				Form.Decoder.all,
+				Web.Element (Inputs, "name")),
 			Ada.Strings.Both);
 	end Get_New_Village_Name;
 	
@@ -257,7 +284,9 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			iconv.Decode (Form.Encoding.all, Web.Element (Inputs, "text")),
+			System.Native_Encoding.Strings.Decode (
+				Form.Decoder.all,
+				Web.Element (Inputs, "text")),
 			Ada.Strings.Both);
 	end Get_Text;
 	

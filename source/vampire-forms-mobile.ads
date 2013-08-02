@@ -1,10 +1,11 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with iconv;
+with System.Native_Encoding.Strings;
 package Vampire.Forms.Mobile is
 	
 	type Form_Type is new Root_Form_Type with record
---		Encoding : iconv.Encoding; -- [gcc-4.7]
-		Encoding : not null access iconv.Encoding;
+		-- [gcc-4.7/4.8] has a bug in built-in-placing controlled objects
+		Encoder : not null access System.Native_Encoding.Strings.Encoder;
+		Decoder : not null access System.Native_Encoding.Strings.Decoder;
 		Speeches_Per_Page : Positive;
 	end record;
 	
