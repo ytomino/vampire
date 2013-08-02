@@ -132,4 +132,4 @@ xref:
 	gnatfind -f -r --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
 
 archive:
-	git archive-all site/vampire.tar.bz2
+	git archive --format=tar HEAD | bzip2 > site/vampire.tar.bz2
