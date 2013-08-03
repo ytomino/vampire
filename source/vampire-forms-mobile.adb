@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
 with System.Native_Encoding.Names;
+with System.Native_Encoding.Encoding_Streams;
 package body Vampire.Forms.Mobile is
 	use type Villages.Village_State;
 	
@@ -93,18 +94,17 @@ package body Vampire.Forms.Mobile is
 		Item : in String;
 		Pre : in Boolean := False)
 	is
-		Encoded_Item_SEA : Ada.Streams.Stream_Element_Array
-			renames System.Native_Encoding.Strings.Encode (
-				Form.Encoder.all,
-				Item);
-		Encoded_Item_String : String (1 .. Encoded_Item_SEA'Length);
-		for Encoded_Item_String'Address use Encoded_Item_SEA'Address;
+		Out_Wrapper : aliased System.Native_Encoding.Encoding_Streams.Out_Type :=
+			System.Native_Encoding.Encoding_Streams.Open (
+				System.Native_Encoding.Converter (Form.Encoder.all),
+				Stream);
 	begin
 		Web.Write_In_HTML (
-			Stream,
+			System.Native_Encoding.Encoding_Streams.Stream (Out_Wrapper),
 			Web.HTML,
-			Encoded_Item_String,
+			Item,
 			Pre);
+		System.Native_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_HTML;
 	
 	overriding procedure Write_In_Attribute (
@@ -112,17 +112,16 @@ package body Vampire.Forms.Mobile is
 		Form : in Form_Type;
 		Item : in String)
 	is
-		Encoded_Item_SEA : Ada.Streams.Stream_Element_Array
-			renames System.Native_Encoding.Strings.Encode (
-				Form.Encoder.all,
-				Item);
-		Encoded_Item_String : String (1 .. Encoded_Item_SEA'Length);
-		for Encoded_Item_String'Address use Encoded_Item_SEA'Address;
+		Out_Wrapper : aliased System.Native_Encoding.Encoding_Streams.Out_Type :=
+			System.Native_Encoding.Encoding_Streams.Open (
+				System.Native_Encoding.Converter (Form.Encoder.all),
+				Stream);
 	begin
 		Web.Write_In_Attribute (
-			Stream,
+			System.Native_Encoding.Encoding_Streams.Stream (Out_Wrapper),
 			Web.HTML,
-			Encoded_Item_String);
+			Item);
+		System.Native_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_Attribute;
 	
 	overriding function Paging (Form : Form_Type) return Boolean is
