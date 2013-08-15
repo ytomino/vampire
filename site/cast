@@ -227,7 +227,7 @@ people:
   sex: male
   group: 1
 - name: ヘルミネ
-  work: 村娘
+  work: 美女
   image: auther-villagegirl.png
   sex: female
   group: 1
@@ -247,7 +247,7 @@ people:
   sex: male
   group: 1
 - name: ゼノビア
-  work: 村長の妻
+  work: 代言
   image: auther-mayorwife.png
   sex: female
   group: 1
@@ -527,7 +527,7 @@ people:
   sex: male
   group: 3
 - name: フミ
-  work: 疎開児童
+  work: 村娘
   image: bunmei_030.png
   sex: female
   group: 3
@@ -619,14 +619,14 @@ works:
   sex: neutral
 - name: 自警団長
   sex: neutral
-- name: 村娘
+- name: 美女
   sex: female
 - name: 経営者
   sex: neutral
 - name: 俳優
   sex: neutral
-- name: 村長の妻
-  sex: female
+- name: 代言
+  sex: neutral
 - name: 執政官
   sex: neutral
 - name: 長老
@@ -739,19 +739,19 @@ works:
   sex: neutral
 - name: 書生
   sex: neutral
-- name: 疎開児童
-  sex: neutral
+- name: 村娘
+  sex: female
 - name: 学者
   sex: neutral
 - name: 間男
   sex: male
-- name: 義侠に生きる男
-  sex: male
+- name: 釣り師
+  sex: neutral
 - name: 糸紡ぎ
   sex: neutral
 - name: 王子様
   sex: male
-- name: 仮面の貴公子
+- name: 熱血硬派
   sex: male
 - name: 船守
   sex: neutral
@@ -761,12 +761,12 @@ works:
   sex: neutral
 - name: ぬすっと
   sex: neutral
-- name: 海の男
+- name: 丁稚
   sex: male
 - name: 養蚕家
   sex: neutral
-- name: 代言
-  sex: neutral
+- name: 火消し
+  sex: male
 - name: 異郷の人
   sex: neutral
 - name: 舞台作家
