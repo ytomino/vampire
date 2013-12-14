@@ -1,20 +1,20 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Strings.Fixed;
-with System.Native_Encoding.Names;
-with System.Native_Encoding.Encoding_Streams;
+with Ada.Environment_Encoding.Names;
+with Ada.Environment_Encoding.Encoding_Streams;
 package body Vampire.Forms.Mobile is
 	use type Villages.Village_State;
 	
-	Encoding : constant System.Native_Encoding.Encoding_Id :=
-		System.Native_Encoding.Names.Windows_31J;
+	Encoding : constant Ada.Environment_Encoding.Encoding_Id :=
+		Ada.Environment_Encoding.Names.Windows_31J;
 	
 	function Create (Speeches_Per_Page : Positive) return Form_Type is
 	begin
 		return (
-			Encoder => new System.Native_Encoding.Strings.Encoder'(
-				System.Native_Encoding.Strings.To (Encoding)),
-			Decoder => new System.Native_Encoding.Strings.Decoder'(
-				System.Native_Encoding.Strings.From (Encoding)),
+			Encoder => new Ada.Environment_Encoding.Strings.Encoder'(
+				Ada.Environment_Encoding.Strings.To (Encoding)),
+			Decoder => new Ada.Environment_Encoding.Strings.Decoder'(
+				Ada.Environment_Encoding.Strings.From (Encoding)),
 			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
@@ -94,17 +94,17 @@ package body Vampire.Forms.Mobile is
 		Item : in String;
 		Pre : in Boolean := False)
 	is
-		Out_Wrapper : aliased System.Native_Encoding.Encoding_Streams.Out_Type :=
-			System.Native_Encoding.Encoding_Streams.Open (
-				System.Native_Encoding.Converter (Form.Encoder.all),
+		Out_Wrapper : aliased Ada.Environment_Encoding.Encoding_Streams.Out_Type :=
+			Ada.Environment_Encoding.Encoding_Streams.Open (
+				Ada.Environment_Encoding.Converter (Form.Encoder.all),
 				Stream);
 	begin
 		Web.Write_In_HTML (
-			System.Native_Encoding.Encoding_Streams.Stream (Out_Wrapper),
+			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
 			Web.HTML,
 			Item,
 			Pre);
-		System.Native_Encoding.Encoding_Streams.Finish (Out_Wrapper);
+		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_HTML;
 	
 	overriding procedure Write_In_Attribute (
@@ -112,16 +112,16 @@ package body Vampire.Forms.Mobile is
 		Form : in Form_Type;
 		Item : in String)
 	is
-		Out_Wrapper : aliased System.Native_Encoding.Encoding_Streams.Out_Type :=
-			System.Native_Encoding.Encoding_Streams.Open (
-				System.Native_Encoding.Converter (Form.Encoder.all),
+		Out_Wrapper : aliased Ada.Environment_Encoding.Encoding_Streams.Out_Type :=
+			Ada.Environment_Encoding.Encoding_Streams.Open (
+				Ada.Environment_Encoding.Converter (Form.Encoder.all),
 				Stream);
 	begin
 		Web.Write_In_Attribute (
-			System.Native_Encoding.Encoding_Streams.Stream (Out_Wrapper),
+			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
 			Web.HTML,
 			Item);
-		System.Native_Encoding.Encoding_Streams.Finish (Out_Wrapper);
+		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_Attribute;
 	
 	overriding function Paging (Form : Form_Type) return Boolean is
@@ -271,7 +271,7 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			System.Native_Encoding.Strings.Decode (
+			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
 				Web.Element (Inputs, "name")),
 			Ada.Strings.Both);
@@ -283,7 +283,7 @@ package body Vampire.Forms.Mobile is
 		return String is
 	begin
 		return Ada.Strings.Fixed.Trim (
-			System.Native_Encoding.Strings.Decode (
+			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
 				Web.Element (Inputs, "text")),
 			Ada.Strings.Both);
