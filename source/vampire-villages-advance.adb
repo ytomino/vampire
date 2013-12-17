@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Containers.Generic_Array_Sort;
+with Ada.Numerics.Distributions;
 with Ada.Strings.Unbounded;
 with Vampire.Villages.Teaming;
 procedure Vampire.Villages.Advance (
@@ -16,8 +17,12 @@ is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	subtype People_Index is Person_Index range Village.People.First_Index .. Village.People.Last_Index;
-	package People_Random is new Ada.Numerics.MT19937.Discrete_Random (People_Index);
-	
+	function People_Random is
+		new Ada.Numerics.Distributions.Linear_Discrete_Random (
+			Ada.Numerics.MT19937.Cardinal,
+			People_Index,
+			Ada.Numerics.MT19937.Generator,
+			Ada.Numerics.MT19937.Random_32);
 	-- 日付変更
 	procedure Increment_Today is
 	begin
@@ -135,7 +140,7 @@ is
 				X : People_Index;
 			begin
 				loop
-					X := People_Random.Random (Generator);
+					X := People_Random (Generator);
 					if Voted (X) = Max then
 						return X;
 					end if;
@@ -230,7 +235,7 @@ is
 						if Target = No_Person then
 							-- 棄権はできない、ランダム(未感染者を優先)で襲う
 							loop
-								Target := People_Random.Random (Generator);
+								Target := People_Random (Generator);
 								exit when Target /= The_Vampire and then Is_Secondary_Attackable (Target);
 							end loop;
 						end if;
@@ -448,7 +453,7 @@ begin
 					begin
 						if The_Astronomer >= 0 then
 							loop
-								Target := People_Random.Random (Generator);
+								Target := People_Random (Generator);
 								case Village.People.Constant_Reference (Target).Element.Role is
 									when Inhabitant | Loved_Inhabitant |
 										Unfortunate_Inhabitant |

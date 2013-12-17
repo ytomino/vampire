@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
 with Ada.Directories;
+with Ada.Numerics.Distributions;
 with Ada.Numerics.MT19937;
 with Ada.Strings.Unbounded;
 with Tabula.Calendar;
@@ -948,7 +949,12 @@ is
 						Filter => "");
 				end Note;
 				subtype X_Type is Integer range 1 .. 3;
-				package Random_X is new Ada.Numerics.MT19937.Discrete_Random(X_Type);
+				function Random_X is
+					new Ada.Numerics.Distributions.Linear_Discrete_Random (
+						Ada.Numerics.MT19937.Cardinal,
+						X_Type,
+						Ada.Numerics.MT19937.Generator,
+						Ada.Numerics.MT19937.Random_32);
 				Executed : Integer := -1;
 				Speech_Index : Tabula.Villages.Message_Index := Tabula.Villages.Message_Index'First;
 				X : X_Type := 2;
@@ -1000,7 +1006,7 @@ is
 												if Last_Speech /= Subject then
 													New_X : loop
 														declare
-															X2 : constant X_Type := Random_X.Random(X_Generator'Access);
+															X2 : constant X_Type := Random_X (X_Generator'Access);
 														begin
 															if X2 /= X then
 																X := X2;
@@ -1817,7 +1823,12 @@ is
 								if Village.State = Prologue then
 									declare
 										subtype Arg is Integer range 1000 .. 4999;
-										package Random_Arg is new Ada.Numerics.MT19937.Discrete_Random (Arg);
+										function Random_Arg is
+											new Ada.Numerics.Distributions.Linear_Discrete_Random (
+												Ada.Numerics.MT19937.Cardinal,
+												Arg,
+												Ada.Numerics.MT19937.Generator,
+												Ada.Numerics.MT19937.Random_32);
 										X : Arg;
 										Y : Arg;
 										procedure Handle_Escape (
@@ -1857,8 +1868,8 @@ is
 										Seed : aliased Ada.Numerics.MT19937.Generator :=
 											Ada.Numerics.MT19937.Initialize;
 									begin
-										X := Random_Arg.Random (Seed'Access);
-										Y := Random_Arg.Random (Seed'Access);
+										X := Random_Arg (Seed'Access);
+										Y := Random_Arg (Seed'Access);
 										Web.Producers.Produce (Output, Template, Handler => Handle_Escape'Access);
 									end;
 								end if;

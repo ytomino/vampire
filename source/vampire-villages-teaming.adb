@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Numerics.Distributions;
 package body Vampire.Villages.Teaming is
 	use type Ada.Containers.Count_Type;
 	use type Casts.Person_Sex;
@@ -336,19 +337,24 @@ package body Vampire.Villages.Teaming is
 		return Role_Set
 	is
 		subtype T is Positive range Sets'Range;
-		package Random is new Ada.Numerics.MT19937.Discrete_Random (T);
+		function Random is
+			new Ada.Numerics.Distributions.Linear_Discrete_Random (
+				Ada.Numerics.MT19937.Cardinal,
+				T,
+				Ada.Numerics.MT19937.Generator,
+				Ada.Numerics.MT19937.Random_32);
 		Index : T;
 	begin
-		Index := Random.Random (Generator);
+		Index := Random (Generator);
 		-- 片想いと数奇な運命の村人の出現率を少し下げる
 		if Sets (Index)(Lover) > 0
 			or else Sets (Index)(Unfortunate_Inhabitant) > 0
 		then
-			Index := Random.Random (Generator);
+			Index := Random (Generator);
 		end if;
 		-- 天文家無しの出現率を少し下げる
 		if Sets (Index)(Astronomer) = 0 then
-			Index := Random.Random (Generator);
+			Index := Random (Generator);
 		end if;
 		return Sets (Index);
 	end Select_Set;
@@ -360,7 +366,12 @@ package body Vampire.Villages.Teaming is
 		Generator : not null access Ada.Numerics.MT19937.Generator)
 	is
 		subtype People_Index is Integer range People.First_Index .. People.Last_Index;
-		package People_Random is new Ada.Numerics.MT19937.Discrete_Random(People_Index);
+		function People_Random is
+			new Ada.Numerics.Distributions.Linear_Discrete_Random (
+				Ada.Numerics.MT19937.Cardinal,
+				People_Index,
+				Ada.Numerics.MT19937.Generator,
+				Ada.Numerics.MT19937.Random_32);
 		
 		type Role_Set is array (Person_Role) of Boolean;
 		pragma Pack(Role_Set);
@@ -457,7 +468,7 @@ package body Vampire.Villages.Teaming is
 				for J in 1 .. Set (I) loop
 					Selecting : loop
 						declare
-							Who : constant People_Index := People_Random.Random(Generator);
+							Who : constant People_Index := People_Random (Generator);
 						begin
 							if Result(Who) = Inhabitant then
 								Result(Who) := I;
@@ -545,7 +556,7 @@ package body Vampire.Villages.Teaming is
 		-- 初日犠牲者
 		if Victim /= null then
 			declare
-				Changing : constant People_Index := People_Random.Random(Generator);
+				Changing : constant People_Index := People_Random (Generator);
 			begin
 				case Current.Assignment(Changing) is
 					when Vampire_Role | Gremlin | Sweetheart_M | Sweetheart_F | Loved_Inhabitant =>
