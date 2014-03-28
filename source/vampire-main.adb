@@ -616,7 +616,7 @@ begin
 								declare
 									Changed, List_Changed : Boolean;
 								begin
-									Villages.Advance(Village, Now, Generator'Access,
+									Villages.Advance(Village, Now, Generator,
 										Changed => Changed, List_Changed => List_Changed);
 									if Changed then
 										Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -813,7 +813,7 @@ begin
 											declare
 												Changed, List_Changed : Boolean;
 											begin
-												Villages.Advance(Village, Now, Generator'Access,
+												Villages.Advance(Village, Now, Generator,
 													Changed => Changed, List_Changed => List_Changed);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												if List_Changed then

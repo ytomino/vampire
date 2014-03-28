@@ -7,7 +7,7 @@ with Vampire.Villages.Teaming;
 procedure Vampire.Villages.Advance (
 	Village : in out Village_Type;
 	Now : in Ada.Calendar.Time;
-	Generator : not null access Ada.Numerics.MT19937.Generator;
+	Generator : aliased in out Ada.Numerics.MT19937.Generator;
 	Changed : out Boolean;
 	List_Changed : out Boolean)
 is

@@ -16,13 +16,13 @@ package Vampire.Villages.Teaming is
 	function Select_Set (
 		Sets : Role_Set_Array;
 		Appearance : Role_Appearances;
-		Generator : not null access Ada.Numerics.MT19937.Generator)
+		Generator : aliased in out Ada.Numerics.MT19937.Generator)
 		return Role_Set;
 	
 	procedure Shuffle (
 		People : in out Villages.People.Vector;
 		Victim : access Villages.Person_Role;
 		Set : Role_Set;
-		Generator : not null access Ada.Numerics.MT19937.Generator);
+		Generator : aliased in out Ada.Numerics.MT19937.Generator);
 	
 end Vampire.Villages.Teaming;

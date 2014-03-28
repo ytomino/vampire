@@ -1006,7 +1006,7 @@ is
 												if Last_Speech /= Subject then
 													New_X : loop
 														declare
-															X2 : constant X_Type := Random_X (X_Generator'Access);
+															X2 : constant X_Type := Random_X (X_Generator);
 														begin
 															if X2 /= X then
 																X := X2;
@@ -1868,8 +1868,8 @@ is
 										Seed : aliased Ada.Numerics.MT19937.Generator :=
 											Ada.Numerics.MT19937.Initialize;
 									begin
-										X := Random_Arg (Seed'Access);
-										Y := Random_Arg (Seed'Access);
+										X := Random_Arg (Seed);
+										Y := Random_Arg (Seed);
 										Web.Producers.Produce (Output, Template, Handler => Handle_Escape'Access);
 									end;
 								end if;

@@ -4,6 +4,8 @@ space:=$(empty) $(empty)
 HOST=$(shell gcc -dumpmachine)
 export TARGET=$(HOST)
 
+VERSION=$(shell gcc -dumpversion)
+
 ifneq (,$(findstring mingw,$(TARGET)))
 DIRSEP=\$(empty)
 PATHLISTSEP=;
@@ -74,7 +76,7 @@ endif
 MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
 
 ifneq ($(DRAKE_RTSROOT),)
-DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)
+DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
 IMPORTDIR:=
