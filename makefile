@@ -18,16 +18,14 @@ EXESUFFIX=
 CGISUFFIX=.cgi
 endif
 
+BUILDDIR=$(abspath $(TARGET).build)
+
 ifneq ($(TARGET),$(HOST))
 GNATMAKE=$(TARGET)-gnatmake
 BUILD=release
-BUILDDIR=$(abspath build-$(TARGET))
-IMPORTDIR:=$(abspath import-$(TARGET))
 else
 GNATMAKE=gnatmake
 BUILD=debug
-BUILDDIR=$(abspath build)
-IMPORTDIR:=$(abspath import)
 LARGS:=$(shell pkg-config --libs-only-L yaml-0.1)
 endif
 
@@ -79,8 +77,9 @@ ifneq ($(DRAKE_RTSROOT),)
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
-IMPORTDIR:=
 MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS)
+else
+IMPORTDIR=$(BUILDDIR)/import
 endif
 
 export ADA_PROJECT_PATH=
@@ -126,7 +125,7 @@ $(IMPORTDIR): lib/import.h
 endif
 
 clean:
-	-rm -rf build* import*
+	-rm -rf *.build
 
 find:
 	gnatfind -f --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
