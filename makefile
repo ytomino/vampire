@@ -2,7 +2,7 @@ empty:=
 space:=$(empty) $(empty)
 
 HOST=$(shell gcc -dumpmachine)
-export TARGET=$(HOST)
+TARGET=$(HOST)
 
 VERSION=$(shell gcc -dumpversion)
 
@@ -18,29 +18,34 @@ EXESUFFIX=
 CGISUFFIX=.cgi
 endif
 
-BUILDDIR=$(abspath $(TARGET).build)
+BUILDDIR=$(TARGET).build
 
 ifneq ($(TARGET),$(HOST))
-GNATMAKE=$(TARGET)-gnatmake
+GNATPREFIX=$(TARGET)-
 BUILD=release
 else
-GNATMAKE=gnatmake
+GNATPREFIX=
 BUILD=debug
-LARGS:=$(shell pkg-config --libs-only-L yaml-0.1)
 endif
 
 LINK=gc
 
 TESTDIR=~/Sites/cgi/vampire
 
-CARGS:=-gnat2012 -gnatwaIFK.R
-BARGS:=
-LARGS:=$(LARGS) -lm
+GARGS:=
+MARGS:=-D $(BUILDDIR)
+CARGS:=-gnat2012 -gnatwaIFK.R -gnatef
+BARGS:=-x
+LARGS:=
+
+ifeq ($(TARGET),$(HOST))
+LARGS:=$(LARGS) $(shell pkg-config --libs-only-L yaml-0.1)
+endif
 ifneq ($(findstring darwin,$(TARGET)),)
 LARGS:=$(LARGS) -licucore
 endif
 ifneq ($(findstring freebsd,$(TARGET)),)
-LARGS:=$(LARGS) -liconv
+LARGS:=$(LARGS) -liconv -lm -lgcc_eh -lpthread
 endif
 
 ifeq ($(LINK),gc)
@@ -67,23 +72,17 @@ else
 CARGS:=$(CARGS) -Os -momit-leaf-frame-pointer -gnatn
 endif
 
-ifneq ($(findstring freebsd,$(TARGET)),)
-LARGS:=$(LARGS) -lgcc_eh -lpthread
-endif
-
-MARGS:=-cargs $(CARGS) -bargs $(BARGS) -largs $(LARGS)
-
 ifneq ($(DRAKE_RTSROOT),)
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
-MARGS:=--RTS=$(abspath $(DRAKE_RTSDIR)) $(MARGS)
+GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 else
 IMPORTDIR=$(BUILDDIR)/import
 endif
 
 export ADA_PROJECT_PATH=
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(abspath $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)) lib/iconv-ada/source/libiconv))
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
 export ADA_OBJECTS_PATH=
 
 .PHONY: all clean test-vampire install-test find xref archive
@@ -91,13 +90,22 @@ export ADA_OBJECTS_PATH=
 all: site/vampire$(CGISUFFIX)
 
 site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR) $(IMPORTDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
+	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
+	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)
-	cd $(BUILDDIR) && $(GNATMAKE) -o ../$@ ../$< $(MARGS)
+	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
+
+$(BUILDDIR):
+	mkdir $@
 
 DEBUGGER=gdb
 export QUERY_STRING=
@@ -116,9 +124,6 @@ install-test: \
 test-vampire: install-test
 	cd $(TESTDIR) && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
 
-$(BUILDDIR):
-	mkdir $@
-
 ifneq ($(IMPORTDIR),)
 $(IMPORTDIR): lib/import.h
 	headmaster --gcc $(TARGET)-gcc --to ada -p -D $(IMPORTDIR) $+
@@ -128,10 +133,10 @@ clean:
 	-rm -rf *.build
 
 find:
-	gnatfind -f --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
+	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
 
 xref:
-	gnatfind -f -r --RTS=$(DRAKE_RTSDIR) -aIsource -aO$(BUILDDIR) $(X)
+	gnatfind -f -r -aIsource -aO$(BUILDDIR) $(X) $(GARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
 
 archive:
 	git archive --format=tar HEAD | bzip2 > site/vampire.tar.bz2
