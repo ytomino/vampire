@@ -78,11 +78,10 @@ endif
 ifneq ($(DRAKE_RTSDIR),)
 GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 else
-IMPORTDIR=$(BUILDDIR)/import
 endif
 
 export ADA_PROJECT_PATH=
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(IMPORTDIR) $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
+export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
 export ADA_OBJECTS_PATH=
 
 .PHONY: all clean test-vampire install-test find xref archive
@@ -123,11 +122,6 @@ install-test: \
 
 test-vampire: install-test
 	cd $(TESTDIR) && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
-
-ifneq ($(IMPORTDIR),)
-$(IMPORTDIR): lib/import.h
-	headmaster --gcc $(TARGET)-gcc --to ada -p -D $(IMPORTDIR) $+
-endif
 
 clean:
 	-rm -rf *.build
