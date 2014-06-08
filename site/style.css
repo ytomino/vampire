@@ -202,13 +202,6 @@ div.speech {
 	margin-right:0%;
 }
 
-.speech tr,
-.ghost tr,
-.vampire tr,
-.dying tr {
-	height:100%;
-}
-
 .speech img,
 .ghost img,
 .vampire img,
