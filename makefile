@@ -56,7 +56,7 @@ LARGS:=$(LARGS) -Xlinker -why_live -Xlinker $(WHYLIVE)
 endif
 else
 CARGS:=$(CARGS) -ffunction-sections -fdata-sections
-LARGS:=$(LARGS) -Xlinker --gc-sections -s
+LARGS:=$(LARGS) -Xlinker --gc-sections
 endif
 endif
 ifeq ($(LINK),lto)
@@ -65,11 +65,13 @@ LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 ifeq ($(BUILD),debug)
-CARGS:=$(CARGS) -Og -g -gnata
+CARGS:=$(CARGS) -Og -ggdb -gnata
 BARGS:=$(BARGS) -E
-LARGS:=$(LARGS) -g
+LARGS:=$(LARGS) -ggdb
 else
-CARGS:=$(CARGS) -Os -momit-leaf-frame-pointer -gnatn
+CARGS:=$(CARGS) -Os -gnatB -gnatVn -ggdb1 -momit-leaf-frame-pointer -gnatn
+BARGS:=$(BARGS) -E
+LARGS:=$(LARGS) -ggdb1
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
@@ -84,27 +86,28 @@ export ADA_PROJECT_PATH=
 export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
 export ADA_OBJECTS_PATH=
 
-.PHONY: all clean test-vampire install-test find xref archive
+.PHONY: all clean test-vampire install-test xfind xfindall archive
 
 all: site/vampire$(CGISUFFIX)
 
-site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR) $(IMPORTDIR)
+site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
-site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)
+site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
-site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)
+site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
-$(BUILDDIR):
-	mkdir $@
+$(BUILDDIR)/.stamp:
+	mkdir $(dir $@)
+	touch $@
 
 DEBUGGER=gdb
 export QUERY_STRING=
@@ -126,11 +129,11 @@ test-vampire: install-test
 clean:
 	-rm -rf *.build
 
-find:
-	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
+xfind:
+	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) $(FARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
 
-xref:
-	gnatfind -f -r -aIsource -aO$(BUILDDIR) $(X) $(GARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
+xfindall: FARGS+=-r
+xfindall: xfind
 
 archive:
 	git archive --format=tar HEAD | bzip2 > site/vampire.tar.bz2
