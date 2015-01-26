@@ -33,8 +33,8 @@ LINK=gc
 TESTDIR=~/Sites/cgi/vampire
 
 GARGS:=
-MARGS:=-D $(BUILDDIR)
-CARGS:=-gnat2012 -gnatwaIFK.R -gnatef
+MARGS:=-C -D $(BUILDDIR)
+CARGS:=-pipe -gnatef -gnatwaIFK.R
 BARGS:=-x
 LARGS:=
 
