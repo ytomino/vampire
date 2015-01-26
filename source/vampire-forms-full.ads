@@ -1,7 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package Vampire.Forms.Full is
 	
-	type Form_Type is new Root_Form_Type with null record;
+	type Form_Type is limited new Root_Form_Type with null record;
 	
 	function Create return Form_Type;
 	

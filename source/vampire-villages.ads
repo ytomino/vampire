@@ -234,7 +234,7 @@ package Vampire.Villages is
 	
 	type Village_Time is (Daytime, Vote, Night);
 	
-	type Village_Type is new Tabula.Villages.Village_Type with record
+	type Village_Type is limited new Tabula.Villages.Village_Type with record
 		Day_Duration : Duration := Default_Long_Day_Duration;
 		Night_Duration : Duration := Default_Night_Duration;
 		State : Village_State := Prologue;
