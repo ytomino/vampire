@@ -3,7 +3,7 @@ with Ada.Environment_Encoding.Strings;
 package Vampire.Forms.Mobile is
 	
 	type Form_Type is limited new Root_Form_Type with record
-		-- [gcc-4.7/4.8] has a bug in built-in-placing controlled objects
+		-- [gcc-4.7/4.8/4.9] has a bug in built-in-placing controlled objects
 		Encoder : not null access Ada.Environment_Encoding.Strings.Encoder;
 		Decoder : not null access Ada.Environment_Encoding.Strings.Decoder;
 		Speeches_Per_Page : Positive;

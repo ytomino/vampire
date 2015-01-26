@@ -58,17 +58,13 @@ begin
 	begin
 		while Has_Element (I) loop
 			declare
-				pragma Warnings (Off);
 				I_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (I);
-				pragma Warnings (On);
 				J : Item_Lists.Cursor := Next (I);
 			begin
 				while Has_Element (J) loop
 					declare
 						use Ada.Text_IO;
-						pragma Warnings (Off);
 						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
-						pragma Warnings (On);
 					begin
 						if I_Ref.Element.Remote_Addr = J_Ref.Element.Remote_Addr
 							or else (
