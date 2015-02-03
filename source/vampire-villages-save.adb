@@ -25,7 +25,7 @@ begin
 		YAML.Flush (Emitter);
 	end;
 	Ada.Streams.Stream_IO.Close (File);
-	Ada.Directories.Rename (Old_Name => Temporary_Name, New_Name => Name);
+	Ada.Directories.Replace_File (Source_Name => Temporary_Name, Target_Name => Name);
 exception
 	when E : others =>
 		Ada.Debug.Put (Temporary_Name);
