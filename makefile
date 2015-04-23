@@ -69,7 +69,7 @@ CARGS:=$(CARGS) -Og -ggdb -gnata
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -ggdb
 else
-CARGS:=$(CARGS) -Os -gnatB -gnatVn -ggdb1 -momit-leaf-frame-pointer -gnatn
+CARGS:=$(CARGS) -Os -gnatB -gnatVn -ggdb1 -gnatn
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -ggdb1
 endif
