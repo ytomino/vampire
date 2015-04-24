@@ -211,14 +211,14 @@ package body Tabula.Villages.Lists is
 			Ada.Directories.End_Search (Search);
 		end;
 		declare
-			Image : String := Integer'Image (Next);
-			Result : Village_Id;
+			function Image_04d is
+				new Ada.Formatting.Integer_Image (
+					Natural,
+					Signs => Ada.Formatting.Triming_Sign_Marks,
+					Width => 4,
+					Padding => '0');
 		begin
-			if Image (Image'First) = ' ' then
-				Image (Image'First) := '0';
-			end if;
-			Result := String'(1 .. 4 - Image'Length => '0') & Image;
-			return Result;
+			return Image_04d (Next);
 		end;
 	end New_Village_Id;
 	
