@@ -89,6 +89,7 @@ export ADA_OBJECTS_PATH=
 .PHONY: all clean test-vampire install-test xfind xfindall archive
 
 all: site/vampire$(CGISUFFIX)
+	$(foreach I,$(filter-out $(BUILDDIR)/.stamp,$(wildcard *.build/.stamp)),rm $(I))
 
 site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
@@ -106,7 +107,7 @@ site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)/.
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 $(BUILDDIR)/.stamp:
-	mkdir $(dir $@)
+	-mkdir $(dir $@)
 	touch $@
 
 DEBUGGER=gdb
