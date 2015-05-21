@@ -218,13 +218,13 @@ package body Vampire.Forms.Mobile is
 		Form : Form_Type;
 		Village : Villages.Village_Type'Class;
 		Day : Natural;
+		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
 		return Villages.Message_Range_Type
 	is
 		function First_N (N : Natural) return Villages.Message_Range_Type is
-			Message_Range : Villages.Message_Range_Type := Village.Message_Range (
-				Day,
-				Recent_Only => False);
+			Message_Range : Villages.Message_Range_Type :=
+				Village.Message_Range (Day);
 		begin
 			return (
 				First => Message_Range.First,
@@ -232,9 +232,8 @@ package body Vampire.Forms.Mobile is
 					Integer'Min (Message_Range.Last, Message_Range.First + (N - 1))));
 		end First_N;
 		function Last_N (N : Natural) return Villages.Message_Range_Type is
-			Message_Range : Villages.Message_Range_Type := Village.Message_Range (
-				Day,
-				Recent_Only => False);
+			Message_Range : Villages.Message_Range_Type :=
+				Village.Message_Range (Day);
 		begin
 			return (
 				First => Integer'Max (Message_Range.First, Message_Range.Last - (N - 1)),

@@ -394,8 +394,16 @@ package Vampire.Villages is
 		Process : not null access procedure (
 			Index : Person_Index;
 			Item : in Tabula.Villages.Person_Type'Class));
+
+	overriding function Message_Range (
+		Village : Village_Type;
+		Day : Natural)
+		return Message_Range_Type;
 	
-	overriding function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+	overriding function Recent_Only_Message_Range (
+		Village : Village_Type;
+		Day : Natural;
+		Now : Ada.Calendar.Time)
 		return Message_Range_Type;
 	
 	overriding procedure Iterate_Options (

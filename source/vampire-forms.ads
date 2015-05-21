@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Calendar;
 with Ada.Streams;
 with Ada.Strings.Unbounded;
 with Web;
@@ -168,6 +169,7 @@ package Vampire.Forms is
 		Form : Root_Form_Type;
 		Village : Villages.Village_Type'Class;
 		Day : Natural;
+		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
 		return Villages.Message_Range_Type is abstract;
 	

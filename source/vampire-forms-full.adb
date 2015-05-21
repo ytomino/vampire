@@ -172,13 +172,17 @@ package body Vampire.Forms.Full is
 		Form : Form_Type;
 		Village : Villages.Village_Type'Class;
 		Day : Natural;
+		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
 		return Villages.Message_Range_Type
 	is
-		Message_Range : Villages.Message_Range_Type := Village.Message_Range (
-			Day,
-			Recent_Only => Web.Element (Query_Strings, "range") = "");
+		Message_Range : Villages.Message_Range_Type;
 	begin
+		if Web.Element (Query_Strings, "range") = "" then
+			Message_Range := Village.Recent_Only_Message_Range (Day, Now => Now);
+		else
+			Message_Range := Village.Message_Range (Day);
+		end if;
 		return (
 			First => Message_Range.First,
 			Last => Integer'Max (Message_Range.First, Message_Range.Last));

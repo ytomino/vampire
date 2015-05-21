@@ -629,7 +629,12 @@ begin
 								-- 村レンダリング
 								declare
 									Day : Natural := Form.Get_Day (Village, Query_Strings);
-									Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
+									Message_Range : Tabula.Villages.Message_Range_Type :=
+										Form.Get_Range (
+											Village,
+											Day,
+											Now => Now,
+											Query_Strings => Query_Strings);
 								begin
 									Web.Header_Content_Type (Output, Web.Text_HTML);
 									Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
@@ -982,7 +987,12 @@ begin
 											Villages.Message_Kind'Value (Form.Get_Reedit_Kind (Inputs));
 										Text : constant String := Form.Get_Text (Inputs);
 										Day : Natural := Form.Get_Day (Village, Query_Strings);
-										Message_Range : Tabula.Villages.Message_Range_Type := Form.Get_Range (Village, Day, Query_Strings);
+										Message_Range : Tabula.Villages.Message_Range_Type :=
+											Form.Get_Range (
+												Village,
+												Day,
+												Now => Now,
+												Query_Strings => Query_Strings);
 									begin
 										Web.Header_Content_Type (Output, Web.Text_HTML);
 										Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);

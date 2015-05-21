@@ -847,7 +847,30 @@ package body Vampire.Villages is
 		end loop;
 	end Iterate_Escaped_People;
 	
-	overriding function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+	function Message_Range (
+		Village : Village_Type;
+		Day : Natural)
+		return Message_Range_Type
+	is
+		First : Natural := 0;
+		Last : Integer := -1;
+	begin
+		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+			declare
+				Current : Message renames Village.Messages.Constant_Reference (Position).Element.all;
+			begin
+				if Current.Day = Day and then (Current.Kind = Speech or else Current.Kind = Escaped_Speech) then
+					Last := Last + 1;
+				end if;
+			end;
+		end loop;
+		return (First, Last);
+	end Message_Range;
+	
+	overriding function Recent_Only_Message_Range (
+		Village : Village_Type;
+		Day : Natural;
+		Now : Ada.Calendar.Time)
 		return Message_Range_Type
 	is
 		function Escaped (Village : Village_Type; Message : Villages.Message) return Boolean is
@@ -870,39 +893,32 @@ package body Vampire.Villages is
 					return False;
 			end case;
 		end Escaped;
-		First : Natural := 0;
-		Last : Integer := -1;
+		Result : Message_Range_Type := Village.Message_Range (Day);
 	begin
-		for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
-			declare
-				Current : Message renames Village.Messages.Constant_Reference (Position).Element.all;
-			begin
-				if Current.Day = Day and then (Current.Kind = Speech or else Current.Kind = Escaped_Speech) then
-					Last := Last + 1;
-				end if;
-			end;
-		end loop;
-		if Recent_Only and then Village.State = Prologue and then Day = 0 then
+		if Village.State = Prologue and then Day = 0 then
 			declare
 				Index : Natural := 0;
 			begin
-				while Index <= Village.Messages.Last_Index
-					and then Escaped (
-						Village,
-						Village.Messages.Constant_Reference (Index).Element.all)
-				loop
-					case Village.Messages.Constant_Reference (Index).Element.Kind is
-						when Speech | Escaped_Speech =>
-							First := First + 1;
-						when others =>
-							null;
-					end case;
-					Index := Index + 1;
+				while Index <= Village.Messages.Last_Index loop
+					declare
+						Item : Message
+							renames Village.Messages.Constant_Reference (Index).Element.all;
+					begin
+						exit when not Escaped (Village, Item)
+							and then Now - Item.Time <= 180 * 24 * 60 * 60.0;
+						case Item.Kind is
+							when Speech | Escaped_Speech =>
+								Result.First := Result.First + 1;
+							when others =>
+								null;
+						end case;
+						Index := Index + 1;
+					end;
 				end loop;
 			end;
 		end if;
-		return (First, Last);
-	end Message_Range;
+		return Result;
+	end Recent_Only_Message_Range;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

@@ -86,6 +86,7 @@ package Vampire.Forms.Full is
 		Form : Form_Type;
 		Village : Villages.Village_Type'Class;
 		Day : Natural;
+		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
 		return Villages.Message_Range_Type;
 	

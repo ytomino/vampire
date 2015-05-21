@@ -424,7 +424,8 @@ is
 	
 	Player_Index : constant Integer := Vampire.Villages.Joined (Village, User_Id);
 	
-	Message_Range : constant Tabula.Villages.Message_Range_Type := Village.Message_Range (Day, Recent_Only => False);
+	Message_Range : constant Tabula.Villages.Message_Range_Type :=
+		Village.Message_Range (Day);
 	Message_Counts : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages (Village, Day);
 	Tip_Showed : Boolean := False;
 	

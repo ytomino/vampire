@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Calendar;
 with Ada.Strings.Unbounded;
 with Tabula.Casts;
 package Tabula.Villages is
@@ -84,7 +85,15 @@ package Tabula.Villages is
 			Index : Person_Index;
 			Item : in Person_Type'Class)) is abstract;
 	
-	function Message_Range (Village : Village_Type; Day : Natural; Recent_Only : Boolean)
+	function Message_Range (
+		Village : Village_Type;
+		Day : Natural)
+		return Message_Range_Type is abstract;
+	
+	function Recent_Only_Message_Range (
+		Village : Village_Type;
+		Day : Natural;
+		Now : Ada.Calendar.Time)
 		return Message_Range_Type is abstract;
 	
 	procedure Iterate_Options (
