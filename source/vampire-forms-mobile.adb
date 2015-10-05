@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings.Fixed;
+with Ada.Strings.Functions;
 with Ada.Environment_Encoding.Names;
 with Ada.Environment_Encoding.Encoding_Streams;
 package body Vampire.Forms.Mobile is
@@ -240,7 +240,7 @@ package body Vampire.Forms.Mobile is
 				Last => Integer'Max (Message_Range.First, Message_Range.Last));
 		end Last_N;
 		Range_Arg : constant String := Web.Element (Query_Strings, "r");
-		P : constant Natural := Ada.Strings.Fixed.Index (Range_Arg, "-");
+		P : constant Natural := Ada.Strings.Functions.Index_Element_Forward (Range_Arg, '-');
 	begin
 		if P < Range_Arg'First then
 			return Last_N (Natural'Value (Range_Arg));
@@ -269,7 +269,7 @@ package body Vampire.Forms.Mobile is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Fixed.Trim (
+		return Ada.Strings.Functions.Trim (
 			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
 				Web.Element (Inputs, "name")),
@@ -281,7 +281,7 @@ package body Vampire.Forms.Mobile is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Fixed.Trim (
+		return Ada.Strings.Functions.Trim (
 			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
 				Web.Element (Inputs, "text")),
