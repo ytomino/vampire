@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Directories.Hierarchical_File_Names;
+with Ada.Hierarchical_File_Names;
 package body Vampire.Forms is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
@@ -7,7 +7,7 @@ package body Vampire.Forms is
 	begin
 		-- "http://.../vampire/" -> ""
 		-- "http://localhost/vampire.cgi" -> "vampire.cgi"
-		return Ada.Directories.Simple_Name (Web.Request_Path);
+		return Ada.Hierarchical_File_Names.Simple_Name (Web.Request_Path);
 	end Self;
 	
 	function Parameters_To_Base_Page (
@@ -63,14 +63,14 @@ package body Vampire.Forms is
 		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map)
 	is
 		Relative : constant String :=
-			Ada.Directories.Hierarchical_File_Names.Relative_Name (
+			Ada.Hierarchical_File_Names.Relative_Name (
 				Name => Resource,
 				From => Current_Directory);
 	begin
 		Write_Attribute_Open (Stream);
 		if Parameters.Is_Empty then
 			if Relative'Length = 0
-				or else Ada.Directories.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
+				or else Ada.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
 			then
 				Web.Write_In_Attribute (Stream, Form.HTML_Version, "./");
 			else
@@ -105,9 +105,9 @@ package body Vampire.Forms is
 				Stream,
 				Form,
 				Current_Directory => Current_Directory,
-				Resource => Ada.Directories.Compose (
-					Containing_Directory => HTML_Directory,
-					Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
+				Resource => Ada.Hierarchical_File_Names.Compose (
+					Directory => HTML_Directory,
+					Relative_Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
 					Extension => "html"));
 		else
 			Write_Link (

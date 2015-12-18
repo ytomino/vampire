@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
 with Tabula.Users.Load;
@@ -61,7 +62,10 @@ package body Tabula.Users.Lists is
 	
 	function Exists (List : User_List; Id : String) return Boolean is
 	begin
-		return Ada.Directories.Exists (Ada.Directories.Compose (List.Directory.all, Id));
+		return Ada.Directories.Exists (
+			Ada.Hierarchical_File_Names.Compose (
+				Directory => List.Directory.all,
+				Relative_Name => Id));
 	end Exists;
 	
 	procedure Query (
@@ -79,7 +83,11 @@ package body Tabula.Users.Lists is
 		elsif not Exists (List, Id) then
 			State := Unknown;
 		else
-			Load (Ada.Directories.Compose (List.Directory.all, Id), Info);
+			Load (
+				Ada.Hierarchical_File_Names.Compose (
+					Directory => List.Directory.all,
+					Relative_Name => Id),
+				Info);
 			if Info.Password /= Digest (Password)
 				or else Info.Renamed /= Ada.Strings.Unbounded.Null_Unbounded_String
 			then
@@ -133,7 +141,11 @@ package body Tabula.Users.Lists is
 					No_Log => False,
 					Renamed => Ada.Strings.Unbounded.Null_Unbounded_String);
 			begin
-				Save (Ada.Directories.Compose (List.Directory.all, Id), Info);
+				Save (
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => List.Directory.all,
+						Relative_Name => Id),
+					Info);
 				Result := True;
 			end;
 		end if;
@@ -152,7 +164,11 @@ package body Tabula.Users.Lists is
 		Info.Last_Remote_Addr := +Remote_Addr;
 		Info.Last_Remote_Host := +Remote_Host;
 		Info.Last_Time := Now;
-		Save (Ada.Directories.Compose (List.Directory.all, Id), Info);
+		Save (
+			Ada.Hierarchical_File_Names.Compose (
+				Directory => List.Directory.all,
+				Relative_Name => Id),
+			Info);
 	end Update;
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map is
@@ -174,7 +190,11 @@ package body Tabula.Users.Lists is
 						declare
 							Info : User_Info;
 						begin
-							Load (Ada.Directories.Compose (List.Directory.all, Id), Info);
+							Load (
+								Ada.Hierarchical_File_Names.Compose (
+									Directory => List.Directory.all,
+									Relative_Name => Id),
+								Info);
 							User_Info_Maps.Include (Result, Id, Info);
 						end;
 					end if;

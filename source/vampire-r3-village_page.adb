@@ -1,6 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
-with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 with Ada.Numerics.Distributions;
 with Ada.Numerics.MT19937;
 with Ada.Strings.Unbounded;
@@ -874,9 +874,9 @@ is
 								Output,
 								Form,
 								Current_Directory => Current_Directory,
-								Resource => Ada.Directories.Compose (
-									Containing_Directory => Image_Directory,
-									Name => Relative_Role_Images (Role).all));
+								Resource => Ada.Hierarchical_File_Names.Compose (
+									Directory => Image_Directory,
+									Relative_Name => Relative_Role_Images (Role).all));
 						else
 							raise Program_Error with "Invalid template """ & Tag & """";
 						end if;
@@ -1599,9 +1599,9 @@ is
 									Output,
 									Form,
 									Current_Directory => Current_Directory,
-									Resource => Ada.Directories.Compose (
-										Containing_Directory => Image_Directory,
-										Name => Relative_Role_Images (Village.People.Constant_Reference (Player_Index).Element.Role).all));
+									Resource => Ada.Hierarchical_File_Names.Compose (
+										Directory => Image_Directory,
+										Relative_Name => Relative_Role_Images (Village.People.Constant_Reference (Player_Index).Element.Role).all));
 							elsif Tag = "vote" then
 								if Village.State = Playing
 									and then Message_Counts(Player_Index).Speech > 0

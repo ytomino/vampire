@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 with Ada.IO_Exceptions;
 with Ada.Streams.Stream_IO;
 with YAML.Streams;
@@ -165,14 +166,16 @@ package body Tabula.Villages.Lists is
 	
 	function File_Name (List : Village_List; Id : Village_Id) return String is
 	begin
-		return Ada.Directories.Compose (List.Data_Directory.all, Id);
+		return Ada.Hierarchical_File_Names.Compose (
+			Directory => List.Data_Directory.all,
+			Relative_Name => Id);
 	end File_Name;
 	
 	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural) return String is
 	begin
-		return Ada.Directories.Compose (
-			Containing_Directory => List.HTML_Directory.all,
-			Name => Id & "-" & Image (Day),
+		return Ada.Hierarchical_File_Names.Compose (
+			Directory => List.HTML_Directory.all,
+			Relative_Name => Id & "-" & Image (Day),
 			Extension => "html");
 	end HTML_File_Name;
 	

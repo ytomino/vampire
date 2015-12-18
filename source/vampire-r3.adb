@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
 with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
 with Tabula.Users;
@@ -279,9 +280,9 @@ package body Vampire.R3 is
 					Output,
 					Form,
 					Current_Directory => Current_Directory,
-					Resource => Ada.Directories.Compose (
-						Containing_Directory => Image_Directory,
-						Name => Subject.Image.Constant_Reference.Element.all));
+					Resource => Ada.Hierarchical_File_Names.Compose (
+						Directory => Image_Directory,
+						Relative_Name => Subject.Image.Constant_Reference.Element.all));
 			elsif Tag = "width_image" then
 				if Face_Width /= 0 then
 					Forms.Write_Attribute_Name (Output, "width");

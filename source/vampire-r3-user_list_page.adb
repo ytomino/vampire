@@ -1,5 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 procedure Vampire.R3.User_List_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
 	Form : in Forms.Root_Form_Type'Class;
@@ -32,9 +32,9 @@ is
 				Output,
 				Form,
 				Current_Directory => ".",
-				Resource => Ada.Directories.Compose (
-					Containing_Directory => HTML_Directory,
-					Name => ""));
+				Resource => Ada.Hierarchical_File_Names.Compose (
+					Directory => HTML_Directory,
+					Relative_Name => "")); -- add a trailing path delimiter
 		elsif Tag = "user" then
 			declare
 				I : Users.Lists.User_Info_Maps.Cursor := User_List.First;
