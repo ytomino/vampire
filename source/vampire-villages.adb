@@ -84,6 +84,7 @@ package body Vampire.Villages is
 			Formation => Initial_Formation,
 			Monster_Side => Initial_Monster_Side,
 			Attack => Initial_Attack,
+			Vampire_Action_Set => Initial_Vampire_Action_Set,
 			Servant_Knowing => Initial_Servant_Knowing,
 			Daytime_Preview => Initial_Daytime_Preview,
 			Doctor_Infected => Initial_Doctor_Infected,
@@ -931,6 +932,7 @@ package body Vampire.Villages is
 		Process (Options.Formation.Option_Item'(Village => Village'Access));
 		Process (Options.Monster_Side.Option_Item'(Village => Village'Access));
 		Process (Options.Attack.Option_Item'(Village => Village'Access));
+		Process (Options.Vampire_Action_Set.Option_Item'(Village => Village'Access));
 		Process (Options.Servant_Knowing.Option_Item'(Village => Village'Access));
 		Process (Options.Daytime_Preview.Option_Item'(Village => Village'Access));
 		Process (Options.Doctor_Infected.Option_Item'(Village => Village'Access));
@@ -1330,6 +1332,61 @@ package body Vampire.Villages is
 			end Change;
 			
 		end Attack;
+		
+		package body Vampire_Action_Set is
+			
+			overriding function Available (Item : Option_Item) return Boolean is
+			begin
+				return True;
+			end Available;
+			
+			overriding function Name (Item : Option_Item) return String is
+			begin
+				return "vampire-action-set";
+			end Name;
+			
+			overriding function Changed (Item : Option_Item) return Boolean is
+			begin
+				return Item.Village.Vampire_Action_Set /= Initial_Vampire_Action_Set;
+			end Changed;
+			
+			overriding procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean)) is
+			begin
+				Process (
+					Vampire_Action_Set_Mode'Image (None),
+					Item.Village.Vampire_Action_Set = None,
+					"吸血鬼には特別なアクションはありません。",
+					Unrecommended => True);
+				Process (
+					Vampire_Action_Set_Mode'Image (Gaze),
+					Item.Village.Vampire_Action_Set = Gaze,
+					"視線「こっそり見つめる」が使えます。",
+					False);
+				Process (
+					Vampire_Action_Set_Mode'Image (Gaze_And_Cancel),
+					Item.Village.Vampire_Action_Set = Gaze_And_Cancel,
+					"視線と襲撃取り消し「襲うのをやめさせる」が使えます。",
+					False);
+			end Iterate;
+			
+			overriding procedure Change (
+				Village : in out Tabula.Villages.Village_Type'Class;
+				Item : in Option_Item;
+				Value : in String)
+			is
+				V : Village_Type renames Village_Type (Village);
+			begin
+				pragma Assert (V'Access = Item.Village);
+				V.Vampire_Action_Set := Vampire_Action_Set_Mode'Value (Value);
+			end Change;
+			
+		end Vampire_Action_Set;
 		
 		package body Servant_Knowing is
 			

@@ -104,6 +104,7 @@ package body Vampire.Villages.Village_IO is
 		use Vote_IO;
 		use Execution_IO;
 		use Attack_IO;
+		use Vampire_Action_Set_IO;
 		use Servant_Knowing_IO;
 		use Person_Role_IO;
 		use Monster_Side_IO;
@@ -140,6 +141,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "formation", Village.Formation, Default => Public);
 			IO (Serializer, "monster-side", Village.Monster_Side, Default => Fixed);
 			IO (Serializer, "attack", Village.Attack, Default => Two);
+			IO (Serializer, "vampire-action-set", Village.Vampire_Action_Set, Default => Gaze);
 			IO (Serializer, "servant-knowing", Village.Servant_Knowing, Default => None);
 			IO (Serializer, "daytime-preview", Village.Daytime_Preview, Default => Role_And_Message);
 			IO (Serializer, "doctor-infected", Village.Doctor_Infected, Default => Cure);

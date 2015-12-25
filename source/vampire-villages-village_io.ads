@@ -19,6 +19,7 @@ package Vampire.Villages.Village_IO is
 	package Formation_IO is new Serialization.IO_Enumeration (Formation_Mode);
 	package Monster_Side_IO is new Serialization.IO_Enumeration (Monster_Side_Mode);
 	package Attack_IO is new Serialization.IO_Enumeration (Attack_Mode);
+	package Vampire_Action_Set_IO is new Serialization.IO_Enumeration (Vampire_Action_Set_Mode);
 	package Servant_Knowing_IO is new Serialization.IO_Enumeration (Servant_Knowing_Mode);
 	package Daytime_Preview_IO is new Serialization.IO_Enumeration (Daytime_Preview_Mode);
 	package Doctor_Infected_IO is new Serialization.IO_Enumeration (Doctor_Infected_Mode);

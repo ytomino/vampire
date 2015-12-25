@@ -1782,14 +1782,16 @@ is
 										Forms.Write_In_HTML (Output, Form, "に話の続きを促す");
 										String'Write (Output, "</option>" & Line_Break);
 									end if;
-									if Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
+									if Village.Vampire_Action_Set /= None
+										and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
 										and then Message_Counts(Player_Index).Vampire_Gaze = 0
 									then
 										String'Write(Output, "<option value=""vampire_gaze"">");
 										Forms.Write_In_HTML (Output, Form, "をこっそり見つめる。");
 										String'Write(Output, "</option>" & Line_Break);
 									end if;
-									if Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
+									if Village.Vampire_Action_Set = Gaze_And_Cancel
+										and then Village.People.Constant_Reference(Player_Index).Element.Role in Vampire.Villages.Vampire_Role
 										and then Message_Counts(Player_Index).Vampire_Cancel = 0
 									then
 										String'Write(Output, "<option value=""vampire_cancel"">");

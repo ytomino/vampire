@@ -38,6 +38,7 @@ procedure Vampire.Main is
 	use type Forms.Base_Page;
 	use type Villages.Ability_State;
 	use type Villages.Attack_Mode;
+	use type Villages.Vampire_Action_Set_Mode;
 	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
 	use type Villages.Person_Role;
@@ -894,6 +895,8 @@ begin
 												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
 											elsif not Village.Can_Gaze then
 												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
+											elsif Village.Vampire_Action_Set = Villages.None then
+												Message_Page ("オプションで「こっそり見つめる」は禁止されています。");
 											else
 												Villages.Vampire_Gaze (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -910,6 +913,8 @@ begin
 												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
 											elsif not Village.Can_Gaze then
 												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
+											elsif Village.Vampire_Action_Set /= Villages.Gaze_And_Cancel then
+												Message_Page ("オプションで「襲うのをやめさせる」は禁止されています。");
 											else
 												Villages.Vampire_Cancel (Village, Player, Target, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);

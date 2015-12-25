@@ -27,6 +27,10 @@
 			.Attack_Mode_Two {display:block}
 			.Attack_Mode_Mocturnal_Infecting {display:block}
 			.Attack_Mode_Unanimity {display:block}
+			.Vampire_Action_Set_all {display:inline}
+			.Vampire_Action_Set_None {display:block}
+			.Vampire_Action_Set_Gaze {display:block}
+			.Vampire_Action_Set_Gaze_And_Cancel {display:block}
 			.Servant_Knowing_Mode_all {display:inline}
 			.Servant_Knowing_Mode_None {display:block}
 			.Servant_Knowing_Mode_Vampire_K {display:block}
@@ -140,6 +144,14 @@
 						</select>
 					</td></tr>
 					<tr><td>
+						<select id="Vampire_Action_Set" onchange="sync('Vampire_Action_Set')">
+							<option value="" selected="selected">≪吸血鬼のアクション≫</option>
+							<option value="None">吸血鬼には特別なアクションはありません。</option>
+							<option value="Gaze">視線「こっそり見つめる」が使えます。*</option>
+							<option value="Gaze_And_Cancel">視線と襲撃取り消し「襲うのをやめさせる」が使えます。</option>
+						</select>
+					</td></tr>
+					<tr><td>
 						<select id="Servant_Knowing_Mode" onchange="sync('Servant_Knowing_Mode')">
 							<option value="" selected="selected">≪使徒が知っている吸血鬼≫</option>
 							<option value="None">使徒は吸血鬼の正体を知りません。</option>
@@ -242,6 +254,7 @@
 						<li><a href="#formation">村側の編成</a></li>
 						<li><a href="#monster-side">吸血鬼側の編成</a></li>
 						<li><a href="#attack">襲撃</a></li>
+						<li><a href="#vampire-action-set">吸血鬼のアクション</a></li>
 						<li><a href="#servant-knowing">使徒が知っている吸血鬼</a></li>
 						<li><a href="#daytime-preview">日中の能力使用</a></li>
 						<li><a href="#doctor-infected">感染した医者</a></li>
@@ -493,14 +506,15 @@
 					発言数が残り少なくなった相手を2回多く喋ることができるようにします。
 					自分の発言数は減りません。
 				</dd>
-				<dt>「こっそり見つめる」</dt>
-				<dd>
+				<dt class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">「こっそり見つめる」</dt>
+				<dd class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">
 					<em>吸血鬼専用のアクションです。</em>
+					視線で仲間に合図をします。
 					誰が誰を見つめたのか他の吸血鬼にしかわかりません。
 					襲撃先の連絡に使用ください。
 				</dd>
-				<dt>「襲うのをやめさせる」</dt>
-				<dd>
+				<dt class="Vampire_Action_Set_Gaze_And_Cancel option">「襲うのをやめさせる」</dt>
+				<dd class="Vampire_Action_Set_Gaze_And_Cancel option">
 					<em>吸血鬼専用のアクションです。</em>
 					仲間の襲撃先設定が特定の相手だった場合にそれを取り消します。
 					取り消された相手の襲撃先は棄権に戻ります。
@@ -508,7 +522,7 @@
 					<span class="Attack_Mode_Mocturnal_Infecting option">
 						<span class="Attack_Mode_all option">オプション「天文家と猟師は感染したら襲撃を行います。」選択時は、</span>感染した天文家と猟師の襲撃も取り消せます。
 						通知はなされません。
-						この場合これらの能力者は、他の人を襲撃します。
+						この場合これらの能力者は、棄権同様に他の人を襲撃します。
 					</span>
 				</dd>
 			</dl>
@@ -886,12 +900,18 @@
 			</p>
 			<h2 id="unfortunate-inhabitant">数奇な運命の村人</h2>
 			<p>
-				自分ではただの村人と思っていますが、その悪運で、知らず知らず吸血鬼の意思疎通を妨害してしまいます。
-				吸血鬼のアクション「こっそり見つめる」を遮断します。
-				夜がある場合でも、自由には話せなくなり、夜が無い場合同様の、夜が明ける際の1発言分しか吸血鬼同士の連絡が取れなくなります。
+				自分ではただの村人と思っていますが、その悪運で、知らず知らず吸血鬼の意思疎通を妨害してしまいます。<br />
+				<span class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">
+					吸血鬼の視線(アクション「こっそり見つめる」)を遮断します。
+				</span>
+				<span class="Duration_Short option">
+					夜がある場合でも自由には話せなくなり、夜が無い場合同様の、夜が明ける際の1発言分しか吸血鬼同士の連絡が取れなくなります。
+				</span>
 				吸血鬼には誰が妨害をしたのかがわかります。
-				「こっそり見つめる」が使われると、妨害されたこと、及び誰が妨害したかは、吸血鬼全員に伝わります。
-				また探偵の調査でもその人が数奇な運命を辿った人物であることがわかります。
+				妨害されたこと及び誰が妨害したかは、吸血鬼全員に伝わります。
+			</p>
+			<p>
+				また探偵の調査結果からもその人が数奇な運命を辿った人物であることがわかります。
 			</p>
 			<p>
 				一度でも感染すると能力を失います。
@@ -955,8 +975,8 @@
 			<p class="Duration_Short option">
 				なお短期では、夜の時間を取っている場合のみ、夜の間は吸血鬼同士で自由に会話できます。
 			</p>
-			<p>
-				日中は、アクション「こっそり見つめる」でのみ、やりとりを行えます。
+			<p class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">
+				日中は、視線(アクション「こっそり見つめる」)でのみ、やりとりを行えます。
 				また、格付けは関係なく吸血鬼の誰かが最後に見つめた対象は、翌日の襲撃先選択欄のデフォルトとして選ばれます。
 				このため吸血鬼の仲間が無発言でも、1日目を除き殺しは可能です。
 			</p>
@@ -1138,6 +1158,33 @@
 					少年漫画風逆境理論的モードといいますか。
 				</p>
 			</div>
+			<h2 id="vampire-action-set">吸血鬼のアクション</h2>
+			<p class="Vampire_Action_Set_None option">
+				<b>吸血鬼には特別なアクションはありません。</b><br />
+				初期の頃の仕様です。<em>推奨しません。</em>
+			</p>
+			<div class="Vampire_Action_Set_Gaze option">
+				<p>
+					<b>視線「こっそり見つめる」が使えます。</b><br />
+					吸血鬼専用アクションの視線「こっそり見つめる」を使うことができます。
+					<em>現在の初期値です。</em>
+				</p>
+			</div>
+			<div class="Vampire_Action_Set_Gaze_And_Cancel option">
+				<p>
+					<b>視線と襲撃取り消し「襲うのをやめさせる」が使えます。</b><br />
+					吸血鬼専用アクションの視線「こっそり見つめる」と襲撃取り消し「襲うのをやめさせる」の両方を使うことができます。
+				</p>
+				<p>
+					仲間の襲撃を取り消せば、タイミング悪く仲間が居合わせない時に状況が変化してしまった場合に、緊急で襲撃先を変えることができます。
+					また感染した天文家や猟師が襲う先を取り消すことで、棄権のときと同じくランダムな対象を襲撃させることができます。
+					実際に使う機会は限らるでしょうが、アクションの存在だけでも村の脅威となるはずです。
+				</p>
+				<p class="narratione">
+					感染した天文家や猟師が意図的に特定の相手を襲うことで情報を得ることができる場合があり、その対応策として実装しました。
+					ただ、同時に吸血鬼Kのコントロールできる範囲が増え、Q以下から選択権を奪ってしまうことにも繋がってしまったため、初期値にするのはやめました。
+				</p>
+			</div>
 			<h2 id="servant-knowing">使徒が知っている吸血鬼</h2>
 			<div class="Servant_Knowing_Mode_None option">
 				<p>
@@ -1228,7 +1275,7 @@
 					<b>数奇な運命の村人がいるかもしれません。</b><br />
 					数奇な運命の村人が登場する可能性があります。
 					襲撃で殺されることもあります。
-					感染だけでも、数奇な運命の村人は視線を妨害しなくなります。<br />
+					感染だけでも、数奇な運命の村人は吸血鬼を妨害しなくなります。<br />
 					<em>推奨しません。</em>
 				</p>
 				<p class="narratione">
@@ -1240,7 +1287,7 @@
 				<b>数奇な運命の村人は襲撃では殺されません。</b><br />
 				数奇な運命の村人が登場する可能性があります。
 				襲撃では殺されず、感染止まりになります。
-				感染だけでも、数奇な運命の村人は視線を妨害しなくなります。<br />
+				感染だけでも、数奇な運命の村人は吸血鬼を妨害しなくなります。<br />
 				<em>現在の初期値です。</em>
 			</p>
 			<hr class="speech" />
@@ -1408,11 +1455,11 @@
 				襲撃を棄権して意味があるケースもあることはありますが、しかしそれはかなり限定されます。
 				明確な意図が無い限り襲撃はセットしましょう。
 			</p>
-			<p>
-				仲間が誰かをこっそり見つめてきたら、その対象を襲ってほしい、という意味です。
+			<p class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">
+				仲間が視線を使って誰かをこっそり見つめてきたら、その対象を襲ってほしい、という意味です。
 				襲撃先を揃えましょう。
 				状況が変わって、その対象を襲ってはまずくなった場合には、適切な襲撃先を考えて、新しい対象として見つめることで仲間に合図しましょう。
-				「こっそり見つめる」は、一日一度しか使えません。
+				視線は、一日一度しか使えません。
 				よく考えて使用してください。
 			</p>
 			<p>
@@ -1659,10 +1706,13 @@
 			<p>
 				両想いを騙るには吸血鬼側から2名を必要としますので、恋人よりも他を騙ったほうが良いでしょう。
 				片想いの場合、想い先に吸血鬼側の仲間を指名するのと村人を指名するのとで大きく変わります。
-				視線で特定した数奇な運命の村人を相手にすると安全に騙ることができます。
-				数奇な運命の村人がいなくても、もし村人を指名して成功すれば大きな信頼を得ることができるでしょう。
+				もし仲間を指名すれば、想い先となった仲間は他の役を騙ることができなくなります。
+				もし村人を指名して成功すれば大きな信頼を得ることができるでしょう。
 				ただし能力者を指名してしまいますと、嘘がばれてしまいます。
 				また相手を安全圏に追いやることにもなりますので、生かしておくと吸血鬼側を追い詰めてきそうな相手は避けましょう。
+				<span class="Vampire_Action_Set_Gaze Vampire_Action_Set_Gaze_And_Cancel option">
+					視線で特定した数奇な運命の村人を相手にすると安全に騙ることができます。
+				</span>
 			</p>
 			<p>
 				<b>開始時点</b><br />

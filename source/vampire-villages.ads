@@ -31,6 +31,7 @@ package Vampire.Villages is
 	type Execution_Mode is (Dummy_Killed_And_From_First, Infection_And_From_First, From_First, From_Second);
 	type Formation_Mode is (Public, Hidden);
 	type Attack_Mode is (Two, Nocturnal_Chain_Infecting, Unanimity);
+	type Vampire_Action_Set_Mode is (None, Gaze, Gaze_And_Cancel);
 	type Servant_Knowing_Mode is (None, Vampire_K, All_Vampires);
 	type Monster_Side_Mode is (Fixed, Shuffling, Gremlin);
 	type Daytime_Preview_Mode is (None, Role_Only, Message_Only, Role_And_Message);
@@ -45,6 +46,7 @@ package Vampire.Villages is
 	Initial_Formation            : constant Formation_Mode            := Public;
 	Initial_Monster_Side         : constant Monster_Side_Mode         := Fixed;
 	Initial_Attack               : constant Attack_Mode               := Nocturnal_Chain_Infecting;
+	Initial_Vampire_Action_Set   : constant Vampire_Action_Set_Mode   := Gaze;
 	Initial_Servant_Knowing      : constant Servant_Knowing_Mode      := Vampire_K;
 	Initial_Daytime_Preview      : constant Daytime_Preview_Mode      := Message_Only;
 	Initial_Doctor_Infected      : constant Doctor_Infected_Mode      := Find_Infection;
@@ -246,6 +248,7 @@ package Vampire.Villages is
 		Formation : Formation_Mode := Public;
 		Monster_Side : Monster_Side_Mode := Fixed;
 		Attack : Attack_Mode := Two;
+		Vampire_Action_Set : Vampire_Action_Set_Mode := Gaze;
 		Servant_Knowing : Servant_Knowing_Mode := None;
 		Daytime_Preview : Daytime_Preview_Mode := Role_And_Message;
 		Doctor_Infected : Doctor_Infected_Mode := Cure;
@@ -545,6 +548,25 @@ package Vampire.Villages is
 				Item : in Option_Item;
 				Value : in String);
 		end Attack;
+		
+		package Vampire_Action_Set is
+			type Option_Item (Village : not null access constant Village_Type) is
+				new Root_Option_Item with null record;
+			overriding function Available (Item : Option_Item) return Boolean;
+			overriding function Name (Item : Option_Item) return String;
+			overriding function Changed (Item : Option_Item) return Boolean;
+			overriding procedure Iterate (
+				Item : in Option_Item;
+				Process : not null access procedure (
+					Value : in String;
+					Selected : in Boolean;
+					Message : in String;
+					Unrecommended : in Boolean));
+			overriding procedure Change (
+				Village : in out Tabula.Villages.Village_Type'Class;
+				Item : in Option_Item;
+				Value : in String);
+		end Vampire_Action_Set;
 		
 		package Servant_Knowing is
 			type Option_Item (Village : not null access constant Village_Type) is
