@@ -1,19 +1,12 @@
-empty:=
-space:=$(empty) $(empty)
-
 HOST=$(shell gcc -dumpmachine)
 TARGET=$(HOST)
 
 VERSION=$(shell gcc -dumpversion)
 
 ifneq (,$(findstring mingw,$(TARGET)))
-DIRSEP=\$(empty)
-PATHLISTSEP=;
 EXESUFFIX=.exe
 CGISUFFIX=.exe
 else
-DIRSEP=/
-PATHLISTSEP=:
 EXESUFFIX=
 CGISUFFIX=.cgi
 endif
@@ -28,12 +21,16 @@ GNATPREFIX=
 BUILD=debug
 endif
 
+ifeq ($(BUILD),debug)
+LINK=
+else
 LINK=gc
+endif
 
 TESTDIR=~/Sites/cgi/vampire
 
 GARGS:=
-MARGS:=-C -D $(BUILDDIR)
+MARGS:=-C -D $(BUILDDIR) $(addprefix -I,$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
 CARGS:=-pipe -gnatef -gnatwaIFK.R
 BARGS:=-x
 LARGS:=
@@ -82,10 +79,6 @@ GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 else
 endif
 
-export ADA_PROJECT_PATH=
-export ADA_INCLUDE_PATH=$(subst $(space),$(PATHLISTSEP),$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
-export ADA_OBJECTS_PATH=
-
 .PHONY: all clean test-vampire install-test xfind xfindall archive
 
 all: site/vampire$(CGISUFFIX)
@@ -101,14 +94,16 @@ site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BU
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
-site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(BUILDDIR)/.stamp
+site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
-$(BUILDDIR)/.stamp:
-	-mkdir $(dir $@)
+$(BUILDDIR)/.stamp: | $(BUILDDIR)
 	touch $@
+
+$(BUILDDIR):
+	mkdir $@
 
 DEBUGGER=gdb
 export QUERY_STRING=
@@ -125,7 +120,7 @@ install-test: \
 	$(addprefix $(TESTDIR)/image/,$(notdir $(wildcard site/image/*.png)))
 
 test-vampire: install-test
-	cd $(TESTDIR) && $(DEBUGGER) .$(DIRSEP)vampire$(CGISUFFIX)
+	cd $(TESTDIR) && $(DEBUGGER) ./vampire$(CGISUFFIX)
 
 clean:
 	-rm -rf *.build
