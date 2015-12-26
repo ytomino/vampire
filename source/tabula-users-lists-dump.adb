@@ -53,15 +53,12 @@ begin
 		Iterate_Log (List, Process'Access);
 		New_Line;
 	end;
-	declare
-		I : Item_Lists.Cursor := Items.First;
-	begin
-		while Has_Element (I) loop
+	if Items.Length >= 2 then
+		for I in Items.Iterate (Items.First, Previous (Items.Last)) loop
 			declare
 				I_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (I);
-				J : Item_Lists.Cursor := Next (I);
 			begin
-				while Has_Element (J) loop
+				for J in Items.Iterate (Next (I), Items.Last) loop
 					declare
 						use Ada.Text_IO;
 						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
@@ -89,10 +86,8 @@ begin
 							New_Line;
 						end if;
 					end;
-					Next (J);
 				end loop;
 			end;
-			Next (I);
 		end loop;
-	end;
+	end if;
 end Tabula.Users.Lists.Dump;

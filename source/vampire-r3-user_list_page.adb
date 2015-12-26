@@ -36,42 +36,41 @@ is
 					Directory => HTML_Directory,
 					Relative_Name => "")); -- add a trailing path delimiter
 		elsif Tag = "user" then
-			declare
-				I : Users.Lists.User_Info_Maps.Cursor := User_List.First;
-				procedure Handle_User (
-					Output : not null access Ada.Streams.Root_Stream_Type'Class;
-					Tag : in String;
-					Template : in Web.Producers.Template) is
+			for I in User_List.Iterate loop
+				declare
+					procedure Handle_User (
+						Output : not null access Ada.Streams.Root_Stream_Type'Class;
+						Tag : in String;
+						Template : in Web.Producers.Template) is
+					begin
+						if Tag = "id" then
+							Forms.Write_In_HTML (
+								Output,
+								Form,
+								Key (I));
+						elsif Tag = "joinedcount" then
+							Forms.Write_In_HTML (
+								Output,
+								Form,
+								Image (
+									Tabula.Villages.Lists.Count_Joined_By (
+										Summaries,
+										Key (I),
+										Filter => (
+											Tabula.Villages.Prologue | Tabula.Villages.Playing => False,
+											Tabula.Villages.Epilogue | Tabula.Villages.Closed => True),
+										Including_Escaped => False)));
+						elsif Tag = "renamed" then
+							Forms.Write_In_HTML (
+								Output,
+								Form,
+								User_List.Constant_Reference (I).Element.
+									Renamed.Constant_Reference.Element.all);
+						else
+							Handle (Output, Tag, Template);
+						end if;
+					end Handle_User;
 				begin
-					if Tag = "id" then
-						Forms.Write_In_HTML (
-							Output,
-							Form,
-							Key (I));
-					elsif Tag = "joinedcount" then
-						Forms.Write_In_HTML (
-							Output,
-							Form,
-							Image (
-								Tabula.Villages.Lists.Count_Joined_By (
-									Summaries,
-									Key (I),
-									Filter => (
-										Tabula.Villages.Prologue | Tabula.Villages.Playing => False,
-										Tabula.Villages.Epilogue | Tabula.Villages.Closed => True),
-									Including_Escaped => False)));
-					elsif Tag = "renamed" then
-						Forms.Write_In_HTML (
-							Output,
-							Form,
-							User_List.Constant_Reference (I).Element.
-								Renamed.Constant_Reference.Element.all);
-					else
-						Handle (Output, Tag, Template);
-					end if;
-				end Handle_User;
-			begin
-				while Has_Element (I) loop
 					if Tabula.Villages.Lists.Count_Joined_By (
 						Summaries,
 						Key (I),
@@ -82,9 +81,8 @@ is
 					then
 						Web.Producers.Produce (Output, Template, Handler => Handle_User'Access);
 					end if;
-					Next (I);
-				end loop;
-			end;
+				end;
+			end loop;
 		else
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;

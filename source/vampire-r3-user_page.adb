@@ -76,33 +76,26 @@ is
 			raise Program_Error with "Invalid template """ & Tag & """";
 		end if;
 	end Handle;
-	I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 begin
-	while Has_Element (I) loop
+	for I in Summaries.Iterate loop
 		declare
 			V : Tabula.Villages.Lists.Village_Summary
 				renames Summaries.Constant_Reference (I).Element.all;
 		begin
 			if V.State < Tabula.Villages.Epilogue then
-				declare
-					J : Tabula.Villages.Lists.User_Lists.Cursor := V.People.First;
-				begin
-					while Has_Element (J) loop
-						if Element (J) = User_Id then
-							if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
-								Ada.Strings.Unbounded.Append(Joined, "、");
-							end if;
-							Ada.Strings.Unbounded.Append(Joined, V.Name);
+				for J in V.People.Iterate loop
+					if Element (J) = User_Id then
+						if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
+							Ada.Strings.Unbounded.Append(Joined, "、");
 						end if;
-						Next (J);
-					end loop;
-				end;
+						Ada.Strings.Unbounded.Append(Joined, V.Name);
+					end if;
+				end loop;
 				if V.By = User_Id then
 					Created := V.Name;
 				end if;
 			end if;
 		end;
-		Next (I);
 	end loop;
 	Web.Producers.Produce (Output, Read (Template), Handler => Handle'Access);
 end Vampire.R3.User_Page;

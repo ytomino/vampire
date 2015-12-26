@@ -99,27 +99,22 @@ package body Vampire.Log is
 				Title => "参加募集中の村 - The Village of Vampire",
 				Description => "",
 				Link => "../");
-			declare
-				I : Lists.Summary_Maps.Cursor := Summaries.Last;
-			begin
-				while Has_Element (I) loop
-					declare
-						Key : Village_Id
-							renames Lists.Summary_Maps.Key (I);
-						Element : Lists.Village_Summary
-							renames Summaries.Constant_Reference (I).Element.all;
-					begin
-						if Element.State = Prologue then
-							Web.RSS.RSS_Item (
-								Stream,
-								Title => Element.Name.Constant_Reference.Element.all,
-								Description => "",
-								Link => "../?village=" & Key);
-						end if;
-					end;
-					Previous (I);
-				end loop;
-			end;
+			for I in reverse Summaries.Iterate loop
+				declare
+					Key : Village_Id
+						renames Lists.Summary_Maps.Key (I);
+					Element : Lists.Village_Summary
+						renames Summaries.Constant_Reference (I).Element.all;
+				begin
+					if Element.State = Prologue then
+						Web.RSS.RSS_Item (
+							Stream,
+							Title => Element.Name.Constant_Reference.Element.all,
+							Description => "",
+							Link => "../?village=" & Key);
+					end if;
+				end;
+			end loop;
 			Web.RSS.RSS_End (Stream);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_RSS;

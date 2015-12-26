@@ -236,11 +236,9 @@ package body Tabula.Villages.Lists is
 		Summaries : Summary_Maps.Map;
 		User_Id : String;
 		Excluding : Village_Id := Invalid_Village_Id)
-		return Boolean
-	is
-		I : Summary_Maps.Cursor := Summaries.First;
+		return Boolean is
 	begin
-		while Has_Element (I) loop
+		for I in Summaries.Iterate loop
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference (I).Element.all;
 			begin
@@ -250,7 +248,6 @@ package body Tabula.Villages.Lists is
 					return True;
 				end if;
 			end;
-			Next (I);
 		end loop;
 		return False;
 	end Exists_Opened_By;
@@ -264,9 +261,8 @@ package body Tabula.Villages.Lists is
 		return Natural
 	is
 		Result : Natural := 0;
-		I : Summary_Maps.Cursor := Summaries.First;
 	begin
-		while Has_Element (I) loop
+		for I in Summaries.Iterate loop
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
 			begin
@@ -278,7 +274,6 @@ package body Tabula.Villages.Lists is
 					end if;
 				end if;
 			end;
-			Next (I);
 		end loop;
 		return Result;
 	end Count_Joined_By;
@@ -327,26 +322,21 @@ package body Tabula.Villages.Lists is
 		-- remake cache
 		Read_Summaries (List, True);
 		-- remake html
-		declare
-			I : Summary_Maps.Cursor := List.Map.First;
-		begin
-			while Has_Element (I) loop
-				declare
-					Id : String renames Summary_Maps.Key (I);
-					Summary : Village_Summary renames List.Map.Constant_Reference (I).Element.all;
-				begin
-					if Summary.State = Closed then
-						declare
-							Type_Code : constant String := Get_YAML_Type (File_Name (List, Id));
-							Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
-						begin
-							List.Registered_Types (Type_Index).Create_Log (List, Id);
-						end;
-					end if;
-				end;
-				Next (I);
-			end loop;
-		end;
+		for I in List.Map.Iterate loop
+			declare
+				Id : String renames Summary_Maps.Key (I);
+				Summary : Village_Summary renames List.Map.Constant_Reference (I).Element.all;
+			begin
+				if Summary.State = Closed then
+					declare
+						Type_Code : constant String := Get_YAML_Type (File_Name (List, Id));
+						Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+					begin
+						List.Registered_Types (Type_Index).Create_Log (List, Id);
+					end;
+				end if;
+			end;
+		end loop;
 		-- remake index
 		List.Create_Index (List.Map, Update => True);
 	end Refresh;

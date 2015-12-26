@@ -153,26 +153,24 @@ package body Vampire.R3 is
 		begin
 			if Tag = "item" then
 				declare
-					I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
+					Start : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
 				begin
 					if Log then
 						declare
 							C : Natural := Limits;
-							J : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.Last;
 						begin
-							while Has_Element (J) loop
+							for J in reverse Summaries.Iterate loop
 								if Summaries.Constant_Reference (J).Element.State = Tabula.Villages.Closed then
 									C := C - 1;
 									if C = 0 then
-										I := J;
+										Start := J;
 										exit;
 									end if;
 								end if;
-								Previous (J);
 							end loop;
 						end;
 					end if;
-					while Has_Element (I) loop
+					for I in Summaries.Iterate (Start, Summaries.Last) loop
 						declare
 							Key : Tabula.Villages.Village_Id
 								renames Tabula.Villages.Lists.Summary_Maps.Key (I);
@@ -230,7 +228,6 @@ package body Vampire.R3 is
 								Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
 							end if;
 						end;
-						Next (I);
 					end loop;
 				end;
 			else
@@ -239,17 +236,12 @@ package body Vampire.R3 is
 		end Handle;
 		Exists : Boolean := False;
 	begin
-		declare
-			I : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
-		begin
-			while Has_Element (I) loop
-				if (Summaries.Constant_Reference (I).Element.State = Tabula.Villages.Closed) = Log then
-					Exists := True;
-					exit;
-				end if;
-				Next (I);
-			end loop;
-		end;
+		for I in Summaries.Iterate loop
+			if (Summaries.Constant_Reference (I).Element.State = Tabula.Villages.Closed) = Log then
+				Exists := True;
+				exit;
+			end if;
+		end loop;
 		if Exists then
 			Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 		end if;
