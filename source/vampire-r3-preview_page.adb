@@ -30,7 +30,7 @@ is
 			Forms.Write_In_HTML (
 				Output,
 				Form,
-				Village.Name.Constant_Reference.Element.all);
+				Village.Name.Constant_Reference);
 		elsif Tag = "speech" then
 			Handle_Speech (
 				Output,
@@ -40,8 +40,8 @@ is
 				Image_Directory => Image_Directory,
 				Face_Width => Village.Face_Width,
 				Face_Height => Village.Face_Height,
-				Subject => Village.People.Constant_Reference (Message.Subject).Element.all,
-				Text => Message.Text.Constant_Reference.Element.all,
+				Subject => Village.People.Constant_Reference (Message.Subject),
+				Text => Message.Text.Constant_Reference,
 				Time => Message.Time,
 				Filter => "");
 		elsif Tag = "value_kind" then
@@ -52,7 +52,7 @@ is
 		elsif Tag = "value_text" then
 			Forms.Write_Attribute_Name (Output, "value");
 			Forms.Write_Attribute_Open (Output);
-			Forms.Write_In_Attribute (Output, Form, Message.Text.Constant_Reference.Element.all);
+			Forms.Write_In_Attribute (Output, Form, Message.Text.Constant_Reference);
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "longer" then
 			if Message.Text.Length > Villages.Max_Length_Of_Message then

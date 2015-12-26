@@ -134,7 +134,7 @@ package body Tabula.Villages.Lists is
 			declare
 				procedure Process (Index : Person_Index; Item : Person_Type'Class) is
 				begin
-				   Append (Result.People, Item.Id.Constant_Reference.Element.all);
+				   Append (Result.People, Item.Id.Constant_Reference);
 				end Process;
 			begin
 				Iterate_People (Village, Process'Access);
@@ -240,7 +240,7 @@ package body Tabula.Villages.Lists is
 	begin
 		for I in Summaries.Iterate loop
 			declare
-				V : Village_Summary renames Summaries.Constant_Reference (I).Element.all;
+				V : Village_Summary renames Summaries.Constant_Reference (I);
 			begin
 				if V.State <= Playing and then V.By = User_Id
 					and then Summary_Maps.Key (I) /= Excluding
@@ -264,7 +264,7 @@ package body Tabula.Villages.Lists is
 	begin
 		for I in Summaries.Iterate loop
 			declare
-				V : Village_Summary renames Summaries.Constant_Reference(I).Element.all;
+				V : Village_Summary renames Summaries.Constant_Reference(I);
 			begin
 				if not Long_Only or else V.Term = Long then
 					if Filter (V.State) then
@@ -290,7 +290,7 @@ package body Tabula.Villages.Lists is
 		then
 			declare
 				Type_Index : constant Positive :=
-					Get_Type_Index (List, Summary.Type_Code.Constant_Reference.Element.all);
+					Get_Type_Index (List, Summary.Type_Code.Constant_Reference);
 			begin
 				List.Registered_Types (Type_Index).Create_Log (List, Id);
 			end;
@@ -325,7 +325,7 @@ package body Tabula.Villages.Lists is
 		for I in List.Map.Iterate loop
 			declare
 				Id : String renames Summary_Maps.Key (I);
-				Summary : Village_Summary renames List.Map.Constant_Reference (I).Element.all;
+				Summary : Village_Summary renames List.Map.Constant_Reference (I);
 			begin
 				if Summary.State = Closed then
 					declare

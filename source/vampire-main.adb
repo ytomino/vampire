@@ -699,22 +699,22 @@ begin
 												Villages.Exclude_Taken (Cast, Village);
 												declare
 													Person_Template : Casts.Person
-														renames Cast.People.Constant_Reference (Joining.Name_Index).Element.all;
+														renames Cast.People.Constant_Reference (Joining.Name_Index);
 												begin
 													if Joining.Work_Index < 0 then
 														Joining.Work_Index := Casts.Find (
 															Cast.Works,
-															Person_Template.Work.Constant_Reference.Element.all);
+															Person_Template.Work.Constant_Reference);
 													end if;
 													if Joining.Work_Index < 0 then
 														Message_Page (
 															"申し訳ありませんが既定の肩書き(" &
-															Person_Template.Work.Constant_Reference.Element.all &
+															Person_Template.Work.Constant_Reference &
 															")は既に他の方に取られています。");
 													else
 														declare
 															Selected_Work : Casts.Work
-																renames Cast.Works.Constant_Reference (Joining.Work_Index).Element.all;
+																renames Cast.Works.Constant_Reference (Joining.Work_Index);
 														begin
 															if Person_Template.Name = "" or Selected_Work.Name = "" then
 																Message_Page ("選択した顔または肩書きは既に他の方に取られています。");
@@ -728,10 +728,10 @@ begin
 																Villages.Join (
 																	Village,
 																	User_Id,
-																	Cast.Groups.Constant_Reference (Casts.Find (Cast.Groups, Person_Template.Group)).Element.all,
+																	Cast.Groups.Constant_Reference (Casts.Find (Cast.Groups, Person_Template.Group)),
 																	Person_Template,
 																	Selected_Work,
-																	Villages.Requested_Role'Value (Joining.Request.Constant_Reference.Element.all),
+																	Villages.Requested_Role'Value (Joining.Request.Constant_Reference),
 																	User_Info.Ignore_Request,
 																	Now);
 																Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -784,8 +784,8 @@ begin
 										declare
 											Target : constant Integer := Form.Get_Target (Inputs);
 											Removed_Id : constant String :=
-												Village.People.Constant_Reference (Target).Element.
-													Id.Constant_Reference.Element.all;
+												Village.People.Constant_Reference (Target).
+													Id.Constant_Reference;
 										begin
 											Villages.Escape(Village, Target, Now);
 											Villages.Save (
@@ -805,13 +805,13 @@ begin
 								elsif Cmd = "commit" then
 									if Village.Time = Villages.Night then
 										Message_Page ("今は行動を終えられない時間帯です。");
-									elsif Village.People.Constant_Reference(Player).Element.
-										Records.Constant_Reference(Village.Today).Element.State = Villages.Died
+									elsif Village.People.Constant_Reference(Player).
+										Records.Constant_Reference(Village.Today).State = Villages.Died
 									then
 										Message_Page ("死者は行動を決定できません。");
 									else
-										if not Village.People.Constant_Reference(Player).Element.Commited then
-											Village.People.Reference(Player).Element.Commited := True;
+										if not Village.People.Constant_Reference(Player).Commited then
+											Village.People.Reference(Player).Commited := True;
 											declare
 												Changed, List_Changed : Boolean;
 											begin
@@ -831,8 +831,8 @@ begin
 										Refresh_Page;
 									end if;
 								elsif Cmd = "rollback" then
-									if Village.People.Constant_Reference(Player).Element.Commited then
-										Village.People.Reference(Player).Element.Commited := False;
+									if Village.People.Constant_Reference(Player).Commited then
+										Village.People.Reference(Player).Commited := False;
 										Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 									end if;
 									Refresh_Page;
@@ -869,7 +869,7 @@ begin
 										elsif Action = "wake" then
 											if Said(Player).Wake > 0 then
 												Message_Page ("人を起こせるのは一日一度です。");
-											elsif not Village.People.Constant_Reference(Target).Element.Commited then
+											elsif not Village.People.Constant_Reference(Target).Commited then
 												Message_Page ("相手はまだ行動を終えていません。");
 											else
 												Villages.Wake (Village, Player, Target, Now);
@@ -885,9 +885,9 @@ begin
 												Refresh_Page;
 											end if;
 										elsif Action = "vampire_gaze" then
-											if Village.People.Constant_Reference(Player).Element.Role not in Villages.Vampire_Role then
+											if Village.People.Constant_Reference(Player).Role not in Villages.Vampire_Role then
 												Message_Page ("見つめられるのは吸血鬼だけです。");
-											elsif Village.People.Constant_Reference(Target).Element.Role in Villages.Vampire_Role then
+											elsif Village.People.Constant_Reference(Target).Role in Villages.Vampire_Role then
 												Message_Page ("見つめようとした相手は吸血鬼です。");
 											elsif Said(Player).Vampire_Gaze > 0 then
 												Message_Page ("見つめられるのは一日一度です。");
@@ -903,9 +903,9 @@ begin
 												Refresh_Page;
 											end if;
 										elsif Action = "vampire_cancel" then
-											if Village.People.Constant_Reference (Player).Element.Role not in Villages.Vampire_Role then
+											if Village.People.Constant_Reference (Player).Role not in Villages.Vampire_Role then
 												Message_Page ("襲撃を取り消せるのは吸血鬼だけです。");
-											elsif Village.People.Constant_Reference (Target).Element.Role in Villages.Vampire_Role then
+											elsif Village.People.Constant_Reference (Target).Role in Villages.Vampire_Role then
 												Message_Page ("相手は吸血鬼です、元々襲えません。");
 											elsif Said (Player).Vampire_Cancel > 0 then
 												Message_Page ("襲撃を取り消せるのは一日一度です。");
@@ -929,8 +929,8 @@ begin
 										function Speech_Check return Boolean is
 										begin
 											if Village.State = Tabula.Villages.Playing
-												and then Village.People.Constant_Reference(Player).Element.
-													Records.Constant_Reference(Village.Today).Element.State = Villages.Died
+												and then Village.People.Constant_Reference(Player).
+													Records.Constant_Reference(Village.Today).State = Villages.Died
 											then
 												Message_Page ("あなたは死にました。");
 												return False;
@@ -1062,8 +1062,8 @@ begin
 								elsif Cmd = "ghost" then
 									if Village.State /= Tabula.Villages.Playing then
 										Message_Page ("プロローグ/エピローグでは呻けません。");
-									elsif Village.People.Constant_Reference(Player).Element.
-										Records.Constant_Reference(Village.Today).Element.State /= Villages.Died
+									elsif Village.People.Constant_Reference(Player).
+										Records.Constant_Reference(Village.Today).State /= Villages.Died
 									then
 										Message_Page ("生者は呻けません。");
 									else
@@ -1124,14 +1124,14 @@ begin
 												User_Id => User_Id,
 												User_Password => User_Password);
 										else
-											if Text /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Note then
+											if Text /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).Note then
 												if Village.Time = Villages.Night
-													and then Village.People.Constant_Reference(Player).Element.Role in Villages.Vampire_Role
-													and then Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State /= Villages.Died
+													and then Village.People.Constant_Reference(Player).Role in Villages.Vampire_Role
+													and then Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State /= Villages.Died
 												then
 													Villages.Night_Talk (Village, Player, Text, Now);
 												else
-													Village.People.Reference(Player).Element.Records.Reference(Village.Today).Element.Note := +Text;
+													Village.People.Reference(Player).Records.Reference(Village.Today).Note := +Text;
 												end if;
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 											end if;
@@ -1145,14 +1145,14 @@ begin
 										declare
 											Target : constant Integer := Form.Get_Target (Inputs);
 										begin
-											if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+											if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
 												Message_Page ("あなたは死んでいます。");
-											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State = Villages.Died then
 												Message_Page ("死者に投票はできません。");
-											elsif Target >= 0 and then not Village.People.Constant_Reference(Target).Element.Records.Constant_Reference(Village.Today).Element.Candidate then
+											elsif Target >= 0 and then not Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).Candidate then
 												Message_Page ("仮投票が行われました。 選ばれた候補以外に投票はできなくなります。");
 											else
-												if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.Vote then
+												if Target /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).Vote then
 													Villages.Vote (Village, Player, Target);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												end if;
@@ -1166,12 +1166,12 @@ begin
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 									begin
-										if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+										if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
 											Message_Page ("あなたは死んでいます。");
 										elsif Special and then Village.Silver_Bullet_State (Player) /= Villages.Allowed then
 											Message_Page ("銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
-											and then Village.People.Constant_Reference(Player).Element.Role in Villages.Daytime_Role
+											and then Village.People.Constant_Reference(Player).Role in Villages.Daytime_Role
 										then
 											case Village.Superman_State (Player) is
 												when Villages.Disallowed =>
@@ -1198,8 +1198,8 @@ begin
 													end if;
 											end case;
 										else
-											if Target /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Target
-												or else Special /= Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Target_Day).Element.Special
+											if Target /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Target_Day).Target
+												or else Special /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Target_Day).Special
 											then
 												Villages.Select_Target (Village, Player, Target, Special, Now);
 												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
@@ -1208,9 +1208,9 @@ begin
 										end if;
 									end;
 								elsif Cmd = "target2" then
-									if Village.People.Constant_Reference(Player).Element.Records.Constant_Reference(Village.Today).Element.State = Villages.Died then
+									if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
 										Message_Page ("あなたは死んでいます。");
-									elsif Village.People.Constant_Reference (Player).Element.Role in Villages.Daytime_Role then
+									elsif Village.People.Constant_Reference (Player).Role in Villages.Daytime_Role then
 										case Village.Superman_State (Player) is
 											when Villages.Disallowed =>
 												Message_Page ("医者と探偵は、夜に能力を使えません。");

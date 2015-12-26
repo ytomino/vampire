@@ -48,7 +48,7 @@ begin
 		end Process;
 		List : User_List := Create (
 			Directory => Users_Directory,
-			Log_File_Name => Input_File_Name.Constant_Reference.Element.all'Access);
+			Log_File_Name => Input_File_Name.Constant_Reference.Element);
 	begin
 		Iterate_Log (List, Process'Access);
 		New_Line;
@@ -63,26 +63,26 @@ begin
 						use Ada.Text_IO;
 						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
 					begin
-						if I_Ref.Element.Remote_Addr = J_Ref.Element.Remote_Addr
+						if I_Ref.Remote_Addr = J_Ref.Remote_Addr
 							or else (
-								I_Ref.Element.Remote_Host = J_Ref.Element.Remote_Host
-								and then J_Ref.Element.Remote_Host /= "")
+								I_Ref.Remote_Host = J_Ref.Remote_Host
+								and then J_Ref.Remote_Host /= "")
 						then
-							Put (I_Ref.Element.Id.Constant_Reference.Element.all);
+							Put (I_Ref.Id.Constant_Reference);
 							Put (',');
-							Put (I_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put (I_Ref.Remote_Addr.Constant_Reference);
 							Put (',');
-							Put (I_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put (I_Ref.Remote_Host.Constant_Reference);
 							Put (',');
-							Put (Ada.Calendar.Formatting.Image (I_Ref.Element.Time));
+							Put (Ada.Calendar.Formatting.Image (I_Ref.Time));
 							New_Line;
-							Put (J_Ref.Element.Id.Constant_Reference.Element.all);
+							Put (J_Ref.Id.Constant_Reference);
 							Put (',');
-							Put (J_Ref.Element.Remote_Addr.Constant_Reference.Element.all);
+							Put (J_Ref.Remote_Addr.Constant_Reference);
 							Put (',');
-							Put (J_Ref.Element.Remote_Host.Constant_Reference.Element.all);
+							Put (J_Ref.Remote_Host.Constant_Reference);
 							Put (',');
-							Put (Ada.Calendar.Formatting.Image (J_Ref.Element.Time));
+							Put (Ada.Calendar.Formatting.Image (J_Ref.Time));
 							New_Line;
 						end if;
 					end;

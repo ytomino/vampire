@@ -104,12 +104,12 @@ package body Vampire.Log is
 					Key : Village_Id
 						renames Lists.Summary_Maps.Key (I);
 					Element : Lists.Village_Summary
-						renames Summaries.Constant_Reference (I).Element.all;
+						renames Summaries.Constant_Reference (I);
 				begin
 					if Element.State = Prologue then
 						Web.RSS.RSS_Item (
 							Stream,
-							Title => Element.Name.Constant_Reference.Element.all,
+							Title => Element.Name.Constant_Reference,
 							Description => "",
 							Link => "../?village=" & Key);
 					end if;

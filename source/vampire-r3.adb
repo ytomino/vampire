@@ -160,7 +160,7 @@ package body Vampire.R3 is
 							C : Natural := Limits;
 						begin
 							for J in reverse Summaries.Iterate loop
-								if Summaries.Constant_Reference (J).Element.State = Tabula.Villages.Closed then
+								if Summaries.Constant_Reference (J).State = Tabula.Villages.Closed then
 									C := C - 1;
 									if C = 0 then
 										Start := J;
@@ -175,7 +175,7 @@ package body Vampire.R3 is
 							Key : Tabula.Villages.Village_Id
 								renames Tabula.Villages.Lists.Summary_Maps.Key (I);
 							Element : Tabula.Villages.Lists.Village_Summary
-								renames Summaries.Constant_Reference (I).Element.all;
+								renames Summaries.Constant_Reference (I);
 							procedure Handle_Item (Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String; Template : in Web.Producers.Template) is
 							begin
@@ -213,7 +213,7 @@ package body Vampire.R3 is
 									Forms.Write_In_HTML (
 										Output,
 										Form,
-										Element.Name.Constant_Reference.Element.all);
+										Element.Name.Constant_Reference);
 								elsif Tag = "people" then
 									Forms.Write_In_HTML (
 										Output,
@@ -237,7 +237,7 @@ package body Vampire.R3 is
 		Exists : Boolean := False;
 	begin
 		for I in Summaries.Iterate loop
-			if (Summaries.Constant_Reference (I).Element.State = Tabula.Villages.Closed) = Log then
+			if (Summaries.Constant_Reference (I).State = Tabula.Villages.Closed) = Log then
 				Exists := True;
 				exit;
 			end if;
@@ -274,7 +274,7 @@ package body Vampire.R3 is
 					Current_Directory => Current_Directory,
 					Resource => Ada.Hierarchical_File_Names.Compose (
 						Directory => Image_Directory,
-						Relative_Name => Subject.Image.Constant_Reference.Element.all));
+						Relative_Name => Subject.Image.Constant_Reference));
 			elsif Tag = "width_image" then
 				if Face_Width /= 0 then
 					Forms.Write_Attribute_Name (Output, "width");

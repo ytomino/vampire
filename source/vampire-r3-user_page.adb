@@ -59,9 +59,9 @@ is
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "activevillage" then
-			Forms.Write_In_HTML (Output, Form, Joined.Constant_Reference.Element.all);
+			Forms.Write_In_HTML (Output, Form, Joined.Constant_Reference);
 		elsif Tag = "createdvillage" then
-			Forms.Write_In_HTML (Output, Form, Created.Constant_Reference.Element.all);
+			Forms.Write_In_HTML (Output, Form, Created.Constant_Reference);
 		elsif Tag = "href_index" then
 			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
@@ -80,7 +80,7 @@ begin
 	for I in Summaries.Iterate loop
 		declare
 			V : Tabula.Villages.Lists.Village_Summary
-				renames Summaries.Constant_Reference (I).Element.all;
+				renames Summaries.Constant_Reference (I);
 		begin
 			if V.State < Tabula.Villages.Epilogue then
 				for J in V.People.Iterate loop

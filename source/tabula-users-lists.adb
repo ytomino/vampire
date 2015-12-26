@@ -256,10 +256,10 @@ package body Tabula.Users.Lists is
 			Key : User_Log_Item renames Users_Log.Key (Position);
 		begin
 			Process (
-				Id => Key.Id.Constant_Reference.Element.all,
-				Remote_Addr => Key.Remote_Addr.Constant_Reference.Element.all,
-				Remote_Host => Key.Remote_Host.Constant_Reference.Element.all,
-				Time => List.Log.Constant_Reference (Position).Element.all);
+				Id => Key.Id.Constant_Reference,
+				Remote_Addr => Key.Remote_Addr.Constant_Reference,
+				Remote_Host => Key.Remote_Host.Constant_Reference,
+				Time => List.Log.Constant_Reference (Position));
 		end Thunk;
 	begin
 		Load_Users_Log (List);

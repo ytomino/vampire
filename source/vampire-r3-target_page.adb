@@ -14,9 +14,9 @@ procedure Vampire.R3.Target_Page (
 is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	Person : Villages.Person_Type
-		renames Village.People.Constant_Reference(Player).Element.all;
+		renames Village.People.Constant_Reference(Player);
 	Target_Person : Villages.Person_Type
-		renames Village.People.Constant_Reference(Target).Element.all;
+		renames Village.People.Constant_Reference(Target);
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
@@ -52,7 +52,7 @@ is
 			Forms.Write_In_HTML (
 				Output,
 				Form,
-				Village.Name.Constant_Reference.Element.all);
+				Village.Name.Constant_Reference);
 		elsif Tag = "message" then
 			case Person.Role is
 				when Villages.Doctor =>
@@ -61,7 +61,7 @@ is
 						Form,
 						Villages.Text.Name (Target_Person) & "を診察しますか？");
 				when Villages.Detective =>
-					if Target_Person.Records.Constant_Reference(Village.Today).Element.Note = "" then
+					if Target_Person.Records.Constant_Reference(Village.Today).Note = "" then
 						Forms.Write_In_HTML (
 							Output,
 							Form,

@@ -43,7 +43,7 @@ is
 					Forms.Write_In_HTML (
 						Output,
 						Form,
-						Village.Name.Constant_Reference.Element.all & " " & 
+						Village.Name.Constant_Reference & " " &
 							Day_Name (Today, Today, State) & " - ");
 				end;
 			end if;

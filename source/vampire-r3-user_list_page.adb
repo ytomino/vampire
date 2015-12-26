@@ -64,8 +64,8 @@ is
 							Forms.Write_In_HTML (
 								Output,
 								Form,
-								User_List.Constant_Reference (I).Element.
-									Renamed.Constant_Reference.Element.all);
+								User_List.Constant_Reference (I).
+									Renamed.Constant_Reference);
 						else
 							Handle (Output, Tag, Template);
 						end if;

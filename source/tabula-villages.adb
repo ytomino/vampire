@@ -66,9 +66,9 @@ package body Tabula.Villages is
 		procedure Process (Index : Person_Index; Item : in Person_Type'Class) is
 		begin
 			-- remove all duplicated characters
-			Casts.Exclude_Person (Cast, Item.Name.Constant_Reference.Element.all, Item.Group);
+			Casts.Exclude_Person (Cast, Item.Name.Constant_Reference, Item.Group);
 			-- remove one duplicated work
-			Casts.Exclude_Work (Cast, Item.Work.Constant_Reference.Element.all);
+			Casts.Exclude_Work (Cast, Item.Work.Constant_Reference);
 		end Process;
 	begin
 		Iterate_People (Village_Type'Class (Village), Process'Access);

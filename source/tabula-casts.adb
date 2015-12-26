@@ -6,7 +6,7 @@ package body Tabula.Casts is
 	function Find (Container : Groups.Vector; Group : Integer) return Groups.Cursor is
 	begin
 		for I in Container.First_Index .. Container.Last_Index loop
-			if Container.Constant_Reference (I).Element.Group = Group then
+			if Container.Constant_Reference (I).Group = Group then
 				return I;
 			end if;
 		end loop;
@@ -26,7 +26,7 @@ package body Tabula.Casts is
 	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor is
 	begin
 		for I in Works.First_Index .. Works.Last_Index loop
-			if Works.Constant_Reference (I).Element.Name = Name then
+			if Works.Constant_Reference (I).Name = Name then
 				return I;
 			end if;
 		end loop;
@@ -36,8 +36,8 @@ package body Tabula.Casts is
 	procedure Exclude_Person (Cast : in out Casts.Cast_Collection; Name : String; Group : Integer) is
 	begin
 		for IP in Cast.People.First_Index .. Cast.People.Last_Index loop
-			if Cast.People.Constant_Reference(IP).Element.Name = Name or else Cast.People.Constant_Reference(IP).Element.Group /= Group then
-				Cast.People.Reference(IP).Element.Name := Ada.Strings.Unbounded.Null_Unbounded_String;
+			if Cast.People.Constant_Reference(IP).Name = Name or else Cast.People.Constant_Reference(IP).Group /= Group then
+				Cast.People.Reference(IP).Name := Ada.Strings.Unbounded.Null_Unbounded_String;
 			end if;
 		end loop;
 	end Exclude_Person;
@@ -45,8 +45,8 @@ package body Tabula.Casts is
 	procedure Exclude_Work (Cast : in out Casts.Cast_Collection; Name : String) is
 	begin
 		for IW in Cast.Works.First_Index .. Cast.Works.Last_Index loop
-			if Cast.Works.Constant_Reference(IW).Element.Name = Name then
-				Cast.Works.Reference(IW).Element.Name := Ada.Strings.Unbounded.Null_Unbounded_String;
+			if Cast.Works.Constant_Reference(IW).Name = Name then
+				Cast.Works.Reference(IW).Name := Ada.Strings.Unbounded.Null_Unbounded_String;
 				exit;
 			end if;
 		end loop;

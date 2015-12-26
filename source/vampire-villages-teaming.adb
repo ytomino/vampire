@@ -417,7 +417,7 @@ package body Vampire.Villages.Teaming is
 			begin
 				for I in People_Index loop
 					declare
-						Person : Person_Type renames People.Constant_Reference(I).Element.all;
+						Person : Person_Type renames People.Constant_Reference(I);
 					begin
 						if not Person.Ignore_Request then
 							declare
@@ -437,7 +437,7 @@ package body Vampire.Villages.Teaming is
 		begin
 			for I in People_Index loop
 				declare
-					Person : Person_Type renames People.Constant_Reference(I).Element.all;
+					Person : Person_Type renames People.Constant_Reference(I);
 				begin
 					if Person.Ignore_Request then
 						Result(I) := (Inhabitant => True, others => False); -- 強制村人
@@ -489,7 +489,7 @@ package body Vampire.Villages.Teaming is
 		begin
 			for I in People_Index loop
 				declare
-					S : constant Casts.Person_Sex := People.Constant_Reference(I).Element.Sex;
+					S : constant Casts.Person_Sex := People.Constant_Reference(I).Sex;
 				begin
 					if (S = Casts.Male and Candidacy (I) = Sweetheart_F)
 						or else (S = Casts.Female and Candidacy (I) = Sweetheart_M)
@@ -503,7 +503,7 @@ package body Vampire.Villages.Teaming is
 				end;
 				if Request (I)(Candidacy (I)) then
 					declare
-						Person : Person_Type renames People.Constant_Reference(I).Element.all;
+						Person : Person_Type renames People.Constant_Reference(I);
 					begin
 						if Person.Ignore_Request then
 							Result := Result + 20;
@@ -569,7 +569,7 @@ package body Vampire.Villages.Teaming is
 		end if;
 		-- 設定
 		for I in People_Index loop
-			People.Reference (I).Element.Role := Current.Assignment(I);
+			People.Reference (I).Role := Current.Assignment(I);
 		end loop;
 	end Shuffle;
 	
