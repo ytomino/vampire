@@ -338,6 +338,7 @@ table.summary {
 
 table.summary td {
 	border-top:1px solid white;
+	padding-top:2px;
 }
 
 table.summary td.control {
@@ -349,6 +350,11 @@ table.summary td.name {
 	border-left:1px solid white;
 	color:white;
 	padding-right:0.5em;
+}
+
+table.summary td.name input {
+	margin-top:0px;
+	margin-bottom:1px;
 }
 
 td.count {
@@ -447,6 +453,7 @@ table.users td {
 	border-bottom:1px dashed;
 	padding-left:4px;
 	padding-right:4px;
+	padding-top:2px;
 }
 
 table.villagelist td a,
