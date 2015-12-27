@@ -11,8 +11,9 @@
 body {
 	/* background-image:url(./image/background.png); */
 	background-color:black;
-	font-family:"Arisaka", "IPA Pゴシック", sans-serif;
+	font-family:HiraKakuProN-W3, 'ヒラギノ角ゴ ProN W3', IPAPGothic, sans-serif;
 	color:white;
+	line-height:1.2;
 	padding-left:1em;
 	padding-right:2.5%;
 }
@@ -22,6 +23,7 @@ h1 {
 	text-align:center;
 	font-family:'Lovers Quarrel', cursive;
 	font-size:3em;
+	line-height:1.2;
 	margin-top:0.25em;
 }
 
@@ -207,7 +209,7 @@ div.speech {
 .vampire img,
 .dying img,
 .monologue img {
-	vertical-align:text-bottom;
+	vertical-align:middle;
 }
 
 div.ghost img,
@@ -273,8 +275,9 @@ td.button {
 }
 
 textarea {
-	font-family:"IPAゴシック", monospace;
-	font-size:12pt;
+	font-family:IPAGothic, monospace;
+	font-size:medium;
+	line-height:1.2;
 }
 
 textarea.speech {
