@@ -106,7 +106,7 @@ package body Vampire.Villages.Teaming is
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			if not (Monster_Side = Gremlin and then Set (Gremlin) >= 1 and then Set (Astronomer) = 0) then
+			if not (Set (Gremlin) >= 1 and then Set (Astronomer) = 0) then
 				Process_Detective (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0 then
@@ -223,77 +223,79 @@ package body Vampire.Villages.Teaming is
 				Servant_Count);
 		end Process_Gremlin;
 		
-		People_Count_2 : Ada.Containers.Count_Type := People_Count;
-		
 		Village_Side_Superman_Count : Village_Side_Superman_Count_Type;
 		Vampire_Count : Vampire_Count_Type;
 		Servant_Count : Servant_Count_Type := 0;
 		Gremlin_Count : Gremlin_Count_Type := 0;
 	begin
-		if Execution = From_Second then
-			People_Count_2 := People_Count_2 - 1;
-		end if;
 		case Execution is
 			when Infection_And_From_First =>
-				if People_Count_2 >= 15 then
+				if People_Count >= 15 then
 					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 11 then
+				elsif People_Count >= 11 then
 					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 8 then
+				elsif People_Count >= 8 then
 					Village_Side_Superman_Count := 2;
 				else
 					Village_Side_Superman_Count := 1;
 				end if;
-				if People_Count_2 >= 14 then
+				if People_Count >= 14 then
 					Vampire_Count := 3;
 					Servant_Count := 1;
-				elsif People_Count_2 >= 12 then
+				elsif People_Count >= 12 then
 					Vampire_Count := 3;
-				elsif People_Count_2 >= 10 then
+				elsif People_Count >= 10 then
 					Vampire_Count := 2;
 					Servant_Count := 1;
-				elsif People_Count_2 >= 8 then
+				elsif People_Count >= 8 then
 					Vampire_Count := 2;
-				elsif People_Count_2 >= 6 then
+				elsif People_Count >= 6 then
 					Vampire_Count := 1;
 					Servant_Count := 1;
 				else
 					Vampire_Count := 1;
 				end if;
-				if People_Count_2 >= 16 then
+				if People_Count >= 16 then
 					Gremlin_Count := 1;
 				end if;
 			when Dummy_Killed_And_From_First | From_First | From_Second =>
-				if People_Count_2 >= 15 then
-					Village_Side_Superman_Count := 5;
-				elsif People_Count_2 >= 13 then
-					Village_Side_Superman_Count := 4;
-				elsif People_Count_2 >= 10 then
-					Village_Side_Superman_Count := 3;
-				elsif People_Count_2 >= 8 then
-					Village_Side_Superman_Count := 2;
-				else
-					Village_Side_Superman_Count := 1;
-				end if;
-				if People_Count_2 >= 14 then
-					Vampire_Count := 3;
-					Servant_Count := 1;
-				elsif People_Count_2 = 13 then
-					Vampire_Count := 3;
-				elsif People_Count_2 >= 9 then
-					Vampire_Count := 2;
-					Servant_Count := 1;
-				elsif People_Count_2 = 8 then
-					Vampire_Count := 2;
-				elsif People_Count_2 = 7 then
-					Vampire_Count := 1;
-					Servant_Count := 1;
-				else
-					Vampire_Count := 1;
-				end if;
-				if People_Count_2 >= 16 then
-					Gremlin_Count := 1;
-				end if;
+				declare
+					People_Count_2 : Ada.Containers.Count_Type := People_Count;
+				begin
+					if Execution = From_Second then
+						People_Count_2 := People_Count_2 - 1;
+					end if;
+					if People_Count_2 >= 15 then
+						Village_Side_Superman_Count := 5;
+					elsif People_Count_2 >= 13 then
+						Village_Side_Superman_Count := 4;
+					elsif People_Count_2 >= 10 then
+						Village_Side_Superman_Count := 3;
+					elsif People_Count_2 >= 8 then
+						Village_Side_Superman_Count := 2;
+					else
+						Village_Side_Superman_Count := 1;
+					end if;
+					if People_Count_2 >= 14 then
+						Vampire_Count := 3;
+						Servant_Count := 1;
+					elsif People_Count_2 = 13 then
+						Vampire_Count := 3;
+					elsif People_Count_2 >= 9 then
+						Vampire_Count := 2;
+						Servant_Count := 1;
+					elsif People_Count_2 = 8 then
+						Vampire_Count := 2;
+					elsif People_Count_2 = 7 then
+						Vampire_Count := 1;
+						Servant_Count := 1;
+					else
+						Vampire_Count := 1;
+					end if;
+					if People_Count_2 >= 16 then
+						Gremlin_Count := 1;
+					end if;
+				end;
 		end case;
 		-- 編成隠し時能力者+1
 		if Formation = Hidden then
@@ -315,6 +317,11 @@ package body Vampire.Villages.Teaming is
 				Servant_Count := Gremlin_Count;
 				Gremlin_Count := T;
 			end;
+			-- 使徒がいなかった場合は吸血鬼と交換
+			if Gremlin_Count = 0 then
+				Vampire_Count := Vampire_Count - 1;
+				Gremlin_Count := 1;
+			end if;
 		end if;
 		-- 組み合わせ探索
 		declare
