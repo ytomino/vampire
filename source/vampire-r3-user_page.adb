@@ -84,7 +84,7 @@ begin
 		begin
 			if V.State < Tabula.Villages.Epilogue then
 				for J in V.People.Iterate loop
-					if Element (J) = User_Id then
+					if V.People.Constant_Reference (J) = User_Id then
 						if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
 							Ada.Strings.Unbounded.Append(Joined, "、");
 						end if;
