@@ -817,7 +817,7 @@ begin
 							Vampire : constant Person_Index'Base := Find_Superman(Village, Rank);
 						begin
 							if Vampire >= 0 and then Village.People.Constant_Reference(Vampire).Records.Constant_Reference(Village.Today).State /= Died then
-								if Village.People.Constant_Reference(Vampire).Records.Constant_Reference(Village.Today - 1).Note /= Ada.Strings.Unbounded.Null_Unbounded_String then
+								if not Village.People.Constant_Reference(Vampire).Records.Constant_Reference(Village.Today - 1).Note.Is_Null then
 									Append(Village.Messages, (
 										Kind => Meeting,
 										Day => Village.Today,

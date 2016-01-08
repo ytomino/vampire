@@ -749,7 +749,7 @@ is
 					end if;
 				end Handle_Summary;
 			begin
-				if Village.People.Length > 0 then
+				if not Village.People.Is_Empty then
 					Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
 				end if;
 			end;
@@ -1122,7 +1122,7 @@ is
 												Villages.Text.Detective_Survey_Message (Village, Message),
 												"narrationi",
 												Vampire.Villages.Detective);
-											if Message.Text /= Ada.Strings.Unbounded.Null_Unbounded_String
+											if not Message.Text.Is_Null
 												and then (
 													Village.Daytime_Preview = Vampire.Villages.Role_And_Message
 													or else Village.Daytime_Preview = Vampire.Villages.Message_Only
@@ -1296,7 +1296,7 @@ is
 								Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I);
 								Rec : Vampire.Villages.Person_Record renames Subject.Records.Constant_Reference(Day);
 							begin
-								if Rec.State = Vampire.Villages.Died and then Rec.Note /= Ada.Strings.Unbounded.Null_Unbounded_String then
+								if Rec.State = Vampire.Villages.Died and then not Rec.Note.Is_Null then
 									Note(Subject, Rec, "dying");
 								end if;
 							end;

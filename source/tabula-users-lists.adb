@@ -89,7 +89,7 @@ package body Tabula.Users.Lists is
 					Relative_Name => Id),
 				Info);
 			if Info.Password /= Digest (Password)
-				or else Info.Renamed /= Ada.Strings.Unbounded.Null_Unbounded_String
+				or else not Info.Renamed.Is_Null
 			then
 				State := Invalid;
 			else

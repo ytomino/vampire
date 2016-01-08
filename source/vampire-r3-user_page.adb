@@ -41,21 +41,19 @@ is
 		elsif Tag = "id" then
 			Forms.Write_In_HTML (Output, Form, User_Id);
 		elsif Tag = "joined" then
-			if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
+			if not Joined.Is_Null then
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "nojoined" then
-			if Joined = Ada.Strings.Unbounded.Null_Unbounded_String then
+			if Joined.Is_Null then
 				Web.Producers.Produce(Output, Template);
 			end if;
 		elsif Tag = "created" then
-			if Created /= Ada.Strings.Unbounded.Null_Unbounded_String then
+			if not Created.Is_Null then
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "creatable" then
-			if Joined = Ada.Strings.Unbounded.Null_Unbounded_String
-				and then Created = Ada.Strings.Unbounded.Null_Unbounded_String
-			then
+			if Joined.Is_Null and then Created.Is_Null then
 				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
 			end if;
 		elsif Tag = "activevillage" then
@@ -85,7 +83,7 @@ begin
 			if V.State < Tabula.Villages.Epilogue then
 				for J in V.People.Iterate loop
 					if V.People.Constant_Reference (J) = User_Id then
-						if Joined /= Ada.Strings.Unbounded.Null_Unbounded_String then
+						if not Joined.Is_Null then
 							Ada.Strings.Unbounded.Append(Joined, "、");
 						end if;
 						Ada.Strings.Unbounded.Append(Joined, V.Name);

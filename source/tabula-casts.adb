@@ -15,12 +15,12 @@ package body Tabula.Casts is
 	
 	function Is_Empty (Item : Person) return Boolean is
 	begin
-		return Item.Name = Ada.Strings.Unbounded.Null_Unbounded_String;
+		return Item.Name.Is_Null;
 	end Is_Empty;
 	
 	function Is_Empty (Item : Work) return Boolean is
 	begin
-		return Item.Name = Ada.Strings.Unbounded.Null_Unbounded_String;
+		return Item.Name.Is_Null;
 	end Is_Empty;
 	
 	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor is
