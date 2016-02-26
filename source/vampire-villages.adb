@@ -274,7 +274,11 @@ package body Vampire.Villages is
 		Escaped_Index : Natural;
 	begin
 		Append (Village.Escaped_People, Village.People.Constant_Reference (Subject));
-		Delete (Village.People, Subject);
+		declare
+			Position : People.Cursor := People.To_Cursor (Village.People, Subject);
+		begin
+			Delete (Village.People, Position);
+		end;
 		Escaped_Index := Village.Escaped_People.Last_Index;
 		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
 			declare
