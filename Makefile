@@ -126,7 +126,7 @@ clean:
 	-rm -rf *.build
 
 xfind:
-	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) $(FARGS) | sed 's/^$(subst /,\/,$(PWD))\///'
+	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) $(FARGS) | sed 's|^$(PWD)/||'
 
 xfindall: FARGS+=-r
 xfindall: xfind
