@@ -62,13 +62,13 @@ LARGS:=$(LARGS) -flto -fwhole-program
 endif
 
 ifeq ($(BUILD),debug)
-CARGS:=$(CARGS) -Og -ggdb -gnata
+CARGS:=$(CARGS) -ggdb -Og -fno-guess-branch-probability -gnata
 BARGS:=$(BARGS) -E
-LARGS:=$(LARGS) -ggdb
+LARGS:=$(LARGS) -ggdb -Og
 else
-CARGS:=$(CARGS) -Os -gnatB -gnatVn -ggdb1 -gnatn
+CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn
 BARGS:=$(BARGS) -E
-LARGS:=$(LARGS) -ggdb1
+LARGS:=$(LARGS) -ggdb1 -Os
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
