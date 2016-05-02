@@ -1,7 +1,9 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Vampire.Forms.Full;
 with Vampire.Forms.Mobile;
-function Vampire.Forms.Select_Form (
+package body Vampire.Forms.Selecting is
+
+function Select_Form (
 	Query_Strings : Web.Query_Strings;
 	Speeches_Per_Page : Positive)
 	return Root_Form_Type'Class is
@@ -11,4 +13,6 @@ begin
 	else
 		return Full.Form_Type'(Full.Create);
 	end if;
-end Vampire.Forms.Select_Form;
+end Select_Form;
+
+end Vampire.Forms.Selecting;

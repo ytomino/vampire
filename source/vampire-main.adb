@@ -13,7 +13,7 @@ with Tabula.Users.Lists;
 with Tabula.Casts.Load;
 with Tabula.Villages.Lists;
 with Vampire.Configurations;
-with Vampire.Forms.Select_Form;
+with Vampire.Forms.Selecting;
 with Vampire.Log;
 with Vampire.R3.Index_Page;
 with Vampire.R3.Message_Page;
@@ -92,7 +92,7 @@ begin
 		Query_Strings : Web.Query_Strings renames Web.Get_Query_Strings;
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
 		Post : Boolean renames Web.Post;
-		Form : Forms.Root_Form_Type'Class := Forms.Select_Form (
+		Form : Forms.Root_Form_Type'Class := Forms.Selecting.Select_Form (
 			Query_Strings,
 			Speeches_Per_Page => Configurations.Speeches_Per_Page);
 		procedure Refresh_Page is
