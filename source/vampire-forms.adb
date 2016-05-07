@@ -7,7 +7,8 @@ package body Vampire.Forms is
 	begin
 		-- "http://.../vampire/" -> ""
 		-- "http://localhost/vampire.cgi" -> "vampire.cgi"
-		return Ada.Hierarchical_File_Names.Simple_Name (Web.Request_Path);
+		return Ada.Hierarchical_File_Names.Unchecked_Simple_Name (
+			Web.Request_Path);
 	end Self;
 	
 	function Parameters_To_Base_Page (
