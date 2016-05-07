@@ -27,6 +27,7 @@ The Village of Vampire
   - users/
     
     - .htaccess (deny from all)
+    - +A/
     
   - villages/
     

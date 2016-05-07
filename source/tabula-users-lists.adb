@@ -46,6 +46,51 @@ package body Tabula.Users.Lists is
 		end;
 	end Add_To_Users_Log;
 	
+	Upper_Subdirectory_Name : constant String := "+A";
+	
+	function User_Full_Name (
+		Directory : String;
+		Id : String;
+		Only_Existing : Boolean := False)
+		return String
+	is
+		Lower_Name : constant String :=
+			Ada.Hierarchical_File_Names.Compose (
+				Directory => Directory,
+				Relative_Name => Id);
+	begin
+		if Ada.Directories.Exists (Lower_Name) then
+			return Lower_Name;
+		else
+			declare
+				Upper_Directory : constant String :=
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => Directory,
+						Relative_Name => Upper_Subdirectory_Name);
+				Upper_Name : constant String :=
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => Upper_Directory,
+						Relative_Name => Id);
+			begin
+				if Ada.Directories.Exists (Upper_Name) then
+					return Upper_Name;
+				else
+					if Only_Existing then
+						raise Ada.IO_Exceptions.Name_Error;
+					end if;
+					if Id (Id'First) in 'A' .. 'Z' then
+						if not Ada.Directories.Exists (Upper_Directory) then
+							Ada.Directories.Create_Directory (Upper_Directory);
+						end if;
+						return Upper_Name;
+					else
+						return Lower_Name;
+					end if;
+				end if;
+			end;
+		end if;
+	end User_Full_Name;
+	
 	-- implementation
 	
 	function Create (
@@ -62,10 +107,14 @@ package body Tabula.Users.Lists is
 	
 	function Exists (List : User_List; Id : String) return Boolean is
 	begin
-		return Ada.Directories.Exists (
-			Ada.Hierarchical_File_Names.Compose (
-				Directory => List.Directory.all,
-				Relative_Name => Id));
+		declare
+			Dummy_File_Name : constant String :=
+				User_Full_Name (List.Directory.all, Id, Only_Existing => True);
+		begin
+			return True;
+		end;
+	exception
+		when Ada.IO_Exceptions.Name_Error => return False;
 	end Exists;
 	
 	procedure Query (
@@ -83,11 +132,7 @@ package body Tabula.Users.Lists is
 		elsif not Exists (List, Id) then
 			State := Unknown;
 		else
-			Load (
-				Ada.Hierarchical_File_Names.Compose (
-					Directory => List.Directory.all,
-					Relative_Name => Id),
-				Info);
+			Load (User_Full_Name (List.Directory.all, Id), Info);
 			if Info.Password /= Digest (Password)
 				or else not Info.Renamed.Is_Null
 			then
@@ -141,11 +186,7 @@ package body Tabula.Users.Lists is
 					No_Log => False,
 					Renamed => Ada.Strings.Unbounded.Null_Unbounded_String);
 			begin
-				Save (
-					Ada.Hierarchical_File_Names.Compose (
-						Directory => List.Directory.all,
-						Relative_Name => Id),
-					Info);
+				Save (User_Full_Name (List.Directory.all, Id), Info);
 				Result := True;
 			end;
 		end if;
@@ -164,11 +205,7 @@ package body Tabula.Users.Lists is
 		Info.Last_Remote_Addr := +Remote_Addr;
 		Info.Last_Remote_Host := +Remote_Host;
 		Info.Last_Time := Now;
-		Save (
-			Ada.Hierarchical_File_Names.Compose (
-				Directory => List.Directory.all,
-				Relative_Name => Id),
-			Info);
+		Save (User_Full_Name (List.Directory.all, Id), Info);
 	end Update;
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map is
@@ -190,11 +227,7 @@ package body Tabula.Users.Lists is
 						declare
 							Info : User_Info;
 						begin
-							Load (
-								Ada.Hierarchical_File_Names.Compose (
-									Directory => List.Directory.all,
-									Relative_Name => Id),
-								Info);
+							Load (User_Full_Name (List.Directory.all, Id), Info);
 							User_Info_Maps.Include (Result, Id, Info);
 						end;
 					end if;
