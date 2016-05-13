@@ -498,8 +498,8 @@ package body Vampire.Villages.Teaming is
 				declare
 					S : constant Casts.Person_Sex := People.Constant_Reference(I).Sex;
 				begin
-					if (S = Casts.Male and Candidacy (I) = Sweetheart_F)
-						or else (S = Casts.Female and Candidacy (I) = Sweetheart_M)
+					if (S = Casts.Male and then Candidacy (I) = Sweetheart_F)
+						or else (S = Casts.Female and then Candidacy (I) = Sweetheart_M)
 					then
 						return Bad;
 					elsif Candidacy(I) = Lover then

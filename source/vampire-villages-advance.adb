@@ -535,7 +535,7 @@ begin
 				begin
 					for Position in People_Index loop
 						if Village.People.Constant_Reference(Position).Records.Constant_Reference(Village.Today).State = Normal
-							and not Village.People.Constant_Reference(Position).Commited
+							and then not Village.People.Constant_Reference(Position).Commited
 						then
 							case Village.People.Constant_Reference(Position).Role is
 								when Gremlin => null;
@@ -544,7 +544,7 @@ begin
 							end case;
 						end if;
 					end loop;
-					return (Vampire_Count = 0) or (Inhabitant_Count <= Vampire_Count);
+					return (Vampire_Count = 0) or else (Inhabitant_Count <= Vampire_Count);
 				end Finished;
 				Daytime_To_Vote, Vote_To_Night, Night_To_Daytime : Boolean := False;
 				Infection_In_First, Preliminary_Voting : Boolean := False;
@@ -594,7 +594,7 @@ begin
 							end if;
 						end if;
 				end case;
-				Changed := Daytime_To_Vote or Vote_To_Night or Night_To_Daytime;
+				Changed := Daytime_To_Vote or else Vote_To_Night or else Night_To_Daytime;
 				List_Changed := Vote_To_Night;
 				-- 初日感染
 				if Infection_In_First then

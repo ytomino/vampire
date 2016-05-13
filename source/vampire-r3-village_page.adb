@@ -371,17 +371,17 @@ is
 						return "あなたは探偵です。";
 					end if;
 				when Vampire.Villages.Astronomer =>
-					if Person.Commited and Setting.Target >= 0 then
+					if Person.Commited and then Setting.Target >= 0 then
 						return "あなたは天文家、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "の家の空を観測します。";
 					else
 						return "あなたは天文家です。";
 					end if;
 				when Vampire.Villages.Hunter =>
-					if Person.Commited and Setting.Target >= 0 and Setting.Special then
+					if Person.Commited and then Setting.Target >= 0 and then Setting.Special then
 						return "あなたは猟師、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を銀の弾丸で守ります。";
-					elsif Person.Commited and Setting.Target >= 0 then
+					elsif Person.Commited and then Setting.Target >= 0 then
 						return "あなたは猟師、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を守ります。";
-					elsif Person.Commited and Setting.Special then
+					elsif Person.Commited and then Setting.Special then
 						return "あなたは猟師、銃には銀の弾丸を装填しています。";
 					else
 						return "あなたは猟師です。";
@@ -410,7 +410,7 @@ is
 					declare
 						Mark : constant array(Vampire.Villages.Vampire_Role) of Character := ('K', 'Q', 'J');
 					begin
-						if Person.Commited and Setting.Target >= 0 then
+						if Person.Commited and then Setting.Target >= 0 then
 							return "あなたは吸血鬼(" & Mark(Person.Role) & ")、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を襲います。";
 						else
 							return "あなたは吸血鬼(" & Mark(Person.Role) & ")です。";
@@ -1246,7 +1246,7 @@ is
 												Vampire.Villages.Lover);
 										end if;
 									when Vampire.Villages.List =>
-										if Village.Today = Message.Day and Village.State >= Epilogue then
+										if Village.Today = Message.Day and then Village.State >= Epilogue then
 											Narration (Villages.Text.Fatalities (Village, Message.Day, Executed));
 											Narration (Villages.Text.People_In_Epilogure (Village));
 											Narration (Villages.Text.Result_In_Epilogure (Village));
@@ -1424,8 +1424,8 @@ is
 				end if;
 			end;
 		elsif Tag = "villagepanel" then
-			if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and Village.Today = Day)
-				or else (User_Id /= "" and Village.State = Prologue)
+			if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and then Village.Today = Day)
+				or else (User_Id /= "" and then Village.State = Prologue)
 			then
 				if Village.State = Closed then
 					Web.Producers.Produce(Output, Template, "closed");
@@ -1679,7 +1679,7 @@ is
 													String'Write (Output, "<div>");
 													if Village.Time = Night then
 														Forms.Write_In_HTML (Output, Form, "夜は行動できません。");
-													elsif Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and Day <= 1 then
+													elsif Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and then Day <= 1 then
 														Forms.Write_In_HTML (Output, Form, "地主さんを調査しています。");
 													else
 														Forms.Write_In_HTML (Output, Form, "まだ村人に被害者はいません。");

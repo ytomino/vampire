@@ -715,7 +715,7 @@ begin
 															Selected_Work : Casts.Work
 																renames Cast.Works.Constant_Reference (Joining.Work_Index);
 														begin
-															if Person_Template.Name = "" or Selected_Work.Name = "" then
+															if Person_Template.Name = "" or else Selected_Work.Name = "" then
 																Message_Page ("選択した顔または肩書きは既に他の方に取られています。");
 															elsif Selected_Work.Sex /= Casts.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
 																Message_Page ("性別と肩書きが一致しません。");
