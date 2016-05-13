@@ -1,9 +1,12 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
+with Ada.Characters.Latin_1;
 with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
 with System.Debug;
 package body Tabula.Debug is
+	
+	Line_Break : constant Character := Ada.Characters.Latin_1.LF;
 	
 	Name : Static_String_Access;
 	File : Ada.Streams.Stream_IO.File_Type;
@@ -21,7 +24,7 @@ package body Tabula.Debug is
 			Stream : Ada.Streams.Stream_IO.Stream_Access :=
 				Ada.Streams.Stream_IO.Stream (File);
 		begin
-			String'Write (Stream, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----" & ASCII.LF);
+			String'Write (Stream, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----" & Line_Break);
 		end;
 	end Start;
 	
@@ -38,7 +41,7 @@ package body Tabula.Debug is
 			Stream : Ada.Streams.Stream_IO.Stream_Access :=
 				Ada.Streams.Stream_IO.Stream (File);
 		begin
-			String'Write (Stream, Source_Location & ": (" & Enclosing_Entity & ") " & S & ASCII.LF);
+			String'Write (Stream, Source_Location & ": (" & Enclosing_Entity & ") " & S & Line_Break);
 		end;
 		return True;
 	end Put;

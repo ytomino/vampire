@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
+with Ada.Characters.Latin_1;
 with Ada.Hierarchical_File_Names;
 with Ada.Numerics.Distributions;
 with Ada.Numerics.MT19937;
@@ -38,7 +39,7 @@ is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Forms.Template_Set_Type;
 	
-	Line_Break : constant Character := ASCII.LF;
+	Line_Break : constant Character := Ada.Characters.Latin_1.LF;
 	
 	procedure Rule_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

@@ -1,7 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Characters.Latin_1;
 package body Vampire.Villages.Text is
 	
-	Line_Break : constant Character := ASCII.LF;
+	Line_Break : constant Character := Ada.Characters.Latin_1.LF;
 	
 	-- 配役
 	

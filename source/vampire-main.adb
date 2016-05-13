@@ -1,5 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
+with Ada.Characters.Latin_1;
 with Ada.Environment_Variables;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
@@ -1254,7 +1255,7 @@ exception
 		begin
 			Ada.Debug.Put (Message);
 			String'Write(Output, Message);
-			Character'Write (Output, ASCII.LF);
+			Character'Write (Output, Ada.Characters.Latin_1.LF);
 		end;
 	when E : others =>
 		Web.Header_Content_Type (Output, Web.Text_Plain);
@@ -1264,6 +1265,6 @@ exception
 		begin
 			Ada.Debug.Put (Message);
 			String'Write (Output, Message);
-			Character'Write (Output, ASCII.LF);
+			Character'Write (Output, Ada.Characters.Latin_1.LF);
 		end;
 end Vampire.Main;
