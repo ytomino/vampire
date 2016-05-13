@@ -981,7 +981,7 @@ begin
 					end if;
 					-- 恋人
 					declare
-						procedure Love_Process(Lover_Role, Loved_Role : Person_Role) is
+						procedure Love_Process(Lover_Role, Loved_Role : in Person_Role) is
 							Lover_Person : constant Person_Index'Base := Find_Superman(Village, Lover_Role);
 							Loved_Person : constant Person_Index'Base := Find_Superman(Village, Loved_Role);
 						begin

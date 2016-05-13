@@ -23,7 +23,7 @@ package body Tabula.Villages is
 	
 	function Joined (Village : Village_Type; User_Id : String) return Person_Index'Base is
 		Result : Person_Index'Base := No_Person;
-		procedure Process (Index : Person_Index; Item : in Person_Type'Class) is
+		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
 			if Item.Id = User_Id then
 				Result := Index;
@@ -40,7 +40,7 @@ package body Tabula.Villages is
 		Sex : Casts.Person_Sex) return Boolean
 	is
 		Result : Boolean := False;
-		procedure Process (Index : Person_Index; Item : in Person_Type'Class) is
+		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
 			if Item.Id = User_Id and then Item.Sex /= Sex then
 				Result := True;
@@ -53,7 +53,7 @@ package body Tabula.Villages is
 	
 	function Male_And_Female (Village : Village_Type) return Boolean is
 		Existing : array (Casts.Person_Sex) of Boolean := (False, False);
-		procedure Process (Index : Person_Index; Item : in Person_Type'Class) is
+		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
 			Existing (Item.Sex) := True;
 		end Process;
@@ -62,8 +62,8 @@ package body Tabula.Villages is
 		return Existing (Casts.Male) and then Existing (Casts.Female);
 	end Male_And_Female;
 	
-	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : Village_Type) is
-		procedure Process (Index : Person_Index; Item : in Person_Type'Class) is
+	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : in Village_Type) is
+		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
 			-- remove all duplicated characters
 			Casts.Exclude_Person (Cast, Item.Name.Constant_Reference, Item.Group);

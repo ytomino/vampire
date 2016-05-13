@@ -233,7 +233,7 @@ package body Vampire.Villages.Text is
 		Detective, Astronomer, Doctor, Hunter, Sweetheart, Lover, Unfortunate, Servant, Gremlin : Boolean := False;
 		Vampire_Count : Natural := 0;
 		Village_Side_Capabilityperson : Natural := 0;
-		procedure Countup (Role : Person_Role) is
+		procedure Countup (Role : in Person_Role) is
 		begin
 			case Role is
 				when Villages.Detective =>

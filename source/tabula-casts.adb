@@ -33,7 +33,7 @@ package body Tabula.Casts is
 		return Casts.Works.No_Element;
 	end Find;
 	
-	procedure Exclude_Person (Cast : in out Casts.Cast_Collection; Name : String; Group : Integer) is
+	procedure Exclude_Person (Cast : in out Casts.Cast_Collection; Name : in String; Group : in Integer) is
 	begin
 		for IP in Cast.People.First_Index .. Cast.People.Last_Index loop
 			if Cast.People.Constant_Reference(IP).Name = Name or else Cast.People.Constant_Reference(IP).Group /= Group then
@@ -42,7 +42,7 @@ package body Tabula.Casts is
 		end loop;
 	end Exclude_Person;
 	
-	procedure Exclude_Work (Cast : in out Casts.Cast_Collection; Name : String) is
+	procedure Exclude_Work (Cast : in out Casts.Cast_Collection; Name : in String) is
 	begin
 		for IW in Cast.Works.First_Index .. Cast.Works.Last_Index loop
 			if Cast.Works.Constant_Reference(IW).Name = Name then

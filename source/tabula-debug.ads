@@ -2,6 +2,6 @@
 with Ada.Calendar;
 package Tabula.Debug is
 	
-	procedure Hook (Name : not null Static_String_Access; Time : Ada.Calendar.Time);
+	procedure Hook (Name : not null Static_String_Access; Time : in Ada.Calendar.Time);
 	
 end Tabula.Debug;

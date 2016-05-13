@@ -73,7 +73,7 @@ package body Tabula.Villages.Lists is
 		Ada.Streams.Stream_IO.Close (File);
 	end Cache_Summaries;
 	
-	procedure Read_Summaries (List : in out Village_List; Update_Cache : Boolean) is
+	procedure Read_Summaries (List : in out Village_List; Update_Cache : in Boolean) is
 	begin
 		if not List.Map_Read then
 			if Ada.Directories.Exists (List.Cache_File_Name.all) then
@@ -132,7 +132,7 @@ package body Tabula.Villages.Lists is
 			People => Empty_List)
 		do
 			declare
-				procedure Process (Index : Person_Index; Item : Person_Type'Class) is
+				procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 				begin
 				   Append (Result.People, Item.Id.Constant_Reference);
 				end Process;

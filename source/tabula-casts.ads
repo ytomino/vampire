@@ -69,7 +69,7 @@ package Tabula.Casts is
 		Works : aliased Casts.Works.Vector;
 	end record;
 	
-	procedure Exclude_Person (Cast : in out Cast_Collection; Name : String; Group : Integer);
-	procedure Exclude_Work (Cast : in out Cast_Collection; Name : String);
+	procedure Exclude_Person (Cast : in out Cast_Collection; Name : in String; Group : in Integer);
+	procedure Exclude_Work (Cast : in out Cast_Collection; Name : in String);
 	
 end Tabula.Casts;

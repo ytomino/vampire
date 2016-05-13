@@ -929,7 +929,7 @@ is
 						Text => Message.Text.Constant_Reference,
 						Filter => Filter.Constant_Reference);
 				end Speech;
-				procedure Note (Subject : Vampire.Villages.Person_Type; Rec : Vampire.Villages.Person_Record; Class : String) is
+				procedure Note (Subject : in Vampire.Villages.Person_Type; Rec : in Vampire.Villages.Person_Record; Class : in String) is
 					Silence : aliased constant String := "……。";
 					Text : access constant String := Rec.Note.Constant_Reference.Element;
 				begin

@@ -29,9 +29,9 @@ package body Tabula.Debug is
 	end Start;
 	
 	function Put (
-		S : String;
-		Source_Location : String;
-		Enclosing_Entity : String)
+		S : in String;
+		Source_Location : in String;
+		Enclosing_Entity : in String)
 		return Boolean is
 	begin
 		if not Ada.Streams.Stream_IO.Is_Open (File) then
@@ -46,7 +46,7 @@ package body Tabula.Debug is
 		return True;
 	end Put;
 	
-	procedure Hook (Name : not null Static_String_Access; Time : Ada.Calendar.Time) is
+	procedure Hook (Name : not null Static_String_Access; Time : in Ada.Calendar.Time) is
 	begin
 		Debug.Name := Name;
 		Debug.Time := Time;

@@ -65,7 +65,7 @@ package body Vampire.Villages.Village_IO is
 		IO (Serializer, Name, People, People_Callback'Access);
 	end IO;
 	
-	procedure IO (Serializer : not null access Serialization.Serializer; Name : String; Messages : in out Villages.Messages.Vector) is
+	procedure IO (Serializer : not null access Serialization.Serializer; Name : in String; Messages : in out Villages.Messages.Vector) is
 		use Serialization;
 		use Message_Kind_IO;
 		use Calendar.Time_IO;

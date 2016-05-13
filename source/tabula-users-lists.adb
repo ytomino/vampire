@@ -209,7 +209,7 @@ package body Tabula.Users.Lists is
 	end Update;
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map is
-		procedure Add (Result : in out User_Info_Maps.Map; Directory : String) is
+		procedure Add (Result : in out User_Info_Maps.Map; Directory : in String) is
 			Search : Ada.Directories.Search_Type;
 			File : Ada.Directories.Directory_Entry_Type;
 		begin
@@ -258,7 +258,7 @@ package body Tabula.Users.Lists is
 		Result : out Natural)
 	is
 		Muramura_Set : Users_Log.Map;
-		procedure Process (Position : Users_Log.Cursor) is
+		procedure Process (Position : in Users_Log.Cursor) is
 		begin
 			if Now - Users_Log.Element(Position) <= Muramura_Duration then
 				declare
