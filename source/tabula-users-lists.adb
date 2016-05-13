@@ -209,13 +209,13 @@ package body Tabula.Users.Lists is
 	end Update;
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map is
-		Search : Ada.Directories.Search_Type;
-		File : Ada.Directories.Directory_Entry_Type;
-	begin
-		return Result : User_Info_Maps.Map do
+		procedure Add (Result : in out User_Info_Maps.Map; Directory : String) is
+			Search : Ada.Directories.Search_Type;
+			File : Ada.Directories.Directory_Entry_Type;
+		begin
 			Ada.Directories.Start_Search (
 				Search,
-				List.Directory.all,
+				Directory,
 				"*",
 				Filter => (Ada.Directories.Ordinary_File => True, others => False));
 			while Ada.Directories.More_Entries(Search) loop
@@ -234,6 +234,20 @@ package body Tabula.Users.Lists is
 				end;
 			end loop;
 			Ada.Directories.End_Search(Search);
+		end Add;
+	begin
+		return Result : User_Info_Maps.Map do
+			Add (Result, List.Directory.all);
+			declare
+				Upper_Directory : constant String :=
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => List.Directory.all,
+						Relative_Name => Upper_Subdirectory_Name);
+			begin
+				if Ada.Directories.Exists (Upper_Directory) then
+					Add (Result, Upper_Directory);
+				end if;
+			end;
 		end return;
 	end All_Users;
 	
