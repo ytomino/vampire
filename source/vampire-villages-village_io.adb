@@ -9,14 +9,6 @@ package body Vampire.Villages.Village_IO is
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	procedure IO (Serializer : not null access Serialization.Serializer; Name : in String; People : in out Villages.People.Vector) is
-		package Person_Records_IO is new Serialization.IO_List (
-			Cursor => Villages.Person_Records.Cursor,
-			Element_Type => Person_Record,
-			Container_Type => Villages.Person_Records.Vector,
-			Reference_Type => Villages.Person_Records.Reference_Type,
-			Default => Default_Person_Record,
-			Has_Element => Villages.Person_Records.Has_Element,
-			Next => Villages.Person_Records.Cursor'Succ);
 		package People_IO is new Serialization.IO_List (
 			Cursor => Villages.People.Cursor,
 			Element_Type => Person_Type,
@@ -26,7 +18,6 @@ package body Vampire.Villages.Village_IO is
 			Has_Element => Villages.People.Has_Element,
 			Next => Villages.People.Cursor'Succ);
 		use Serialization;
-		use Person_Records_IO;
 		use Person_Role_IO;
 		use Person_State_IO;
 		use Requested_Role_IO;
@@ -46,6 +37,15 @@ package body Vampire.Villages.Village_IO is
 					IO (Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
 				end loop;
 			end Person_Records_Callback;
+			package Person_Records_IO is new Serialization.IO_List (
+				Cursor => Villages.Person_Records.Cursor,
+				Element_Type => Person_Record,
+				Container_Type => Villages.Person_Records.Vector,
+				Reference_Type => Villages.Person_Records.Reference_Type,
+				Default => Default_Person_Record,
+				Has_Element => Villages.Person_Records.Has_Element,
+				Next => Villages.Person_Records.Cursor'Succ);
+			use Person_Records_IO;
 		begin
 			for P in IO (Serializer) loop
 				IO (Serializer, "id", Item.Id);
