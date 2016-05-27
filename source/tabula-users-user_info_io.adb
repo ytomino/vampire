@@ -9,8 +9,8 @@ package body Tabula.Users.User_Info_IO is
 		use Serialization;
 		use Tabula.Calendar.Time_IO;
 		use Password_Digest_IO;
-		procedure Callback is
-		begin
+	begin
+		for P in IO (Serializer) loop
 			IO (Serializer, "password", Value.Password);
 			IO (Serializer, "remote-addr", Value.Creation_Remote_Addr);
 			IO (Serializer, "remote-host", Value.Creation_Remote_Host);
@@ -22,9 +22,7 @@ package body Tabula.Users.User_Info_IO is
 			IO (Serializer, "disallow-new-village", Value.Disallow_New_Village, Default => False);
 			IO (Serializer, "no-log", Value.No_Log, Default => False);
 			IO (Serializer, "renamed", Value.Renamed, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
-		end Callback;
-	begin
-		IO (Serializer, Callback'Access);
+		end loop;
 	end IO;
 	
 end Tabula.Users.User_Info_IO;

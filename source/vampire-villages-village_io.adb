@@ -34,22 +34,20 @@ package body Vampire.Villages.Village_IO is
 		use Calendar.Time_IO;
 		use Casts.Cast_IO;
 		procedure People_Callback (Serializer : not null access Serialization.Serializer; Item : in out Person_Type) is
-			procedure Person_Callback is
-				procedure Person_Records_Callback (Serializer : not null access Serialization.Serializer; Item : in out Person_Record) is
-					procedure Person_Record_Callback is
-					begin
-						IO (Serializer, "state", Item.State);
-						IO (Serializer, "vote", Item.Vote, Default => Default_Person_Record.Vote);
-						IO (Serializer, "provisional-vote", Item.Provisional_Vote, Default => Default_Person_Record.Provisional_Vote);
-						IO (Serializer, "candidate", Item.Candidate, Default => Default_Person_Record.Candidate);
-						IO (Serializer, "target", Item.Target, Default => Default_Person_Record.Target);
-						IO (Serializer, "special", Item.Special, Default => Default_Person_Record.Special);
-						IO (Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
-					end Person_Record_Callback;
-				begin
-					IO (Serializer, Person_Record_Callback'Access);
-				end Person_Records_Callback;
+			procedure Person_Records_Callback (Serializer : not null access Serialization.Serializer; Item : in out Person_Record) is
 			begin
+				for P in IO (Serializer) loop
+					IO (Serializer, "state", Item.State);
+					IO (Serializer, "vote", Item.Vote, Default => Default_Person_Record.Vote);
+					IO (Serializer, "provisional-vote", Item.Provisional_Vote, Default => Default_Person_Record.Provisional_Vote);
+					IO (Serializer, "candidate", Item.Candidate, Default => Default_Person_Record.Candidate);
+					IO (Serializer, "target", Item.Target, Default => Default_Person_Record.Target);
+					IO (Serializer, "special", Item.Special, Default => Default_Person_Record.Special);
+					IO (Serializer, "note", Item.Note, Default => Default_Person_Record.Note);
+				end loop;
+			end Person_Records_Callback;
+		begin
+			for P in IO (Serializer) loop
 				IO (Serializer, "id", Item.Id);
 				IO_Partial (Serializer, Item);
 				IO (Serializer, "request", Item.Request);
@@ -57,9 +55,7 @@ package body Vampire.Villages.Village_IO is
 				IO (Serializer, "ignore-request", Item.Ignore_Request, Default => Empty_Person.Ignore_Request);
 				IO (Serializer, "records", Item.Records, Person_Records_Callback'Access);
 				IO (Serializer, "commited", Item.Commited);
-			end Person_Callback;
-		begin
-			IO (Serializer, Person_Callback'Access);
+			end loop;
 		end People_Callback;
 	begin
 		IO (Serializer, Name, People, People_Callback'Access);
@@ -70,17 +66,15 @@ package body Vampire.Villages.Village_IO is
 		use Message_Kind_IO;
 		use Calendar.Time_IO;
 		procedure Messages_Callback (Serializer : not null access Serialization.Serializer; Item : in out Message) is
-			procedure Message_Callback is
-			begin
+		begin
+			for P in IO (Serializer) loop
 				IO (Serializer, "day", Item.Day);
 				IO (Serializer, "time", Item.Time);
 				IO (Serializer, "kind", Item.Kind);
 				IO (Serializer, "subject", Item.Subject, Default => Default_Message.Subject);
 				IO (Serializer, "target", Item.Target, Default => Default_Message.Target);
 				IO (Serializer, "text", Item.Text, Default => Default_Message.Text);
-			end Message_Callback;
-		begin
-			IO (Serializer, Message_Callback'Access);
+			end loop;
 		end Messages_Callback;
 		use Villages.Messages;
 		package Messages_IO is new Serialization.IO_List (
@@ -115,14 +109,19 @@ package body Vampire.Villages.Village_IO is
 		use Doctor_Infected_IO;
 		use Formation_IO;
 		use Obsolete_Teaming_IO;
-		procedure Root_Callback is
-			procedure Appearance_Callback is
-			begin
-				for I in Village.Appearance'Range loop
-					IO (Serializer, Person_Role'Image (I), Village.Appearance (I));
-				end loop;
-			end Appearance_Callback;
+		procedure IO (
+			Serializer: not null access Serialization.Serializer;
+			Name : in String;
+			Item : in out Role_Appearances) is
 		begin
+			for P in IO (Serializer, Name) loop
+				for I in Village.Appearance'Range loop
+					IO (Serializer, Person_Role'Image (I), Item (I));
+				end loop;
+			end loop;
+		end IO;
+	begin
+		for P in IO (Serializer) loop
 			-- inherited
 			IO (Serializer, "name", Village.Name);
 			IO (Serializer, "by", Village.By, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
@@ -149,7 +148,7 @@ package body Vampire.Villages.Village_IO is
 			IO (Serializer, "unfortunate", Village.Unfortunate, Default => None);
 			IO (Serializer, "teaming", Village.Obsolete_Teaming); -- 記録用
 			if Serializer.Direction = Reading or else Village.Appearance /= Role_Appearances'(others => Random) then
-				IO (Serializer, "appearance", Appearance_Callback'Access);
+				IO (Serializer, "appearance", Village.Appearance);
 			end if;
 			if Serializer.Direction = Reading or else Village.Execution = Dummy_Killed_And_From_First then
 				IO (Serializer, "dummy-role", Village.Dummy_Role);
@@ -161,9 +160,7 @@ package body Vampire.Villages.Village_IO is
 			if not Info_Only then
 				IO (Serializer, "messages", Village.Messages);
 			end if;
-		end Root_Callback;
-	begin
-		IO (Serializer, Root_Callback'Access);
+		end loop;
 	end IO;
 	
 end Vampire.Villages.Village_IO;

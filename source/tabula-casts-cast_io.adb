@@ -47,44 +47,36 @@ package body Tabula.Casts.Cast_IO is
 		use Groups_IO;
 		use People_IO;
 		use Works_IO;
-		procedure Root_Callback is
-			procedure Groups_Callback (Serializer: not null access Serialization.Serializer; Item : in out Group) is
-				procedure Group_Callback is
-				begin
-					IO (Serializer, "name", Item.Name);
-					IO (Serializer, "by", Item.By);
-					IO (Serializer, "width", Item.Width);
-					IO (Serializer, "height", Item.Height);
-					IO (Serializer, "group", Item.Group);
-				end Group_Callback;
-			begin
-				IO (Serializer, Group_Callback'Access);
-			end Groups_Callback;
-			procedure People_Callback (Serializer: not null access Serialization.Serializer; Item : in out Person) is
-				procedure Person_Callback is
-				begin
-					IO_Partial (Serializer, Item);
-				end Person_Callback;
-			begin
-				IO (Serializer, Person_Callback'Access);
-			end People_Callback;
-			procedure Works_Callback (Serializer: not null access Serialization.Serializer; Item : in out Work) is
-				procedure Work_Callback is
-				begin
-					IO (Serializer, "name", Item.Name);
-					IO (Serializer, "sex", Item.Sex);
-					IO (Serializer, "nominated", Item.Nominated);
-				end Work_Callback;
-			begin
-				IO (Serializer, Work_Callback'Access);
-			end Works_Callback;
+		procedure Groups_Callback (Serializer: not null access Serialization.Serializer; Item : in out Group) is
 		begin
+			for P in IO (Serializer) loop
+				IO (Serializer, "name", Item.Name);
+				IO (Serializer, "by", Item.By);
+				IO (Serializer, "width", Item.Width);
+				IO (Serializer, "height", Item.Height);
+				IO (Serializer, "group", Item.Group);
+			end loop;
+		end Groups_Callback;
+		procedure People_Callback (Serializer: not null access Serialization.Serializer; Item : in out Person) is
+		begin
+			for P in IO (Serializer) loop
+				IO_Partial (Serializer, Item);
+			end loop;
+		end People_Callback;
+		procedure Works_Callback (Serializer: not null access Serialization.Serializer; Item : in out Work) is
+		begin
+			for P in IO (Serializer) loop
+				IO (Serializer, "name", Item.Name);
+				IO (Serializer, "sex", Item.Sex);
+				IO (Serializer, "nominated", Item.Nominated);
+			end loop;
+		end Works_Callback;
+	begin
+		for P in IO (Serializer) loop
 			IO (Serializer, "groups", Item.Groups, Groups_Callback'Access);
 			IO (Serializer, "people", Item.People, People_Callback'Access);
 			IO (Serializer, "works", Item.Works, Works_Callback'Access);
-		end Root_Callback;
-	begin
-		IO (Serializer, Root_Callback'Access);
+		end loop;
 	end IO;
 	
 end Tabula.Casts.Cast_IO;
