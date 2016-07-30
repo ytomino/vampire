@@ -12,7 +12,7 @@ package body Tabula.Users is
 	
 	function Valid_Id_String (Id : String) return Boolean is
 	begin
-		if Id = "" then
+		if Id'Length = 0 then
 			return False;
 		end if;
 		for I in Id'Range loop

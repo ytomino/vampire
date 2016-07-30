@@ -115,7 +115,8 @@ begin
 		if Web.Lock_Files.Forced (Lock) then
 			Ada.Debug.Put ("forced to remove lock-file.");
 		end if;
-		if Post and then (Remote_Host = "" or else Remote_Host = Remote_Addr)
+		if Post
+			and then (Remote_Host'Length = 0 or else Remote_Host = Remote_Addr)
 			and then Remote_Addr /= "127.0.0.1" -- localhost
 			and then Remote_Addr /= "::1" -- IPv6 localhost
 		then
@@ -387,7 +388,7 @@ begin
 									declare
 										Village_Name : constant String := Form.Get_New_Village_Name (Inputs);
 									begin
-										if Village_Name = "" then
+										if Village_Name'Length = 0 then
 											Web.Header_Content_Type (Output, Web.Text_HTML);
 											Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 											Web.Header_Break (Output);
@@ -485,7 +486,7 @@ begin
 					end if;
 				elsif Base_Page /= Forms.Village_Page then
 					-- index page, user page, all users page
-					if Cmd = "" then
+					if Cmd'Length = 0 then
 						if Post then
 							Refresh_Page;
 						elsif Base_Page = Forms.User_Page then
@@ -605,7 +606,7 @@ begin
 					begin
 						Villages.Load (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 						-- Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
-						if Cmd = "" then
+						if Cmd'Length = 0 then
 							if Post then
 								Refresh_Page;
 							else
@@ -716,7 +717,9 @@ begin
 															Selected_Work : Casts.Work
 																renames Cast.Works.Constant_Reference (Joining.Work_Index);
 														begin
-															if Person_Template.Name = "" or else Selected_Work.Name = "" then
+															if Person_Template.Name.Is_Null
+																or else Selected_Work.Name.Is_Null
+															then
 																Message_Page ("選択した顔または肩書きは既に他の方に取られています。");
 															elsif Selected_Work.Sex /= Casts.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
 																Message_Page ("性別と肩書きが一致しません。");
@@ -864,7 +867,7 @@ begin
 										Said : Villages.Message_Counts
 											renames Villages.Count_Messages(Village, Village.Today);
 									begin
-										if Target < 0 or else Action = "" then
+										if Target < 0 or else Action'Length = 0 then
 											Message_Page ("アクションの対象と行動を選んでください。");
 										elsif Action = "wake" then
 											if Said(Player).Wake > 0 then
@@ -1051,7 +1054,7 @@ begin
 													User_Id => User_Id,
 													User_Password => User_Password);
 											else
-												if Text /= "" then
+												if Text'Length /= 0 then
 													Villages.Monologue (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												end if;
@@ -1091,7 +1094,7 @@ begin
 													User_Id => User_Id,
 													User_Password => User_Password);
 											else
-												if Text /= "" then
+												if Text'Length /= 0 then
 													Villages.Ghost (Village, Player, Text, Now);
 													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
 												end if;

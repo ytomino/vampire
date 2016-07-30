@@ -66,7 +66,7 @@ begin
 						if I_Ref.Remote_Addr = J_Ref.Remote_Addr
 							or else (
 								I_Ref.Remote_Host = J_Ref.Remote_Host
-								and then J_Ref.Remote_Host /= "")
+								and then not J_Ref.Remote_Host.Is_Null)
 						then
 							Put (I_Ref.Id.Constant_Reference);
 							Put (',');

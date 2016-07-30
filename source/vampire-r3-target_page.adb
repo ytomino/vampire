@@ -61,7 +61,7 @@ is
 						Form,
 						Villages.Text.Name (Target_Person) & "を診察しますか？");
 				when Villages.Detective =>
-					if Target_Person.Records.Constant_Reference(Village.Today).Note = "" then
+					if Target_Person.Records.Constant_Reference (Village.Today).Note.Is_Null then
 						Forms.Write_In_HTML (
 							Output,
 							Form,

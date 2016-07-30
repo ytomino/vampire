@@ -178,7 +178,7 @@ package body Vampire.Forms.Full is
 	is
 		Message_Range : Villages.Message_Range_Type;
 	begin
-		if Web.Element (Query_Strings, "range") = "" then
+		if String'(Web.Element (Query_Strings, "range"))'Length = 0 then
 			Message_Range := Village.Recent_Only_Message_Range (Day, Now => Now);
 		else
 			Message_Range := Village.Message_Range (Day);

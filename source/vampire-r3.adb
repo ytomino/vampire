@@ -131,7 +131,11 @@ package body Vampire.R3 is
 			new String'("logoff"),
 			new String'("logon"));
 	begin
-		Web.Producers.Produce (Output, Template, Extract (User_Id /= "").all, Handler => Handle'Access);
+		Web.Producers.Produce (
+			Output,
+			Template,
+			Extract (User_Id'Length /= 0).all,
+			Handler => Handle'Access);
 	end Handle_User_Panel;
 	
 	procedure Handle_Village_List (

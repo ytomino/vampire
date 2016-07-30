@@ -933,7 +933,7 @@ is
 					Silence : aliased constant String := "……。";
 					Text : access constant String := Rec.Note.Constant_Reference.Element;
 				begin
-					if Text.all = "" then
+					if Text'Length = 0 then
 						Text := Silence'Access;
 					end if;
 					R3.Handle_Speech (
@@ -1426,7 +1426,7 @@ is
 			end;
 		elsif Tag = "villagepanel" then
 			if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and then Village.Today = Day)
-				or else (User_Id /= "" and then Village.State = Prologue)
+				or else (User_Id'Length /= 0 and then Village.State = Prologue)
 			then
 				if Village.State = Closed then
 					Web.Producers.Produce(Output, Template, "closed");

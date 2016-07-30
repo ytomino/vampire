@@ -127,7 +127,7 @@ package body Tabula.Users.Lists is
 		Info : out User_Info;
 		State : out User_State) is
 	begin
-		if Id = "" then
+		if Id'Length = 0 then
 			State := Log_Off;
 		elsif not Exists (List, Id) then
 			State := Unknown;

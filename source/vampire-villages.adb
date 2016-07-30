@@ -1001,7 +1001,7 @@ package body Vampire.Villages is
 				V : Village_Type renames Village_Type (Village);
 			begin
 				pragma Assert (V'Access = Item.Village);
-				if Value /= "" and then Available (Item) then
+				if Value'Length /= 0 and then Available (Item) then
 					V.Day_Duration := Duration'Value (Value);
 				end if;
 			end Change;
@@ -1053,7 +1053,7 @@ package body Vampire.Villages is
 				V : Village_Type renames Village_Type (Village);
 			begin
 				pragma Assert (V'Access = Item.Village);
-				if Value /= "" and then Available (Item) then
+				if Value'Length /= 0 and then Available (Item) then
 					V.Night_Duration := Duration'Value (Value);
 				end if;
 			end Change;
