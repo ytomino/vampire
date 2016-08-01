@@ -258,21 +258,19 @@ package body Tabula.Users.Lists is
 		Result : out Natural)
 	is
 		Muramura_Set : Users_Log.Map;
-		procedure Process (Position : in Users_Log.Cursor) is
-		begin
-			if Now - Users_Log.Element(Position) <= Muramura_Duration then
+	begin
+		Load_Users_Log (List);
+		for I in List.Log.Iterate loop
+			if Now - Users_Log.Element (I) <= Muramura_Duration then
 				declare
-					Item : User_Log_Item := (Users_Log.Key(Position).Id,
+					Item : User_Log_Item := (Users_Log.Key (I).Id,
 						Ada.Strings.Unbounded.Null_Unbounded_String,
 						Ada.Strings.Unbounded.Null_Unbounded_String);
 				begin
 					Users_Log.Include (Muramura_Set, Item, Now);
 				end;
 			end if;
-		end Process;
-	begin
-		Load_Users_Log (List);
-		Users_Log.Iterate (List.Log, Process'Access);
+		end loop;
 		Result := Muramura_Set.Length;
 	end Muramura_Count;
 	
@@ -297,20 +295,20 @@ package body Tabula.Users.Lists is
 			Id : in String;
 			Remote_Addr : in String;
 			Remote_Host : in String;
-			Time : in Ada.Calendar.Time))
-	is
-		procedure Thunk (Position : in Users_Log.Cursor) is
-			Key : User_Log_Item renames Users_Log.Key (Position);
-		begin
-			Process (
-				Id => Key.Id.Constant_Reference,
-				Remote_Addr => Key.Remote_Addr.Constant_Reference,
-				Remote_Host => Key.Remote_Host.Constant_Reference,
-				Time => List.Log.Constant_Reference (Position));
-		end Thunk;
+			Time : in Ada.Calendar.Time)) is
 	begin
 		Load_Users_Log (List);
-		Users_Log.Iterate (List.Log, Thunk'Access);
+		for I in List.Log.Iterate loop
+			declare
+				Key : User_Log_Item renames Users_Log.Key (I);
+			begin
+				Process (
+					Id => Key.Id.Constant_Reference,
+					Remote_Addr => Key.Remote_Addr.Constant_Reference,
+					Remote_Host => Key.Remote_Host.Constant_Reference,
+					Time => List.Log.Constant_Reference (I));
+			end;
+		end loop;
 	end Iterate_Log;
 	
 end Tabula.Users.Lists;
