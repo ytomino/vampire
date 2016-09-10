@@ -57,8 +57,8 @@ LARGS:=$(LARGS) -Xlinker --gc-sections
 endif
 endif
 ifeq ($(LINK),lto)
-CARGS:=$(CARGS) -flto -fwhole-program
-LARGS:=$(LARGS) -flto -fwhole-program
+CARGS:=$(CARGS) -flto
+LARGS:=$(LARGS) -flto
 endif
 
 ifeq ($(BUILD),debug)
