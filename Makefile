@@ -58,7 +58,10 @@ endif
 endif
 ifeq ($(LINK),lto)
 CARGS:=$(CARGS) -flto
-LARGS:=$(LARGS) -flto
+LARGS:=$(LARGS) -flto -Xlinker --gc-sections
+ifneq ($(filter -lgcc_eh,$(LARGS)),)
+LARGS:=$(filter-out -lgcc_eh,$(LARGS)) -static-libgcc
+endif
 endif
 
 ifeq ($(BUILD),debug)
