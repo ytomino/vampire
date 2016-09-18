@@ -210,8 +210,7 @@ package body Tabula.Users.Lists is
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map is
 		procedure Add (Result : in out User_Info_Maps.Map; Directory : in String) is
-			Search : Ada.Directories.Search_Type;
-			File : Ada.Directories.Directory_Entry_Type;
+			Search : aliased Ada.Directories.Search_Type;
 		begin
 			Ada.Directories.Start_Search (
 				Search,
@@ -219,8 +218,9 @@ package body Tabula.Users.Lists is
 				"*",
 				Filter => (Ada.Directories.Ordinary_File => True, others => False));
 			while Ada.Directories.More_Entries(Search) loop
-				Ada.Directories.Get_Next_Entry(Search, File);
 				declare
+					File : Ada.Directories.Directory_Entry_Type
+						renames Ada.Directories.Look_Next_Entry (Search);
 					Id : String := Ada.Directories.Simple_Name (File);
 				begin
 					if Id (Id'First) /= '.' then -- excluding dot file
@@ -232,6 +232,7 @@ package body Tabula.Users.Lists is
 						end;
 					end if;
 				end;
+				Ada.Directories.Skip_Next_Entry (Search);
 			end loop;
 			Ada.Directories.End_Search(Search);
 		end Add;

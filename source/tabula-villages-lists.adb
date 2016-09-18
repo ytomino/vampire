@@ -86,13 +86,13 @@ package body Tabula.Villages.Lists is
 				end;
 			else
 				declare
-					Search : Ada.Directories.Search_Type;
-					File : Ada.Directories.Directory_Entry_Type;
+					Search : aliased Ada.Directories.Search_Type;
 				begin
 					Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
 					while Ada.Directories.More_Entries (Search) loop
-						Ada.Directories.Get_Next_Entry (Search, File);
 						declare
+							File : Ada.Directories.Directory_Entry_Type
+								renames Ada.Directories.Look_Next_Entry (Search);
 							Id : String renames Ada.Directories.Simple_Name (File);
 						begin
 							if Id (Id'First) in '0' .. '9' then
@@ -106,6 +106,7 @@ package body Tabula.Villages.Lists is
 								end;
 							end if;
 						end;
+						Ada.Directories.Skip_Next_Entry (Search);
 					end loop;
 					Ada.Directories.End_Search (Search);
 					if Update_Cache then
@@ -188,28 +189,27 @@ package body Tabula.Villages.Lists is
 		Next : Integer := 0;
 	begin
 		declare
-			Search : Ada.Directories.Search_Type;
+			Search : aliased Ada.Directories.Search_Type;
 		begin
 			Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
 			while Ada.Directories.More_Entries (Search) loop
 				declare
-					File : Ada.Directories.Directory_Entry_Type;
+					File : Ada.Directories.Directory_Entry_Type
+						renames Ada.Directories.Look_Next_Entry (Search);
+					File_Name : constant String :=
+						Ada.Directories.Simple_Name (File);
 				begin
-					Ada.Directories.Get_Next_Entry (Search, File);
 					declare
-						File_Name : constant String := Ada.Directories.Simple_Name (File);
+						Num : constant Integer := Integer'Value (File_Name);
 					begin
-						declare
-							Num : constant Integer := Integer'Value (File_Name);
-						begin
-							if Num >= Next then
-								Next := Num + 1;
-							end if;
-						end;
-					exception
-						when Constraint_Error => null;
+						if Num >= Next then
+							Next := Num + 1;
+						end if;
 					end;
+				exception
+					when Constraint_Error => null;
 				end;
+				Ada.Directories.Skip_Next_Entry (Search);
 			end loop;
 			Ada.Directories.End_Search (Search);
 		end;
@@ -300,8 +300,7 @@ package body Tabula.Villages.Lists is
 	end Update;
 	
 	procedure Refresh (List : in out Village_List) is
-		Search : Ada.Directories.Search_Type;
-		File : Ada.Directories.Directory_Entry_Type;
+		Search : aliased Ada.Directories.Search_Type;
 	begin
 		-- delete cache
 		if Ada.Directories.Exists (List.Cache_File_Name.all) then
@@ -311,12 +310,14 @@ package body Tabula.Villages.Lists is
 		-- delete html
 		Ada.Directories.Start_Search (Search, List.HTML_Directory.all, "*.html");
 		while Ada.Directories.More_Entries (Search) loop
-			Ada.Directories.Get_Next_Entry (Search, File);
 			declare
+				File : Ada.Directories.Directory_Entry_Type
+					renames Ada.Directories.Look_Next_Entry (Search);
 				File_Name : constant String := Ada.Directories.Full_Name (File);
 			begin
 				Ada.Directories.Delete_File (File_Name);
 			end;
+			Ada.Directories.Skip_Next_Entry (Search);
 		end loop;
 		Ada.Directories.End_Search (Search);
 		-- remake cache
