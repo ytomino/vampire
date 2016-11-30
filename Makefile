@@ -69,7 +69,7 @@ CARGS:=$(CARGS) -ggdb -Og -fno-guess-branch-probability -gnata
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -ggdb -Og
 else
-CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn
+CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn2
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -ggdb1 -Os
 endif
