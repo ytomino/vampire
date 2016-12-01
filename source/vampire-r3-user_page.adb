@@ -9,8 +9,6 @@ procedure Vampire.R3.User_Page (
 	User_Password : in String;
 	User_Info : in Users.User_Info)
 is
-	use Tabula.Villages.Lists.Summary_Maps;
-	use Tabula.Villages.Lists.User_Lists;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Tabula.Villages.Village_State;
 	-- ユーザーの参加状況

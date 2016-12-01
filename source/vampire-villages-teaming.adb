@@ -1,7 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Numerics.Distributions;
 package body Vampire.Villages.Teaming is
-	use type Ada.Containers.Count_Type;
 	use type Casts.Person_Sex;
 	
 	function Possibilities (

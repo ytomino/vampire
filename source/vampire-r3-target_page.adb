@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings.Unbounded;
 with Vampire.Villages.Text;
 procedure Vampire.R3.Target_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -12,7 +11,6 @@ procedure Vampire.R3.Target_Page (
 	User_Id : in String;
 	User_Password : in String)
 is
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	Person : Villages.Person_Type
 		renames Village.People.Constant_Reference(Player);
 	Target_Person : Villages.Person_Type

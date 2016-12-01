@@ -7,7 +7,6 @@ with Tabula.Calendar;
 with Tabula.Users;
 with Vampire.Villages.Text;
 package body Vampire.R3 is
-	use Tabula.Villages.Lists.Summary_Maps;
 	use type Ada.Calendar.Time;
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Term;

@@ -14,7 +14,6 @@ is
 	use Person_Records;
 	use Messages;
 	use type Ada.Calendar.Time;
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	subtype People_Index is Person_Index range Village.People.First_Index .. Village.People.Last_Index;
 	function People_Random is

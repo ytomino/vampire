@@ -1,6 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 package body Tabula.Casts is
-	use type Ada.Containers.Count_Type;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function Find (Container : Groups.Vector; Group : Integer) return Groups.Cursor is

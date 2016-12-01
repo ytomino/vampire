@@ -36,7 +36,6 @@ is
 	use Tabula.Villages;
 	use Villages;
 	use type Ada.Calendar.Time;
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Forms.Template_Set_Type;
 	
 	Line_Break : constant Character := Ada.Characters.Latin_1.LF;

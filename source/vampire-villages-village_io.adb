@@ -6,7 +6,6 @@ with Tabula.Villages.Village_IO;
 package body Vampire.Villages.Village_IO is
 	use People;
 	use Person_Records;
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	procedure IO (Serializer : not null access Serialization.Serializer; Name : in String; People : in out Villages.People.Vector) is
 		package People_IO is new Serialization.IO_List (

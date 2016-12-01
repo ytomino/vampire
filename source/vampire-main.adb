@@ -32,20 +32,14 @@ procedure Vampire.Main is
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	use type Casts.Person_Sex;
-	use type Casts.Work;
 	use type Users.Lists.User_State;
 	use type Tabula.Villages.Village_State;
 	use type Tabula.Villages.Village_Term;
 	use type Forms.Base_Page;
 	use type Villages.Ability_State;
-	use type Villages.Attack_Mode;
 	use type Villages.Vampire_Action_Set_Mode;
-	use type Villages.Doctor_Infected_Mode;
 	use type Villages.Daytime_Preview_Mode;
-	use type Villages.Person_Role;
 	use type Villages.Person_State;
-	use type Villages.Message_Kind;
-	use type Villages.Message;
 	use type Villages.Village_Time;
 	use type Villages.Vote_State_Type;
 	

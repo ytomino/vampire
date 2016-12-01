@@ -1,7 +1,6 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Directories;
 with Ada.Streams.Stream_IO;
-with Ada.Strings.Unbounded;
 with Web.Producers;
 with Web.RSS;
 with Vampire.Configurations;
@@ -11,10 +10,6 @@ with Vampire.R3.Village_Page;
 with Vampire.Villages.Load;
 package body Vampire.Log is
 	use Tabula.Villages;
-	use Tabula.Villages.Lists.Summary_Maps;
-	use Tabula.Villages.Lists.User_Lists;
-	use Villages;
-	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function Load_Summary (
 		List : Tabula.Villages.Lists.Village_List;

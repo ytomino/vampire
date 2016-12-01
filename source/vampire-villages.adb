@@ -5,7 +5,6 @@ package body Vampire.Villages is
 	use People;
 	use type Ada.Calendar.Time;
 	use type Ada.Strings.Unbounded.Unbounded_String;
-	use type Casts.Person_Sex;
 	
 	function Equivalent_Messages (Left, Right : Message) return Boolean is
 	begin
