@@ -81,12 +81,12 @@ begin
 	Locked : declare
 		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
 		-- HTTP Info
-		Remote_Addr : String renames Web.Remote_Addr;
-		Remote_Host : String renames Web.Remote_Host;
+		Remote_Addr : constant String := Web.Remote_Addr;
+		Remote_Host : constant String := Web.Remote_Host;
 		Inputs : Web.Query_Strings renames Web.Get (Input);
 		Query_Strings : Web.Query_Strings renames Web.Get_Query_Strings;
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
-		Post : Boolean renames Web.Post;
+		Post : constant Boolean := Web.Post;
 		Form : Forms.Root_Form_Type'Class := Forms.Selecting.Select_Form (
 			Query_Strings,
 			Speeches_Per_Page => Configurations.Speeches_Per_Page);

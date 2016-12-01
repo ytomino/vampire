@@ -31,7 +31,7 @@ TESTDIR=~/Sites/cgi/vampire
 
 GARGS:=
 MARGS:=-C -D $(BUILDDIR) $(addprefix -I,$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET))) -gnatA
-CARGS:=-pipe -gnatef -gnatwaIFK.R $(addprefix -gnatec=,$(abspath $(wildcard *.adc)))
+CARGS:=-pipe -gnatef -gnatwaIFK $(addprefix -gnatec=,$(abspath $(wildcard *.adc)))
 BARGS:=-x
 LARGS:=
 
