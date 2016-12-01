@@ -17,36 +17,20 @@ package body Tabula.Villages.Lists is
 		Parser : YAML.Parser := YAML.Streams.Create (
 			Ada.Streams.Stream_IO.Stream (File));
 	begin
+		YAML.Parse_Stream_Start (Parser);
+		YAML.Parse_Document_Start (Parser);
 		declare
-			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
-			begin
-				if Event.Event_Type /= YAML.Stream_Start then
-					raise Ada.IO_Exceptions.Data_Error;
-				end if;
-			end Process;
+			Parsing_Entry : YAML.Parsing_Entry_Type;
 		begin
-			YAML.Parse (Parser, Process'Access);
-		end;
-		declare
-			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
-			begin
-				if Event.Event_Type /= YAML.Document_Start then
-					raise Ada.IO_Exceptions.Data_Error;
-				end if;
-			end Process;
-		begin
-			YAML.Parse (Parser, Process'Access);
-		end;
-		declare
-			procedure Process (Event : in YAML.Event; Start_Mark, End_Mark : in YAML.Mark) is
+			YAML.Parse (Parser, Parsing_Entry);
+			declare
+				Event : YAML.Event renames YAML.Value (Parsing_Entry);
 			begin
 				if Event.Event_Type /= YAML.Mapping_Start then
 					raise Ada.IO_Exceptions.Data_Error;
 				end if;
 				Result := +Event.Tag.all;
-			end Process;
-		begin
-			YAML.Parse (Parser, Process'Access);
+			end;
 		end;
 		Ada.Streams.Stream_IO.Close (File);
 		if Result.Element (1) = '!' then
