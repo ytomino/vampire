@@ -63,7 +63,7 @@ is
 				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
 			end if;
 		else
-			raise Program_Error with "Invalid template """ & Tag & """";
+			Raise_Unknown_Tag (Tag);
 		end if;
 	end Handle;
 begin

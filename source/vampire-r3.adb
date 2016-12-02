@@ -1,6 +1,7 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
 with Ada.Directories;
+with Ada.Exception_Identification.From_Here;
 with Ada.Hierarchical_File_Names;
 with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
@@ -80,6 +81,18 @@ package body Vampire.R3 is
 		end if;
 	end Day_Name;
 	
+	procedure Raise_Unknown_Tag (
+		Tag : in String;
+		File : in String := Ada.Debug.File;
+		Line : in Integer := Ada.Debug.Line) is
+	begin
+		Ada.Exception_Identification.From_Here.Raise_Exception (
+			Web.Producers.Data_Error'Identity,
+			File => File,
+			Line => Line,
+			Message => "Invalid template """ & Tag & """");
+	end Raise_Unknown_Tag;
+	
 	procedure Handle_User_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in Web.Producers.Template;
@@ -123,7 +136,7 @@ package body Vampire.R3 is
 						User_Id => User_Id,
 						User_Password => User_Password));
 			else
-				raise Program_Error with "Invalid template """ & Tag & """";
+				Raise_Unknown_Tag (Tag);
 			end if;
 		end Handle;
 		Extract : constant array (Boolean) of access constant String := (
@@ -223,7 +236,7 @@ package body Vampire.R3 is
 										Form,
 										Image (Element.People.Length) & "人");
 								else
-									raise Program_Error with "Invalid template """ & Tag & """";
+									Raise_Unknown_Tag (Tag);
 								end if;
 							end Handle_Item;
 						begin
@@ -234,7 +247,7 @@ package body Vampire.R3 is
 					end loop;
 				end;
 			else
-				raise Program_Error with "Invalid template """ & Tag & """";
+				Raise_Unknown_Tag (Tag);
 			end if;
 		end Handle;
 		Exists : Boolean := False;
@@ -321,7 +334,7 @@ package body Vampire.R3 is
 				Forms.Write_In_Attribute (Output, Form, Filter);
 				Forms.Write_Attribute_Close (Output);
 			else
-				raise Program_Error with "Invalid template """ & Tag & """";
+				Raise_Unknown_Tag (Tag);
 			end if;
 		end Handle;
 	begin

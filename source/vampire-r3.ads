@@ -20,6 +20,12 @@ private
 		State : Tabula.Villages.Village_State)
 		return String;
 	
+	procedure Raise_Unknown_Tag (
+		Tag : in String;
+		File : in String := Ada.Debug.File;
+		Line : in Integer := Ada.Debug.Line);
+	pragma No_Return (Raise_Unknown_Tag);
+	
 	-- ログインパネル
 	procedure Handle_User_Panel (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;

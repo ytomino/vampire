@@ -136,7 +136,7 @@ is
 								end;
 								String'Write (Output, "</select>");
 							else
-								raise Program_Error with "Invalid template """ & Tag & """";
+								Raise_Unknown_Tag (Tag);
 							end if;
 						end Handle_Item;
 					begin
@@ -156,7 +156,7 @@ is
 								if Tag = "current" or else Tag = "select" then
 									Forms.Write_In_HTML (Output, Form, "旧編成「" & Villages.Text.Image (Village.Obsolete_Teaming) & "」です。");
 								else
-									raise Program_Error with "Invalid template """ & Tag & """";
+									Raise_Unknown_Tag (Tag);
 								end if;
 							end Handle_Item;
 						begin
@@ -184,7 +184,7 @@ is
 						User_Id => User_Id,
 						User_Password => User_Password));
 			else
-				raise Program_Error with "Invalid template """ & Tag & """";
+				Raise_Unknown_Tag (Tag);
 			end if;
 		end Handle;
 	begin
@@ -658,7 +658,7 @@ is
 								User_Id => User_Id,
 								User_Password => User_Password);
 						else
-							raise Program_Error with "Invalid template """ & Tag & """";
+							Raise_Unknown_Tag (Tag);
 						end if;
 					end Handle_Days;
 				begin
@@ -721,7 +721,7 @@ is
 										Forms.Write_In_Attribute (Output, Form, Image (I));
 										Forms.Write_Attribute_Close (Output);
 									else
-										raise Program_Error with "Invalid template """ & Tag & """";
+										Raise_Unknown_Tag (Tag);
 									end if;
 								end Handle_Person;
 							begin
@@ -745,7 +745,7 @@ is
 							Web.Producers.Produce(Output, Template);
 						end if;
 					else
-						raise Program_Error with "Invalid template """ & Tag & """";
+						Raise_Unknown_Tag (Tag);
 					end if;
 				end Handle_Summary;
 			begin
@@ -795,7 +795,7 @@ is
 												end loop;
 											end loop;
 										else
-											raise Program_Error with "Invalid template """ & Tag & """";
+											Raise_Unknown_Tag (Tag);
 										end if;
 									end Handle_Item;
 								begin
@@ -803,7 +803,7 @@ is
 								end;
 							end loop;
 						else
-							raise Program_Error with "Invalid template """ & Tag & """";
+							Raise_Unknown_Tag (Tag);
 						end if;
 					end Handle_Role_Set;
 				begin
@@ -842,7 +842,7 @@ is
 									User_Id => User_Id,
 									User_Password => User_Password));
 						else
-							raise Program_Error with "Invalid template """ & Tag & """";
+							Raise_Unknown_Tag (Tag);
 						end if;
 					end Handle_Range_All;
 				begin
@@ -878,7 +878,7 @@ is
 									Directory => Image_Directory,
 									Relative_Name => Relative_Role_Images (Role).all));
 						else
-							raise Program_Error with "Invalid template """ & Tag & """";
+							Raise_Unknown_Tag (Tag);
 						end if;
 					end Handle_Narration;
 				begin
@@ -1865,7 +1865,7 @@ is
 														User_Id => User_Id,
 														User_Password => User_Password));
 											else
-												raise Program_Error with "Invalid template """ & Tag & """";
+												Raise_Unknown_Tag (Tag);
 											end if;
 										end Handle_Escape;
 										Seed : aliased Ada.Numerics.MT19937.Generator :=
@@ -1892,7 +1892,7 @@ is
 										User_Id => User_Id,
 										User_Password => User_Password));
 							else
-								raise Program_Error with "Invalid template """ & Tag & """";
+								Raise_Unknown_Tag (Tag);
 							end if;
 						end Handle_Player;
 					begin
@@ -2018,7 +2018,7 @@ is
 										User_Id => User_Id,
 										User_Password => User_Password));
 							else
-								raise Program_Error with "Invalid template """ & Tag & """";
+								Raise_Unknown_Tag (Tag);
 							end if;
 						end Handle_Entry;
 					begin
@@ -2048,7 +2048,7 @@ is
 								User_Id => User_Id,
 								User_Password => User_Password);
 						else
-							raise Program_Error with "Invalid template """ & Tag & """";
+							Raise_Unknown_Tag (Tag);
 						end if;
 					end Handle_Next;
 				begin
@@ -2063,7 +2063,7 @@ is
 				Web.Producers.Produce (Output, Template);
 			end if;
 		else
-			raise Program_Error with "Invalid template """ & Tag & """";
+			Raise_Unknown_Tag (Tag);
 		end if;
 	end Handle;
 begin
