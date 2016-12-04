@@ -29,7 +29,7 @@ begin
 			Forms.Write_In_HTML (Output, Form, "受理しました。");
 			String'Write (
 				Output,
-				"<div>" &
+				"</div>" &
 				"<hr>" &
 				"<div><a href=""");
 			Forms.Write_In_Attribute (Output, Form, URI);
@@ -39,7 +39,7 @@ begin
 			Forms.Write_In_HTML (Output, Form, "戻る");
 			String'Write (
 				Output,
-				"</a><div>" &
+				"</a></div>" &
 				"</body>" &
 				"</html>");
 	end case;
