@@ -1222,7 +1222,7 @@ is
 												"narrationi",
 												Vampire.Villages.Hunter);
 										end if;
-									when Vampire.Villages.Meeting => null;
+									when Vampire.Villages.Meeting =>
 										if Village.State >= Epilogue
 											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role)
 										then
