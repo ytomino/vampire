@@ -12,23 +12,23 @@ is
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
-		Template : in Web.Producers.Template) is
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "userpanel" then
 			Handle_User_Panel (
 				Output,
-				Template,
+				Contents,
 				Form,
 				User_Id => User_Id,
 				User_Password => User_Password);
 		elsif Tag = "muramura" then
 			for I in 1 .. Muramura loop
-				Web.Producers.Produce (Output, Template);
+				Web.Producers.Produce (Output, Contents);
 			end loop;
 		elsif Tag = "activelist" then
 			Handle_Village_List (
 				Output,
-				Template,
+				Contents,
 				Form,
 				Current_Directory => ".",
 				HTML_Directory => HTML_Directory,
@@ -40,7 +40,7 @@ is
 		elsif Tag = "loglist" then
 			Handle_Village_List (
 				Output,
-				Template,
+				Contents,
 				Form,
 				Current_Directory => ".",
 				HTML_Directory => HTML_Directory,

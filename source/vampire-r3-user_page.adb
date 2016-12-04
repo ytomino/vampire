@@ -14,64 +14,6 @@ is
 	-- ユーザーの参加状況
 	Joined : aliased Ada.Strings.Unbounded.Unbounded_String;
 	Created : aliased Ada.Strings.Unbounded.Unbounded_String;
-	procedure Handle(
-		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Tag : in String;
-		Template : in Web.Producers.Template) is
-	begin
-		if Tag = "action_page" then
-			Forms.Write_Attribute_Name (Output, "action");
-			Forms.Write_Link (
-				Output,
-				Form,
-				Current_Directory => ".",
-				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_User_Page (
-					User_Id => User_Id,
-					User_Password => User_Password));
-		elsif Tag = "userpanel" then
-			Handle_User_Panel (
-				Output,
-				Template,
-				Form,
-				User_Id => User_Id,
-				User_Password => User_Password);
-		elsif Tag = "id" then
-			Forms.Write_In_HTML (Output, Form, User_Id);
-		elsif Tag = "joined" then
-			if not Joined.Is_Null then
-				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-			end if;
-		elsif Tag = "nojoined" then
-			if Joined.Is_Null then
-				Web.Producers.Produce(Output, Template);
-			end if;
-		elsif Tag = "created" then
-			if not Created.Is_Null then
-				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-			end if;
-		elsif Tag = "creatable" then
-			if Joined.Is_Null and then Created.Is_Null then
-				Web.Producers.Produce(Output, Template, Handler => Handle'Access);
-			end if;
-		elsif Tag = "activevillage" then
-			Forms.Write_In_HTML (Output, Form, Joined.Constant_Reference);
-		elsif Tag = "createdvillage" then
-			Forms.Write_In_HTML (Output, Form, Created.Constant_Reference);
-		elsif Tag = "href_index" then
-			Forms.Write_Attribute_Name (Output, "href");
-			Forms.Write_Link (
-				Output,
-				Form,
-				Current_Directory => ".",
-				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Index_Page (
-					User_Id => User_Id,
-					User_Password => User_Password));
-		else
-			Raise_Unknown_Tag (Tag);
-		end if;
-	end Handle;
 begin
 	for I in Summaries.Iterate loop
 		declare
@@ -93,5 +35,92 @@ begin
 			end if;
 		end;
 	end loop;
-	Web.Producers.Produce (Output, Read (Template), Handler => Handle'Access);
+	declare
+		procedure Handle (
+			Output : not null access Ada.Streams.Root_Stream_Type'Class;
+			Tag : in String;
+			Contents : in Web.Producers.Template) is
+		begin
+			if Tag = "action_page" then
+				Forms.Write_Attribute_Name (Output, "action");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Forms.Self,
+					Parameters =>
+						Form.Parameters_To_User_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
+			elsif Tag = "userpanel" then
+				Handle_User_Panel (
+					Output,
+					Contents,
+					Form,
+					User_Id => User_Id,
+					User_Password => User_Password);
+			elsif Tag = "id" then
+				Forms.Write_In_HTML (Output, Form, User_Id);
+			elsif Tag = "joined" then
+				if not Joined.Is_Null then
+					declare
+						procedure Handle (
+							Output : not null access Ada.Streams.Root_Stream_Type'Class;
+							Tag : in String;
+							Contents : in Web.Producers.Template) is
+						begin
+							if Tag = "activevillage" then
+								Forms.Write_In_HTML (Output, Form, Joined.Constant_Reference);
+							else
+								Raise_Unknown_Tag (Tag);
+							end if;
+						end Handle;
+					begin
+						Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
+					end;
+				end if;
+			elsif Tag = "nojoined" then
+				if Joined.Is_Null then
+					Web.Producers.Produce(Output, Contents);
+				end if;
+			elsif Tag = "created" then
+				if not Created.Is_Null then
+					declare
+						procedure Handle (
+							Output : not null access Ada.Streams.Root_Stream_Type'Class;
+							Tag : in String;
+							Contents : in Web.Producers.Template) is
+						begin
+							if Tag = "createdvillage" then
+								Forms.Write_In_HTML (Output, Form, Created.Constant_Reference);
+							else
+								Raise_Unknown_Tag (Tag);
+							end if;
+						end Handle;
+					begin
+						Web.Producers.Produce(Output, Contents, Handler => Handle'Access);
+					end;
+				end if;
+			elsif Tag = "creatable" then
+				if Joined.Is_Null and then Created.Is_Null then
+					Web.Producers.Produce(Output, Contents, Handler => Handle'Access); -- rec
+				end if;
+			elsif Tag = "href_index" then
+				Forms.Write_Attribute_Name (Output, "href");
+				Forms.Write_Link (
+					Output,
+					Form,
+					Current_Directory => ".",
+					Resource => Forms.Self,
+					Parameters =>
+						Form.Parameters_To_Index_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
+			else
+				Raise_Unknown_Tag (Tag);
+			end if;
+		end Handle;
+	begin
+		Web.Producers.Produce (Output, Read (Template), Handler => Handle'Access);
+	end;
 end Vampire.R3.User_Page;

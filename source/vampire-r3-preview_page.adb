@@ -13,7 +13,7 @@ is
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
-		Template : in Web.Producers.Template) is
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_page" then
 			Forms.Write_Attribute_Name (Output, "action");
@@ -34,7 +34,7 @@ is
 		elsif Tag = "speech" then
 			Handle_Speech (
 				Output,
-				Template,
+				Contents,
 				Form => Form,
 				Current_Directory => ".",
 				Image_Directory => Image_Directory,
@@ -56,11 +56,11 @@ is
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "longer" then
 			if Message.Text.Length > Villages.Max_Length_Of_Message then
-				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				Web.Producers.Produce (Output, Contents);
 			end if;
 		elsif Tag = "ok" then
 			if Message.Text.Length <= Villages.Max_Length_Of_Message then
-				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+				Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 			end if;
 		else
 			Raise_Unknown_Tag (Tag);

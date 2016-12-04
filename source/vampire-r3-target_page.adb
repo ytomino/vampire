@@ -18,7 +18,7 @@ is
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
-		Template : in Web.Producers.Template) is
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
 			Forms.Write_Attribute_Name (Output, "action");

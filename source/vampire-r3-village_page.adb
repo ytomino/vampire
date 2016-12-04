@@ -58,138 +58,148 @@ is
 			Player
 			and then Village.Today = 0
 			and then Village.No_Commit;
-		procedure Handle (
-			Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String;
-			Template : in Web.Producers.Template) is
-		begin
-			if Tag = "items" then
-				declare
-					procedure Process (Item : in Root_Option_Item'Class) is
-						procedure Handle_Item (
-							Output : not null access Ada.Streams.Root_Stream_Type'Class;
-							Tag : in String;
-							Template : in Web.Producers.Template) is
-						begin
-							if Tag = "current" then
-								declare
-									procedure Process (
-										Value : in String;
-										Selected : in Boolean;
-										Message : in String;
-										Unrecommended : in Boolean) is
-									begin
-										if Selected then
-											if Item.Changed and then Village.State /= Closed then
-												String'Write (Output, "<em>");
-											end if;
-											Forms.Write_In_HTML (Output, Form, Message);
-											if Village.State /= Closed and then Unrecommended then
-												Forms.Write_In_HTML (Output, Form, " (非推奨)");
-											end if;
-											if Item.Changed and then Village.State /= Closed then
-												String'Write (Output, "</em>");
-											end if;
-										end if;
-									end Process;
-								begin
-									Tabula.Villages.Iterate (Item, Process'Access);
-								end;
-							elsif Tag = "select" then
-								String'Write (Output, "<select ");
-								Forms.Write_Attribute_Name (Output, "name");
-								Forms.Write_Attribute_Open (Output);
-								Forms.Write_In_Attribute (Output, Form, Item.Name);
-								Forms.Write_Attribute_Close (Output);
-								Character'Write (Output, '>');
-								declare
-									procedure Process (
-										Value : in String;
-										Selected : in Boolean;
-										Message : in String;
-										Unrecommended : in Boolean) is
-									begin
-										String'Write (Output, "<option ");
-										Forms.Write_Attribute_Name (Output, "value");
-										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, Value);
-										Forms.Write_Attribute_Close (Output);
-										Character'Write (Output, ' ');
-										if Selected then
-											Forms.Write_Attribute_Name (Output, "selected");
-											Forms.Write_Attribute_Open (Output);
-											Forms.Write_In_Attribute (Output, Form, "selected");
-											Forms.Write_Attribute_Close (Output);
-										end if;
-										Character'Write (Output, '>');
-										Forms.Write_In_HTML (Output, Form, Message);
-										if Unrecommended then
-											Forms.Write_In_HTML (Output, Form, " (非推奨)");
-										end if;
-										if Selected then
-											Forms.Write_In_HTML (Output, Form, " *");
-										end if;
-										String'Write (Output, "</option>");
-									end Process;
-								begin
-									Tabula.Villages.Iterate (Item, Process'Access);
-								end;
-								String'Write (Output, "</select>");
-							else
-								Raise_Unknown_Tag (Tag);
-							end if;
-						end Handle_Item;
-					begin
-						if Item.Available and then (Changable or else Item.Changed or else Player) then
-							Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
-						end if;
-					end Process;
-				begin
-					Villages.Iterate_Options (Village, Process'Access);
-					if Is_Obsolete_Teaming (Village.Obsolete_Teaming) then
-						declare
-							procedure Handle_Item (
-								Output : not null access Ada.Streams.Root_Stream_Type'Class;
-								Tag : in String;
-								Template : in Web.Producers.Template) is
-							begin
-								if Tag = "current" or else Tag = "select" then
-									Forms.Write_In_HTML (Output, Form, "旧編成「" & Villages.Text.Image (Village.Obsolete_Teaming) & "」です。");
-								else
-									Raise_Unknown_Tag (Tag);
-								end if;
-							end Handle_Item;
-						begin
-							Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
-						end;
-					end if;
-				end;
-			elsif Tag = "changable" then
-				if Changable then
-					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
-				end if;
-			elsif Tag = "static" then
-				if not Changable then
-					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
-				end if;
-			elsif Tag = "action_page" then
-				Forms.Write_Attribute_Name (Output, "action");
-				Forms.Write_Link (
-					Output,
-					Form,
-					Current_Directory => Current_Directory,
-					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_Village_Page (
-						Village_Id => Village_Id,
-						User_Id => User_Id,
-						User_Password => User_Password));
-			else
-				Raise_Unknown_Tag (Tag);
-			end if;
-		end Handle;
 	begin
 		if Visible then
-			Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+			declare
+				procedure Handle (
+					Output : not null access Ada.Streams.Root_Stream_Type'Class;
+					Tag : in String;
+					Contents : in Web.Producers.Template) is
+				begin
+					if Tag = "items" then
+						declare
+							procedure Process (Item : in Root_Option_Item'Class) is
+							begin
+								if Item.Available and then (Changable or else Item.Changed or else Player) then
+									declare
+										procedure Handle (
+											Output : not null access Ada.Streams.Root_Stream_Type'Class;
+											Tag : in String;
+											Contents : in Web.Producers.Template) is
+										begin
+											if Tag = "current" then
+												declare
+													procedure Process (
+														Value : in String;
+														Selected : in Boolean;
+														Message : in String;
+														Unrecommended : in Boolean) is
+													begin
+														if Selected then
+															if Item.Changed and then Village.State /= Closed then
+																String'Write (Output, "<em>");
+															end if;
+															Forms.Write_In_HTML (Output, Form, Message);
+															if Village.State /= Closed and then Unrecommended then
+																Forms.Write_In_HTML (Output, Form, " (非推奨)");
+															end if;
+															if Item.Changed and then Village.State /= Closed then
+																String'Write (Output, "</em>");
+															end if;
+														end if;
+													end Process;
+												begin
+													Tabula.Villages.Iterate (Item, Process'Access);
+												end;
+											elsif Tag = "select" then
+												String'Write (Output, "<select ");
+												Forms.Write_Attribute_Name (Output, "name");
+												Forms.Write_Attribute_Open (Output);
+												Forms.Write_In_Attribute (Output, Form, Item.Name);
+												Forms.Write_Attribute_Close (Output);
+												Character'Write (Output, '>');
+												declare
+													procedure Process (
+														Value : in String;
+														Selected : in Boolean;
+														Message : in String;
+														Unrecommended : in Boolean) is
+													begin
+														String'Write (Output, "<option ");
+														Forms.Write_Attribute_Name (Output, "value");
+														Forms.Write_Attribute_Open (Output);
+														Forms.Write_In_Attribute (Output, Form, Value);
+														Forms.Write_Attribute_Close (Output);
+														Character'Write (Output, ' ');
+														if Selected then
+															Forms.Write_Attribute_Name (Output, "selected");
+															Forms.Write_Attribute_Open (Output);
+															Forms.Write_In_Attribute (Output, Form, "selected");
+															Forms.Write_Attribute_Close (Output);
+														end if;
+														Character'Write (Output, '>');
+														Forms.Write_In_HTML (Output, Form, Message);
+														if Unrecommended then
+															Forms.Write_In_HTML (Output, Form, " (非推奨)");
+														end if;
+														if Selected then
+															Forms.Write_In_HTML (Output, Form, " *");
+														end if;
+														String'Write (Output, "</option>");
+													end Process;
+												begin
+													Tabula.Villages.Iterate (Item, Process'Access);
+												end;
+												String'Write (Output, "</select>");
+											else
+												Raise_Unknown_Tag (Tag);
+											end if;
+										end Handle;
+									begin
+										Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+									end;
+								end if;
+							end Process;
+						begin
+							Villages.Iterate_Options (Village, Process'Access);
+							if Is_Obsolete_Teaming (Village.Obsolete_Teaming) then
+								declare
+									procedure Handle (
+										Output : not null access Ada.Streams.Root_Stream_Type'Class;
+										Tag : in String;
+										Contents : in Web.Producers.Template) is
+									begin
+										if Tag = "current" or else Tag = "select" then
+											Forms.Write_In_HTML (
+												Output,
+												Form,
+												"旧編成「" & Villages.Text.Image (Village.Obsolete_Teaming) & "」です。");
+										else
+											Raise_Unknown_Tag (Tag);
+										end if;
+									end Handle;
+								begin
+									Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+								end;
+							end if;
+						end;
+					elsif Tag = "changable" then
+						if Changable then
+							Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+						end if;
+					elsif Tag = "static" then
+						if not Changable then
+							Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+						end if;
+					elsif Tag = "action_page" then
+						Forms.Write_Attribute_Name (Output, "action");
+						Forms.Write_Link (
+							Output,
+							Form,
+							Current_Directory => Current_Directory,
+							Resource => Forms.Self,
+							Parameters =>
+								Form.Parameters_To_Village_Page (
+									Village_Id => Village_Id,
+									User_Id => User_Id,
+									User_Password => User_Password));
+					else
+						Raise_Unknown_Tag (Tag);
+					end if;
+				end Handle;
+			begin
+				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+			end;
 		end if;
 	end Rule_Panel;
 	
@@ -537,13 +547,13 @@ is
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
-		Template : in Web.Producers.Template) is
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "userpanel" then
 			if not Log then
 				Handle_User_Panel (
 					Output,
-					Template,
+					Contents,
 					Form,
 					User_Id => User_Id,
 					User_Password => User_Password);
@@ -630,18 +640,18 @@ is
 		elsif Tag = "days" then
 			for I in 0 .. Village.Today loop
 				declare
-					procedure Handle_Days (
+					procedure Handle (
 						Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String;
-						Template : in Web.Producers.Template) is
+						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "today" then
 							if I = Day then
-								Web.Producers.Produce (Output, Template, Handler => Handle_Days'Access);
+								Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 							end if;
 						elsif Tag = "otherday" then
 							if I /= Day then
-								Web.Producers.Produce (Output, Template, Handler => Handle_Days'Access);
+								Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 							end if;
 						elsif Tag = "day" then
 							Forms.Write_In_HTML (Output, Form, Day_Name (I, Village.Today, Village.State));
@@ -660,104 +670,111 @@ is
 						else
 							Raise_Unknown_Tag (Tag);
 						end if;
-					end Handle_Days;
+					end Handle;
 				begin
-					Web.Producers.Produce (Output, Template, Handler => Handle_Days'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
 				end;
 			end loop;
 		elsif Tag = "summary" then
-			declare
-				procedure Handle_Summary (
-					Output : not null access Ada.Streams.Root_Stream_Type'Class;
-					Tag : in String;
-					Template : in Web.Producers.Template) is
-				begin
-					if Tag = "person" then
-						for I in Village.People.First_Index .. Village.People.Last_Index loop
-							declare
-								Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I);
-								procedure Handle_Person (
-									Output : not null access Ada.Streams.Root_Stream_Type'Class;
-									Tag : in String;
-									Template : in Web.Producers.Template) is
+			if not Village.People.Is_Empty then
+				declare
+					procedure Handle (
+						Output : not null access Ada.Streams.Root_Stream_Type'Class;
+						Tag : in String;
+						Contents : in Web.Producers.Template) is
+					begin
+						if Tag = "person" then
+							for I in Village.People.First_Index .. Village.People.Last_Index loop
+								declare
+									Person : Vampire.Villages.Person_Type
+										renames Village.People.Constant_Reference(I);
 								begin
-									if Tag = "for_cn" then
-										Forms.Write_Attribute_Name (Output, "for");
-										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
-										Forms.Write_Attribute_Close (Output);
-									elsif Tag = "id_cn" then
-										Forms.Write_Attribute_Name (Output, "id");
-										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
-										Forms.Write_Attribute_Close (Output);
-									elsif Tag = "onclick" then
-										Forms.Write_Attribute_Name (Output, "onclick");
-										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, "javascript:sync(" & Image (I) & ")");
-										Forms.Write_Attribute_Close (Output);
-									elsif Tag = "name" then
-										Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
-									elsif Tag = "speech" then
-										Forms.Write_In_HTML (Output, Form, Image (Message_Counts(I).Speech));
-										if Message_Counts(I).Encouraged > 0 then
-											String'Write (Output, " <small>/");
-											Forms.Write_In_HTML (Output, Form, Image (Speech_Limit + Message_Counts(I).Encouraged * Encouraged_Speech_Limit));
-											String'Write (Output, "</small>");
-										end if;
-									elsif Tag = "administrator" then
-										if User_id = Tabula.Users.Administrator then
-											Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
-										end if;
-									elsif Tag = "id" then
-										Forms.Write_In_HTML (Output, Form, Person.Id.Constant_Reference);
-									elsif Tag = "remove" then
-										if Village.State = Prologue then
-											Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
-										end if;
-									elsif Tag = "value_target" then
-										Forms.Write_Attribute_Name (Output, "value");
-										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, Image (I));
-										Forms.Write_Attribute_Close (Output);
-									else
-										Raise_Unknown_Tag (Tag);
+									if (Village.State >= Epilogue and then Village.Today = Day)
+										or else Person.Records.Constant_Reference(Day).State /= Vampire.Villages.Died
+									then
+										declare
+											procedure Handle (
+												Output : not null access Ada.Streams.Root_Stream_Type'Class;
+												Tag : in String;
+												Contents : in Web.Producers.Template) is
+											begin
+												if Tag = "for_cn" then
+													Forms.Write_Attribute_Name (Output, "for");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
+													Forms.Write_Attribute_Close (Output);
+												elsif Tag = "id_cn" then
+													Forms.Write_Attribute_Name (Output, "id");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
+													Forms.Write_Attribute_Close (Output);
+												elsif Tag = "onclick" then
+													Forms.Write_Attribute_Name (Output, "onclick");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, "javascript:sync(" & Image (I) & ")");
+													Forms.Write_Attribute_Close (Output);
+												elsif Tag = "name" then
+													Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
+												elsif Tag = "speech" then
+													Forms.Write_In_HTML (Output, Form, Image (Message_Counts(I).Speech));
+													if Message_Counts(I).Encouraged > 0 then
+														String'Write (Output, " <small>/");
+														Forms.Write_In_HTML (
+															Output,
+															Form,
+															Image (Speech_Limit + Message_Counts(I).Encouraged * Encouraged_Speech_Limit));
+														String'Write (Output, "</small>");
+													end if;
+												elsif Tag = "administrator" then
+													if User_id = Tabula.Users.Administrator then
+														Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+													end if;
+												elsif Tag = "id" then
+													Forms.Write_In_HTML (Output, Form, Person.Id.Constant_Reference);
+												elsif Tag = "remove" then
+													if Village.State = Prologue then
+														Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+													end if;
+												elsif Tag = "value_target" then
+													Forms.Write_Attribute_Name (Output, "value");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, Image (I));
+													Forms.Write_Attribute_Close (Output);
+												else
+													Raise_Unknown_Tag (Tag);
+												end if;
+											end Handle;
+										begin
+											Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+										end;
 									end if;
-								end Handle_Person;
-							begin
-								if (Village.State >= Epilogue and then Village.Today = Day)
-									or else Person.Records.Constant_Reference(Day).State /= Vampire.Villages.Died
-								then
-									Web.Producers.Produce(Output, Template, Handler => Handle_Person'Access);
-								end if;
-							end;
-						end loop;
-					elsif Tag = "ghost-filter" then
-						if Village.Is_Anyone_Died (Day)
-							and then (Village.State < Epilogue or else Day < Village.Today)
-							and then (
-								Village.State >= Epilogue
-								or else (
-									Player_Index /= No_Person
-									and then Village.People.Constant_Reference(Player_Index).
-										Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died))
-						then
-							Web.Producers.Produce(Output, Template);
+								end;
+							end loop;
+						elsif Tag = "ghost-filter" then
+							if Village.Is_Anyone_Died (Day)
+								and then (Village.State < Epilogue or else Day < Village.Today)
+								and then (
+									Village.State >= Epilogue
+									or else (
+										Player_Index /= No_Person
+										and then Village.People.Constant_Reference(Player_Index).
+											Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died))
+							then
+								Web.Producers.Produce (Output, Contents);
+							end if;
+						else
+							Raise_Unknown_Tag (Tag);
 						end if;
-					else
-						Raise_Unknown_Tag (Tag);
-					end if;
-				end Handle_Summary;
-			begin
-				if not Village.People.Is_Empty then
-					Web.Producers.Produce(Output, Template, Handler => Handle_Summary'Access);
-				end if;
-			end;
+					end Handle;
+				begin
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+				end;
+			end if;
 		elsif Tag = "rule" then
 			if Day = 0 then
 				Rule_Panel (
 					Output => Output,
-					Template => Template,
+					Template => Contents,
 					Village_Id => Village_Id,
 					Village => Village,
 					Player => Player_Index >= 0,
@@ -775,18 +792,18 @@ is
 							Formation => Village.Formation,
 							Unfortunate => Village.Unfortunate,
 							Monster_Side => Village.Monster_Side);
-					procedure Handle_Role_Set (
+					procedure Handle (
 						Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String;
-						Template : in Web.Producers.Template) is
+						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "items" then
 							for I in Sets'Range loop
 								declare
-									procedure Handle_Item (
+									procedure Handle (
 										Output : not null access Ada.Streams.Root_Stream_Type'Class;
 										Tag : in String;
-										Template : in Web.Producers.Template) is
+										Contents : in Web.Producers.Template) is
 									begin
 										if Tag = "set" then
 											for J in Vampire.Villages.Person_Role loop
@@ -797,17 +814,17 @@ is
 										else
 											Raise_Unknown_Tag (Tag);
 										end if;
-									end Handle_Item;
+									end Handle;
 								begin
-									Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
+									Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
 								end;
 							end loop;
 						else
 							Raise_Unknown_Tag (Tag);
 						end if;
-					end Handle_Role_Set;
+					end Handle;
 				begin
-					Web.Producers.Produce (Output, Template, Handler => Handle_Role_Set'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
 				end;
 			end if;
 		elsif Tag = "href_index" then
@@ -823,10 +840,10 @@ is
 		elsif Tag = "all" then
 			if Showing_Range.First > Message_Index'First then
 				declare
-					procedure Handle_Range_All (
+					procedure Handle (
 						Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String;
-						Template : in Web.Producers.Template) is
+						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "href_all" then
 							Forms.Write_Attribute_Name (Output, "href");
@@ -844,9 +861,9 @@ is
 						else
 							Raise_Unknown_Tag (Tag);
 						end if;
-					end Handle_Range_All;
+					end Handle;
 				begin
-					Web.Producers.Produce (Output, Template, Handler => Handle_Range_All'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
 				end;
 			end if;
 		elsif Tag = "message" then
@@ -854,36 +871,51 @@ is
 				procedure Narration (
 					Message : String;
 					Class : String := "narration";
-					Role : Vampire.Villages.Person_Role := Vampire.Villages.Inhabitant)
-				is
-					procedure Handle_Narration (
-						Output : not null access Ada.Streams.Root_Stream_Type'Class;
-						Tag : in String;
-						Template : in Web.Producers.Template) is
-					begin
-						if Tag = "text" then
-							Forms.Write_In_HTML (Output, Form, Message);
-						elsif Tag = "roleimg" then
-							if Role /= Inhabitant then
-								pragma Assert (Class = "narrationi");
-								Web.Producers.Produce (Output, Template, Handler => Handle_Narration'Access);
-							end if;
-						elsif Tag = "src_roleimg" then
-							Forms.Write_Attribute_Name (Output, "src");
-							Forms.Write_Link (
-								Output,
-								Form,
-								Current_Directory => Current_Directory,
-								Resource => Ada.Hierarchical_File_Names.Compose (
-									Directory => Image_Directory,
-									Relative_Name => Relative_Role_Images (Role).all));
-						else
-							Raise_Unknown_Tag (Tag);
-						end if;
-					end Handle_Narration;
+					Role : Vampire.Villages.Person_Role := Vampire.Villages.Inhabitant) is
 				begin
 					if Message'Length > 0 then
-						Web.Producers.Produce(Output, Template, Class, Handler => Handle_Narration'Access);
+						declare
+							procedure Handle (
+								Output : not null access Ada.Streams.Root_Stream_Type'Class;
+								Tag : in String;
+								Contents : in Web.Producers.Template) is
+							begin
+								if Tag = "text" then
+									Forms.Write_In_HTML (Output, Form, Message);
+								elsif Tag = "roleimg" then
+									if Role /= Inhabitant then
+										pragma Assert (Class = "narrationi");
+										declare
+											procedure Handle (
+												Output : not null access Ada.Streams.Root_Stream_Type'Class;
+												Tag : in String;
+												Contents : in Web.Producers.Template) is
+											begin
+												if Tag = "src_roleimg" then
+													Forms.Write_Attribute_Name (Output, "src");
+													Forms.Write_Link (
+														Output,
+														Form,
+														Current_Directory => Current_Directory,
+														Resource =>
+															Ada.Hierarchical_File_Names.Compose (
+																Directory => Image_Directory,
+																Relative_Name => Relative_Role_Images (Role).all));
+												else
+													Raise_Unknown_Tag (Tag);
+												end if;
+											end Handle;
+										begin
+											Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+										end;
+									end if;
+								else
+									Raise_Unknown_Tag (Tag);
+								end if;
+							end Handle;
+						begin
+							Web.Producers.Produce (Output, Contents, Class, Handler => Handle'Access);
+						end;
 					end if;
 				end Narration;
 				procedure Speech (
@@ -916,7 +948,7 @@ is
 					end if;
 					R3.Handle_Speech (
 						Output,
-						Template,
+						Contents,
 						Class,
 						Form,
 						Current_Directory => Current_Directory,
@@ -937,7 +969,7 @@ is
 					end if;
 					R3.Handle_Speech (
 						Output,
-						Template,
+						Contents,
 						Class,
 						Form,
 						Current_Directory => Current_Directory,
@@ -1304,10 +1336,10 @@ is
 					end if;
 					if Day = Village.Today and then Village.State /= Closed then
 						declare
-							procedure Handle_Guidance (
+							procedure Handle (
 								Output : not null access Ada.Streams.Root_Stream_Type'Class;
 								Tag : in String;
-								Template : in Web.Producers.Template) is
+								Contents : in Web.Producers.Template) is
 							begin
 								if Village.State <= Playing then
 									declare
@@ -1409,9 +1441,10 @@ is
 										Forms.Write_In_HTML (Output, Form, "まで話すことができます。");
 									when Closed => null;
 								end case;
-							end;
+							end Handle;
 						begin
-							Web.Producers.Produce(Output, Template, "narration", Handler => Handle_Guidance'Access);
+							Web.Producers.Produce (Output, Contents, "narration",
+								Handler => Handle'Access);
 						end;
 					end if;
 					if Form.Paging then
@@ -1428,7 +1461,7 @@ is
 				or else (User_Id'Length /= 0 and then Village.State = Prologue)
 			then
 				if Village.State = Closed then
-					Web.Producers.Produce(Output, Template, "closed");
+					Web.Producers.Produce (Output, Contents, "closed");
 				elsif Player_Index >= 0 then
 					declare
 						Person : Villages.Person_Type
@@ -1437,7 +1470,7 @@ is
 						procedure Handle_Player (
 							Output : not null access Ada.Streams.Root_Stream_Type'Class;
 							Tag : in String;
-							Template : in Web.Producers.Template) is
+							Contents : in Web.Producers.Template) is
 						begin
 							if Tag = "id_bottom" then
 								if Bottom then
@@ -1460,28 +1493,31 @@ is
 										Rest : constant Integer := Speech_Limit
 											+ Message_Counts (Player_Index).Encouraged * Encouraged_Speech_Limit
 											- Message_Counts (Player_Index).Speech;
-										procedure Handle_Speech (
-											Output : not null access Ada.Streams.Root_Stream_Type'Class;
-											Tag : in String;
-											Template : in Web.Producers.Template) is
-										begin
-											if Tag = "count" then
-												Forms.Write_In_HTML (Output, Form, Image (Rest));
-											elsif Tag = "rest" then
-												if Village.State = Playing then
-													Web.Producers.Produce(Output, Template, Handler => Handle_Speech'Access);
-												end if;
-											elsif Tag = "edit" then
-												if Editing = Speech then
-													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
-												end if;
-											else
-												Handle_Player(Output, Tag, Template);
-											end if;
-										end Handle_Speech;
 									begin
 										if Village.State /= Playing or else Rest > 0 then
-											Web.Producers.Produce (Output, Template, Handler => Handle_Speech'Access);
+											declare
+												procedure Handle (
+													Output : not null access Ada.Streams.Root_Stream_Type'Class;
+													Tag : in String;
+													Contents : in Web.Producers.Template) is
+												begin
+													if Tag = "count" then
+														Forms.Write_In_HTML (Output, Form, Image (Rest));
+													elsif Tag = "rest" then
+														if Village.State = Playing then
+															Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+														end if;
+													elsif Tag = "edit" then
+														if Editing = Speech then
+															Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
+														end if;
+													else
+														Handle_Player (Output, Tag, Contents); -- rec
+													end if;
+												end Handle;
+											begin
+												Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+											end;
 										end if;
 									end;
 								end if;
@@ -1492,26 +1528,29 @@ is
 								then
 									declare
 										Rest : constant Integer := Monologue_Limit - Message_Counts(Player_Index).Monologue;
-										procedure Handle_Monologue (
-											Output : not null access Ada.Streams.Root_Stream_Type'Class;
-											Tag : in String;
-											Template : in Web.Producers.Template) is
-										begin
-											if Tag = "count" then
-												Forms.Write_In_HTML (Output, Form, Image (Rest));
-											elsif Tag = "rest" then
-												Web.Producers.Produce(Output, Template, Handler => Handle_Monologue'Access);
-											elsif Tag = "edit" then
-												if Editing = Monologue then
-													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
-												end if;
-											else
-												Handle_Player(Output, Tag, Template);
-											end if;
-										end Handle_Monologue;
 									begin
 										if Rest > 0 then
-											Web.Producers.Produce(Output, Template, Handler => Handle_Monologue'Access);
+											declare
+												procedure Handle (
+													Output : not null access Ada.Streams.Root_Stream_Type'Class;
+													Tag : in String;
+													Contents : in Web.Producers.Template) is
+												begin
+													if Tag = "count" then
+														Forms.Write_In_HTML (Output, Form, Image (Rest));
+													elsif Tag = "rest" then
+														Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+													elsif Tag = "edit" then
+														if Editing = Monologue then
+															Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
+														end if;
+													else
+														Handle_Player (Output, Tag, Contents); -- rec
+													end if;
+												end Handle;
+											begin
+												Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+											end;
 										end if;
 									end;
 								end if;
@@ -1521,26 +1560,29 @@ is
 								then
 									declare
 										Rest : constant Integer := Ghost_Limit - Message_Counts(Player_Index).Ghost;
-										procedure Handle_Ghost (
-											Output : not null access Ada.Streams.Root_Stream_Type'Class;
-											Tag : in String;
-											Template : in Web.Producers.Template) is
-										begin
-											if Tag = "count" then
-												Forms.Write_In_HTML (Output, Form, Image (Rest));
-											elsif Tag = "rest" then
-												Web.Producers.Produce(Output, Template, Handler => Handle_Ghost'Access);
-											elsif Tag = "edit" then
-												if Editing = Ghost then
-													Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
-												end if;
-											else
-												Handle_Player(Output, Tag, Template);
-											end if;
-										end Handle_Ghost;
 									begin
 										if Rest > 0 then
-											Web.Producers.Produce(Output, Template, Handler => Handle_Ghost'Access);
+											declare
+												procedure Handle (
+													Output : not null access Ada.Streams.Root_Stream_Type'Class;
+													Tag : in String;
+													Contents : in Web.Producers.Template) is
+												begin
+													if Tag = "count" then
+														Forms.Write_In_HTML (Output, Form, Image (Rest));
+													elsif Tag = "rest" then
+														Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+													elsif Tag = "edit" then
+														if Editing = Ghost then
+															Forms.Write_In_HTML (Output, Form, Editing_Text, Pre => True);
+														end if;
+													else
+														Handle_Player (Output, Tag, Contents); -- rec
+													end if;
+												end Handle;
+											begin
+												Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+											end;
 										end if;
 									end;
 								end if;
@@ -1554,14 +1596,16 @@ is
 										)
 									)
 								then
-									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
+									Web.Producers.Produce (Output, Contents,
+										Handler => Handle_Player'Access); -- rec
 								end if;
 							elsif Tag ="dying" then
 								if Village.State = Playing
 									and then not Person.Commited
 									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died
 								then
-									Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
+									Web.Producers.Produce (Output, Contents,
+										Handler => Handle_Player'Access); -- rec
 								end if;
 							elsif Tag = "note" then
 								if Editing = Howling then
@@ -1580,12 +1624,13 @@ is
 									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died
 									and then Message_Counts(Player_Index).Speech = 0
 								then
-									Web.Producers.Produce(Output, Template);
+									Web.Producers.Produce (Output, Contents);
 								end if;
 							elsif Tag = "role" then
 								if Village.State = Playing then
 									if Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died then
-										Web.Producers.Produce(Output, Template, Handler => Handle_Player'Access);
+										Web.Producers.Produce (Output, Contents,
+											Handler => Handle_Player'Access); -- rec
 									else
 										Forms.Write_In_HTML (Output, Form, Role_Text(Person));
 									end if;
@@ -1818,7 +1863,8 @@ is
 											renames Person.Records.Constant_Reference (Village.Today);
 									begin
 										if Setting.State /= Vampire.Villages.Died then
-											Web.Producers.Produce (Output, Template, Handler => Handle_Player'Access);
+											Web.Producers.Produce (Output, Contents,
+												Handler => Handle_Player'Access); -- rec
 										end if;
 									end;
 								end if;
@@ -1834,51 +1880,56 @@ is
 												Ada.Numerics.MT19937.Random_32);
 										X : Arg;
 										Y : Arg;
-										procedure Handle_Escape (
-											Output : not null access Ada.Streams.Root_Stream_Type'Class;
-											Tag : in String;
-											Template : in Web.Producers.Template) is
-										begin
-											if Tag = "x" then
-												Forms.Write_In_HTML (Output, Form, Image (X));
-											elsif Tag = "value_x" then
-												Forms.Write_Attribute_Name (Output, "value");
-												Forms.Write_Attribute_Open (Output);
-												Forms.Write_In_Attribute (Output, Form, Image (X));
-												Forms.Write_Attribute_Close (Output);
-											elsif Tag = "y" then
-												Forms.Write_In_HTML (Output, Form, Image (Y));
-											elsif Tag = "value_y" then
-												Forms.Write_Attribute_Name (Output, "value");
-												Forms.Write_Attribute_Open (Output);
-												Forms.Write_In_Attribute (Output, Form, Image (Y));
-												Forms.Write_Attribute_Close (Output);
-											elsif Tag = "action_page" then
-												Forms.Write_Attribute_Name (Output, "action");
-												Forms.Write_Link (
-													Output,
-													Form,
-													Current_Directory => Current_Directory,
-													Resource => Forms.Self,
-													Parameters => Form.Parameters_To_Village_Page (
-														Village_Id => Village_Id,
-														User_Id => User_Id,
-														User_Password => User_Password));
-											else
-												Raise_Unknown_Tag (Tag);
-											end if;
-										end Handle_Escape;
 										Seed : aliased Ada.Numerics.MT19937.Generator :=
 											Ada.Numerics.MT19937.Initialize;
 									begin
 										X := Random_Arg (Seed);
 										Y := Random_Arg (Seed);
-										Web.Producers.Produce (Output, Template, Handler => Handle_Escape'Access);
+										declare
+											procedure Handle (
+												Output : not null access Ada.Streams.Root_Stream_Type'Class;
+												Tag : in String;
+												Contents : in Web.Producers.Template) is
+											begin
+												if Tag = "x" then
+													Forms.Write_In_HTML (Output, Form, Image (X));
+												elsif Tag = "value_x" then
+													Forms.Write_Attribute_Name (Output, "value");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, Image (X));
+													Forms.Write_Attribute_Close (Output);
+												elsif Tag = "y" then
+													Forms.Write_In_HTML (Output, Form, Image (Y));
+												elsif Tag = "value_y" then
+													Forms.Write_Attribute_Name (Output, "value");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, Image (Y));
+													Forms.Write_Attribute_Close (Output);
+												elsif Tag = "action_page" then
+													Forms.Write_Attribute_Name (Output, "action");
+													Forms.Write_Link (
+														Output,
+														Form,
+														Current_Directory => Current_Directory,
+														Resource => Forms.Self,
+														Parameters =>
+															Form.Parameters_To_Village_Page (
+																Village_Id => Village_Id,
+																User_Id => User_Id,
+																User_Password => User_Password));
+												else
+													Raise_Unknown_Tag (Tag);
+												end if;
+											end Handle;
+										begin
+											Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+										end;
 									end;
 								end if;
 							elsif Tag = "commited" then
 								if Person.Commited then
-									Web.Producers.Produce (Output, Template, Handler => Handle_Player'Access);
+									Web.Producers.Produce (Output, Contents,
+										Handler => Handle_Player'Access); -- rec
 								end if;
 							elsif Tag = "action_page" then
 								Forms.Write_Attribute_Name (Output, "action");
@@ -1896,144 +1947,154 @@ is
 							end if;
 						end Handle_Player;
 					begin
-						Web.Producers.Produce (Output, Template, "player", Handler => Handle_Player'Access);
+						Web.Producers.Produce (Output, Contents, "player",
+							Handler => Handle_Player'Access);
 					end;
 				elsif User_Id = Tabula.Users.Administrator then
-					Web.Producers.Produce (Output, Template, "administrator", Handler=> Handle'Access);
+					Web.Producers.Produce (Output, Contents, "administrator",
+						Handler=> Handle'Access); -- rec
 				elsif Village.State > Prologue then
-					Web.Producers.Produce (Output, Template, "opened");
+					Web.Producers.Produce (Output, Contents, "opened");
 				elsif Village.People.Length >= Maximum_Number_Of_Persons then
-					Web.Producers.Produce (Output, Template, "over");
+					Web.Producers.Produce (Output, Contents, "over");
 				else
 					declare
 						Cast : Casts.Cast_Collection := Casts.Load (Cast_File_Name);
-						procedure Handle_Entry (
-							Output : not null access Ada.Streams.Root_Stream_Type'Class;
-							Tag : in String;
-							Template : in Web.Producers.Template) is
-						begin
-							if Tag = "works" then
-								String'Write (Output, "<option value=""-1"" selected=""selected"">");
-								Forms.Write_In_HTML (Output, Form, "(既定)");
-								String'Write (Output, "</option>");
-								for Position in Cast.Works.First_Index .. Cast.Works.Last_Index loop
-									declare
-										Item : Casts.Work renames Cast.Works.Constant_Reference (Position);
-									begin
-										if not Casts.Is_Empty (Item) then
-											String'Write (Output, "<option ");
-											Forms.Write_Attribute_Name (Output, "value");
-											Forms.Write_Attribute_Open (Output);
-											Forms.Write_In_Attribute (Output, Form, Image (Position));
-											Forms.Write_Attribute_Close (Output);
-											Character'Write (Output, '>');
-											Forms.Write_In_HTML (Output, Form, Item.Name.Constant_Reference);
-											case Item.Sex is
-												when Casts.Male =>
-													Forms.Write_In_HTML (Output, Form, " (男性職)");
-												when Casts.Female =>
-													Forms.Write_In_HTML (Output, Form, " (女性職)");
-												when Casts.Neutral =>
-													null;
-											end case;
-											if Item.Nominated then
-												Forms.Write_In_HTML (Output, Form, " (指名職)");
-											end if;
-											String'Write (Output, "</option>");
-										end if;
-									end;
-								end loop;
-							elsif Tag = "names" then
-								declare
-									type Sex_To_String is array (Casts.Person_Sex) of String (1 .. 9);
-									Sex_Name : constant Sex_To_String := (" (男性)", " (女性)");
-								begin
-									for Position in Cast.People.First_Index .. Cast.People.Last_Index loop
+					begin
+						Vampire.Villages.Exclude_Taken (Cast, Village);
+						declare
+							procedure Handle (
+								Output : not null access Ada.Streams.Root_Stream_Type'Class;
+								Tag : in String;
+								Contents : in Web.Producers.Template) is
+							begin
+								if Tag = "works" then
+									String'Write (Output, "<option value=""-1"" selected=""selected"">");
+									Forms.Write_In_HTML (Output, Form, "(既定)");
+									String'Write (Output, "</option>");
+									for Position in Cast.Works.First_Index .. Cast.Works.Last_Index loop
 										declare
-											Item : Casts.Person renames Cast.People.Constant_Reference (Position);
+											Item : Casts.Work renames Cast.Works.Constant_Reference (Position);
 										begin
-											if not Casts.Is_Empty (Item) and then Item.Group = Village.Face_Group then
+											if not Casts.Is_Empty (Item) then
 												String'Write (Output, "<option ");
 												Forms.Write_Attribute_Name (Output, "value");
 												Forms.Write_Attribute_Open (Output);
 												Forms.Write_In_Attribute (Output, Form, Image (Position));
 												Forms.Write_Attribute_Close (Output);
 												Character'Write (Output, '>');
-												Forms.Write_In_HTML (Output, Form,
-													Item.Name.Constant_Reference &
-													Sex_Name (Item.Sex));
+												Forms.Write_In_HTML (Output, Form, Item.Name.Constant_Reference);
+												case Item.Sex is
+													when Casts.Male =>
+														Forms.Write_In_HTML (Output, Form, " (男性職)");
+													when Casts.Female =>
+														Forms.Write_In_HTML (Output, Form, " (女性職)");
+													when Casts.Neutral =>
+														null;
+												end case;
+												if Item.Nominated then
+													Forms.Write_In_HTML (Output, Form, " (指名職)");
+												end if;
 												String'Write (Output, "</option>");
 											end if;
 										end;
 									end loop;
-								end;
-							elsif Tag = "request" then
-								for I in Vampire.Villages.Requested_Role loop
-									String'Write (Output, "<option ");
-									Forms.Write_Attribute_Name (Output, "value");
-									Forms.Write_Attribute_Open (Output);
-									Forms.Write_In_Attribute (Output, Form, Vampire.Villages.Requested_Role'Image (I));
-									Forms.Write_Attribute_Close (Output);
-									Character'Write (Output, '>');
-									Forms.Write_In_HTML (Output, Form, Villages.Text.Image (I));
-									String'Write (Output, "</option>");
-								end loop;
-							elsif Tag = "groups" then
-								for I in Cast.Groups.First_Index .. Cast.Groups.Last_Index loop
+								elsif Tag = "names" then
 									declare
-										Item : Casts.Group renames Cast.Groups.Constant_Reference (I);
+										type Sex_To_String is array (Casts.Person_Sex) of String (1 .. 9);
+										Sex_Name : constant Sex_To_String := (" (男性)", " (女性)");
 									begin
+										for Position in Cast.People.First_Index .. Cast.People.Last_Index loop
+											declare
+												Item : Casts.Person renames Cast.People.Constant_Reference (Position);
+											begin
+												if not Casts.Is_Empty (Item) and then Item.Group = Village.Face_Group then
+													String'Write (Output, "<option ");
+													Forms.Write_Attribute_Name (Output, "value");
+													Forms.Write_Attribute_Open (Output);
+													Forms.Write_In_Attribute (Output, Form, Image (Position));
+													Forms.Write_Attribute_Close (Output);
+													Character'Write (Output, '>');
+													Forms.Write_In_HTML (
+														Output,
+														Form,
+														Item.Name.Constant_Reference & Sex_Name (Item.Sex));
+													String'Write (Output, "</option>");
+												end if;
+											end;
+										end loop;
+									end;
+								elsif Tag = "request" then
+									for I in Vampire.Villages.Requested_Role loop
 										String'Write (Output, "<option ");
 										Forms.Write_Attribute_Name (Output, "value");
 										Forms.Write_Attribute_Open (Output);
-										Forms.Write_In_Attribute (Output, Form, Image (Item.Group));
+										Forms.Write_In_Attribute (
+											Output,
+											Form,
+											Vampire.Villages.Requested_Role'Image (I));
 										Forms.Write_Attribute_Close (Output);
-										if Item.Group = Village.Face_Group then
-											Forms.Write_Attribute_Name (Output, "selected");
-											Forms.Write_Attribute_Open (Output);
-											Forms.Write_In_Attribute (Output, Form, "selected");
-											Forms.Write_Attribute_Close (Output);
-										end if;
 										Character'Write (Output, '>');
-										Forms.Write_In_HTML (Output, Form, Item.Name.Constant_Reference);
-										if Item.Group = Village.Face_Group then
-											Forms.Write_In_HTML (Output, Form, " *");
-										end if;
+										Forms.Write_In_HTML (Output, Form, Villages.Text.Image (I));
 										String'Write (Output, "</option>");
-									end;
-								end loop;
-							elsif Tag = "facegroups" then
-								if Village.People.Is_Empty then
-									Web.Producers.Produce (Output, Template, Handler => Handle_Entry'Access);
+									end loop;
+								elsif Tag = "groups" then
+									for I in Cast.Groups.First_Index .. Cast.Groups.Last_Index loop
+										declare
+											Item : Casts.Group renames Cast.Groups.Constant_Reference (I);
+										begin
+											String'Write (Output, "<option ");
+											Forms.Write_Attribute_Name (Output, "value");
+											Forms.Write_Attribute_Open (Output);
+											Forms.Write_In_Attribute (Output, Form, Image (Item.Group));
+											Forms.Write_Attribute_Close (Output);
+											if Item.Group = Village.Face_Group then
+												Forms.Write_Attribute_Name (Output, "selected");
+												Forms.Write_Attribute_Open (Output);
+												Forms.Write_In_Attribute (Output, Form, "selected");
+												Forms.Write_Attribute_Close (Output);
+											end if;
+											Character'Write (Output, '>');
+											Forms.Write_In_HTML (Output, Form, Item.Name.Constant_Reference);
+											if Item.Group = Village.Face_Group then
+												Forms.Write_In_HTML (Output, Form, " *");
+											end if;
+											String'Write (Output, "</option>");
+										end;
+									end loop;
+								elsif Tag = "facegroups" then
+									if Village.People.Is_Empty then
+										Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
+									end if;
+								elsif Tag = "action_page" then
+									Forms.Write_Attribute_Name (Output, "action");
+									Forms.Write_Link (
+										Output,
+										Form,
+										Current_Directory => Current_Directory,
+										Resource => Forms.Self,
+										Parameters =>
+											Form.Parameters_To_Village_Page (
+												Village_Id => Village_Id,
+												User_Id => User_Id,
+												User_Password => User_Password));
+								else
+									Raise_Unknown_Tag (Tag);
 								end if;
-							elsif Tag = "action_page" then
-								Forms.Write_Attribute_Name (Output, "action");
-								Forms.Write_Link (
-									Output,
-									Form,
-									Current_Directory => Current_Directory,
-									Resource => Forms.Self,
-									Parameters => Form.Parameters_To_Village_Page (
-										Village_Id => Village_Id,
-										User_Id => User_Id,
-										User_Password => User_Password));
-							else
-								Raise_Unknown_Tag (Tag);
-							end if;
-						end Handle_Entry;
-					begin
-						Vampire.Villages.Exclude_Taken (Cast, Village);
-						Web.Producers.Produce (Output, Template, "entry", Handler => Handle_Entry'Access);
+							end Handle;
+						begin
+							Web.Producers.Produce (Output, Contents, "entry", Handler => Handle'Access);
+						end;
 					end;
 				end if;
 			end if;
 		elsif Tag = "next" then
 			if Day < Village.Today and then Tip_Showed then
 				declare
-					procedure Handle_Next (
+					procedure Handle (
 						Output : not null access Ada.Streams.Root_Stream_Type'Class;
 						Tag : in String;
-						Template : in Web.Producers.Template) is
+						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "href_next" then
 							Forms.Write_Attribute_Name (Output, "href");
@@ -2050,9 +2111,9 @@ is
 						else
 							Raise_Unknown_Tag (Tag);
 						end if;
-					end Handle_Next;
+					end Handle;
 				begin
-					Web.Producers.Produce (Output, Template, Handler => Handle_Next'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
 				end;
 			end if;
 		elsif Tag = "scroll" then
@@ -2060,7 +2121,7 @@ is
 				and then Day = Village.Today
 				and then Player_Index >= 0
 			then
-				Web.Producers.Produce (Output, Template);
+				Web.Producers.Produce (Output, Contents);
 			end if;
 		else
 			Raise_Unknown_Tag (Tag);

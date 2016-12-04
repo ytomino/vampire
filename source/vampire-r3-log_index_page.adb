@@ -11,7 +11,7 @@ is
 	procedure Handle (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Tag : in String;
-		Template : in Web.Producers.Template) is
+		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "background" then
 			Forms.Write_Attribute_Name (Output, "background");
@@ -33,7 +33,7 @@ is
 		elsif Tag = "loglist" then
 			Handle_Village_List (
 				Output,
-				Template,
+				Contents,
 				Form,
 				Current_Directory => HTML_Directory,
 				HTML_Directory => HTML_Directory,

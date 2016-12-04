@@ -100,10 +100,13 @@ package body Vampire.R3 is
 		User_Id : in String;
 		User_Password : in String)
 	is
+		Extract : constant array (Boolean) of access constant String := (
+			new String'("logoff"),
+			new String'("logon"));
 		procedure Handle (
 			Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String;
-			Template : in Web.Producers.Template) is
+			Contents : in Web.Producers.Template) is
 		begin
 			if Tag = "action_page" then
 				Forms.Write_Attribute_Name (Output, "action");
@@ -117,11 +120,11 @@ package body Vampire.R3 is
 						User_Password => User_Password));
 			elsif Tag = "administrator" then
 				if User_Id = Users.Administrator then
-					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 				end if;
 			elsif Tag = "notadmin" then
 				if User_Id /= Users.Administrator then
-					Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+					Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 				end if;
 			elsif Tag = "id" then
 				Forms.Write_In_HTML (Output, Form, User_Id);
@@ -139,9 +142,6 @@ package body Vampire.R3 is
 				Raise_Unknown_Tag (Tag);
 			end if;
 		end Handle;
-		Extract : constant array (Boolean) of access constant String := (
-			new String'("logoff"),
-			new String'("logon"));
 	begin
 		Web.Producers.Produce (
 			Output,
@@ -162,94 +162,6 @@ package body Vampire.R3 is
 		User_Id : in String;
 		User_Password : in String)
 	is
-		procedure Handle (
-			Output : not null access Ada.Streams.Root_Stream_Type'Class;
-			Tag : in String;
-			Template : in Web.Producers.Template) is
-		begin
-			if Tag = "item" then
-				declare
-					Start : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
-				begin
-					if Log then
-						declare
-							C : Natural := Limits;
-						begin
-							for J in reverse Summaries.Iterate loop
-								if Summaries.Constant_Reference (J).State = Tabula.Villages.Closed then
-									C := C - 1;
-									if C = 0 then
-										Start := J;
-										exit;
-									end if;
-								end if;
-							end loop;
-						end;
-					end if;
-					for I in Summaries.Iterate (Start, Summaries.Last) loop
-						declare
-							Key : Tabula.Villages.Village_Id
-								renames Tabula.Villages.Lists.Summary_Maps.Key (I);
-							Element : Tabula.Villages.Lists.Village_Summary
-								renames Summaries.Constant_Reference (I);
-							procedure Handle_Item (Output : not null access Ada.Streams.Root_Stream_Type'Class;
-								Tag : in String; Template : in Web.Producers.Template) is
-							begin
-								if Tag = "day" then
-									Forms.Write_In_HTML (
-										Output,
-										Form,
-										Day_Name (
-											Element.Today,
-											Element.Today,
-											Element.State));
-								elsif Tag = "href_village" then
-									Forms.Write_Attribute_Name (Output, "href");
-									Forms.Write_Link_To_Village_Page (
-										Output,
-										Form,
-										Current_Directory => Current_Directory,
-										HTML_Directory => HTML_Directory,
-										Log => Log,
-										Village_Id => Key,
-										User_Id => User_Id,
-										User_Password => User_Password);
-								elsif Tag = "id" then
-									Forms.Write_In_HTML (
-										Output,
-										Form,
-										Key);
-								elsif Tag = "name" then
-									if Element.Term = Tabula.Villages.Short then
-										Forms.Write_In_HTML (
-											Output,
-											Form,
-											"短期 ");
-									end if;
-									Forms.Write_In_HTML (
-										Output,
-										Form,
-										Element.Name.Constant_Reference);
-								elsif Tag = "people" then
-									Forms.Write_In_HTML (
-										Output,
-										Form,
-										Image (Element.People.Length) & "人");
-								else
-									Raise_Unknown_Tag (Tag);
-								end if;
-							end Handle_Item;
-						begin
-							if (Element.State = Tabula.Villages.Closed) = Log then
-								Web.Producers.Produce (Output, Template, Handler => Handle_Item'Access);
-							end if;
-						end;
-					end loop;
-				end;
-			else
-				Raise_Unknown_Tag (Tag);
-			end if;
-		end Handle;
 		Exists : Boolean := False;
 	begin
 		for I in Summaries.Iterate loop
@@ -259,7 +171,88 @@ package body Vampire.R3 is
 			end if;
 		end loop;
 		if Exists then
-			Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+			declare
+				procedure Handle (
+					Output : not null access Ada.Streams.Root_Stream_Type'Class;
+					Tag : in String;
+					Contents : in Web.Producers.Template) is
+				begin
+					if Tag = "item" then
+						declare
+							Start : Tabula.Villages.Lists.Summary_Maps.Cursor := Summaries.First;
+						begin
+							if Log then
+								declare
+									C : Natural := Limits;
+								begin
+									for J in reverse Summaries.Iterate loop
+										if Summaries.Constant_Reference (J).State = Tabula.Villages.Closed then
+											C := C - 1;
+											if C = 0 then
+												Start := J;
+												exit;
+											end if;
+										end if;
+									end loop;
+								end;
+							end if;
+							for I in Summaries.Iterate (Start, Summaries.Last) loop
+								declare
+									Key : Tabula.Villages.Village_Id
+										renames Tabula.Villages.Lists.Summary_Maps.Key (I);
+									Element : Tabula.Villages.Lists.Village_Summary
+										renames Summaries.Constant_Reference (I);
+								begin
+									if (Element.State = Tabula.Villages.Closed) = Log then
+										declare
+											procedure Handle (
+												Output : not null access Ada.Streams.Root_Stream_Type'Class;
+												Tag : in String;
+												Contents : in Web.Producers.Template) is
+											begin
+												if Tag = "day" then
+													Forms.Write_In_HTML (
+														Output,
+														Form,
+														Day_Name (Element.Today, Element.Today, Element.State));
+												elsif Tag = "href_village" then
+													Forms.Write_Attribute_Name (Output, "href");
+													Forms.Write_Link_To_Village_Page (
+														Output,
+														Form,
+														Current_Directory => Current_Directory,
+														HTML_Directory => HTML_Directory,
+														Log => Log,
+														Village_Id => Key,
+														User_Id => User_Id,
+														User_Password => User_Password);
+												elsif Tag = "id" then
+													Forms.Write_In_HTML (Output, Form, Key);
+												elsif Tag = "name" then
+													if Element.Term = Tabula.Villages.Short then
+														Forms.Write_In_HTML (Output, Form, "短期 ");
+													end if;
+													Forms.Write_In_HTML (Output, Form, Element.Name.Constant_Reference);
+												elsif Tag = "people" then
+													Forms.Write_In_HTML (Output, Form, Image (Element.People.Length) & "人");
+												else
+													Raise_Unknown_Tag (Tag);
+												end if;
+											end Handle;
+										begin
+											Web.Producers.Produce (Output, Contents, Handler => Handle'Access);
+										end;
+									end if;
+								end;
+							end loop;
+						end;
+					else
+						Raise_Unknown_Tag (Tag);
+					end if;
+				end Handle;
+			begin
+				Web.Producers.Produce (Output, Template, Handler => Handle'Access);
+			end;
 		end if;
 	end Handle_Village_List;
 	
@@ -280,7 +273,7 @@ package body Vampire.R3 is
 		procedure Handle (
 			Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String;
-			Template : in Web.Producers.Template) is
+			Contents : in Web.Producers.Template) is
 		begin
 			if Tag = "src_image" then
 				Forms.Write_Attribute_Name (Output, "src");
