@@ -16,7 +16,7 @@ package body Tabula.Users.Lists is
 					File : Ada.Streams.Stream_IO.File_Type :=
 						Ada.Streams.Stream_IO.Open (
 							Ada.Streams.Stream_IO.In_File,
-							List.Log_File_Name.all);
+							Name => List.Log_File_Name.all);
 				begin
 					Users_Log.Map'Read (Ada.Streams.Stream_IO.Stream (File), List.Log);
 					Ada.Streams.Stream_IO.Close (File);
@@ -43,7 +43,7 @@ package body Tabula.Users.Lists is
 			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (
 					Ada.Streams.Stream_IO.Out_File,
-					List.Log_File_Name.all);
+					Name => List.Log_File_Name.all);
 		begin
 			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Log);
 			Ada.Streams.Stream_IO.Close (File);

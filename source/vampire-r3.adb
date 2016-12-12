@@ -18,7 +18,8 @@ package body Vampire.R3 is
 		return Web.Producers.Template
 	is
 		File : Ada.Streams.Stream_IO.File_Type :=
-			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Template_Source);
+			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File,
+				Name => Template_Source);
 	begin
 		return Template : Web.Producers.Template :=
 			Web.Producers.Read (

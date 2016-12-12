@@ -54,7 +54,7 @@ package body Tabula.Villages.Lists is
 		File : Ada.Streams.Stream_IO.File_Type :=
 			Ada.Streams.Stream_IO.Create (
 				Ada.Streams.Stream_IO.Out_File,
-				List.Cache_File_Name.all);
+				Name => List.Cache_File_Name.all);
 	begin
 		Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
 		Ada.Streams.Stream_IO.Close (File);
@@ -70,7 +70,7 @@ package body Tabula.Villages.Lists is
 					Cache_File : Ada.Streams.Stream_IO.File_Type :=
 						Ada.Streams.Stream_IO.Open (
 							Ada.Streams.Stream_IO.In_File,
-							List.Cache_File_Name.all);
+							Name => List.Cache_File_Name.all);
 				begin
 					Summary_Maps.Map'Read (Ada.Streams.Stream_IO.Stream (Cache_File), List.Map);
 					Ada.Streams.Stream_IO.Close (Cache_File);

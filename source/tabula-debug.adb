@@ -24,7 +24,7 @@ package body Tabula.Debug is
 		Ada.Streams.Stream_IO.Create (
 			File,
 			Ada.Streams.Stream_IO.Append_File,
-			Name.all);
+			Name => Name.all);
 		declare
 			Stream : Ada.Streams.Stream_IO.Stream_Access :=
 				Ada.Streams.Stream_IO.Stream (File);
