@@ -43,7 +43,7 @@ The Village of Vampire
 ビルドに必要なもの
 ==================
 
-gcc 5を使わせていただいています。
+gcc 6を使わせていただいています。
  http://gcc.gnu.org/
 
 パスワードを保存するときのハッシュ関数にOpenSSLを使わせていただいています。
@@ -53,10 +53,7 @@ gcc 5を使わせていただいています。
  http://pyyaml.org/wiki/LibYAML
 
 C言語のヘッダーをAdaに変換するために"headmaster"(拙作)を使用しています。
- http://panathenaia.halfmoon.jp/alang/headmaster/
-
-"headmaster"のコンパイルのためにはObjective-Caml(3.12.0以降)が必要です。
- http://caml.inria.fr/
+ https://github.com/ytomino/headmaster
 
 Adaの標準ライブラリには、gcc標準のものではなくdrake(拙作)を使用しています。
  https://github.com/ytomino/drake
