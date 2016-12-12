@@ -53,7 +53,6 @@ package body Vampire.R3 is
 					begin
 						Ada.Streams.Stream_IO.Create (
 							Cache_File,
-							Ada.Streams.Stream_IO.Out_File,
 							Name => Template_Cache);
 						Web.Producers.Write_Parsed_Information (
 							Ada.Streams.Stream_IO.Stream (Cache_File),

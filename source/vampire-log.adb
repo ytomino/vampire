@@ -40,7 +40,6 @@ package body Vampire.Log is
 			begin
 				Ada.Streams.Stream_IO.Create (
 					Output,
-					Ada.Streams.Stream_IO.Out_File,
 					Name => Lists.HTML_File_Name (List, Id, Day));
 				R3.Village_Page (
 					Ada.Streams.Stream_IO.Stream(Output),
@@ -92,7 +91,6 @@ package body Vampire.Log is
 		procedure Make_RSS (Summaries : in Lists.Summary_Maps.Map) is
 			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (
-					Ada.Streams.Stream_IO.Out_File,
 					Name => Configurations.Villages_Index_RSS_File_Name);
 			Stream : not null access Ada.Streams.Root_Stream_Type'Class :=
 				Ada.Streams.Stream_IO.Stream (File);

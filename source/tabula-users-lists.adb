@@ -41,9 +41,7 @@ package body Tabula.Users.Lists is
 		Users_Log.Include (List.Log, Item, Now);
 		declare
 			File : Ada.Streams.Stream_IO.File_Type :=
-				Ada.Streams.Stream_IO.Create (
-					Ada.Streams.Stream_IO.Out_File,
-					Name => List.Log_File_Name.all);
+				Ada.Streams.Stream_IO.Create (Name => List.Log_File_Name.all);
 		begin
 			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Log);
 			Ada.Streams.Stream_IO.Close (File);

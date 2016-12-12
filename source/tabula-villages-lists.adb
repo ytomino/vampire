@@ -52,9 +52,7 @@ package body Tabula.Villages.Lists is
 	
 	procedure Cache_Summaries (List : in Village_List) is
 		File : Ada.Streams.Stream_IO.File_Type :=
-			Ada.Streams.Stream_IO.Create (
-				Ada.Streams.Stream_IO.Out_File,
-				Name => List.Cache_File_Name.all);
+			Ada.Streams.Stream_IO.Create (Name => List.Cache_File_Name.all);
 	begin
 		Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
 		Ada.Streams.Stream_IO.Close (File);
