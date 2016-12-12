@@ -20,7 +20,8 @@ package Tabula.Casts is
 	
 	package Groups is new Ada.Containers.Vectors (Natural, Group);
 	
-	function Find (Container : Groups.Vector; Group : Integer) return Groups.Cursor;
+	function Find (Container : Groups.Vector; Group : Integer)
+		return Groups.Cursor;
 	
 	type Neutralable_Sex is (Neutral, Male, Female);
 	subtype Person_Sex is Neutralable_Sex range Male .. Female;
@@ -59,7 +60,8 @@ package Tabula.Casts is
 	
 	package Works is new Ada.Containers.Vectors (Natural, Work);
 	
-	function Find (Works : Casts.Works.Vector; Name : String) return Casts.Works.Cursor;
+	function Find (Works : Casts.Works.Vector; Name : String)
+		return Casts.Works.Cursor;
 	
 	type Cast_Collection is
 		-- limited -- see tabula-casts-load.adb
@@ -69,7 +71,12 @@ package Tabula.Casts is
 		Works : aliased Casts.Works.Vector;
 	end record;
 	
-	procedure Exclude_Person (Cast : in out Cast_Collection; Name : in String; Group : in Integer);
-	procedure Exclude_Work (Cast : in out Cast_Collection; Name : in String);
+	procedure Exclude_Person (
+		Cast : in out Cast_Collection;
+		Name : in String;
+		Group : in Integer);
+	procedure Exclude_Work (
+		Cast : in out Cast_Collection;
+		Name : in String);
 	
 end Tabula.Casts;

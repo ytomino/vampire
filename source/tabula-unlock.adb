@@ -13,12 +13,13 @@ is
 	Now : constant Ada.Calendar.Time := Ada.Calendar.Clock;
 	
 	Output : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
+		Ada.Streams.Stream_IO.Stream (
+			Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
 	
 	Count : Natural := 0;
 begin
 	Debug.Hook (Debug_Log_File_Name, Now);
-	Deleting: loop
+	Deleting : loop
 		begin
 			Ada.Directories.Delete_Tree (Lock_Name.all);
 			delay 0.1;

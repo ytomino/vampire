@@ -60,6 +60,6 @@ private
 		Subject : in Tabula.Villages.Person_Type'Class;
 		Text : in String;
 		Time : in Ada.Calendar.Time; -- 時刻嘘表示用
-		Filter : in String); 
+		Filter : in String);
 	
 end Vampire.R3;

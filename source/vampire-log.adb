@@ -28,10 +28,12 @@ package body Vampire.Log is
 	is
 		Form : Forms.Full.Form_Type := Forms.Full.Create;
 		Template : Web.Producers.Template :=
-			R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all);
+			R3.Read (
+				Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all);
 		Village : aliased Vampire.Villages.Village_Type;
 	begin
-		Vampire.Villages.Load (Lists.File_Name (List, Id), Village, Info_Only => False);
+		Vampire.Villages.Load (Lists.File_Name (List, Id), Village,
+			Info_Only => False);
 		for Day in 0 .. Village.Today loop
 			declare
 				Output : Ada.Streams.Stream_IO.File_Type;
@@ -46,15 +48,19 @@ package body Vampire.Log is
 					Template,
 					Current_Directory => Configurations.Villages_HTML_Directory,
 					HTML_Directory => Configurations.Villages_HTML_Directory,
-					Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
-					Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
-					Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
-					Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+					Image_Directory =>
+						Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+					Style_Sheet =>
+						Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+					Background =>
+						Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+					Relative_Role_Images =>
+						Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
 					Cast_File_Name => Configurations.Cast_File_Name,
 					Log => True,
 					Village_Id => Id,
 					Village => Village,
-					Day => Day, 
+					Day => Day,
 					User_Id => "",
 					User_Password => "");
 				Ada.Streams.Stream_IO.Close(Output);
@@ -68,8 +74,9 @@ package body Vampire.Log is
 	is
 		procedure Make_Log_Index (Summaries : in Lists.Summary_Maps.Map) is
 			Form : Forms.Full.Form_Type := Forms.Full.Create;
-			File: Ada.Streams.Stream_IO.File_Type :=
-				Ada.Streams.Stream_IO.Create (Name => Configurations.Villages_Index_HTML_File_Name);
+			File : Ada.Streams.Stream_IO.File_Type :=
+				Ada.Streams.Stream_IO.Create (
+					Name => Configurations.Villages_Index_HTML_File_Name);
 		begin
 			R3.Log_Index_Page (
 				Ada.Streams.Stream_IO.Stream (File),
@@ -77,12 +84,13 @@ package body Vampire.Log is
 				Configurations.Template_Names (Form.Template_Set).Template_Log_Index_File_Name.all,
 				HTML_Directory => Configurations.Villages_HTML_Directory,
 				Style_Sheet => Configurations.Style_Sheet_File_Name,
-				Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+				Background =>
+					Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
 				Summaries => Summaries);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_Log_Index;
 		procedure Make_RSS (Summaries : in Lists.Summary_Maps.Map) is
-			File: Ada.Streams.Stream_IO.File_Type :=
+			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (
 					Ada.Streams.Stream_IO.Out_File,
 					Configurations.Villages_Index_RSS_File_Name);
@@ -114,10 +122,15 @@ package body Vampire.Log is
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_RSS;
 	begin
-		if Update or else not Ada.Directories.Exists (Configurations.Villages_Index_HTML_File_Name) then
+		if Update
+			or else not Ada.Directories.Exists (
+				Configurations.Villages_Index_HTML_File_Name)
+		then
 			Make_Log_Index (Summaries);
 		end if;
-		if Update or else not Ada.Directories.Exists (Configurations.Villages_Index_RSS_File_Name) then
+		if Update
+			or else not Ada.Directories.Exists (Configurations.Villages_Index_RSS_File_Name)
+		then
 			Make_RSS (Summaries);
 		end if;
 	end Create_Index;

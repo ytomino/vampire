@@ -8,9 +8,7 @@ package Tabula.Users.User_Info_IO is
 		Serializer : not null access Serialization.Serializer;
 		Value : in out User_Info);
 	
-	package Password_Digest_IO is new Serialization.IO_Custom (
-		Password_Digest,
-		Image,
-		Value);
+	package Password_Digest_IO is
+		new Serialization.IO_Custom (Password_Digest, Image, Value);
 	
 end Tabula.Users.User_Info_IO;

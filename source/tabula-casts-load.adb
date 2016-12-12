@@ -11,8 +11,8 @@ begin
 				Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Name => Name);
 		begin
 			declare
-				Parser : aliased YAML.Parser := YAML.Streams.Create (
-					Ada.Streams.Stream_IO.Stream (File));
+				Parser : aliased YAML.Parser :=
+					YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 			begin
 				YAML.Parse_Stream_Start (Parser);
 				Cast_IO.IO (

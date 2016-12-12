@@ -68,7 +68,7 @@ package Vampire.Forms.Mobile is
 	overriding procedure Set_User (
 		Form : in out Form_Type;
 		Cookie : in out Web.Cookie;
-		New_User_Id: in String;
+		New_User_Id : in String;
 		New_User_Password : in String);
 	
 	overriding function Is_User_Page (

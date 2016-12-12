@@ -20,15 +20,16 @@ package body Vampire.R3 is
 		File : Ada.Streams.Stream_IO.File_Type :=
 			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Template_Source);
 	begin
-		return Template : Web.Producers.Template := Web.Producers.Read (
-			Ada.Streams.Stream_IO.Stream (File),
-			Ada.Streams.Stream_IO.Size(File),
-			Parsing => False)
+		return Template : Web.Producers.Template :=
+			Web.Producers.Read (
+				Ada.Streams.Stream_IO.Stream (File),
+				Ada.Streams.Stream_IO.Size (File),
+				Parsing => False)
 		do
 			if Template_Cache'Length > 0 then
 				if Ada.Directories.Exists (Template_Cache)
 					and then Ada.Directories.Modification_Time (Template_Cache) >
-						Ada.Directories.Modification_Time (Template_Source)
+					         Ada.Directories.Modification_Time (Template_Source)
 				then
 					-- read parsed-structure from cache file
 					declare
@@ -115,9 +116,10 @@ package body Vampire.R3 is
 					Form,
 					Current_Directory => ".",
 					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_Index_Page (
-						User_Id => User_Id,
-						User_Password => User_Password));
+					Parameters =>
+						Form.Parameters_To_Index_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
 			elsif Tag = "administrator" then
 				if User_Id = Users.Administrator then
 					Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
@@ -135,9 +137,10 @@ package body Vampire.R3 is
 					Form,
 					Current_Directory => ".",
 					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_User_Page (
-						User_Id => User_Id,
-						User_Password => User_Password));
+					Parameters =>
+						Form.Parameters_To_User_Page (
+							User_Id => User_Id,
+							User_Password => User_Password));
 			else
 				Raise_Unknown_Tag (Tag);
 			end if;
@@ -281,9 +284,10 @@ package body Vampire.R3 is
 					Output,
 					Form,
 					Current_Directory => Current_Directory,
-					Resource => Ada.Hierarchical_File_Names.Compose (
-						Directory => Image_Directory,
-						Relative_Name => Subject.Image.Constant_Reference));
+					Resource =>
+						Ada.Hierarchical_File_Names.Compose (
+							Directory => Image_Directory,
+							Relative_Name => Subject.Image.Constant_Reference));
 			elsif Tag = "width_image" then
 				if Face_Width /= 0 then
 					Forms.Write_Attribute_Name (Output, "width");
@@ -310,7 +314,9 @@ package body Vampire.R3 is
 					declare
 						I : Natural := Villages.Max_Length_Of_Message;
 					begin
-						while I >= Text'First and then Character'Pos (Text (I + 1)) in 16#80# .. 16#bf# loop
+						while I >= Text'First
+							and then Character'Pos (Text (I + 1)) in 16#80# .. 16#bf#
+						loop
 							I := I - 1;
 						end loop;
 						Forms.Write_In_HTML (Output, Form, Text (Text'First .. I));

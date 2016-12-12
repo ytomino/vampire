@@ -23,18 +23,20 @@ is
 				Form,
 				Current_Directory => ".",
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Index_Page (
-					User_Id => User_Id,
-					User_Password => User_Password));
+				Parameters =>
+					Form.Parameters_To_Index_Page (
+						User_Id => User_Id,
+						User_Password => User_Password));
 		elsif Tag = "href_logindex" then
 			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
 				Current_Directory => ".",
-				Resource => Ada.Hierarchical_File_Names.Compose (
-					Directory => HTML_Directory,
-					Relative_Name => "")); -- add a trailing path delimiter
+				Resource =>
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => HTML_Directory,
+						Relative_Name => "")); -- add a trailing path delimiter
 		elsif Tag = "user" then
 			for I in User_List.Iterate loop
 				if Tabula.Villages.Lists.Count_Joined_By (

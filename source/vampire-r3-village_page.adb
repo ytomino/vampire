@@ -44,7 +44,7 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Template : in Web.Producers.Template;
 		Village_Id : in Tabula.Villages.Village_Id;
-		Village : in Vampire.Villages.Village_Type; 
+		Village : in Vampire.Villages.Village_Type;
 		Player : in Boolean;
 		User_Id : in String;
 		User_Password : in String)
@@ -213,15 +213,17 @@ is
 		Message : in String;
 		Button : in String)
 	is
-		Keeping_Silver_Bullet : constant Boolean := Kind = Hunter and then Special = Disallowed;
+		Keeping_Silver_Bullet : constant Boolean :=
+			Kind = Hunter and then Special = Disallowed;
 		Including : Boolean;
 	begin
 		case Form.Template_Set is
 			when Forms.For_Full =>
 				String'Write (
 					Output,
-					"<form method=""POST"" class=""inner"">" & Line_Break &
-					"<table><tr>" & Line_Break & "<td class=""input"">");
+					"<form method=""POST"" class=""inner"">" & Line_Break
+						& "<table><tr>" & Line_Break
+						& "<td class=""input"">");
 			when Forms.For_Mobile =>
 				String'Write (
 					Output,
@@ -232,10 +234,11 @@ is
 					Form,
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_Village_Page (
-						Village_Id => Village_Id,
-						User_Id => User_Id,
-						User_Password => User_Password));
+					Parameters =>
+						Form.Parameters_To_Village_Page (
+							Village_Id => Village_Id,
+							User_Id => User_Id,
+							User_Password => User_Password));
 				Character'Write (Output, '>');
 		end case;
 		Forms.Write_In_HTML (Output, Form, Message);
@@ -244,15 +247,23 @@ is
 			if Position /= Player then
 				case Kind is
 					when Vampire.Villages.Inhabitant =>
-						Including := Village.People.Constant_Reference(Position).Records.Constant_Reference (Village.Target_Day).State /= Vampire.Villages.Died
-							and then Village.People.Constant_Reference(Position).Records.Constant_Reference (Village.Target_Day).Candidate;
+						Including :=
+							Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Target_Day).State /=
+							Vampire.Villages.Died
+							and then Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Target_Day).Candidate;
 					when Vampire.Villages.Detective =>
-						Including := Village.People.Constant_Reference(Position).Records.Constant_Reference (Village.Target_Day).State = Vampire.Villages.Died;
+						Including :=
+							Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Target_Day).State =
+							Vampire.Villages.Died;
 					when Vampire.Villages.Vampire_Role =>
-						Including := Village.People.Constant_Reference(Position).Records.Constant_Reference (Village.Target_Day).State /= Vampire.Villages.Died
-							and then Village.People.Constant_Reference(Position).Role not in Vampire.Villages.Vampire_Role;
+						Including :=
+							Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Target_Day).State /=
+							Vampire.Villages.Died
+							and then Village.People.Constant_Reference (Position).Role not in Vampire.Villages.Vampire_Role;
 					when others =>
-						Including := Village.People.Constant_Reference(Position).Records.Constant_Reference (Village.Target_Day).State /= Vampire.Villages.Died;
+						Including :=
+							Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Target_Day).State /=
+							Vampire.Villages.Died;
 				end case;
 				if Including then
 					String'Write(Output, "<option ");
@@ -268,7 +279,10 @@ is
 						Forms.Write_Attribute_Close (Output);
 					end if;
 					Character'Write (Output, '>');
-					Forms.Write_In_HTML (Output, Form, Villages.Text.Name(Village.People.Constant_Reference(Position)));
+					Forms.Write_In_HTML (
+						Output,
+						Form,
+						Villages.Text.Name (Village.People.Constant_Reference (Position)));
 					if Current = Position then
 						Forms.Write_In_HTML (Output, Form, " *");
 					end if;
@@ -360,37 +374,49 @@ is
 	end Vote_Form;
 	
 	function Role_Text(Person : Vampire.Villages.Person_Type) return String is
-		Setting : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Village.Today);
+		Setting : Vampire.Villages.Person_Record
+			renames Person.Records.Constant_Reference (Village.Today);
 	begin
 		if Setting.State = Vampire.Villages.Died then
 			return "あなたは幽霊です。";
 		else
 			case Person.Role is
-				when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant =>
+				when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant
+					| Vampire.Villages.Unfortunate_Inhabitant =>
 					return "あなたは村人です。";
 				when Vampire.Villages.Doctor =>
 					if Setting.Target >= 0 then
-						return "あなたは医者、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を診察しました。";
+						return "あなたは医者、"
+							& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+							& "を診察しました。";
 					else
 						return "あなたは医者です。";
 					end if;
 				when Vampire.Villages.Detective =>
 					if Setting.Target >= 0 then
-						return "あなたは探偵、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を調査中です。";
+						return "あなたは探偵、"
+							& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+							& "を調査中です。";
 					else
 						return "あなたは探偵です。";
 					end if;
 				when Vampire.Villages.Astronomer =>
 					if Person.Commited and then Setting.Target >= 0 then
-						return "あなたは天文家、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "の家の空を観測します。";
+						return "あなたは天文家、"
+							& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+							& "の家の空を観測します。";
 					else
 						return "あなたは天文家です。";
 					end if;
 				when Vampire.Villages.Hunter =>
 					if Person.Commited and then Setting.Target >= 0 and then Setting.Special then
-						return "あなたは猟師、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を銀の弾丸で守ります。";
+						return "あなたは猟師、"
+							& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+							& "を銀の弾丸で守ります。";
 					elsif Person.Commited and then Setting.Target >= 0 then
-						return "あなたは猟師、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を守ります。";
+						return "あなたは猟師、"
+							& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+							& "を守ります。";
 					elsif Person.Commited and then Setting.Special then
 						return "あなたは猟師、銃には銀の弾丸を装填しています。";
 					else
@@ -398,8 +424,12 @@ is
 					end if;
 				when Vampire.Villages.Lover =>
 					for Position in Village.People.First_Index .. Village.People.Last_Index loop
-						if Village.People.Constant_Reference(Position).Role = Vampire.Villages.Loved_Inhabitant then
-							return "あなたは" & Villages.Text.Name(Village.People.Constant_Reference(Position)) & "に片想いです。";
+						if Village.People.Constant_Reference (Position).Role =
+						   Vampire.Villages.Loved_Inhabitant
+						then
+							return "あなたは"
+								& Villages.Text.Name (Village.People.Constant_Reference (Position))
+								& "に片想いです。";
 						end if;
 					end loop;
 					pragma Assert(False);
@@ -407,9 +437,12 @@ is
 				when Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F =>
 					for Position in Village.People.First_Index .. Village.People.Last_Index loop
 						if Village.People.Constant_Reference(Position).Role /= Person.Role
-							and then Village.People.Constant_Reference(Position).Role in Vampire.Villages.Sweetheart_M .. Vampire.Villages.Sweetheart_F
+							and then Village.People.Constant_Reference (Position).Role in
+								Vampire.Villages.Sweetheart_M .. Vampire.Villages.Sweetheart_F
 						then
-							return "あなたは" & Villages.Text.Name(Village.People.Constant_Reference(Position)) & "の恋人です。";
+							return "あなたは"
+								& Villages.Text. Name (Village.People.Constant_Reference (Position))
+								& "の恋人です。";
 						end if;
 					end loop;
 					pragma Assert(False);
@@ -418,10 +451,13 @@ is
 					return "あなたは吸血鬼に身を捧げることが喜びである使徒です。";
 				when Vampire.Villages.Vampire_Role =>
 					declare
-						Mark : constant array(Vampire.Villages.Vampire_Role) of Character := ('K', 'Q', 'J');
+						Mark : constant array (Vampire.Villages.Vampire_Role) of Character :=
+							('K', 'Q', 'J');
 					begin
 						if Person.Commited and then Setting.Target >= 0 then
-							return "あなたは吸血鬼(" & Mark(Person.Role) & ")、" & Villages.Text.Name(Village.People.Constant_Reference(Setting.Target)) & "を襲います。";
+							return "あなたは吸血鬼(" & Mark (Person.Role) & ")、"
+								& Villages.Text.Name (Village.People.Constant_Reference (Setting.Target))
+								& "を襲います。";
 						else
 							return "あなたは吸血鬼(" & Mark(Person.Role) & ")です。";
 						end if;
@@ -436,7 +472,8 @@ is
 	
 	Message_Range : constant Tabula.Villages.Message_Range_Type :=
 		Village.Message_Range (Day);
-	Message_Counts : Vampire.Villages.Message_Counts renames Vampire.Villages.Count_Messages (Village, Day);
+	Message_Counts : Vampire.Villages.Message_Counts
+		renames Vampire.Villages.Count_Messages (Village, Day);
 	Tip_Showed : Boolean := False;
 	
 	type Paging_Pos is (Top, Bottom, Tip);
@@ -462,22 +499,26 @@ is
 					Form,
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_Village_Page (
-						Village_Id => Village_Id,
-						Day => Day,
-						First => Message_Range.First,
-						Last => Integer'Max (Message_Range.First, Message_Range.Last),
-						User_Id => User_Id,
-						User_Password => User_Password));
+					Parameters =>
+						Form.Parameters_To_Village_Page (
+							Village_Id => Village_Id,
+							Day => Day,
+							First => Message_Range.First,
+							Last => Integer'Max (Message_Range.First, Message_Range.Last),
+							User_Id => User_Id,
+							User_Password => User_Password));
 				Character'Write (Output, '>');
 				Forms.Write_In_HTML (Output, Form, "全");
 				String'Write (Output, "</a>");
 			end if;
-			for I in 0 .. (Message_Range.Last - Message_Range.First) / Form.Speeches_Per_Page loop
+			for I in
+				0 .. (Message_Range.Last - Message_Range.First) / Form.Speeches_Per_Page
+			loop
 				declare
 					I_S : constant String := Image (I + 1);
 					I_F : constant Natural := I * Form.Speeches_Per_Page;
-					I_L : Integer := Natural'Min (Message_Range.Last, I_F + (Form.Speeches_Per_Page - 1));
+					I_L : Integer :=
+						Natural'Min (Message_Range.Last, I_F + (Form.Speeches_Per_Page - 1));
 				begin
 					if F = I_F and then L = I_L then
 						Forms.Write_In_HTML (Output, Form, "|" & I_S);
@@ -490,13 +531,14 @@ is
 							Form,
 							Current_Directory => Current_Directory,
 							Resource => Forms.Self,
-							Parameters => Form.Parameters_To_Village_Page (
-								Village_Id => Village_Id,
-								Day => Day,
-								First => I_F,
-								Last => I_L,
-								User_Id => User_Id,
-								User_Password => User_Password));
+							Parameters =>
+								Form.Parameters_To_Village_Page (
+									Village_Id => Village_Id,
+									Day => Day,
+									First => I_F,
+									Last => I_L,
+									User_Id => User_Id,
+									User_Password => User_Password));
 						Character'Write (Output, '>');
 						Forms.Write_In_HTML (Output, Form, I_S);
 						String'Write (Output, "</a>");
@@ -505,7 +547,10 @@ is
 			end loop;
 			if Village.State = Closed or else Day /= Village.Today then
 				Forms.Write_In_HTML (Output, Form, "|");
-			elsif F = Integer'Max (Message_Range.First, Message_Range.Last - (Form.Speeches_Per_Page - 1))
+			elsif F =
+			      Integer'Max (
+			      	Message_Range.First,
+			      	Message_Range.Last - (Form.Speeches_Per_Page - 1))
 				and then L = Message_Range.Last
 			then
 				Forms.Write_In_HTML (Output, Form, "|新|");
@@ -518,12 +563,13 @@ is
 					Form,
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
-					Parameters => Form.Parameters_To_Village_Page (
-						Village_Id => Village_Id,
-						Day => Day,
-						Latest => Form.Speeches_Per_Page,
-						User_Id => User_Id,
-						User_Password => User_Password));
+					Parameters =>
+						Form.Parameters_To_Village_Page (
+							Village_Id => Village_Id,
+							Day => Day,
+							Latest => Form.Speeches_Per_Page,
+							User_Id => User_Id,
+							User_Password => User_Password));
 				Character'Write (Output, '>');
 				Forms.Write_In_HTML (Output, Form, "新");
 				String'Write (Output, "</a>");
@@ -569,8 +615,8 @@ is
 			Forms.Write_In_HTML (
 				Output,
 				Form,
-				Village.Name.Constant_Reference & ' ' &
-				Day_Name (Day, Village.Today, Village.State));
+				Village.Name.Constant_Reference & ' '
+					& Day_Name (Day, Village.Today, Village.State));
 		elsif Tag = "background" then
 			Forms.Write_Attribute_Name (Output, "background");
 			Forms.Write_Link (
@@ -587,7 +633,10 @@ is
 				String'Write (Output, ".pg{display:none;} ");
 				String'Write (Output, "</style>");
 				for I in Village.People.First_Index .. Village.People.Last_Index loop
-					String'Write (Output, "<style id=""s" & Image (I) & """>.p" & Image (I) & "{display:block;} </style>");
+					String'Write (
+						Output,
+						"<style id=""s" & Image (I) & """>.p" & Image (I)
+							& "{display:block;} </style>");
 				end loop;
 				String'Write (Output, "<style id=""sg"">.pg{display:block;} </style>");
 			end if;
@@ -611,7 +660,8 @@ is
 						when Daytime => Next := Village.Daytime_To_Vote;
 						when Vote => Next := Village.Vote_To_Night;
 					end case;
-					Ada.Calendar.Formatting.Split(Next, Y, M, D, H, N, S, T, Time_Zone => Calendar.Time_Offset);
+					Ada.Calendar.Formatting.Split (Next, Y, M, D, H, N, S, T,
+						Time_Zone => Calendar.Time_Offset);
 					declare
 						Y : String renames Ada.Calendar.Year_Number'Image(Next_Dawn.Y);
 						M : String renames Ada.Calendar.Month_Number'Image(Next_Dawn.M);
@@ -620,20 +670,23 @@ is
 						N : String renames Ada.Calendar.Formatting.Minute_Number'Image(Next_Dawn.N);
 						S : String renames Ada.Calendar.Formatting.Second_Number'Image(Next_Dawn.S);
 					begin
-						String'Write (Output, Line_Break &
-							"<script type=""text/javascript"">" &
-							"var limit = new Date(" & Y & "," & M & " - 1," & D & "," & H & "," & N & "," & S & ");" &
-							"var timer = setTimeout('on_time()', 500);" &
-							"function on_time(){" &
-							"clearTimeout(timer);" &
-							"var t = (limit.getTime() - (new Date).getTime()) / 1000;" &
-							"var m = document.getElementById('min');" &
-							"if(m) m.firstChild.nodeValue = Math.floor(t / 60);" &
-							"var s = document.getElementById('sec');" &
-							"if(s) s.firstChild.nodeValue = Math.floor(t % 60);" &
-							"timer = setTimeout('on_time()', 500);" &
-							"}" &
-							"</script>");
+						String'Write (
+							Output,
+							Line_Break
+								& "<script type=""text/javascript"">"
+								& "var limit = new Date(" & Y & "," & M & " - 1," & D & "," & H & "," & N & ","
+								& S & ");"
+								& "var timer = setTimeout('on_time()', 500);"
+								& "function on_time(){"
+								& "clearTimeout(timer);"
+								& "var t = (limit.getTime() - (new Date).getTime()) / 1000;"
+								& "var m = document.getElementById('min');"
+								& "if(m) m.firstChild.nodeValue = Math.floor(t / 60);"
+								& "var s = document.getElementById('sec');"
+								& "if(s) s.firstChild.nodeValue = Math.floor(t % 60);"
+								& "timer = setTimeout('on_time()', 500);"
+								& "}"
+								& "</script>");
 					end;
 				end Next_Dawn;
 			end if;
@@ -687,10 +740,11 @@ is
 							for I in Village.People.First_Index .. Village.People.Last_Index loop
 								declare
 									Person : Vampire.Villages.Person_Type
-										renames Village.People.Constant_Reference(I);
+										renames Village.People.Constant_Reference (I);
 								begin
 									if (Village.State >= Epilogue and then Village.Today = Day)
-										or else Person.Records.Constant_Reference(Day).State /= Vampire.Villages.Died
+										or else Person.Records.Constant_Reference (Day).State /=
+										        Vampire.Villages.Died
 									then
 										declare
 											procedure Handle (
@@ -757,8 +811,8 @@ is
 									Village.State >= Epilogue
 									or else (
 										Player_Index /= No_Person
-										and then Village.People.Constant_Reference(Player_Index).
-											Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died))
+										and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State =
+										         Vampire.Villages.Died))
 							then
 								Web.Producers.Produce (Output, Contents);
 							end if;
@@ -782,7 +836,10 @@ is
 					User_Password => User_Password);
 			end if;
 		elsif Tag = "roleset" then
-			if Day = 0 and then Village.State <= Playing and then Village.People.Length >= 3 then
+			if Day = 0
+				and then Village.State <= Playing
+				and then Village.People.Length >= 3
+			then
 				declare
 					Sets : constant Vampire.Villages.Teaming.Role_Set_Array :=
 						Vampire.Villages.Teaming.Possibilities (
@@ -834,9 +891,10 @@ is
 				Form,
 				Current_Directory => Current_Directory,
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Index_Page (
-					User_Id => User_Id,
-					User_Password => User_Password));
+				Parameters =>
+					Form.Parameters_To_Index_Page (
+						User_Id => User_Id,
+						User_Password => User_Password));
 		elsif Tag = "all" then
 			if Showing_Range.First > Message_Index'First then
 				declare
@@ -852,12 +910,13 @@ is
 								Form,
 								Current_Directory => Current_Directory,
 								Resource => Forms.Self,
-								Parameters => Form.Parameters_To_Village_Page (
-									Village_Id => Village_Id,
-									Day => Day,
-									First => Tabula.Villages.Message_Index'First,
-									User_Id => User_Id,
-									User_Password => User_Password));
+								Parameters =>
+									Form.Parameters_To_Village_Page (
+										Village_Id => Village_Id,
+										Day => Day,
+										First => Tabula.Villages.Message_Index'First,
+										User_Id => User_Id,
+										User_Password => User_Password));
 						else
 							Raise_Unknown_Tag (Tag);
 						end if;
@@ -929,7 +988,8 @@ is
 					Subject_Ref : access constant Villages.Person_Type;
 				begin
 					if Message.Kind = Escaped_Speech then
-						Subject_Ref := Village.Escaped_People.Constant_Reference (Message.Subject).Element;
+						Subject_Ref :=
+							Village.Escaped_People.Constant_Reference (Message.Subject).Element;
 					elsif Message.Kind in Detective_Message_Kind then
 						Subject_Ref := Village.People.Constant_Reference (Message.Target).Element;
 					else
@@ -960,7 +1020,11 @@ is
 						Text => Message.Text.Constant_Reference,
 						Filter => Filter.Constant_Reference);
 				end Speech;
-				procedure Note (Subject : in Vampire.Villages.Person_Type; Rec : in Vampire.Villages.Person_Record; Class : in String) is
+				procedure Note (
+					Subject : in Vampire.Villages.Person_Type;
+					Rec : in Vampire.Villages.Person_Record;
+					Class : in String)
+				is
 					Silence : aliased constant String := "……。";
 					Text : access constant String := Rec.Note.Constant_Reference.Element;
 				begin
@@ -989,7 +1053,8 @@ is
 						Ada.Numerics.MT19937.Generator,
 						Ada.Numerics.MT19937.Random_32);
 				Executed : Integer := -1;
-				Speech_Index : Tabula.Villages.Message_Index := Tabula.Villages.Message_Index'First;
+				Speech_Index : Tabula.Villages.Message_Index :=
+					Tabula.Villages.Message_Index'First;
 				X : X_Type := 2;
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
@@ -999,9 +1064,12 @@ is
 				if Form.Paging then
 					Paging (Output, Top);
 				end if;
-				for Position in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+				for Position in
+					Village.Messages.First_Index .. Village.Messages.Last_Index
+				loop
 					declare
-						Message : Vampire.Villages.Message renames Village.Messages.Constant_Reference(Position);
+						Message : Vampire.Villages.Message
+							renames Village.Messages.Constant_Reference (Position);
 					begin
 						if Message.Day = Day then
 							if Speech_Index in Showing_Range.First .. Showing_Range.Last + 1 then
@@ -1025,8 +1093,7 @@ is
 										begin
 											if Message.Kind = Escaped_Speech then
 												Subject := Village.Joined (
-													Village.Escaped_People.Constant_Reference (Message.Subject).
-														Id.Constant_Reference);
+													Village.Escaped_People.Constant_Reference (Message.Subject).Id.Constant_Reference);
 												if Subject /= No_Person
 													and then not Same_Id_And_Figure (
 														Village.Escaped_People.Constant_Reference (Message.Subject),
@@ -1050,7 +1117,8 @@ is
 													Last_Speech := Subject;
 													if Message.Time - Last_Speech_Time < Speech_Simultaneous then
 														declare
-															Uso : constant Duration := Duration(Long_Long_Integer(Message.Time - Calendar.Null_Time) rem 3);
+															Uso : constant Duration :=
+																Duration (Long_Long_Integer (Message.Time - Calendar.Null_Time) rem 3);
 														begin
 															Last_Speech_Time := Last_Speech_Time + Speech_Simultaneous + Uso;
 														end;
@@ -1066,27 +1134,33 @@ is
 											end if;
 										end;
 									when Vampire.Villages.Monologue =>
-										if Village.State >= Epilogue
-											or else Message.Subject = Player_Index
-										then
+										if Village.State >= Epilogue or else Message.Subject = Player_Index then
 											Speech (Message, Message.Subject, Message.Time, "monologue");
 										end if;
 									when Vampire.Villages.Ghost =>
 										if Village.State >= Epilogue
-											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died)
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State =
+												         Vampire.Villages.Died)
 										then
 											Speech (Message, Message.Subject, Message.Time, "ghost");
 										end if;
 									when Vampire.Villages.Howling =>
 										if Village.State >= Epilogue
-											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role)
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Role in
+													Vampire.Villages.Vampire_Role)
 										then
 											Speech (Message, Message.Subject, Message.Time, "vampire");
 										end if;
 									when Vampire.Villages.Howling_Blocked =>
 										if Village.State >= Epilogue
-											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role)
-										then
+												or else (
+													Player_Index >= 0
+													and then Village.People.Constant_Reference (Player_Index).Role
+														in Vampire.Villages.Vampire_Role) then
 											Narration (
 												Villages.Text.Howling_Blocked (Village),
 												"narrationi",
@@ -1216,7 +1290,9 @@ is
 												Vampire.Villages.Astronomer);
 										end if;
 									when Vampire.Villages.Hunter_Message_Kind =>
-										if Village.State >= Tabula.Villages.Epilogue or else Player_Index = Message.Subject then
+										if Village.State >= Tabula.Villages.Epilogue
+											or else Player_Index = Message.Subject
+										then
 											Narration (
 												Villages.Text.Hunter_Guard_Message (Village, Message),
 												"narrationi",
@@ -1224,16 +1300,21 @@ is
 										end if;
 									when Vampire.Villages.Meeting =>
 										if Village.State >= Epilogue
-											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role)
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Role in
+													Vampire.Villages.Vampire_Role)
 										then
 											for Role in Vampire.Villages.Vampire_Role loop
 												for I in Village.People.First_Index .. Village.People.Last_Index loop
 													declare
-														Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I);
+														Person : Vampire.Villages.Person_Type
+															renames Village.People.Constant_Reference (I);
 													begin
 														if Person.Role = Role then
 															declare
-																Yesterday_Record : Vampire.Villages.Person_Record renames Person.Records.Constant_Reference(Day - 1);
+																Yesterday_Record : Vampire.Villages.Person_Record
+																	renames Person.Records.Constant_Reference (Day - 1);
 															begin
 																if Yesterday_Record.State /= Vampire.Villages.Died and then Executed /= I then
 																	Note(Person, Yesterday_Record, "vampire");
@@ -1246,10 +1327,14 @@ is
 										end if;
 									when Vampire.Villages.Vampire_Message_Kind =>
 										if Village.State >= Epilogue
-											or else (Player_Index /= No_Person
-												and then (Message.Subject = Player_Index
-													or else (Village.People.Constant_Reference (Message.Subject).Role in Vampire_Role
-														and then Village.People.Constant_Reference (Player_Index).Role in Vampire_Role)))
+											or else (
+												Player_Index /= No_Person
+												and then (
+													Message.Subject = Player_Index
+													or else (
+														Village.People.Constant_Reference (Message.Subject).Role in Vampire_Role
+														and then Village.People.Constant_Reference (Player_Index).Role in
+															Vampire_Role)))
 										then
 											Narration (
 												Villages.Text.Vampire_Murder_Message (Village, Message, Executed),
@@ -1271,7 +1356,10 @@ is
 												Vampire.Villages.Lover);
 										end if;
 									when Vampire.Villages.Sweetheart_Suicide =>
-										if Village.State >= Epilogue or else (Player_Index = Message.Subject) or else (Player_Index = Message.Target) then
+										if Village.State >= Epilogue
+											or else (Player_Index = Message.Subject)
+											or else (Player_Index = Message.Target)
+										then
 											Narration(
 												Villages.Text.Sweetheart_Suicide (Village, Message),
 												"narrationi",
@@ -1286,11 +1374,15 @@ is
 											declare
 												Log : aliased Ada.Strings.Unbounded.Unbounded_String;
 											begin
-												Ada.Strings.Unbounded.Append (Log, Villages.Text.Fatalities (Village, Message.Day, Executed));
+												Ada.Strings.Unbounded.Append (
+													Log,
+													Villages.Text.Fatalities (Village, Message.Day, Executed));
 												if not Log.Is_Null then
 													Ada.Strings.Unbounded.Append (Log, Line_Break);
 												end if;
-												Ada.Strings.Unbounded.Append (Log, Villages.Text.Survivors (Village, Message.Day));
+												Ada.Strings.Unbounded.Append (
+													Log,
+													Villages.Text.Survivors (Village, Message.Day));
 												Narration (Log.Constant_Reference);
 											end;
 											if Message.Day = 2 then
@@ -1303,7 +1395,10 @@ is
 										Narration (Villages.Text.Introduction (Village));
 									when Vampire.Villages.Breakdown =>
 										if Village.State >= Epilogue
-											or else (Player_Index >= 0 and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role)
+											or else (
+												Player_Index >= 0
+												and then Village.People.Constant_Reference (Player_Index).Role in
+													Vampire.Villages.Vampire_Role)
 										then
 											Narration (
 												Villages.Text.Vampires (Village),
@@ -1314,7 +1409,9 @@ is
 										Narration (Villages.Text.Teaming (Village));
 								end case;
 							end if;
-							if Message.Kind = Vampire.Villages.Speech or else Message.Kind = Vampire.Villages.Escaped_Speech then
+							if Message.Kind = Vampire.Villages.Speech
+								or else Message.Kind = Vampire.Villages.Escaped_Speech
+							then
 								Speech_Index := Speech_Index + 1;
 							end if;
 						end if;
@@ -1325,8 +1422,10 @@ is
 					if Village.State >= Epilogue and then Day < Village.Today then
 						for I in Village.People.First_Index .. Village.People.Last_Index loop
 							declare
-								Subject : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I);
-								Rec : Vampire.Villages.Person_Record renames Subject.Records.Constant_Reference(Day);
+								Subject : Vampire.Villages.Person_Type
+									renames Village.People.Constant_Reference (I);
+								Rec : Vampire.Villages.Person_Record
+									renames Subject.Records.Constant_Reference (Day);
 							begin
 								if Rec.State = Vampire.Villages.Died and then not Rec.Note.Is_Null then
 									Note(Subject, Rec, "dying");
@@ -1347,9 +1446,12 @@ is
 									begin
 										for I in Village.People.First_Index .. Village.People.Last_Index loop
 											declare
-												P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference(I);
+												P : Vampire.Villages.Person_Type renames Village.People.Constant_Reference (I);
 											begin
-												if not P.Commited and then P.Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died then
+												if not P.Commited
+													and then P.Records.Constant_Reference (Village.Today).State /=
+													         Vampire.Villages.Died
+												then
 													if Second then
 														Forms.Write_In_HTML (Output, Form, "、");
 													end if;
@@ -1380,8 +1482,9 @@ is
 															Forms.Write_In_HTML (
 																Output,
 																Form,
-																Ada.Calendar.Formatting.Image (Village.Infection_In_First_Time, Time_Zone => Calendar.Time_Offset) &
-																"まではとりあえず様子をうかがいましょう。 ");
+																Ada.Calendar.Formatting.Image (Village.Infection_In_First_Time,
+																		Time_Zone => Calendar.Time_Offset)
+																	& "まではとりあえず様子をうかがいましょう。 ");
 														end if;
 													when Allowed_For_Preliminary =>
 														declare
@@ -1390,8 +1493,8 @@ is
 															Forms.Write_In_HTML (
 																Output,
 																Form,
-																Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset) &
-																"に一次開票します。 ");
+																Ada.Calendar.Formatting.Image (Open_Time, Time_Zone => Calendar.Time_Offset)
+																	& "に一次開票します。 ");
 															if Ada.Calendar.Clock > Open_Time then
 																Forms.Write_In_HTML (
 																	Output,
@@ -1405,8 +1508,9 @@ is
 												Forms.Write_In_HTML (
 													Output,
 													Form,
-													Ada.Calendar.Formatting.Image (Village.Daytime_To_Vote, Time_Zone => Calendar.Time_Offset) &
-													"までに行動を終えてください。 ");
+													Ada.Calendar.Formatting.Image (Village.Daytime_To_Vote,
+															Time_Zone => Calendar.Time_Offset)
+														& "までに行動を終えてください。 ");
 											when Vote =>
 												Forms.Write_In_HTML (
 													Output,
@@ -1418,9 +1522,7 @@ is
 													Form,
 													"夜です。 ");
 										end case;
-										if Village.Term = Short
-											and then Form.Template_Set = Forms.For_Full
-										then
+										if Village.Term = Short and then Form.Template_Set = Forms.For_Full then
 											Forms.Write_In_HTML (Output, Form, "あと");
 											String'Write (Output, "<span id=""min"">?</span>");
 											Forms.Write_In_HTML (Output, Form, "分");
@@ -1429,17 +1531,18 @@ is
 										end if;
 									when Epilogue =>
 										declare
-											Next_Duration : constant Duration := Duration'Max(
-												Village.Day_Duration,
-												Epilogue_Min_Duration);
+											Next_Duration : constant Duration :=
+												Duration'Max (Village.Day_Duration, Epilogue_Min_Duration);
 										begin
 											Forms.Write_In_HTML (
 												Output,
 												Form,
-												Ada.Calendar.Formatting.Image(Village.Dawn + Next_Duration, Time_Zone => Calendar.Time_Offset));
+												Ada.Calendar.Formatting.Image (Village.Dawn + Next_Duration,
+													Time_Zone => Calendar.Time_Offset));
 										end;
 										Forms.Write_In_HTML (Output, Form, "まで話すことができます。");
-									when Closed => null;
+									when Closed =>
+										null;
 								end case;
 							end Handle;
 						begin
@@ -1457,7 +1560,8 @@ is
 				end if;
 			end;
 		elsif Tag = "villagepanel" then
-			if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator) and then Village.Today = Day)
+			if ((Player_Index >= 0 or else User_Id = Tabula.Users.Administrator)
+					and then Village.Today = Day)
 				or else (User_Id'Length /= 0 and then Village.State = Prologue)
 			then
 				if Village.State = Closed then
@@ -1483,11 +1587,13 @@ is
 							elsif Tag = "name" then
 								Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
 							elsif Tag = "speech" then
-								if Village.State = Epilogue or else (
-									(Village.State = Playing or else Village.State = Prologue)
-									and then Village.Time = Daytime
-									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died
-									and then not Person.Commited)
+								if Village.State = Epilogue
+									or else (
+										(Village.State = Playing or else Village.State = Prologue)
+										and then Village.Time = Daytime
+										and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+										         Vampire.Villages.Died
+										and then not Person.Commited)
 								then
 									declare
 										Rest : constant Integer := Speech_Limit
@@ -1523,11 +1629,13 @@ is
 								end if;
 							elsif Tag = "monologue" then
 								if Village.State = Playing
-									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died
+									and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+									         Vampire.Villages.Died
 									and then not Person.Commited
 								then
 									declare
-										Rest : constant Integer := Monologue_Limit - Message_Counts(Player_Index).Monologue;
+										Rest : constant Integer :=
+											Monologue_Limit - Message_Counts (Player_Index).Monologue;
 									begin
 										if Rest > 0 then
 											declare
@@ -1556,7 +1664,8 @@ is
 								end if;
 							elsif Tag ="ghost" then
 								if Village.State = Playing
-									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died
+									and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State =
+									         Vampire.Villages.Died
 								then
 									declare
 										Rest : constant Integer := Ghost_Limit - Message_Counts(Player_Index).Ghost;
@@ -1587,14 +1696,15 @@ is
 									end;
 								end if;
 							elsif Tag ="vampire" then
-								if Village.State = Playing and then
-									not Person.Commited and then
-									Person.Role in Vampire.Villages.Vampire_Role and then (
-										Message_Counts(Player_Index).Speech > 0 or else (
-											Village.Time = Night and then
-											Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died
-										)
-									)
+								if Village.State = Playing
+									and then not Person.Commited
+									and then Person.Role in Vampire.Villages.Vampire_Role
+									and then (
+										Message_Counts (Player_Index).Speech > 0
+										or else (
+											Village.Time = Night
+											and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+											         Vampire.Villages.Died))
 								then
 									Web.Producers.Produce (Output, Contents,
 										Handler => Handle_Player'Access); -- rec
@@ -1602,7 +1712,8 @@ is
 							elsif Tag ="dying" then
 								if Village.State = Playing
 									and then not Person.Commited
-									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State = Vampire.Villages.Died
+									and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State =
+									         Vampire.Villages.Died
 								then
 									Web.Producers.Produce (Output, Contents,
 										Handler => Handle_Player'Access); -- rec
@@ -1620,15 +1731,18 @@ is
 							elsif Tag = "zero" then
 								if Village.State = Playing
 									and then Village.Time /= Night
-									and then not Village.People.Constant_Reference(Player_Index).Commited
-									and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died
-									and then Message_Counts(Player_Index).Speech = 0
+									and then not Village.People.Constant_Reference (Player_Index).Commited
+									and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+									         Vampire.Villages.Died
+									and then Message_Counts (Player_Index).Speech = 0
 								then
 									Web.Producers.Produce (Output, Contents);
 								end if;
 							elsif Tag = "role" then
 								if Village.State = Playing then
-									if Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Vampire.Villages.Died then
+									if Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+									   Vampire.Villages.Died
+									then
 										Web.Producers.Produce (Output, Contents,
 											Handler => Handle_Player'Access); -- rec
 									else
@@ -1638,18 +1752,22 @@ is
 							elsif Tag = "roletext" then
 								Forms.Write_In_HTML (Output, Form, Role_Text (Person));
 							elsif Tag = "src_roleimg" then
-								pragma Assert (Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Died);
+								pragma Assert (
+									Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+									Died);
 								Forms.Write_Attribute_Name (Output, "src");
 								Forms.Write_Link (
 									Output,
 									Form,
 									Current_Directory => Current_Directory,
-									Resource => Ada.Hierarchical_File_Names.Compose (
-										Directory => Image_Directory,
-										Relative_Name => Relative_Role_Images (Village.People.Constant_Reference (Player_Index).Role).all));
+									Resource =>
+										Ada.Hierarchical_File_Names.Compose (
+											Directory => Image_Directory,
+											Relative_Name =>
+												Relative_Role_Images (Village.People.Constant_Reference (Player_Index).Role).all));
 							elsif Tag = "vote" then
 								if Village.State = Playing
-									and then Message_Counts(Player_Index).Speech > 0
+									and then Message_Counts (Player_Index).Speech > 0
 									and then Village.Vote_State /= Disallowed
 								then
 									if Person.Commited then
@@ -1668,15 +1786,13 @@ is
 													Forms.Write_In_HTML (
 														Output,
 														Form,
-														"処刑には" &
-														Villages.Text.Name (Target) &
-														"を推しています。");
+														"処刑には" & Villages.Text.Name (Target) & "を推しています。");
 												end;
 											end if;
 											String'Write (Output, "</div>");
 										end;
 									else
-										Vote_Form (Output, Player_Index, Vampire.Villages.Inhabitant, 
+										Vote_Form (Output, Player_Index, Vampire.Villages.Inhabitant,
 											Special => Disallowed,
 											Current => Person.Records.Constant_Reference(Village.Today).Vote,
 											Current_Special => False,
@@ -1687,14 +1803,19 @@ is
 							elsif Tag = "ability" then
 								if Village.State = Playing
 									and then not Person.Commited
-									and then (Message_Counts(Player_Index).Speech > 0
-										or else (Village.Time = Night
-											and then Village.People.Constant_Reference(Player_Index).Records.Constant_Reference(Village.Today).State /= Died))
+									and then (
+										Message_Counts (Player_Index).Speech > 0
+										or else (
+											Village.Time = Night
+											and then Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
+											         Died))
 								then
 									case Person.Role is
-										when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant | Vampire.Villages.Unfortunate_Inhabitant
-											| Vampire.Villages.Lover | Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F
-											| Vampire.Villages.Servant | Vampire.Villages.Gremlin => null;
+										when Vampire.Villages.Inhabitant | Vampire.Villages.Loved_Inhabitant
+											| Vampire.Villages.Unfortunate_Inhabitant | Vampire.Villages.Lover
+											| Vampire.Villages.Sweetheart_M | Vampire.Villages.Sweetheart_F
+											| Vampire.Villages.Servant | Vampire.Villages.Gremlin =>
+											null;
 										when Vampire.Villages.Doctor =>
 											case Village.Doctor_State (Player_Index) is
 												when Disallowed =>
@@ -1724,7 +1845,9 @@ is
 													String'Write (Output, "<div>");
 													if Village.Time = Night then
 														Forms.Write_In_HTML (Output, Form, "夜は行動できません。");
-													elsif Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First and then Day <= 1 then
+													elsif Village.Execution = Vampire.Villages.Dummy_Killed_And_From_First
+														and then Day <= 1
+													then
 														Forms.Write_In_HTML (Output, Form, "地主さんを調査しています。");
 													else
 														Forms.Write_In_HTML (Output, Form, "まだ村人に被害者はいません。");
@@ -1776,13 +1899,16 @@ is
 									end case;
 								end if;
 							elsif Tag = "action" then
-								if Village.State = Playing and then (
-									Message_Counts (Player_Index).Wake = 0
-									or else Message_Counts (Player_Index).Encourage = 0
-									or else ((Village.People.Constant_Reference (Player_Index).Role in Vampire.Villages.Vampire_Role)
-										and then (
-											Message_Counts (Player_Index).Vampire_Gaze = 0
-											or else Message_Counts (Player_Index).Vampire_Cancel = 0)))
+								if Village.State = Playing
+									and then (
+										Message_Counts (Player_Index).Wake = 0
+										or else Message_Counts (Player_Index).Encourage = 0
+										or else (
+											Village.People.Constant_Reference (Player_Index).Role in
+												Vampire.Villages.Vampire_Role
+											and then (
+												Message_Counts (Player_Index).Vampire_Gaze = 0
+												or else Message_Counts (Player_Index).Vampire_Cancel = 0)))
 								then
 									if Form.Template_Set = Forms.For_Full then
 										String'Write (Output, "<form method=""POST"" class=""inner"">" & Line_Break);
@@ -1793,20 +1919,25 @@ is
 											Form,
 											Current_Directory => Current_Directory,
 											Resource => Forms.Self,
-											Parameters => Form.Parameters_To_Village_Page (
-												Village_Id => Village_Id,
-												User_Id => User_Id,
-												User_Password => User_Password));
+											Parameters =>
+												Form.Parameters_To_Village_Page (
+													Village_Id => Village_Id,
+													User_Id => User_Id,
+													User_Password => User_Password));
 										Character'Write (Output, '>');
 									end if;
 									String'Write (Output, "<select name=""target"">" & Line_Break);
-									String'Write (Output, "<option value=""-1"" selected=""selected""></option>" & Line_Break);
+									String'Write (
+										Output,
+										"<option value=""-1"" selected=""selected""></option>" & Line_Break);
 									for I in Village.People.First_Index .. Village.People.Last_Index loop
 										if I /= Player_Index
-											and then Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State /= Vampire.Villages.Died
+											and then Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State /=
+											         Vampire.Villages.Died
 										then
 											declare
-												Person : Vampire.Villages.Person_Type renames Village.People.Constant_Reference (I);
+												Person : Vampire.Villages.Person_Type
+													renames Village.People.Constant_Reference (I);
 											begin
 												String'Write (Output, "<option value=""" & Image (I) & """>");
 												Forms.Write_In_HTML (Output, Form, Villages.Text.Name (Person));
@@ -1816,7 +1947,9 @@ is
 									end loop;
 									String'Write(Output, "</select>" & Line_Break);
 									String'Write(Output, "<select name=""action"">" & Line_Break);
-									String'Write(Output, "<option value="""" selected=""selected""></option>" & Line_Break);
+									String'Write (
+										Output,
+										"<option value="""" selected=""selected""></option>" & Line_Break);
 									if Message_Counts(Player_Index).Wake = 0 then
 										String'Write(Output, "<option value=""wake"">");
 										Forms.Write_In_HTML (Output, Form, "を起こす");
@@ -1828,16 +1961,18 @@ is
 										String'Write (Output, "</option>" & Line_Break);
 									end if;
 									if Village.Vampire_Action_Set /= None
-										and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role
-										and then Message_Counts(Player_Index).Vampire_Gaze = 0
+										and then Village.People.Constant_Reference (Player_Index).Role in
+											Vampire.Villages.Vampire_Role
+										and then Message_Counts (Player_Index).Vampire_Gaze = 0
 									then
 										String'Write(Output, "<option value=""vampire_gaze"">");
 										Forms.Write_In_HTML (Output, Form, "をこっそり見つめる。");
 										String'Write(Output, "</option>" & Line_Break);
 									end if;
 									if Village.Vampire_Action_Set = Gaze_And_Cancel
-										and then Village.People.Constant_Reference(Player_Index).Role in Vampire.Villages.Vampire_Role
-										and then Message_Counts(Player_Index).Vampire_Cancel = 0
+										and then Village.People.Constant_Reference (Player_Index).Role in
+											Vampire.Villages.Vampire_Role
+										and then Message_Counts (Player_Index).Vampire_Cancel = 0
 									then
 										String'Write(Output, "<option value=""vampire_cancel"">");
 										Forms.Write_In_HTML (Output, Form, "を襲うのをやめさせる。");
@@ -1850,13 +1985,17 @@ is
 									Forms.Write_In_Attribute (Output, Form, "行動");
 									Forms.Write_Attribute_Close (Output);
 									String'Write (Output, "/>");
-									String'Write(Output, "<input type=""hidden"" name=""cmd"" value=""action"" />" & Line_Break &
-										"</form>" & Line_Break);
+									String'Write (
+										Output,
+										"<input type=""hidden"" name=""cmd"" value=""action"" />" & Line_Break
+										& "</form>" & Line_Break);
 								end if;
 							elsif Tag = "active" then
 								if not Person.Commited
 									and then Village.State /= Epilogue
-									and then (Message_Counts (Player_Index).Speech > 0 or else Village.State = Prologue)
+									and then (
+										Message_Counts (Player_Index).Speech > 0
+										or else Village.State = Prologue)
 								then
 									declare
 										Setting : Vampire.Villages.Person_Record
@@ -1938,10 +2077,11 @@ is
 									Form,
 									Current_Directory => Current_Directory,
 									Resource => Forms.Self,
-									Parameters => Form.Parameters_To_Village_Page (
-										Village_Id => Village_Id,
-										User_Id => User_Id,
-										User_Password => User_Password));
+									Parameters =>
+										Form.Parameters_To_Village_Page (
+											Village_Id => Village_Id,
+											User_Id => User_Id,
+											User_Password => User_Password));
 							else
 								Raise_Unknown_Tag (Tag);
 							end if;

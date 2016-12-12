@@ -17,11 +17,14 @@ package body Tabula.Villages is
 			end if;
 		end Process;
 	begin
-		Iterate_Options (Village_Type'Class (Village), Process'Access); -- dyamic dispatch
+		Iterate_Options (Village_Type'Class (Village), Process'Access);
+			-- dyamic dispatch
 		return Result;
 	end Option_Changed;
 	
-	function Joined (Village : Village_Type; User_Id : String) return Person_Index'Base is
+	function Joined (Village : Village_Type; User_Id : String)
+		return Person_Index'Base
+	is
 		Result : Person_Index'Base := No_Person;
 		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
@@ -62,7 +65,10 @@ package body Tabula.Villages is
 		return Existing (Casts.Male) and then Existing (Casts.Female);
 	end Male_And_Female;
 	
-	procedure Exclude_Taken(Cast : in out Casts.Cast_Collection; Village : in Village_Type) is
+	procedure Exclude_Taken (
+		Cast : in out Casts.Cast_Collection;
+		Village : in Village_Type)
+	is
 		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 		begin
 			-- remove all duplicated characters

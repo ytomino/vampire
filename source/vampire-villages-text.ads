@@ -43,14 +43,20 @@ package Vampire.Villages.Text is
 	function Teaming (Village : Village_Type) return String;
 	
 	-- 使徒が吸血鬼を知る(Breakdownの後)
-	function Servant_Knew_Message (Village : Village_Type; Message : Villages.Message)
+	function Servant_Knew_Message (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	
 	-- 治療結果
-	function Doctor_Cure_Message (Village : Village_Type; Message : Villages.Message)
+	function Doctor_Cure_Message (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	-- 調査結果
-	function Detective_Survey_Message (Village : Village_Type; Message : Villages.Message)
+	function Detective_Survey_Message (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	
 	-- 誰が誰に投票したか(無記名投票では非公開)
@@ -65,17 +71,21 @@ package Vampire.Villages.Text is
 		Village : Village_Type;
 		Day : Natural;
 		Preliminary : Boolean;
-		Executed: Person_Index'Base)
+		Executed : Person_Index'Base)
 		return String;
 	
 	-- 夜間の会話が数奇な運命の村人に妨害された
 	function Howling_Blocked (Village : Village_Type) return String;
 	
 	-- 観測結果
-	function Astronomer_Observation_Message (Village : Village_Type; Message : Villages.Message)
+	function Astronomer_Observation_Message (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	-- 護衛結果
-	function Hunter_Guard_Message (Village : Village_Type; Message : Villages.Message)
+	function Hunter_Guard_Message (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	
 	-- 襲撃結果
@@ -85,14 +95,18 @@ package Vampire.Villages.Text is
 		Executed : Person_Index'Base)
 		return String;
 	
-	function Foreboding_About_Infection_In_First (Village : Village_Type) return String;
+	function Foreboding_About_Infection_In_First (Village : Village_Type)
+		return String;
 	
 	-- 感染自覚
 	function Awareness (Village : Village_Type; Message : Villages.Message)
 		return String;
 	
 	-- 遺体の一覧
-	function Fatalities (Village : Village_Type; Day : Natural; Executed : Person_Index'Base)
+	function Fatalities (
+		Village : Village_Type;
+		Day : Natural;
+		Executed : Person_Index'Base)
 		return String;
 	-- 生存者の一覧
 	function Survivors (Village : Village_Type; Day : Natural) return String;
@@ -101,10 +115,14 @@ package Vampire.Villages.Text is
 	function Gremlin_Sense (Village : Village_Type; Day : Natural) return String;
 	
 	-- 違和感
-	function Sweetheart_Incongruity (Village : Village_Type; Message : Villages.Message)
+	function Sweetheart_Incongruity (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	-- 後追い
-	function Sweetheart_Suicide (Village : Village_Type; Message : Villages.Message)
+	function Sweetheart_Suicide (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	
 	-- アクション
@@ -113,13 +131,21 @@ package Vampire.Villages.Text is
 		return String;
 	function Action_Encourage (Village : Village_Type; Message : Villages.Message)
 		return String;
-	function Action_Vampire_Gaze (Village : Village_Type; Message : Villages.Message)
+	function Action_Vampire_Gaze (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
-	function Action_Vampire_Gaze_Blocked (Village : Village_Type; Message : Villages.Message)
+	function Action_Vampire_Gaze_Blocked (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
-	function Action_Vampire_Cancel (Village : Village_Type; Message : Villages.Message)
+	function Action_Vampire_Cancel (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
-	function Action_Vampire_Canceled (Village : Village_Type; Message : Villages.Message)
+	function Action_Vampire_Canceled (
+		Village : Village_Type;
+		Message : Villages.Message)
 		return String;
 	
 	-- 決着

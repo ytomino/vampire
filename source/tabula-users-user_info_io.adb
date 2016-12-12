@@ -3,8 +3,8 @@ with Tabula.Calendar.Time_IO;
 package body Tabula.Users.User_Info_IO is
 	
 	procedure IO (
-		Serializer: not null access Serialization.Serializer;
-		Value: in out User_Info)
+		Serializer : not null access Serialization.Serializer;
+		Value : in out User_Info)
 	is
 		use Serialization;
 		use Tabula.Calendar.Time_IO;
@@ -19,9 +19,11 @@ package body Tabula.Users.User_Info_IO is
 			IO (Serializer, "last-remote-host", Value.Last_Remote_Host);
 			IO (Serializer, "last-time", Value.Last_Time);
 			IO (Serializer, "ignore-request", Value.Ignore_Request, Default => False);
-			IO (Serializer, "disallow-new-village", Value.Disallow_New_Village, Default => False);
+			IO (Serializer, "disallow-new-village", Value.Disallow_New_Village,
+				Default => False);
 			IO (Serializer, "no-log", Value.No_Log, Default => False);
-			IO (Serializer, "renamed", Value.Renamed, Default => Ada.Strings.Unbounded.Null_Unbounded_String);
+			IO (Serializer, "renamed", Value.Renamed,
+				Default => Ada.Strings.Unbounded.Null_Unbounded_String);
 		end loop;
 	end IO;
 	

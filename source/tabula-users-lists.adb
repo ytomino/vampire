@@ -14,7 +14,9 @@ package body Tabula.Users.Lists is
 			begin
 				declare
 					File : Ada.Streams.Stream_IO.File_Type :=
-						Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, List.Log_File_Name.all);
+						Ada.Streams.Stream_IO.Open (
+							Ada.Streams.Stream_IO.In_File,
+							List.Log_File_Name.all);
 				begin
 					Users_Log.Map'Read (Ada.Streams.Stream_IO.Stream (File), List.Log);
 					Ada.Streams.Stream_IO.Close (File);
@@ -39,7 +41,9 @@ package body Tabula.Users.Lists is
 		Users_Log.Include (List.Log, Item, Now);
 		declare
 			File : Ada.Streams.Stream_IO.File_Type :=
-				Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Log_File_Name.all);
+				Ada.Streams.Stream_IO.Create (
+					Ada.Streams.Stream_IO.Out_File,
+					List.Log_File_Name.all);
 		begin
 			Users_Log.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Log);
 			Ada.Streams.Stream_IO.Close (File);
@@ -133,9 +137,7 @@ package body Tabula.Users.Lists is
 			State := Unknown;
 		else
 			Load (User_Full_Name (List.Directory.all, Id), Info);
-			if Info.Password /= Digest (Password)
-				or else not Info.Renamed.Is_Null
-			then
+			if Info.Password /= Digest (Password) or else not Info.Renamed.Is_Null then
 				State := Invalid;
 			else
 				State := Valid;

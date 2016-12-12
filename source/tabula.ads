@@ -7,8 +7,9 @@ package Tabula is
 	for Static_String_Access'Storage_Size use 0;
 	
 	-- string of Natural without spacing
-	function Image is new Ada.Formatting.Integer_Image (
-		Natural,
-		Signs => Ada.Formatting.Triming_Sign_Marks);
+	function Image is
+		new Ada.Formatting.Integer_Image (
+			Natural,
+			Signs => Ada.Formatting.Triming_Sign_Marks);
 	
 end Tabula;

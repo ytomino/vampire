@@ -9,12 +9,14 @@ procedure Tabula.Users.Save (
 	Name : in String;
 	Info : in out User_Info)
 is
-	Temporary_Name : constant String := Ada.Directories.Temporary.Create_Temporary_File;
-	File : Ada.Streams.Stream_IO.File_Type := Ada.Streams.Stream_IO.Create (Name => Temporary_Name);
+	Temporary_Name : constant String :=
+		Ada.Directories.Temporary.Create_Temporary_File;
+	File : Ada.Streams.Stream_IO.File_Type :=
+		Ada.Streams.Stream_IO.Create (Name => Temporary_Name);
 begin
 	declare
-		Emitter : aliased YAML.Emitter := YAML.Streams.Create (
-			Ada.Streams.Stream_IO.Stream (File));
+		Emitter : aliased YAML.Emitter :=
+			YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 	begin
 		YAML.Set_Unicode (Emitter, True);
 		YAML.Emit (Emitter, (Event_Type => YAML.Stream_Start, Encoding => YAML.UTF_8));
@@ -25,12 +27,15 @@ begin
 		YAML.Flush (Emitter);
 	end;
 	Ada.Streams.Stream_IO.Close (File);
-	Ada.Directories.Replace_File (Source_Name => Temporary_Name, Target_Name => Name);
+	Ada.Directories.Replace_File (
+		Source_Name => Temporary_Name,
+		Target_Name => Name);
 exception
 	when E : others =>
 		Ada.Debug.Put (Temporary_Name);
 		declare
-			Message : constant String := Name & ": " & Ada.Exceptions.Exception_Message (E);
+			Message : constant String :=
+				Name & ": " & Ada.Exceptions.Exception_Message (E);
 		begin
 			Ada.Debug.Put (Message);
 			Ada.Exceptions.Raise_Exception (

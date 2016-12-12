@@ -5,7 +5,7 @@ procedure Vampire.R3.Preview_Page (
 	Template : in String;
 	Image_Directory : in String;
 	Village_Id : in Tabula.Villages.Village_Id;
-	Village : in Villages.Village_Type; 
+	Village : in Villages.Village_Type;
 	Message : in Villages.Message;
 	User_Id : in String;
 	User_Password : in String)
@@ -22,10 +22,11 @@ is
 				Form,
 				Current_Directory => ".",
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Village_Page (
-					Village_Id => Village_Id,
-					User_Id => User_Id,
-					User_Password => User_Password));
+				Parameters =>
+					Form.Parameters_To_Village_Page (
+						Village_Id => Village_Id,
+						User_Id => User_Id,
+						User_Password => User_Password));
 		elsif Tag = "villagename" then
 			Forms.Write_In_HTML (
 				Output,
@@ -47,7 +48,10 @@ is
 		elsif Tag = "value_kind" then
 			Forms.Write_Attribute_Name (Output, "value");
 			Forms.Write_Attribute_Open (Output);
-			Forms.Write_In_Attribute (Output, Form, Villages.Message_Kind'Image (Message.Kind));
+			Forms.Write_In_Attribute (
+				Output,
+				Form,
+				Villages.Message_Kind'Image (Message.Kind));
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_text" then
 			Forms.Write_Attribute_Name (Output, "value");

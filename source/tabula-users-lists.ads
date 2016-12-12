@@ -46,7 +46,8 @@ package Tabula.Users.Lists is
 	
 	-- 全ユーザーのリスト
 	
-	package User_Info_Maps is new Ada.Containers.Indefinite_Ordered_Maps (String, User_Info);
+	package User_Info_Maps is
+		new Ada.Containers.Indefinite_Ordered_Maps (String, User_Info);
 	
 	function All_Users (List : User_List) return User_Info_Maps.Map;
 	
@@ -69,7 +70,8 @@ private
 	
 	function "<" (Left, Right : User_Log_Item) return Boolean;
 	
-	package Users_Log is new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
+	package Users_Log is
+		new Ada.Containers.Ordered_Maps (User_Log_Item, Ada.Calendar.Time);
 	
 	type User_List is limited record
 		Directory : not null Static_String_Access;

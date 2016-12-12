@@ -15,7 +15,8 @@ is
 	use Messages;
 	use type Ada.Calendar.Time;
 	
-	subtype People_Index is Person_Index range Village.People.First_Index .. Village.People.Last_Index;
+	subtype People_Index is
+		Person_Index range Village.People.First_Index .. Village.People.Last_Index;
 	function People_Random is
 		new Ada.Numerics.Distributions.Linear_Discrete_Random (
 			Ada.Numerics.MT19937.Cardinal,
@@ -52,17 +53,23 @@ is
 		Changed : in out Boolean)
 	is
 		type Voted_Array is array (Natural range <>) of Natural;
-		procedure Sort is new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
-		Voted, Sort_Voted : Voted_Array (Village.People.First_Index .. Village.People.Last_Index) := (others => 0);
+		procedure Sort is
+			new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
+		Voted, Sort_Voted :
+				Voted_Array (Village.People.First_Index .. Village.People.Last_Index) :=
+			(others => 0);
 		Candidates : Natural := 0;
 		Max : Natural := 0;
 		Limit : Natural := 0;
 	begin
 		-- 集計
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
-			if Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State /= Died then
+			if Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State /=
+			   Died
+			then
 				declare
-					Target : Person_Index'Base := Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).Provisional_Vote;
+					Target : Person_Index'Base :=
+						Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).Provisional_Vote;
 				begin
 					if Target in Village.People.First_Index .. Village.People.Last_Index then
 						if Voted (Target) = 0 then
@@ -85,7 +92,8 @@ is
 			for I in Village.People.First_Index .. Village.People.Last_Index loop
 				declare
 					The_Person : Person_Type renames Village.People.Reference (I);
-					The_Record : Person_Record renames The_Person.Records.Reference (Village.Today);
+					The_Record : Person_Record
+						renames The_Person.Records.Reference (Village.Today);
 				begin
 					if The_Record.State /= Died then
 						The_Record.Candidate := Voted (I) >= Limit;
@@ -95,9 +103,12 @@ is
 			-- 選ばれた候補以外に投票していた人は棄権に戻す
 			for I in Village.People.First_Index .. Village.People.Last_Index loop
 				declare
-					V : Person_Index'Base renames Village.People.Reference (I).Records.Reference (Village.Today).Vote;
+					V : Person_Index'Base
+						renames Village.People.Reference (I).Records.Reference (Village.Today).Vote;
 				begin
-					if V >= 0 and then not Village.People.Constant_Reference (V).Records.Constant_Reference (Village.Today).Candidate then
+					if V >= 0
+						and then not Village.People.Constant_Reference (V).Records.Constant_Reference (Village.Today).Candidate
+					then
 						V := No_Person;
 					end if;
 				end;
@@ -121,9 +132,12 @@ is
 		Max : Natural := 0;
 	begin
 		for I in People_Index loop
-			if Village.People.Constant_Reference (I).Records.Constant_Reference (Execution_Day).State /= Died then
+			if Village.People.Constant_Reference (I).Records.Constant_Reference (Execution_Day).State /=
+			   Died
+			then
 				declare
-					V : constant Person_Index'Base := Village.People.Constant_Reference (I).Records.Constant_Reference (Execution_Day).Vote;
+					V : constant Person_Index'Base :=
+						Village.People.Constant_Reference (I).Records.Constant_Reference (Execution_Day).Vote;
 				begin
 					if V >= 0 then
 						Voted (V) := Voted (V) + 1;
@@ -161,7 +175,8 @@ is
 			begin
 				if Vampire /= No_Person then
 					declare
-						Vampire_Person : Person_Type renames Village.People.Constant_Reference (Vampire);
+						Vampire_Person : Person_Type
+							renames Village.People.Constant_Reference (Vampire);
 					begin
 						if Vampire_Person.Records.Constant_Reference (Village.Today).State /= Died
 							and then not Vampire_Person.Records.Constant_Reference (Target_Day).Note.Is_Null
@@ -183,7 +198,8 @@ is
 	begin
 		return Village.People.Constant_Reference (I).Role not in Vampire_Role
 			and then Village.People.Constant_Reference (I).Role /= Gremlin
-			and then Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State = Normal;
+			and then Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State =
+			         Normal;
 	end Is_Secondary_Attackable;
 	
 	-- 襲撃
@@ -199,14 +215,18 @@ is
 		Silver_Bullet : in out Boolean; -- 銀の弾丸
 		Guard_Succeed : in out Boolean) -- 護衛結果
 	is
-		Vampire_Person : Person_Type renames Village.People.Constant_Reference (The_Vampire);
+		Vampire_Person : Person_Type
+			renames Village.People.Constant_Reference (The_Vampire);
 	begin
 		Attacked := False;
 		if Vampire_Person.Records.Constant_Reference (Village.Today).State /= Died
-			and then (Vampire_Person.Role in Vampire_Role or else Night_State = Infected)
+			and then (
+				Vampire_Person.Role in Vampire_Role
+				or else Night_State = Infected)
 		then
 			declare
-				Target : Person_Index'Base := Vampire_Person.Records.Constant_Reference (Village.Today - 1).Target;
+				Target : Person_Index'Base :=
+					Vampire_Person.Records.Constant_Reference (Village.Today - 1).Target;
 				Result : Vampire_Message_Kind := Vampire_Infection;
 				Hunter_Result : Message_Kind;
 			begin
@@ -216,12 +236,15 @@ is
 						Target := No_Person;
 						-- キャンセル対象または処刑対象を襲撃しようとした場合、他に振り替え
 						-- 感染時点で使われた視線の中から未感染者を優先
-						Find_Gaze : for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+						Find_Gaze : for I in reverse
+							Village.Messages.First_Index .. Village.Messages.Last_Index
+						loop
 							declare
 								Message : Villages.Message renames Village.Messages.Constant_Reference (I);
 							begin
 								if Message.Kind = Action_Vampire_Gaze
-									and then Vampire_Person.Records.Constant_Reference (Message.Day).State = Infected -- 視線タイミングで感染していた？
+									and then Vampire_Person.Records.Constant_Reference (Message.Day).State =
+									         Infected -- 視線タイミングで感染していた？
 									and then Message.Target /= Executed
 									and then Message.Target /= Canceled
 									and then Is_Secondary_Attackable (Message.Target)
@@ -241,10 +264,13 @@ is
 					end if;
 				end if;
 				if Target /= No_Person
-					and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State /= Died
+					and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State /=
+					         Died
 				then
 					Attacked := True;
-					if Vampire_Person.Role in Vampire_Role and then not Infection_Only_In_First then
+					if Vampire_Person.Role in Vampire_Role
+						and then not Infection_Only_In_First
+					then
 						-- 吸血鬼の襲撃タイプ選択
 						case Village.Attack is
 							when Two | Nocturnal_Chain_Infecting =>
@@ -253,8 +279,10 @@ is
 										Vampire2 : constant Person_Index'Base := Find_Superman (Village, Rank2);
 									begin
 										if Vampire2 >= 0
-											and then Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today).State /= Died
-											and then Target = Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today - 1).Target
+											and then Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today).State /=
+											         Died
+											and then Target =
+											         Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today - 1).Target
 										then
 											Result := Vampire_Murder;
 										end if;
@@ -267,8 +295,10 @@ is
 										Vampire2 : constant Person_Index'Base := Find_Superman (Village, Rank2);
 									begin
 										if Vampire2 >= 0
-											and then Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today).State /= Died
-											and then Target /= Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today - 1).Target
+											and then Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today).State /=
+											         Died
+											and then Target /=
+											         Village.People.Constant_Reference (Vampire2).Records.Constant_Reference (Village.Today - 1).Target
 										then
 											Result := Vampire_Infection;
 										end if;
@@ -277,7 +307,8 @@ is
 						end case;
 						-- 数奇な運命の村人は常に感染
 						if Village.Unfortunate = Infected_Only
-							and then Village.People.Constant_Reference (Target).Role = Unfortunate_Inhabitant
+							and then Village.People.Constant_Reference (Target).Role =
+							         Unfortunate_Inhabitant
 						then
 							Result := Vampire_Infection;
 						end if;
@@ -289,11 +320,13 @@ is
 							Result := Vampire_Failed;
 						else
 							if Result = Vampire_Murder then
-								Village.People.Reference (Target).Records.Reference (Village.Today).State := Died;
+								Village.People.Reference (Target).Records.Reference (Village.Today).State :=
+									Died;
 								Hunter_Result := Hunter_Killed_With_Silver;
 							else
 								if Village.People.Constant_Reference (Target).Role not in Vampire_Role then
-									Village.People.Reference (Target).Records.Reference (Village.Today).State := Infected;
+									Village.People.Reference (Target).Records.Reference (Village.Today).State :=
+										Infected;
 								end if;
 								if Guard /= No_Person then
 									Hunter_Result := Hunter_Guard_With_Silver;
@@ -308,7 +341,8 @@ is
 								-- 相打ち
 								Guard_Succeed := True;
 								Silver_Bullet := False;
-								Village.People.Reference (The_Vampire).Records.Reference (Village.Today).State := Died;
+								Village.People.Reference (The_Vampire).Records.Reference (Village.Today).State :=
+									Died;
 								pragma Assert (not Infection_Only_In_First);
 								Append (
 									Village.Messages,
@@ -327,7 +361,8 @@ is
 						Guard_Succeed := True;
 						if Silver_Bullet then
 							Silver_Bullet := False;
-							Village.People.Reference (The_Vampire).Records.Reference (Village.Today).State := Died;
+							Village.People.Reference (The_Vampire).Records.Reference (Village.Today).State :=
+								Died;
 							Hunter_Result := Hunter_Guard_With_Silver;
 							Result := Vampire_Failed_And_Killed;
 						else
@@ -447,7 +482,8 @@ begin
 				-- 初日犠牲者有りの時はひとりを観測済み
 				if Village.Execution = Dummy_Killed_And_From_First then
 					declare
-						The_Astronomer : constant Person_Index'Base := Village.Find_Superman (Astronomer);
+						The_Astronomer : constant Person_Index'Base :=
+							Village.Find_Superman (Astronomer);
 						Target : Person_Index'Base;
 					begin
 						if The_Astronomer >= 0 then
@@ -508,7 +544,8 @@ begin
 				-- 探偵が初日犠牲者の役を知る
 				if Village.Execution = Dummy_Killed_And_From_First then
 					declare
-						The_Detective : constant Person_Index'Base := Find_Superman(Village, Detective);
+						The_Detective : constant Person_Index'Base :=
+							Find_Superman (Village, Detective);
 					begin
 						if The_Detective >= 0 then
 							Append (
@@ -533,8 +570,9 @@ begin
 					Inhabitant_Count, Vampire_Count : Natural := 0;
 				begin
 					for Position in People_Index loop
-						if Village.People.Constant_Reference(Position).Records.Constant_Reference(Village.Today).State = Normal
-							and then not Village.People.Constant_Reference(Position).Commited
+						if Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Today).State =
+						   Normal
+							and then not Village.People.Constant_Reference (Position).Commited
 						then
 							case Village.People.Constant_Reference(Position).Role is
 								when Gremlin => null;
@@ -564,9 +602,7 @@ begin
 							Infection_In_First := True;
 						end if;
 						-- 更新
-						if Now >= Village.Daytime_To_Vote
-							or else Commit_Finished(Village)
-						then
+						if Now >= Village.Daytime_To_Vote or else Commit_Finished (Village) then
 							Daytime_To_Vote := True;
 							if Village.Day_Duration >= 24 * 60 * 60.0
 								or else Vote_Finished (Village)
@@ -584,9 +620,7 @@ begin
 							Preliminary_Voting := True; -- コミットで飛ぶ
 						end if;
 					when Vote =>
-						if Now >= Village.Vote_To_Night
-							or else Vote_Finished(Village)
-						then
+						if Now >= Village.Vote_To_Night or else Vote_Finished (Village) then
 							Vote_To_Night := True;
 							if Village.Night_Duration = 0.0 then
 								Night_To_Daytime := True;
@@ -606,8 +640,11 @@ begin
 						Attacked : Boolean;
 					begin
 						if The_Hunter /= No_Person then
-							pragma Assert (Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today).State = Normal);
-							Guard := Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today - 1).Target;
+							pragma Assert (
+								Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today).State =
+								Normal);
+							Guard :=
+								Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today - 1).Target;
 						end if;
 						for Rank in Vampire_Role loop
 							declare
@@ -672,66 +709,89 @@ begin
 					declare
 						The_Doctor : constant Person_Index'Base := Find_Superman(Village, Doctor);
 					begin
-						if The_Doctor >= 0 and then Village.People.Constant_Reference(The_Doctor).Records.Constant_Reference(Village.Today).State /= Died then
+						if The_Doctor >= 0
+							and then Village.People.Constant_Reference (The_Doctor).Records.Constant_Reference (Village.Today).State /=
+							         Died
+						then
 							declare
-								Target : constant Person_Index'Base := Village.People.Constant_Reference(The_Doctor).Records.Constant_Reference(Village.Today - 1).Target;
+								Target : constant Person_Index'Base :=
+									Village.People.Constant_Reference (The_Doctor).Records.Constant_Reference (Village.Today - 1).Target;
 								Kind : Message_Kind;
 							begin
-								if Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State /= Died then
+								if Target >= 0
+									and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State /=
+									         Died
+								then
 									if Village.People.Constant_Reference(Target).Role = Gremlin then
 										Gremlin_Kill_Doctor := True;
 										Kind := Doctor_Found_Gremlin;
-									elsif Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State = Infected then
+									elsif Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State =
+									      Infected
+									then
 										if Village.Doctor_Infected = Find_Infection
-											and then Village.People.Constant_Reference(The_Doctor).Records.Constant_Reference(Village.Today).State = Infected
+											and then Village.People.Constant_Reference (The_Doctor).Records.Constant_Reference (Village.Today).State =
+											         Infected
 										then
 											Kind := Doctor_Found_Infection;
 										else
 											-- 治療成功
-											Village.People.Reference(Target).Records.Reference(Village.Today).State := Normal;
+											Village.People.Reference (Target).Records.Reference (Village.Today).State :=
+												Normal;
 											Kind := Doctor_Cure;
 										end if;
 									else
 										Kind := Doctor_Failed;
 									end if;
-									Append(Village.Messages, (
-										Kind => Kind,
-										Day => Village.Today,
-										Time => Now,
-										Subject => The_Doctor,
-										Target => Target,
-										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+									Append (
+										Village.Messages,
+										(Kind => Kind,
+											Day => Village.Today,
+											Time => Now,
+											Subject => The_Doctor,
+											Target => Target,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 								end if;
 							end;
 						end if;
 					end;
 					-- 探偵 (生存しているかぎり)
 					declare
-						The_Detective : constant Person_Index'Base := Find_Superman(Village, Detective);
+						The_Detective : constant Person_Index'Base :=
+							Find_Superman (Village, Detective);
 					begin
-						if The_Detective >= 0 and then Village.People.Constant_Reference(The_Detective).Records.Constant_Reference(Village.Today).State /= Died then
+						if The_Detective >= 0
+							and then Village.People.Constant_Reference (The_Detective).Records.Constant_Reference (Village.Today).State /=
+							         Died
+						then
 							if Village.Today <= 2 then
 								if Village.Execution = Dummy_Killed_And_From_First then
-									Append(Village.Messages, (
-										Kind => Detective_Survey_Victim,
-										Day => Village.Today,
-										Time => Now,
-										Subject => The_Detective,
-										Target => No_Person,
-										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-								end if;
-							else
-								declare
-									Target : constant Person_Index'Base := Village.People.Constant_Reference(The_Detective).Records.Constant_Reference(Village.Today - 1).Target;
-								begin
-									if Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today - 1).State = Died then
-										Append(Village.Messages, (
-											Kind => Detective_Survey,
+									Append (
+										Village.Messages,
+										(Kind => Detective_Survey_Victim,
 											Day => Village.Today,
 											Time => Now,
 											Subject => The_Detective,
-											Target => Target,
-											Text => Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today - 1).Note));
+											Target => No_Person,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+								end if;
+							else
+								declare
+									Target : constant Person_Index'Base :=
+										Village.People.Constant_Reference (The_Detective).Records.Constant_Reference (Village.Today - 1).Target;
+								begin
+									if Target >= 0
+										and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today - 1).State =
+										         Died
+									then
+										Append (
+											Village.Messages,
+											(Kind => Detective_Survey,
+												Day => Village.Today,
+												Time => Now,
+												Subject => The_Detective,
+												Target => Target,
+												Text =>
+													Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today - 1).Note));
 									end if;
 								end;
 							end if;
@@ -740,14 +800,16 @@ begin
 					-- 処刑
 					Executed := Get_Execution(Village.Today - 1);
 					if Executed >= 0 then
-						Village.People.Reference(Executed).Records.Reference(Village.Today).State := Died;
-						Append(Village.Messages, (
-							Kind => Execution,
-							Day => Village.Today,
-							Time => Now,
-							Subject => No_Person,
-							Target => Executed,
-							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+						Village.People.Reference (Executed).Records.Reference (Village.Today).State :=
+							Died;
+						Append (
+							Village.Messages,
+							(Kind => Execution,
+								Day => Village.Today,
+								Time => Now,
+								Subject => No_Person,
+								Target => Executed,
+								Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 					end if;
 					-- 吸血鬼の会話があらかじめセットされていたら転写
 					if not Night_To_Daytime then
@@ -759,7 +821,9 @@ begin
 					Village.Time := Daytime;
 					-- 誰が処刑されたかを拾っておく
 					Executed := No_Person;
-					Find_Executed : for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+					Find_Executed : for I in reverse
+						Village.Messages.First_Index .. Village.Messages.Last_Index
+					loop
 						declare
 							Message : Villages.Message renames Element(Village.Messages, I);
 						begin
@@ -773,36 +837,48 @@ begin
 					end loop Find_Executed;
 					-- 自覚症状 (猟師と天文家のみ)
 					for I in People_Index loop
-						if Village.People.Constant_Reference(I).Records.Constant_Reference(Village.Today).State = Infected then
-							case Village.People.Constant_Reference(I).Role is
+						if Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State =
+						   Infected
+						then
+							case Village.People.Constant_Reference (I).Role is
 								when Hunter | Astronomer =>
-									Append(Village.Messages, (
-										Kind => Awareness,
-										Day => Village.Today,
-										Time => Now,
-										Subject => I,
-										Target => No_Person,
-										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+									Append (
+										Village.Messages,
+										(Kind => Awareness,
+											Day => Village.Today,
+											Time => Now,
+											Subject => I,
+											Target => No_Person,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 								when others => null;
 							end case;
 						end if;
 					end loop;
 					-- 観測 (感染すると無効)
 					declare
-						The_Astronomer : constant Person_Index'Base := Find_Superman(Village, Astronomer);
+						The_Astronomer : constant Person_Index'Base :=
+							Find_Superman (Village, Astronomer);
 					begin
-						if The_Astronomer >= 0 and then Village.People.Constant_Reference(The_Astronomer).Records.Constant_Reference(Village.Today).State = Normal then
+						if The_Astronomer >= 0
+							and then Village.People.Constant_Reference (The_Astronomer).Records.Constant_Reference (Village.Today).State =
+							         Normal
+						then
 							declare
-								Target : constant Person_Index'Base := Village.People.Constant_Reference(The_Astronomer).Records.Constant_Reference(Village.Today - 1).Target;
+								Target : constant Person_Index'Base :=
+									Village.People.Constant_Reference (The_Astronomer).Records.Constant_Reference (Village.Today - 1).Target;
 							begin
-								if Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State /= Died then
-									Append(Village.Messages, (
-										Kind => Astronomer_Observation,
-										Day => Village.Today,
-										Time => Now,
-										Subject => The_Astronomer,
-										Target => Target,
-										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+								if Target >= 0
+									and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State /=
+									         Died
+								then
+									Append (
+										Village.Messages,
+										(Kind => Astronomer_Observation,
+											Day => Village.Today,
+											Time => Now,
+											Subject => The_Astronomer,
+											Target => Target,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 									if Village.People.Constant_Reference(Target).Role = Gremlin then
 										Gremlin_Kill_Astronomer := True;
 									end if;
@@ -815,15 +891,19 @@ begin
 						declare
 							Vampire : constant Person_Index'Base := Find_Superman(Village, Rank);
 						begin
-							if Vampire >= 0 and then Village.People.Constant_Reference(Vampire).Records.Constant_Reference(Village.Today).State /= Died then
-								if not Village.People.Constant_Reference(Vampire).Records.Constant_Reference(Village.Today - 1).Note.Is_Null then
-									Append(Village.Messages, (
-										Kind => Meeting,
-										Day => Village.Today,
-										Time => Now,
-										Subject => No_Person,
-										Target => No_Person,
-										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+							if Vampire >= 0
+								and then Village.People.Constant_Reference (Vampire).Records.Constant_Reference (Village.Today).State /=
+								         Died
+							then
+								if not Village.People.Constant_Reference (Vampire).Records.Constant_Reference (Village.Today - 1).Note.Is_Null then
+									Append (
+										Village.Messages,
+										(Kind => Meeting,
+											Day => Village.Today,
+											Time => Now,
+											Subject => No_Person,
+											Target => No_Person,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 									exit Vampire_Meeting;
 								end if;
 							end if;
@@ -832,16 +912,20 @@ begin
 					-- 襲撃 (感染すると天文家、猟師または医者も)、と、ガード (感染すると無効)
 					declare
 						The_Hunter : constant Person_Index'Base := Village.Find_Superman (Hunter);
-						The_Astronomer : constant Person_Index'Base := Village.Find_Superman (Astronomer);
+						The_Astronomer : constant Person_Index'Base :=
+							Village.Find_Superman (Astronomer);
 						Guard : Person_Index'Base := No_Person;
 						Silver_Bullet : Boolean := False;
 						Guard_Succeed : Boolean := False;
 						Attacked : Boolean;
-						Astronomer_State, Hunter_State : Person_State; -- 連鎖が起きないように状態を保存
+						Astronomer_State, Hunter_State : Person_State;
+							-- 連鎖が起きないように状態を保存
 						Canceled : Person_Index'Base := No_Person; -- 襲撃取りやめアクションの対象
 					begin
 						-- キャンセル先
-						Find_Cancel : for I in reverse Village.Messages.First_Index .. Village.Messages.Last_Index loop
+						Find_Cancel : for I in reverse
+							Village.Messages.First_Index .. Village.Messages.Last_Index
+						loop
 							declare
 								Message : Villages.Message renames Village.Messages.Constant_Reference (I);
 							begin
@@ -855,14 +939,18 @@ begin
 						end loop Find_Cancel;
 						-- 猟師の行動確認
 						if The_Hunter /= No_Person then
-							Hunter_State := Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today).State;
+							Hunter_State :=
+								Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today).State;
 							if Hunter_State = Normal then
-								Guard := Village.People.Constant_Reference(The_Hunter).Records.Constant_Reference(Village.Today - 1).Target;
-								Silver_Bullet := Village.People.Constant_Reference(The_Hunter).Records.Constant_Reference(Village.Today - 1).Special;
+								Guard :=
+									Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today - 1).Target;
+								Silver_Bullet :=
+									Village.People.Constant_Reference (The_Hunter).Records.Constant_Reference (Village.Today - 1).Special;
 							end if;
 						end if;
 						if The_Astronomer /= No_Person then
-							Astronomer_State := Village.People.Constant_Reference(The_Astronomer).Records.Constant_Reference(Village.Today).State;
+							Astronomer_State :=
+								Village.People.Constant_Reference (The_Astronomer).Records.Constant_Reference (Village.Today).State;
 						end if;
 						-- 吸血鬼の襲撃
 						for Rank in Vampire_Role loop
@@ -929,22 +1017,24 @@ begin
 									else
 										Hunter_Result := Hunter_Failed;
 									end if;
-									Append(Village.Messages, (
-										Kind => Hunter_Result,
+									Append (
+										Village.Messages,
+										(Kind => Hunter_Result,
+											Day => Village.Today,
+											Time => Now,
+											Subject => The_Hunter,
+											Target => Guard,
+											Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+								end;
+							elsif Silver_Bullet then
+								Append (
+									Village.Messages,
+									(Kind => Hunter_Nothing_With_Silver,
 										Day => Village.Today,
 										Time => Now,
 										Subject => The_Hunter,
-										Target => Guard,
+										Target => No_Person,
 										Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-								end;
-							elsif Silver_Bullet then
-								Append(Village.Messages, (
-									Kind => Hunter_Nothing_With_Silver,
-									Day => Village.Today,
-									Time => Now,
-									Subject => The_Hunter,
-									Target => No_Person,
-									Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 							end if;
 						end if;
 					end;
@@ -952,14 +1042,18 @@ begin
 					declare
 						The_Gremlin : constant Person_Index'Base := Find_Superman(Village, Gremlin);
 					begin
-						if The_Gremlin >= 0 and then Village.People.Constant_Reference(The_Gremlin).Records.Constant_Reference(Village.Today).State /= Died then
-							Append(Village.Messages, (
-								Kind => Gremlin_Sense,
-								Day => Village.Today,
-								Time => Now,
-								Subject => The_Gremlin,
-								Target => No_Person,
-								Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+						if The_Gremlin >= 0
+							and then Village.People.Constant_Reference (The_Gremlin).Records.Constant_Reference (Village.Today).State /=
+							         Died
+						then
+							Append (
+								Village.Messages,
+								(Kind => Gremlin_Sense,
+									Day => Village.Today,
+									Time => Now,
+									Subject => The_Gremlin,
+									Target => No_Person,
+									Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 						end if;
 					end;
 					if Gremlin_Kill_Doctor then
@@ -967,43 +1061,53 @@ begin
 							The_Doctor : constant Person_Index'Base := Find_Superman(Village, Doctor);
 						begin
 							pragma Assert(The_Doctor >= 0);
-							Village.People.Reference(The_Doctor).Records.Reference(Village.Today).State := Died;
+							Village.People.Reference (The_Doctor).Records.Reference (Village.Today).State :=
+								Died;
 						end;
 					end if;
 					if Gremlin_Kill_Astronomer then
 						declare
-							The_Astronomer : constant Person_Index'Base := Find_Superman(Village, Astronomer);
+							The_Astronomer : constant Person_Index'Base :=
+								Find_Superman (Village, Astronomer);
 						begin
 							pragma Assert(The_Astronomer >= 0);
-							Village.People.Reference(The_Astronomer).Records.Reference(Village.Today).State := Died;
+							Village.People.Reference (The_Astronomer).Records.Reference (Village.Today).State :=
+								Died;
 						end;
 					end if;
 					-- 恋人
 					declare
 						procedure Love_Process(Lover_Role, Loved_Role : in Person_Role) is
-							Lover_Person : constant Person_Index'Base := Find_Superman(Village, Lover_Role);
-							Loved_Person : constant Person_Index'Base := Find_Superman(Village, Loved_Role);
+							Lover_Person : constant Person_Index'Base :=
+								Find_Superman (Village, Lover_Role);
+							Loved_Person : constant Person_Index'Base :=
+								Find_Superman (Village, Loved_Role);
 						begin
 							if Lover_Person >= 0 and then Loved_Person >= 0 then
-								if Village.People.Constant_Reference(Lover_Person).Records.Constant_Reference(Village.Today).State /= Died then
+								if Village.People.Constant_Reference (Lover_Person).Records.Constant_Reference (Village.Today).State /=
+								   Died
+								then
 									case Village.People.Constant_Reference(Loved_Person).Records.Constant_Reference(Village.Today).State is
 										when Died =>
-											Village.People.Reference(Lover_Person).Records.Reference(Village.Today).State := Died;
-											Append(Village.Messages, (
-												Kind => Sweetheart_Suicide,
-												Day => Village.Today,
-												Time => Now,
-												Subject => Lover_Person,
-												Target => Loved_Person,
-												Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+											Village.People.Reference (Lover_Person).Records.Reference (Village.Today).State :=
+												Died;
+											Append (
+												Village.Messages,
+												(Kind => Sweetheart_Suicide,
+													Day => Village.Today,
+													Time => Now,
+													Subject => Lover_Person,
+													Target => Loved_Person,
+													Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 										when Infected =>
-											Append(Village.Messages, (
-												Kind => Sweetheart_Incongruity,
-												Day => Village.Today,
-												Time => Now,
-												Subject => Lover_Person,
-												Target => Loved_Person,
-												Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+											Append (
+												Village.Messages,
+												(Kind => Sweetheart_Incongruity,
+													Day => Village.Today,
+													Time => Now,
+													Subject => Lover_Person,
+													Target => Loved_Person,
+													Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 										when Normal =>
 											null;
 									end case;
@@ -1016,20 +1120,22 @@ begin
 						Love_Process(Sweetheart_F, Sweetheart_M);
 					end;
 					-- 生存者リスト
-					Append(Village.Messages, (
-						Kind => List,
-						Day => Village.Today,
-						Time => Now,
-						Subject => No_Person,
-						Target => No_Person,
-						Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+					Append (
+						Village.Messages,
+						(Kind => List,
+							Day => Village.Today,
+							Time => Now,
+							Subject => No_Person,
+							Target => No_Person,
+							Text => Ada.Strings.Unbounded.Null_Unbounded_String));
 					-- 生きていて前日発言が無い場合は強制コミット
 					declare
 						Said : Message_Counts renames Count_Messages(Village, Village.Today - 1);
 					begin
 						for Position in People_Index loop
-							if Village.People.Constant_Reference(Position).Records.Constant_Reference(Village.Today).State /= Died
-								and then Said(Position).Speech = 0
+							if Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Today).State /=
+							   Died
+								and then Said (Position).Speech = 0
 							then
 								Village.People.Reference(Position).Commited := True;
 							end if;
@@ -1045,12 +1151,17 @@ begin
 								exit Find_Gaze;
 							end if;
 						end loop Find_Gaze;
-						if Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State /= Died then
+						if Target >= 0
+							and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State /=
+							         Died
+						then
 							for Position in People_Index loop
-								if Village.People.Constant_Reference(Position).Records.Constant_Reference(Village.Today).State /= Died
-									and then Village.People.Constant_Reference(Position).Role in Vampire_Role
+								if Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Today).State /=
+								   Died
+									and then Village.People.Constant_Reference (Position).Role in Vampire_Role
 								then
-									Village.People.Reference(Position).Records.Reference(Village.Today).Target := Target;
+									Village.People.Reference(Position).Records.Reference (Village.Today).Target :=
+										Target;
 								end if;
 							end loop;
 						end if;
@@ -1068,7 +1179,7 @@ begin
 		when Epilogue =>
 			Changed := Now - Village.Dawn >= Duration'Max (
 				Village.Day_Duration,
-				Epilogue_Min_Duration); --  エピローグは最低でも1時間
+				Epilogue_Min_Duration); -- エピローグは最低でも1時間
 			List_Changed := Changed;
 			if Changed then
 				Village.Dawn := Now;

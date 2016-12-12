@@ -11,10 +11,12 @@ package body Vampire.Forms.Mobile is
 	function Create (Speeches_Per_Page : Positive) return Form_Type is
 	begin
 		return (
-			Encoder => new Ada.Environment_Encoding.Strings.Encoder'(
-				Ada.Environment_Encoding.Strings.To (Encoding)),
-			Decoder => new Ada.Environment_Encoding.Strings.Decoder'(
-				Ada.Environment_Encoding.Strings.From (Encoding)),
+			Encoder =>
+				new Ada.Environment_Encoding.Strings.Encoder'(
+					Ada.Environment_Encoding.Strings.To (Encoding)),
+			Decoder =>
+				new Ada.Environment_Encoding.Strings.Decoder'(
+					Ada.Environment_Encoding.Strings.From (Encoding)),
 			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
@@ -155,7 +157,7 @@ package body Vampire.Forms.Mobile is
 	overriding procedure Set_User (
 		Form : in out Form_Type;
 		Cookie : in out Web.Cookie;
-		New_User_Id: in String;
+		New_User_Id : in String;
 		New_User_Password : in String) is
 	begin
 		null;
@@ -240,7 +242,8 @@ package body Vampire.Forms.Mobile is
 				Last => Integer'Max (Message_Range.First, Message_Range.Last));
 		end Last_N;
 		Range_Arg : constant String := Web.Element (Query_Strings, "r");
-		P : constant Natural := Ada.Strings.Functions.Index_Element_Forward (Range_Arg, '-');
+		P : constant Natural :=
+			Ada.Strings.Functions.Index_Element_Forward (Range_Arg, '-');
 	begin
 		if P < Range_Arg'First then
 			return Last_N (Natural'Value (Range_Arg));

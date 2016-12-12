@@ -17,9 +17,11 @@ package Tabula.Villages.Lists is
 		People : User_Lists.List;
 	end record;
 	
-	function Summary (Type_Code : String; Village : Village_Type'Class) return Village_Summary;
+	function Summary (Type_Code : String; Village : Village_Type'Class)
+		return Village_Summary;
 	
-	package Summary_Maps is new Ada.Containers.Ordered_Maps (Village_Id, Village_Summary);
+	package Summary_Maps is
+		new Ada.Containers.Ordered_Maps (Village_Id, Village_Summary);
 	
 	type Village_List (<>) is limited private;
 	
@@ -54,14 +56,17 @@ package Tabula.Villages.Lists is
 	-- 村ID
 	
 	function File_Name (List : Village_List; Id : Village_Id) return String;
-	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural) return String;
+	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural)
+		return String;
 	
 	function Exists (List : Village_List; Id : Village_Id) return Boolean;
 	function New_Village_Id (List : Village_List) return Village_Id;
 	
 	-- 問い合わせ
 	
-	procedure Get_Summaries (List : in out Village_List; Result : out Summary_Maps.Map);
+	procedure Get_Summaries (
+		List : in out Village_List;
+		Result : out Summary_Maps.Map);
 	
 	-- あるユーザーが村を作っているか
 	function Exists_Opened_By (

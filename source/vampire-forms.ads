@@ -15,8 +15,10 @@ package Vampire.Forms is
 	
 	-- HTML / template set
 	
-	function HTML_Version (Form : Root_Form_Type) return Web.HTML_Version is abstract;
-	function Template_Set (Form : Root_Form_Type) return Template_Set_Type is abstract;
+	function HTML_Version (Form : Root_Form_Type) return Web.HTML_Version is
+		abstract;
+	function Template_Set (Form : Root_Form_Type) return Template_Set_Type is
+		abstract;
 	
 	-- 出力用
 	
@@ -128,7 +130,7 @@ package Vampire.Forms is
 	procedure Set_User (
 		Form : in out Root_Form_Type;
 		Cookie : in out Web.Cookie;
-		New_User_Id: in String;
+		New_User_Id : in String;
 		New_User_Password : in String) is abstract;
 	
 	-- ページ

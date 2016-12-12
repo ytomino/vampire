@@ -27,9 +27,10 @@ is
 				Form,
 				Current_Directory => HTML_Directory,
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Index_Page (
-					User_Id => "",
-					User_Password => ""));
+				Parameters =>
+					Form.Parameters_To_Index_Page (
+						User_Id => "",
+						User_Password => ""));
 		elsif Tag = "loglist" then
 			Handle_Village_List (
 				Output,

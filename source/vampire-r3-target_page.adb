@@ -42,15 +42,13 @@ is
 				Form,
 				Current_Directory => ".",
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Village_Page (
-					Village_Id => Village_Id,
-					User_Id => User_Id,
-					User_Password => User_Password));
+				Parameters =>
+					Form.Parameters_To_Village_Page (
+						Village_Id => Village_Id,
+						User_Id => User_Id,
+						User_Password => User_Password));
 		elsif Tag = "villagename" then
-			Forms.Write_In_HTML (
-				Output,
-				Form,
-				Village.Name.Constant_Reference);
+			Forms.Write_In_HTML (Output, Form, Village.Name.Constant_Reference);
 		elsif Tag = "message" then
 			case Person.Role is
 				when Villages.Doctor =>

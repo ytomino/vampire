@@ -46,9 +46,10 @@ begin
 				Remote_Host => +Remote_Host,
 				Time => Time));
 		end Process;
-		List : User_List := Create (
-			Directory => Users_Directory,
-			Log_File_Name => Input_File_Name.Constant_Reference.Element);
+		List : User_List :=
+			Create (
+				Directory => Users_Directory,
+				Log_File_Name => Input_File_Name.Constant_Reference.Element);
 	begin
 		Iterate_Log (List, Process'Access);
 		New_Line;
@@ -56,12 +57,14 @@ begin
 	if Items.Length >= 2 then
 		for I in Items.Iterate (Items.First, Previous (Items.Last)) loop
 			declare
-				I_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (I);
+				I_Ref : constant Item_Lists.Constant_Reference_Type :=
+					Items.Constant_Reference (I);
 			begin
 				for J in Items.Iterate (Next (I), Items.Last) loop
 					declare
 						use Ada.Text_IO;
-						J_Ref : constant Item_Lists.Constant_Reference_Type := Items.Constant_Reference (J);
+						J_Ref : constant Item_Lists.Constant_Reference_Type :=
+							Items.Constant_Reference (J);
 					begin
 						if I_Ref.Remote_Addr = J_Ref.Remote_Addr
 							or else (

@@ -28,7 +28,9 @@ package Vampire.Villages is
 	-- オプションルール
 	
 	type Vote_Mode is (Unsigned, Preliminary_And_Final);
-	type Execution_Mode is (Dummy_Killed_And_From_First, Infection_And_From_First, From_First, From_Second);
+	type Execution_Mode is (
+		Dummy_Killed_And_From_First, Infection_And_From_First, From_First,
+		From_Second);
 	type Formation_Mode is (Public, Hidden);
 	type Attack_Mode is (Two, Nocturnal_Chain_Infecting, Unanimity);
 	type Vampire_Action_Set_Mode is (None, Gaze, Gaze_And_Cancel);
@@ -39,7 +41,9 @@ package Vampire.Villages is
 	type Hunter_Silver_Bullet_Mode is (Target, Target_And_Self);
 	type Unfortunate_Mode is (None, Appear, Infected_Only);
 	
-	type Obsolete_Teaming_Mode is (Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling, Shuffling_Gremlin, Hiding, Hiding_Gremlin);
+	type Obsolete_Teaming_Mode is (
+		Low_Density, Liner_2, Shuffling_Headless, Shuffling_Euro, Shuffling,
+		Shuffling_Gremlin, Hiding, Hiding_Gremlin);
 	
 	Initial_Vote                 : constant Vote_Mode                 := Unsigned;
 	Initial_Execution            : constant Execution_Mode            := From_First;
@@ -57,7 +61,8 @@ package Vampire.Villages is
 	
 	Is_Obsolete_Teaming : constant array (Obsolete_Teaming_Mode) of Boolean := (
 		Liner_2 | Shuffling | Hiding => False,
-		Low_Density | Shuffling_Headless | Shuffling_Euro | Shuffling_Gremlin | Hiding_Gremlin => True);
+		Low_Density | Shuffling_Headless | Shuffling_Euro | Shuffling_Gremlin
+		| Hiding_Gremlin => True);
 	
 	-- 配役
 	
@@ -76,16 +81,19 @@ package Vampire.Villages is
 	subtype Vampire_Role is Person_Role range Vampire_K .. Vampire_J;
 	
 	type Role_Appearance is (None, Random, Force);
-	type Role_Appearances is array (Unfortunate_Inhabitant .. Lover) of Role_Appearance;
+	type Role_Appearances is
+		array (Unfortunate_Inhabitant .. Lover) of Role_Appearance;
 	
-	type Role_Images is array (Villages.Person_Role) of not null access constant String;
+	type Role_Images is
+		array (Villages.Person_Role) of not null access constant String;
 	
 	type Ability_State is (Disallowed, Allowed, Already_Used);
 	
 	-- 参加者
 	
 	type Requested_Role is (Random, Rest,
-		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart, Servant, Vampire,
+		Inhabitant, Detective, Astronomer, Doctor, Hunter, Sweetheart,
+		Servant, Vampire,
 		Village_Side, Vampire_Side, Gremlin);
 	
 	type Person_State is (Normal, Infected, Died);
@@ -132,71 +140,77 @@ package Vampire.Villages is
 	-- ログ
 	
 	type Message_Kind is (
-		Narration,                        -- ト書き
-		Escape,                           -- 村を出る
-		Escaped_Join,                     -- 村を出た者の参加
-		Escaped_Speech,                   -- 村を出た者の会話
-		Join,                             -- 参加
-		Speech,                           -- 通常会話
-		Monologue,                        -- 独り言
-		Ghost,                            -- 墓場
-		Howling,                          -- 夜間の会話
-		Howling_Blocked,                  -- 夜間の会話が妨害された
-		Action_Wake,                      -- 起こす
-		Action_Encourage,                 -- 促し
-		Action_Vampire_Gaze,              -- 視線
-		Action_Vampire_Gaze_Blocked,      -- 視線が妨害された
-		Action_Vampire_Cancel,            -- 襲撃取り消し
-		Action_Vampire_Canceled,          -- 自分の襲撃設定が取り消された
-		Doctor_Cure,                      -- 治療
-		Doctor_Cure_Preview,              -- 治療
-		Doctor_Found_Infection,           -- 感染を発見しただけ
-		Doctor_Found_Infection_Preview,   -- 感染を発見しただけ
-		Doctor_Failed,                    -- 診察はしたが感染させられた患者では無かった
-		Doctor_Failed_Preview,            -- 診察はしたが感染させられた患者では無かった
-		Doctor_Found_Gremlin,             -- 妖魔を見つけた
-		Doctor_Found_Gremlin_Preview,     -- 妖魔を見つけた
-		Detective_Survey,                 -- 調査
-		Detective_Survey_Preview,         -- 調査
-		Detective_Survey_Victim,          -- 初日犠牲者の調査
-		Preliminary_Vote,                 -- 一次開票
-		Execution,                        -- 処刑
-		Awareness,                        -- 自覚
-		Astronomer_Observation,           -- 観測
-		Meeting,                          -- 吸血鬼の会話
-		Vampire_Infection_In_First,       -- 初日の感染
-		Vampire_Failed_In_First,          -- 初日の感染に失敗
-		Vampire_Murder,                   -- 襲撃
-		Vampire_Murder_And_Killed,        -- 襲撃に成功し相打ちで銀の弾丸を撃ちこまれた
-		Vampire_Infection,                -- 感染
-		Vampire_Infection_And_Killed,     -- 感染に成功し相打ちで銀の弾丸を撃ちこまれた
-		Vampire_Failed,                   -- 襲撃に失敗
-		Vampire_Failed_And_Killed,        -- 襲撃に失敗し銀の弾丸を撃ちこまれた
-		Hunter_Guard_No_Response,         -- 護衛していた(手応えなし)
-		Hunter_Guard,                     -- 護衛に成功した
-		Hunter_Guard_With_Silver,         -- 護衛に成功し銀の弾丸を撃ちこんだ
-		Hunter_Nothing_With_Silver,       -- 銀の弾丸を込めていたが何も無かった
-		Hunter_Infected_With_Silver,      -- 誰かを護衛していたわけではないが自分が襲われたので銀の弾丸で反撃した
-		Hunter_Killed_With_Silver,        -- 銀の弾丸で相打ち
-		Hunter_Failed,                    -- ガードしたが吸血鬼は来なかった
-		Hunter_Failed_With_Silver,        -- ガードしたが吸血鬼は来ず銀の弾丸を無駄遣いした
-		Gremlin_Sense,                    -- 妖魔が吸血鬼の残数を知る
-		Sweetheart_Incongruity,           -- 違和感
-		Sweetheart_Suicide,               -- 後追い
-		Servant_Knew_Vampire_K,           -- Kを知る
-		Servant_Knew_Vampires,            -- 吸血鬼全員を知る
-		List,                             -- 一覧
-		Foreboding,                       -- 初日感染の公開メッセージ
-		Introduction,                     -- 序文
-		Breakdown);                       -- 開始
+		Narration,                      -- ト書き
+		Escape,                         -- 村を出る
+		Escaped_Join,                   -- 村を出た者の参加
+		Escaped_Speech,                 -- 村を出た者の会話
+		Join,                           -- 参加
+		Speech,                         -- 通常会話
+		Monologue,                      -- 独り言
+		Ghost,                          -- 墓場
+		Howling,                        -- 夜間の会話
+		Howling_Blocked,                -- 夜間の会話が妨害された
+		Action_Wake,                    -- 起こす
+		Action_Encourage,               -- 促し
+		Action_Vampire_Gaze,            -- 視線
+		Action_Vampire_Gaze_Blocked,    -- 視線が妨害された
+		Action_Vampire_Cancel,          -- 襲撃取り消し
+		Action_Vampire_Canceled,        -- 自分の襲撃設定が取り消された
+		Doctor_Cure,                    -- 治療
+		Doctor_Cure_Preview,            -- 治療
+		Doctor_Found_Infection,         -- 感染を発見しただけ
+		Doctor_Found_Infection_Preview, -- 感染を発見しただけ
+		Doctor_Failed,                  -- 診察はしたが感染させられた患者では無かった
+		Doctor_Failed_Preview,          -- 診察はしたが感染させられた患者では無かった
+		Doctor_Found_Gremlin,           -- 妖魔を見つけた
+		Doctor_Found_Gremlin_Preview,   -- 妖魔を見つけた
+		Detective_Survey,               -- 調査
+		Detective_Survey_Preview,       -- 調査
+		Detective_Survey_Victim,        -- 初日犠牲者の調査
+		Preliminary_Vote,               -- 一次開票
+		Execution,                      -- 処刑
+		Awareness,                      -- 自覚
+		Astronomer_Observation,         -- 観測
+		Meeting,                        -- 吸血鬼の会話
+		Vampire_Infection_In_First,     -- 初日の感染
+		Vampire_Failed_In_First,        -- 初日の感染に失敗
+		Vampire_Murder,                 -- 襲撃
+		Vampire_Murder_And_Killed,      -- 襲撃に成功し相打ちで銀の弾丸を撃ちこまれた
+		Vampire_Infection,              -- 感染
+		Vampire_Infection_And_Killed,   -- 感染に成功し相打ちで銀の弾丸を撃ちこまれた
+		Vampire_Failed,                 -- 襲撃に失敗
+		Vampire_Failed_And_Killed,      -- 襲撃に失敗し銀の弾丸を撃ちこまれた
+		Hunter_Guard_No_Response,       -- 護衛していた(手応えなし)
+		Hunter_Guard,                   -- 護衛に成功した
+		Hunter_Guard_With_Silver,       -- 護衛に成功し銀の弾丸を撃ちこんだ
+		Hunter_Nothing_With_Silver,     -- 銀の弾丸を込めていたが何も無かった
+		Hunter_Infected_With_Silver,    -- 誰かを護衛していたわけではないが自分が襲われたので銀の弾丸で反撃した
+		Hunter_Killed_With_Silver,      -- 銀の弾丸で相打ち
+		Hunter_Failed,                  -- ガードしたが吸血鬼は来なかった
+		Hunter_Failed_With_Silver,      -- ガードしたが吸血鬼は来ず銀の弾丸を無駄遣いした
+		Gremlin_Sense,                  -- 妖魔が吸血鬼の残数を知る
+		Sweetheart_Incongruity,         -- 違和感
+		Sweetheart_Suicide,             -- 後追い
+		Servant_Knew_Vampire_K,         -- Kを知る
+		Servant_Knew_Vampires,          -- 吸血鬼全員を知る
+		List,                           -- 一覧
+		Foreboding,                     -- 初日感染の公開メッセージ
+		Introduction,                   -- 序文
+		Breakdown);                     -- 開始
 	
-	subtype Action_Message_Kind is Message_Kind range Action_Wake .. Action_Vampire_Gaze_Blocked;
+	subtype Action_Message_Kind is
+		Message_Kind range Action_Wake .. Action_Vampire_Gaze_Blocked;
 	
-	subtype Doctor_Message_Kind is Message_Kind range Doctor_Cure .. Doctor_Found_Gremlin_Preview;
-	subtype Detective_Message_Kind is Message_Kind range Detective_Survey .. Detective_Survey_Victim;
-	subtype Hunter_Message_Kind is Message_Kind range Hunter_Guard_No_Response .. Hunter_Failed_With_Silver;
-	subtype Vampire_Message_Kind is Message_Kind range Vampire_Infection_In_First .. Vampire_Failed_And_Killed;
-	subtype Servant_Message_Kind is Message_Kind range Servant_Knew_Vampire_K .. Servant_Knew_Vampires;
+	subtype Doctor_Message_Kind is
+		Message_Kind range Doctor_Cure .. Doctor_Found_Gremlin_Preview;
+	subtype Detective_Message_Kind is
+		Message_Kind range Detective_Survey .. Detective_Survey_Victim;
+	subtype Hunter_Message_Kind is
+		Message_Kind range Hunter_Guard_No_Response .. Hunter_Failed_With_Silver;
+	subtype Vampire_Message_Kind is
+		Message_Kind range Vampire_Infection_In_First .. Vampire_Failed_And_Killed;
+	subtype Servant_Message_Kind is
+		Message_Kind range Servant_Knew_Vampire_K .. Servant_Knew_Vampires;
 	
 	type Message is record
 		Day : Integer;
@@ -242,7 +256,8 @@ package Vampire.Villages is
 		State : Village_State := Prologue;
 		Today : Integer := 0;
 		Time : Village_Time := Daytime;
-		Dawn : Ada.Calendar.Time := Calendar.Null_Time; -- 更新時刻(1日目は夜を飛ばすため調整)
+		Dawn : Ada.Calendar.Time := Calendar.Null_Time;
+			-- 更新時刻(1日目は夜を飛ばすため調整)
 		Vote : Vote_Mode := Unsigned;
 		Execution : Execution_Mode := From_First;
 		Formation : Formation_Mode := Public;
@@ -263,16 +278,23 @@ package Vampire.Villages is
 	end record;
 	
 	-- 作成
-	function Create (Name : String; By : String; Term : Village_Term; Time : Ada.Calendar.Time)
+	function Create (
+		Name : String;
+		By : String;
+		Term : Village_Term;
+		Time : Ada.Calendar.Time)
 		return Village_Type;
 	
 	-- 発言数
-	function Count_Messages (Village : Village_Type; Day : Natural) return Message_Counts;
+	function Count_Messages (Village : Village_Type; Day : Natural)
+		return Message_Counts;
 	
 	-- 更新予定時刻
 	function Night_To_Daytime (Village : Village_Type) return Ada.Calendar.Time;
-	function Infection_In_First_Time (Village : Village_Type) return Ada.Calendar.Time;
-	function Preliminary_Vote_Time (Village : Village_Type) return Ada.Calendar.Time;
+	function Infection_In_First_Time (Village : Village_Type)
+		return Ada.Calendar.Time;
+	function Preliminary_Vote_Time (Village : Village_Type)
+		return Ada.Calendar.Time;
 	function Daytime_To_Vote (Village : Village_Type) return Ada.Calendar.Time;
 	function Vote_To_Night (Village : Village_Type) return Ada.Calendar.Time;
 	
@@ -300,7 +322,11 @@ package Vampire.Villages is
 	-- 投票
 	function Vote_State (Village : Village_Type) return Vote_State_Type;
 	function Vote_Finished (Village : Village_Type) return Boolean;
-	function Voted_Count (Village : Village_Type; Day : Natural; Preliminary : Boolean) return Voted_Count_Info;
+	function Voted_Count (
+		Village : Village_Type;
+		Day : Natural;
+		Preliminary : Boolean)
+		return Voted_Count_Info;
 	procedure Vote (
 		Village : in out Village_Type;
 		Subject : in Person_Index;
@@ -332,16 +358,23 @@ package Vampire.Villages is
 	
 	-- 能力者
 	function Infected_In_First (Village : Village_Type) return Boolean;
-	function Is_Anyone_Died (Village : Village_Type; Day : Natural) return Boolean;
-	function Find_Superman (Village : Village_Type; Role : Person_Role) return Person_Index'Base;
+	function Is_Anyone_Died (Village : Village_Type; Day : Natural)
+		return Boolean;
+	function Find_Superman (Village : Village_Type; Role : Person_Role)
+		return Person_Index'Base;
 	function Target_Day (Village : Village_Type) return Integer;
 	function Astronomer_Target_Day (Village : Village_Type) return Integer;
-	function Already_Used_Special (Village : Village_Type; Subject : Person_Index) return Boolean;
+	function Already_Used_Special (Village : Village_Type; Subject : Person_Index)
+		return Boolean;
 	
-	function Detective_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
-	function Doctor_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
-	function Superman_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
-	function Silver_Bullet_State (Village : Village_Type; Subject : Person_Index) return Ability_State;
+	function Detective_State (Village : Village_Type; Subject : Person_Index)
+		return Ability_State;
+	function Doctor_State (Village : Village_Type; Subject : Person_Index)
+		return Ability_State;
+	function Superman_State (Village : Village_Type; Subject : Person_Index)
+		return Ability_State;
+	function Silver_Bullet_State (Village : Village_Type; Subject : Person_Index)
+		return Ability_State;
 	
 	procedure Select_Target (
 		Village : in out Village_Type;

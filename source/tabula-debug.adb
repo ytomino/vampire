@@ -13,18 +13,25 @@ package body Tabula.Debug is
 	Time : Ada.Calendar.Time;
 	
 	procedure Start is
-		Time_Image : constant String := Ada.Calendar.Formatting.Image (Time, Time_Zone => Tabula.Calendar.Time_Offset);
-		Offset_Image : constant String := Ada.Calendar.Formatting.Image (Tabula.Calendar.Time_Offset);
+		Time_Image : constant String :=
+			Ada.Calendar.Formatting.Image (Time, Time_Zone => Tabula.Calendar.Time_Offset);
+		Offset_Image : constant String :=
+			Ada.Calendar.Formatting.Image (Tabula.Calendar.Time_Offset);
 	begin
 		if Name = null then
 			raise Program_Error with "debug log handler is not installed.";
 		end if;
-		Ada.Streams.Stream_IO.Create (File, Ada.Streams.Stream_IO.Append_File, Name.all);
+		Ada.Streams.Stream_IO.Create (
+			File,
+			Ada.Streams.Stream_IO.Append_File,
+			Name.all);
 		declare
 			Stream : Ada.Streams.Stream_IO.Stream_Access :=
 				Ada.Streams.Stream_IO.Stream (File);
 		begin
-			String'Write (Stream, "---- " & Time_Image & " (GMT" & Offset_Image & ") ----" & Line_Break);
+			String'Write (
+				Stream,
+				"---- " & Time_Image & " (GMT" & Offset_Image & ") ----" & Line_Break);
 		end;
 	end Start;
 	
@@ -41,12 +48,16 @@ package body Tabula.Debug is
 			Stream : Ada.Streams.Stream_IO.Stream_Access :=
 				Ada.Streams.Stream_IO.Stream (File);
 		begin
-			String'Write (Stream, Source_Location & ": (" & Enclosing_Entity & ") " & S & Line_Break);
+			String'Write (
+				Stream,
+				Source_Location & ": (" & Enclosing_Entity & ") " & S & Line_Break);
 		end;
 		return True;
 	end Put;
 	
-	procedure Hook (Name : not null Static_String_Access; Time : in Ada.Calendar.Time) is
+	procedure Hook (
+		Name : not null Static_String_Access;
+		Time : in Ada.Calendar.Time) is
 	begin
 		Debug.Name := Name;
 		Debug.Time := Time;

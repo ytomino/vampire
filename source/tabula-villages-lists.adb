@@ -14,8 +14,8 @@ package body Tabula.Villages.Lists is
 		Result : Ada.Strings.Unbounded.Unbounded_String;
 		File : Ada.Streams.Stream_IO.File_Type :=
 			Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, Name => Name);
-		Parser : YAML.Parser := YAML.Streams.Create (
-			Ada.Streams.Stream_IO.Stream (File));
+		Parser : YAML.Parser :=
+			YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 	begin
 		YAML.Parse_Stream_Start (Parser);
 		YAML.Parse_Document_Start (Parser);
@@ -39,7 +39,8 @@ package body Tabula.Villages.Lists is
 		return Ada.Strings.Unbounded.To_String (Result);
 	end Get_YAML_Type;
 	
-	function Get_Type_Index (List : Village_List; Type_Code : String) return Positive is
+	function Get_Type_Index (List : Village_List; Type_Code : String)
+		return Positive is
 	begin
 		for I in 1 .. List.Registered_Type_Count loop
 			if List.Registered_Types (I).Type_Code.all = Type_Code then
@@ -50,20 +51,26 @@ package body Tabula.Villages.Lists is
 	end Get_Type_Index;
 	
 	procedure Cache_Summaries (List : in Village_List) is
-		File: Ada.Streams.Stream_IO.File_Type :=
-			Ada.Streams.Stream_IO.Create (Ada.Streams.Stream_IO.Out_File, List.Cache_File_Name.all);
+		File : Ada.Streams.Stream_IO.File_Type :=
+			Ada.Streams.Stream_IO.Create (
+				Ada.Streams.Stream_IO.Out_File,
+				List.Cache_File_Name.all);
 	begin
 		Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
 		Ada.Streams.Stream_IO.Close (File);
 	end Cache_Summaries;
 	
-	procedure Read_Summaries (List : in out Village_List; Update_Cache : in Boolean) is
+	procedure Read_Summaries (
+		List : in out Village_List;
+		Update_Cache : in Boolean) is
 	begin
 		if not List.Map_Read then
 			if Ada.Directories.Exists (List.Cache_File_Name.all) then
 				declare
 					Cache_File : Ada.Streams.Stream_IO.File_Type :=
-						Ada.Streams.Stream_IO.Open (Ada.Streams.Stream_IO.In_File, List.Cache_File_Name.all);
+						Ada.Streams.Stream_IO.Open (
+							Ada.Streams.Stream_IO.In_File,
+							List.Cache_File_Name.all);
 				begin
 					Summary_Maps.Map'Read (Ada.Streams.Stream_IO.Stream (Cache_File), List.Map);
 					Ada.Streams.Stream_IO.Close (Cache_File);
@@ -81,7 +88,8 @@ package body Tabula.Villages.Lists is
 						begin
 							if Id (Id'First) in '0' .. '9' then
 								declare
-									Type_Code : constant String := Get_YAML_Type (Ada.Directories.Full_Name (File));
+									Type_Code : constant String :=
+										Get_YAML_Type (Ada.Directories.Full_Name (File));
 									Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
 									Summary : Village_Summary
 										renames List.Registered_Types (Type_Index).Load_Summary (List, Id);
@@ -102,7 +110,9 @@ package body Tabula.Villages.Lists is
 		end if;
 	end Read_Summaries;
 	
-	function Summary (Type_Code : String; Village : Village_Type'Class) return Village_Summary is
+	function Summary (Type_Code : String; Village : Village_Type'Class)
+		return Village_Summary
+	is
 		State : Village_State;
 		Today : Natural;
 	begin
@@ -119,7 +129,7 @@ package body Tabula.Villages.Lists is
 			declare
 				procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is
 				begin
-				   Append (Result.People, Item.Id.Constant_Reference);
+					Append (Result.People, Item.Id.Constant_Reference);
 				end Process;
 			begin
 				Iterate_People (Village, Process'Access);
@@ -145,8 +155,9 @@ package body Tabula.Villages.Lists is
 			Map => Empty_Map,
 			Map_Read => False,
 			Registered_Type_Count => Types'Length,
-			Registered_Types => Types &
-				Registered_Type_Array'(1 .. Registered_Type_Capacity - Types'Length => <>));
+			Registered_Types =>
+				Types
+					& Registered_Type_Array'(1 .. Registered_Type_Capacity - Types'Length => <>));
 	end Create;
 	
 	function File_Name (List : Village_List; Id : Village_Id) return String is
@@ -156,7 +167,8 @@ package body Tabula.Villages.Lists is
 			Relative_Name => Id);
 	end File_Name;
 	
-	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural) return String is
+	function HTML_File_Name (List : Village_List; Id : Village_Id; Day : Natural)
+		return String is
 	begin
 		return Ada.Hierarchical_File_Names.Compose (
 			Directory => List.HTML_Directory.all,
@@ -209,7 +221,9 @@ package body Tabula.Villages.Lists is
 		end;
 	end New_Village_Id;
 	
-	procedure Get_Summaries (List : in out Village_List; Result : out Summary_Maps.Map) is
+	procedure Get_Summaries (
+		List : in out Village_List;
+		Result : out Summary_Maps.Map) is
 	begin
 		Read_Summaries (List, True);
 		List.Create_Index (List.Map, Update => False);
@@ -226,7 +240,8 @@ package body Tabula.Villages.Lists is
 			declare
 				V : Village_Summary renames Summaries.Constant_Reference (I);
 			begin
-				if V.State <= Playing and then V.By = User_Id
+				if V.State <= Playing
+					and then V.By = User_Id
 					and then Summary_Maps.Key (I) /= Excluding
 				then
 					return True;

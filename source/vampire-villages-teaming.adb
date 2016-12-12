@@ -15,8 +15,10 @@ package body Vampire.Villages.Teaming is
 		Result : Role_Set_Array (1 .. 2 ** (Role_Set'Length - 2));
 		Last : Natural := 0;
 		
-		subtype Village_Side_Superman_Count_Type is Natural range 0 .. 7; -- 天猟探医数恋恋
-		subtype Vampire_Count_Type is Natural range 0 .. 4; -- KQJ + 一時的に使徒を計算に含める分
+		subtype Village_Side_Superman_Count_Type is Natural range 0 .. 7;
+			-- 天猟探医数恋恋
+		subtype Vampire_Count_Type is Natural range 0 .. 4;
+			-- KQJ + 一時的に使徒を計算に含める分
 		subtype Servant_Count_Type is Natural range 0 .. 1;
 		subtype Gremlin_Count_Type is Natural range 0 .. 1;
 		
@@ -57,24 +59,37 @@ package body Vampire.Villages.Teaming is
 			Village_Side_Superman_Count : in Village_Side_Superman_Count_Type;
 			Total_Village_Side_Superman_Count : in Village_Side_Superman_Count_Type) is
 		begin
-			Process_Inhabitants (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			Process_Inhabitants (
+				Set,
+				Village_Side_Superman_Count,
+				Total_Village_Side_Superman_Count);
 			if Male_And_Female then
-				if Village_Side_Superman_Count >= 1 and then Total_Village_Side_Superman_Count >= 3 then
+				if Village_Side_Superman_Count >= 1
+					and then Total_Village_Side_Superman_Count >= 3
+				then
 					declare
 						Set_2 : Role_Set := Set;
 					begin
 						Set_2 (Lover) := 1;
 						Set_2 (Loved_Inhabitant) := 1;
-						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
+						Process_Inhabitants (
+							Set_2,
+							Village_Side_Superman_Count - 1,
+							Total_Village_Side_Superman_Count);
 					end;
 				end if;
-				if Village_Side_Superman_Count >= 2 and then Total_Village_Side_Superman_Count >= 4 then
+				if Village_Side_Superman_Count >= 2
+					and then Total_Village_Side_Superman_Count >= 4
+				then
 					declare
 						Set_2 : Role_Set := Set;
 					begin
 						Set_2 (Sweetheart_M) := 1;
 						Set_2 (Sweetheart_F) := 1;
-						Process_Inhabitants (Set_2, Village_Side_Superman_Count - 2, Total_Village_Side_Superman_Count);
+						Process_Inhabitants (
+							Set_2,
+							Village_Side_Superman_Count - 2,
+							Total_Village_Side_Superman_Count);
 					end;
 				end if;
 			end if;
@@ -87,14 +102,21 @@ package body Vampire.Villages.Teaming is
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			Process_Lovers (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			Process_Lovers (
+				Set,
+				Village_Side_Superman_Count,
+				Total_Village_Side_Superman_Count);
 			if Village_Side_Superman_Count > 0
 				and then (
 					Set (Astronomer) + Set (Hunter) + Set (Doctor) < 3
-					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 4)
+					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >=
+					        4)
 			then
 				Set_2 (Detective) := 1;
-				Process_Lovers (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
+				Process_Lovers (
+					Set_2,
+					Village_Side_Superman_Count - 1,
+					Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Detective;
 		
@@ -106,11 +128,17 @@ package body Vampire.Villages.Teaming is
 			Set_2 : Role_Set := Set;
 		begin
 			if not (Set (Gremlin) >= 1 and then Set (Astronomer) = 0) then
-				Process_Detective (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+				Process_Detective (
+					Set,
+					Village_Side_Superman_Count,
+					Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Doctor) := 1;
-				Process_Detective (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
+				Process_Detective (
+					Set_2,
+					Village_Side_Superman_Count - 1,
+					Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Doctor;
 		
@@ -121,18 +149,23 @@ package body Vampire.Villages.Teaming is
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			if Village_Side_Superman_Count = 0
-				or else Set (Astronomer) >= 1
-			then
-				Process_Doctor (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			if Village_Side_Superman_Count = 0 or else Set (Astronomer) >= 1 then
+				Process_Doctor (
+					Set,
+					Village_Side_Superman_Count,
+					Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0
 				and then (
 					Set (Astronomer) = 0
-					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >= 3)
+					or else Set (Vampire_K) + Set (Vampire_Q) + Set (Vampire_J) + Set (Servant) + Set (Gremlin) >=
+					        3)
 			then
 				Set_2 (Hunter) := 1;
-				Process_Doctor (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
+				Process_Doctor (
+					Set_2,
+					Village_Side_Superman_Count - 1,
+					Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Hunter;
 		
@@ -143,14 +176,18 @@ package body Vampire.Villages.Teaming is
 		is
 			Set_2 : Role_Set := Set;
 		begin
-			if Village_Side_Superman_Count = 0
-				or else Formation /= Hidden
-			then
-				Process_Hunter (Set, Village_Side_Superman_Count, Total_Village_Side_Superman_Count);
+			if Village_Side_Superman_Count = 0 or else Formation /= Hidden then
+				Process_Hunter (
+					Set,
+					Village_Side_Superman_Count,
+					Total_Village_Side_Superman_Count);
 			end if;
 			if Village_Side_Superman_Count > 0 then
 				Set_2 (Astronomer) := 1;
-				Process_Hunter (Set_2, Village_Side_Superman_Count - 1, Total_Village_Side_Superman_Count);
+				Process_Hunter (
+					Set_2,
+					Village_Side_Superman_Count - 1,
+					Total_Village_Side_Superman_Count);
 			end if;
 		end Process_Astronomer;
 		
@@ -170,7 +207,10 @@ package body Vampire.Villages.Teaming is
 					end if;
 				end if;
 			end if;
-			Process_Astronomer (Set_2, Village_Side_Superman_Count, Village_Side_Superman_Count);
+			Process_Astronomer (
+				Set_2,
+				Village_Side_Superman_Count,
+				Village_Side_Superman_Count);
 		end Process_Vampires;
 		
 		procedure Process_Servant (
@@ -354,7 +394,7 @@ package body Vampire.Villages.Teaming is
 		Index := Random (Generator);
 		-- 片想いと数奇な運命の村人の出現率を少し下げる
 		if Sets (Index)(Lover) > 0
-			or else Sets (Index)(Unfortunate_Inhabitant) > 0
+			or else Sets (Index) (Unfortunate_Inhabitant) > 0
 		then
 			Index := Random (Generator);
 		end if;
@@ -391,7 +431,9 @@ package body Vampire.Villages.Teaming is
 					pragma Assert(False);
 					return Role_Set'(others => False);
 				when Inhabitant =>
-					return Role_Set'(Inhabitant | Loved_Inhabitant | Unfortunate_Inhabitant => True, others => False);
+					return Role_Set'(
+						Inhabitant | Loved_Inhabitant | Unfortunate_Inhabitant => True,
+						others => False);
 				when Detective =>
 					return Role_Set'(Detective => True, others => False);
 				when Astronomer =>
@@ -407,9 +449,13 @@ package body Vampire.Villages.Teaming is
 				when Vampire =>
 					return Role_Set'(Vampire_Role => True, others => False);
 				when Village_Side =>
-					return Role_Set'(Vampire_Role | Servant => False, Gremlin => False, others => True);
+					return Role_Set'(
+						Vampire_Role | Servant => False, Gremlin => False,
+						others => True);
 				when Vampire_Side =>
-					return Role_Set'(Vampire_Role | Servant => True, Gremlin => False, others => False);
+					return Role_Set'(
+						Vampire_Role | Servant => True,
+						Gremlin => False, others => False);
 				when Gremlin =>
 					return Role_Set'(Gremlin => True, others => False);
 			end case;

@@ -6,7 +6,7 @@ procedure Vampire.R3.Preview_Page (
 	Template : in String;
 	Image_Directory : in String;
 	Village_Id : in Tabula.Villages.Village_Id;
-	Village : in Villages.Village_Type; 
+	Village : in Villages.Village_Type;
 	Message : in Villages.Message;
 	User_Id : in String;
 	User_Password : in String);

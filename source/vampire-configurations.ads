@@ -23,18 +23,22 @@ package Vampire.Configurations is
 	-- for villages
 	Villages_Data_Directory : aliased constant String := "villages/data";
 	Villages_HTML_Directory : aliased constant String := "villages";
-	Villages_Index_HTML_File_Name : aliased constant String := "villages/index.html";
-	Villages_Index_RSS_File_Name : aliased constant String := "villages/wanted.rdf";
+	Villages_Index_HTML_File_Name : aliased constant String :=
+		"villages/index.html";
+	Villages_Index_RSS_File_Name : aliased constant String :=
+		"villages/wanted.rdf";
 	
 	-- temporary file for villages
 	Villages_Cache_File_Name : aliased constant String := "temp/cache-villages";
-	Villages_Blocking_Short_Term_File_Name : aliased constant String := "temp/disabled-short";
+	Villages_Blocking_Short_Term_File_Name : aliased constant String :=
+		"temp/disabled-short";
 	
 	-- for rendering
 	Style_Sheet_File_Name : aliased constant String := "style.css";
 	Image_Directory : aliased constant String := "image";
 	
-	Background_Image_File_Name : aliased constant String := Image_Directory & "/" & "background.png";
+	Background_Image_File_Name : aliased constant String :=
+		Image_Directory & "/" & "background.png";
 	
 	Relative_Role_Image_File_Names : aliased constant Villages.Role_Images := (
 		Villages.Gremlin =>
@@ -43,7 +47,8 @@ package Vampire.Configurations is
 			new String'("vampire.png"),
 		Villages.Servant =>
 			new String'("servant.png"),
-		Villages.Inhabitant | Villages.Loved_Inhabitant | Villages.Unfortunate_Inhabitant =>
+		Villages.Inhabitant | Villages.Loved_Inhabitant
+		| Villages.Unfortunate_Inhabitant =>
 			new String'("inhabitant.png"),
 		Villages.Detective =>
 			new String'("detective.png"),
@@ -74,7 +79,8 @@ package Vampire.Configurations is
 		Template_Log_Index_File_Name : not null access constant String;
 	end record;
 	
-	Template_Names : constant array (Forms.Template_Set_Type) of aliased Template_Names_Type := (
+	Template_Names : constant
+			array (Forms.Template_Set_Type) of aliased Template_Names_Type := (
 		Forms.For_Full => (
 			Style_Sheet_File_Name => Style_Sheet_File_Name'Access,
 			Image_Directory => Image_Directory'Access,

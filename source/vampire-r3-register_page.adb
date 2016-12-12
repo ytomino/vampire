@@ -4,7 +4,8 @@ procedure Vampire.R3.Register_Page (
 	Form : in Forms.Root_Form_Type'Class;
 	Template : in String;
 	Base_Page : in Forms.Base_Page;
-	Village_Id : in Tabula.Villages.Village_Id := Tabula.Villages.Invalid_Village_Id;
+	Village_Id : in Tabula.Villages.Village_Id :=
+		Tabula.Villages.Invalid_Village_Id;
 	New_User_Id : in String;
 	New_User_Password : in String)
 is
@@ -27,11 +28,12 @@ is
 				Form,
 				Current_Directory => ".",
 				Resource => Forms.Self,
-				Parameters => Form.Parameters_To_Base_Page (
-					Base_Page => Base_Page,
-					Village_Id => Village_Id,
-					User_Id => "",
-					User_Password => ""));
+				Parameters =>
+					Form.Parameters_To_Base_Page (
+						Base_Page => Base_Page,
+						Village_Id => Village_Id,
+						User_Id => "",
+						User_Password => ""));
 		elsif Tag = "id" then
 			Forms.Write_In_HTML (Output, Form, New_User_Id);
 		elsif Tag = "parameters" then

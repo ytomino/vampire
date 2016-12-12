@@ -21,7 +21,7 @@ package body Vampire.Forms is
 	begin
 		case Base_Page is
 			when Index_Page =>
-				return  Form.Parameters_To_Index_Page (
+				return Form.Parameters_To_Index_Page (
 					User_Id => User_Id,
 					User_Password => User_Password);
 			when User_Page =>
@@ -106,24 +106,26 @@ package body Vampire.Forms is
 				Stream,
 				Form,
 				Current_Directory => Current_Directory,
-				Resource => Ada.Hierarchical_File_Names.Compose (
-					Directory => HTML_Directory,
-					Relative_Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
-					Extension => "html"));
+				Resource =>
+					Ada.Hierarchical_File_Names.Compose (
+						Directory => HTML_Directory,
+						Relative_Name => Village_Id & "-" & Image (Integer'Max (0, Day)),
+						Extension => "html"));
 		else
 			Write_Link (
 				Stream,
 				Form,
 				Current_Directory => Current_Directory,
 				Resource => Self,
-				Parameters => Form.Parameters_To_Village_Page (
-					Village_Id => Village_Id,
-					Day => Day,
-					First => First,
-					Last => Last,
-					Latest => Latest,
-					User_Id => User_Id,
-					User_Password => User_Password));
+				Parameters =>
+					Form.Parameters_To_Village_Page (
+						Village_Id => Village_Id,
+						Day => Day,
+						First => First,
+						Last => Last,
+						Latest => Latest,
+						User_Id => User_Id,
+						User_Password => User_Password));
 		end if;
 	end Write_Link_To_Village_Page;
 	
@@ -157,7 +159,9 @@ package body Vampire.Forms is
 		Cookie : Web.Cookie)
 		return Base_Page is
 	begin
-		if Form.Get_Village_Id (Query_Strings) /= Tabula.Villages.Invalid_Village_Id then
+		if Form.Get_Village_Id (Query_Strings) /=
+		   Tabula.Villages.Invalid_Village_Id
+		then
 			return Village_Page;
 		elsif Form.Is_User_Page (Query_Strings, Cookie) then
 			return User_Page;

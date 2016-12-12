@@ -6,7 +6,7 @@ procedure Vampire.R3.Index_Page (
 	HTML_Directory : in String;
 	Summaries : in out Tabula.Villages.Lists.Summary_Maps.Map;
 	Muramura : in Natural;
-	User_Id: in String;
+	User_Id : in String;
 	User_Password : in String)
 is
 	procedure Handle (

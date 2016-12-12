@@ -108,7 +108,7 @@ package body Vampire.Forms.Full is
 	overriding procedure Set_User (
 		Form : in out Form_Type;
 		Cookie : in out Web.Cookie;
-		New_User_Id: in String;
+		New_User_Id : in String;
 		New_User_Password : in String) is
 	begin
 		Web.String_Maps.Include (Cookie, "id", New_User_Id);
@@ -193,7 +193,9 @@ package body Vampire.Forms.Full is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (Web.Element (Inputs, "name"), Ada.Strings.Both);
+		return Ada.Strings.Functions.Trim (
+			Web.Element (Inputs, "name"),
+			Ada.Strings.Both);
 	end Get_New_Village_Name;
 	
 	overriding function Get_Text (
@@ -201,7 +203,9 @@ package body Vampire.Forms.Full is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (Web.Element (Inputs, "text"), Ada.Strings.Both);
+		return Ada.Strings.Functions.Trim (
+			Web.Element (Inputs, "text"),
+			Ada.Strings.Both);
 	end Get_Text;
 	
 end Vampire.Forms.Full;

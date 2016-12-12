@@ -31,8 +31,8 @@ package Tabula.Villages is
 	
 	subtype Message_Index is Natural;
 	type Message_Range_Type is record
-	   First : Message_Index;
-	   Last : Message_Index'Base;
+		First : Message_Index;
+		Last : Message_Index'Base;
 	end record;
 	
 	-- オプション
@@ -98,12 +98,14 @@ package Tabula.Villages is
 	
 	procedure Iterate_Options (
 		Village : in Village_Type;
-		Process : not null access procedure (Item : in Root_Option_Item'Class)) is abstract;
+		Process : not null access procedure (Item : in Root_Option_Item'Class)) is
+		abstract;
 	
 	function Option_Changed (Village : Village_Type) return Boolean;
 	
 	-- 参加状況
-	function Joined (Village : Village_Type; User_Id : String) return Person_Index'Base;
+	function Joined (Village : Village_Type; User_Id : String)
+		return Person_Index'Base;
 	
 	function Already_Joined_As_Another_Sex (
 		Village : Village_Type;
@@ -112,6 +114,8 @@ package Tabula.Villages is
 	function Male_And_Female (Village : Village_Type) return Boolean;
 	
 	-- 既に取られているものを除外
-	procedure Exclude_Taken (Cast : in out Casts.Cast_Collection; Village : in Village_Type);
+	procedure Exclude_Taken (
+		Cast : in out Casts.Cast_Collection;
+		Village : in Village_Type);
 	
 end Tabula.Villages;

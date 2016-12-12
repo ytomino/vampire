@@ -48,30 +48,36 @@ procedure Vampire.Main is
 	
 	-- 標準入出力
 	Input : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Input.all);
+		Ada.Streams.Stream_IO.Stream (
+			Ada.Streams.Stream_IO.Standard_Files.Standard_Input.all);
 	Output : not null Ada.Streams.Stream_IO.Stream_Access :=
-		Ada.Streams.Stream_IO.Stream (Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
+		Ada.Streams.Stream_IO.Stream (
+			Ada.Streams.Stream_IO.Standard_Files.Standard_Output.all);
 	
 	-- 乱数シード
-	Generator : aliased Ada.Numerics.MT19937.Generator := Ada.Numerics.MT19937.Initialize;
+	Generator : aliased Ada.Numerics.MT19937.Generator :=
+		Ada.Numerics.MT19937.Initialize;
 	
 	-- ユーザー情報
-	User_List : Users.Lists.User_List := Users.Lists.Create (
-		Directory => Configurations.Users_Directory'Access,
-		Log_File_Name => Configurations.Users_Log_File_Name'Access);
+	User_List : Users.Lists.User_List :=
+		Users.Lists.Create (
+			Directory => Configurations.Users_Directory'Access,
+			Log_File_Name => Configurations.Users_Log_File_Name'Access);
 	
 	-- 村情報
-	Village_List : Tabula.Villages.Lists.Village_List := Tabula.Villages.Lists.Create (
-		Data_Directory => Configurations.Villages_Data_Directory'Access,
-		HTML_Directory => Configurations.Villages_HTML_Directory'Access,
-		Blocking_Short_Term_File_Name => Configurations.Villages_Blocking_Short_Term_File_Name'Access,
-		Cache_File_Name => Configurations.Villages_Cache_File_Name'Access,
-		Create_Index => Log.Create_Index'Access,
-		Types => (
-			1 => (
-				Type_Code => Log.Type_Code'Access,
-				Load_Summary => Log.Load_Summary'Access,
-				Create_Log => Log.Create_Log'Access)));
+	Village_List : Tabula.Villages.Lists.Village_List :=
+		Tabula.Villages.Lists.Create (
+			Data_Directory => Configurations.Villages_Data_Directory'Access,
+			HTML_Directory => Configurations.Villages_HTML_Directory'Access,
+			Blocking_Short_Term_File_Name =>
+				Configurations.Villages_Blocking_Short_Term_File_Name'Access,
+			Cache_File_Name => Configurations.Villages_Cache_File_Name'Access,
+			Create_Index => Log.Create_Index'Access,
+			Types => (
+				1 => (
+					Type_Code => Log.Type_Code'Access,
+					Load_Summary => Log.Load_Summary'Access,
+					Create_Log => Log.Create_Log'Access)));
 	
 begin
 	if not Ada.Environment_Variables.Exists ("USE_STDERR") then
@@ -79,7 +85,8 @@ begin
 	end if;
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	Locked : declare
-		Lock : Web.Lock_Files.Lock_Type := Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
+		Lock : Web.Lock_Files.Lock_Type :=
+			Web.Lock_Files.Lock (Configurations.Lock_Name, Force => 60.0);
 		-- HTTP Info
 		Remote_Addr : constant String := Web.Remote_Addr;
 		Remote_Host : constant String := Web.Remote_Host;
@@ -87,9 +94,10 @@ begin
 		Query_Strings : Web.Query_Strings renames Web.Get_Query_Strings;
 		Cookie : Web.Cookie := Web.Get_Cookie; -- variable
 		Post : constant Boolean := Web.Post;
-		Form : Forms.Root_Form_Type'Class := Forms.Selecting.Select_Form (
-			Query_Strings,
-			Speeches_Per_Page => Configurations.Speeches_Per_Page);
+		Form : Forms.Root_Form_Type'Class :=
+			Forms.Selecting.Select_Form (
+				Query_Strings,
+				Speeches_Per_Page => Configurations.Speeches_Per_Page);
 		procedure Refresh_Page is
 			Self_URI : constant String := Web.Request_URI;
 		begin
@@ -101,9 +109,12 @@ begin
 		end Refresh_Page;
 		-- Values
 		User_Id : constant String := Form.Get_User_Id (Query_Strings, Cookie);
-		User_Password : constant String := Form.Get_User_Password (Query_Strings, Cookie);
-		Base_Page : constant Forms.Base_Page := Form.Get_Base_Page (Query_Strings, Cookie);
-		Village_Id : constant Tabula.Villages.Village_Id := Form.Get_Village_Id (Query_Strings);
+		User_Password : constant String :=
+			Form.Get_User_Password (Query_Strings, Cookie);
+		Base_Page : constant Forms.Base_Page :=
+			Form.Get_Base_Page (Query_Strings, Cookie);
+		Village_Id : constant Tabula.Villages.Village_Id :=
+			Form.Get_Village_Id (Query_Strings);
 		Cmd : constant String := Form.Get_Command (Inputs);
 	begin
 		if Web.Lock_Files.Forced (Lock) then
@@ -230,7 +241,8 @@ begin
 					when others =>
 						null;
 				end case;
-				Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => ""); -- logoff
+				Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => "");
+					-- logoff
 				if Base_Page = Forms.User_Page then
 					Dest_Page := Forms.Index_Page;
 				else
@@ -253,7 +265,8 @@ begin
 			Register : declare
 				New_User_Id : constant String := Form.Get_New_User_Id (Inputs);
 				New_User_Password : constant String := Form.Get_New_User_Password (Inputs);
-				New_User_Password_Retype : constant String := Form.Get_New_User_Confirmation_Password (Inputs);
+				New_User_Password_Retype : constant String :=
+					Form.Get_New_User_Confirmation_Password (Inputs);
 				Registered : Boolean;
 			begin
 				if New_User_Password /= New_User_Password_Retype then
@@ -320,7 +333,8 @@ begin
 					Now => Now,
 					Info => User_Info, State => User_State);
 				if User_State = Users.Lists.Invalid then
-					Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => ""); -- logoff
+					Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => "");
+						-- logoff
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
@@ -361,7 +375,8 @@ begin
 										User_Id => User_Id,
 										User_Password => User_Password);
 								elsif Term = Tabula.Villages.Short
-									and then (User_Info.Disallow_New_Village
+									and then (
+										User_Info.Disallow_New_Village
 										or else (
 											Tabula.Villages.Lists.Blocking_Short_Term (Village_List)
 											and then User_Id /= Users.Administrator
@@ -396,11 +411,12 @@ begin
 												User_Password => User_Password);
 										else
 											declare
-												New_Village : Villages.Village_Type := Villages.Create (
-													Name => Village_Name,
-													By => User_Id,
-													Term => Term,
-													Time => Now);
+												New_Village : Villages.Village_Type :=
+													Villages.Create (
+														Name => Village_Name,
+														By => User_Id,
+														Term => Term,
+														Time => Now);
 												New_Village_Id : constant Tabula.Villages.Village_Id :=
 													Tabula.Villages.Lists.New_Village_Id (Village_List);
 											begin
@@ -462,7 +478,9 @@ begin
 						end case;
 					end New_Village;
 				elsif Cmd = "remakelog" then
-					if User_State = Users.Lists.Valid and then User_Id = Tabula.Users.Administrator then
+					if User_State = Users.Lists.Valid
+						and then User_Id = Tabula.Users.Administrator
+					then
 						Tabula.Villages.Lists.Refresh (Village_List);
 						Refresh_Page;
 					else
@@ -538,7 +556,11 @@ begin
 								Muramura_Count : Natural;
 							begin
 								Tabula.Villages.Lists.Get_Summaries (Village_List, Summaries);
-								Users.Lists.Muramura_Count (User_List, Now, Configurations.Muramura_Duration, Muramura_Count);
+								Users.Lists.Muramura_Count (
+									User_List,
+									Now,
+									Configurations.Muramura_Duration,
+									Muramura_Count);
 								Web.Header_Content_Type (Output, Web.Text_HTML);
 								Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 								Web.Header_Break (Output);
@@ -598,7 +620,9 @@ begin
 								User_Password => User_Password);
 						end Message_Page;
 					begin
-						Villages.Load (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+						Villages.Load (
+							Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+							Village);
 						-- Village.Name := +Village.Name.Constant_Reference.Element.all; -- dirty hack for memory bug
 						if Cmd'Length = 0 then
 							if Post then
@@ -611,7 +635,9 @@ begin
 									Villages.Advance(Village, Now, Generator,
 										Changed => Changed, List_Changed => List_Changed);
 									if Changed then
-										Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+										Villages.Save (
+											Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+											Village);
 									end if;
 									if List_Changed then
 										Tabula.Villages.Lists.Update (
@@ -638,13 +664,18 @@ begin
 									R3.Village_Page (
 										Output,
 										Form,
-										R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
+										R3.Read (
+											Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
 										Current_Directory => ".",
 										HTML_Directory => Configurations.Villages_HTML_Directory,
-										Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
-										Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
-										Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
-										Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+										Image_Directory =>
+											Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+										Style_Sheet =>
+											Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+										Background =>
+											Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+										Relative_Role_Images =>
+											Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
 										Cast_File_Name => Configurations.Cast_File_Name,
 										Log => False,
 										Village_Id => Village_Id,
@@ -671,10 +702,14 @@ begin
 										if Player /= Tabula.Villages.No_Person then
 											Message_Page ("既にこの村に参加しています。");
 										elsif Village.State /= Tabula.Villages.Prologue then
-											Message_Page ("村が開始されたため今からは参加できません。 次の村をよろしくお願いします。");
+											Message_Page (
+												"村が開始されたため今からは参加できません。 次の村をよろしくお願いします。");
 										elsif Village.People.Length >= Villages.Maximum_Number_Of_Persons then
-											Message_Page ("定員に達したため今からは参加できません。 次の村をよろしくお願いします。");
-										elsif Tabula.Villages.Lists.Exists_Opened_By (Summaries, User_Id, Excluding => Village_Id) then
+											Message_Page (
+												"定員に達したため今からは参加できません。 次の村をよろしくお願いします。");
+										elsif Tabula.Villages.Lists.Exists_Opened_By (Summaries, User_Id,
+											Excluding => Village_Id)
+										then
 											Message_Page ("自分の作成した村に入ってください。");
 										elsif Village.Term = Tabula.Villages.Long
 											and then Tabula.Villages.Lists.Count_Joined_By (
@@ -703,35 +738,44 @@ begin
 													end if;
 													if Joining.Work_Index < 0 then
 														Message_Page (
-															"申し訳ありませんが既定の肩書き(" &
-															Person_Template.Work.Constant_Reference &
-															")は既に他の方に取られています。");
+															"申し訳ありませんが既定の肩書き("
+																& Person_Template.Work.Constant_Reference
+																& ")は既に他の方に取られています。");
 													else
 														declare
 															Selected_Work : Casts.Work
 																renames Cast.Works.Constant_Reference (Joining.Work_Index);
 														begin
-															if Person_Template.Name.Is_Null
-																or else Selected_Work.Name.Is_Null
-															then
+															if Person_Template.Name.Is_Null or else Selected_Work.Name.Is_Null then
 																Message_Page ("選択した顔または肩書きは既に他の方に取られています。");
-															elsif Selected_Work.Sex /= Casts.Neutral and then Selected_Work.Sex /= Person_Template.Sex then
+															elsif Selected_Work.Sex /= Casts.Neutral
+																and then Selected_Work.Sex /= Person_Template.Sex
+															then
 																Message_Page ("性別と肩書きが一致しません。");
-															elsif Selected_Work.Nominated and then Selected_Work.Name /= Person_Template.Work then
+															elsif Selected_Work.Nominated
+																and then Selected_Work.Name /= Person_Template.Work
+															then
 																Message_Page ("その肩書きは特定の組み合わせでしか使えません。");
-															elsif Villages.Already_Joined_As_Another_Sex(Village, User_Id, Person_Template.Sex) then
+															elsif Villages.Already_Joined_As_Another_Sex (
+																Village,
+																User_Id,
+																Person_Template.Sex)
+															then
 																Message_Page ("以前にエントリされたときと性別が異なります。");
 															else
 																Villages.Join (
 																	Village,
 																	User_Id,
-																	Cast.Groups.Constant_Reference (Casts.Find (Cast.Groups, Person_Template.Group)),
+																	Cast.Groups.Constant_Reference (
+																		Casts.Find (Cast.Groups, Person_Template.Group)),
 																	Person_Template,
 																	Selected_Work,
 																	Villages.Requested_Role'Value (Joining.Request.Constant_Reference),
 																	User_Info.Ignore_Request,
 																	Now);
-																Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+																Villages.Save (
+																	Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+																	Village);
 																Tabula.Villages.Lists.Update (
 																	Village_List,
 																	Village_Id,
@@ -754,7 +798,9 @@ begin
 											Message_Page ("既に他の人が参加されているため顔絵セットを変えられません。");
 										else
 											Village.Face_Group := New_Group;
-											Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+											Villages.Save (
+												Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+												Village);
 											Refresh_Page;
 										end if;
 									end Group;
@@ -781,8 +827,7 @@ begin
 										declare
 											Target : constant Integer := Form.Get_Target (Inputs);
 											Removed_Id : constant String :=
-												Village.People.Constant_Reference (Target).
-													Id.Constant_Reference;
+												Village.People.Constant_Reference (Target).Id.Constant_Reference;
 										begin
 											Villages.Escape(Village, Target, Now);
 											Villages.Save (
@@ -802,8 +847,8 @@ begin
 								elsif Cmd = "commit" then
 									if Village.Time = Villages.Night then
 										Message_Page ("今は行動を終えられない時間帯です。");
-									elsif Village.People.Constant_Reference(Player).
-										Records.Constant_Reference(Village.Today).State = Villages.Died
+									elsif Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
+									      Villages.Died
 									then
 										Message_Page ("死者は行動を決定できません。");
 									else
@@ -814,7 +859,9 @@ begin
 											begin
 												Villages.Advance(Village, Now, Generator,
 													Changed => Changed, List_Changed => List_Changed);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												if List_Changed then
 													Tabula.Villages.Lists.Update (
 														Village_List,
@@ -830,7 +877,9 @@ begin
 								elsif Cmd = "rollback" then
 									if Village.People.Constant_Reference(Player).Commited then
 										Village.People.Reference(Player).Commited := False;
-										Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+										Villages.Save (
+											Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+											Village);
 									end if;
 									Refresh_Page;
 								elsif Cmd = "escape" then
@@ -844,7 +893,9 @@ begin
 												Message_Page ("答えが違います。");
 											when Forms.OK =>
 												Villages.Escape(Village, Player, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												Tabula.Villages.Lists.Update (
 													Village_List,
 													Village_Id,
@@ -870,7 +921,9 @@ begin
 												Message_Page ("相手はまだ行動を終えていません。");
 											else
 												Villages.Wake (Village, Player, Target, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												Refresh_Page;
 											end if;
 										elsif Action = "encourage" then
@@ -878,43 +931,59 @@ begin
 												Message_Page ("話の続きを促せるのは一日一度です。");
 											else
 												Villages.Encourage (Village, Player, Target, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												Refresh_Page;
 											end if;
 										elsif Action = "vampire_gaze" then
-											if Village.People.Constant_Reference(Player).Role not in Villages.Vampire_Role then
+											if Village.People.Constant_Reference (Player).Role not in
+												Villages.Vampire_Role
+											then
 												Message_Page ("見つめられるのは吸血鬼だけです。");
-											elsif Village.People.Constant_Reference(Target).Role in Villages.Vampire_Role then
+											elsif Village.People.Constant_Reference (Target).Role in
+												Villages.Vampire_Role
+											then
 												Message_Page ("見つめようとした相手は吸血鬼です。");
 											elsif Said(Player).Vampire_Gaze > 0 then
 												Message_Page ("見つめられるのは一日一度です。");
 											elsif Village.Time = Villages.Night then
 												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
 											elsif not Village.Can_Gaze then
-												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
+												Message_Page (
+													"1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
 											elsif Village.Vampire_Action_Set = Villages.None then
 												Message_Page ("オプションで「こっそり見つめる」は禁止されています。");
 											else
 												Villages.Vampire_Gaze (Village, Player, Target, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												Refresh_Page;
 											end if;
 										elsif Action = "vampire_cancel" then
-											if Village.People.Constant_Reference (Player).Role not in Villages.Vampire_Role then
+											if Village.People.Constant_Reference (Player).Role not in
+												Villages.Vampire_Role
+											then
 												Message_Page ("襲撃を取り消せるのは吸血鬼だけです。");
-											elsif Village.People.Constant_Reference (Target).Role in Villages.Vampire_Role then
+											elsif Village.People.Constant_Reference (Target).Role in
+												Villages.Vampire_Role
+											then
 												Message_Page ("相手は吸血鬼です、元々襲えません。");
 											elsif Said (Player).Vampire_Cancel > 0 then
 												Message_Page ("襲撃を取り消せるのは一日一度です。");
 											elsif Village.Time = Villages.Night then
 												Message_Page ("今は夜です。 アクションを消費せずに直接会話できます。");
 											elsif not Village.Can_Gaze then
-												Message_Page ("1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
+												Message_Page (
+													"1日目の途中の襲撃は必ず感染になりますので襲撃先を揃える必要はありません、夜の襲撃用に取っておきましょう。");
 											elsif Village.Vampire_Action_Set /= Villages.Gaze_And_Cancel then
 												Message_Page ("オプションで「襲うのをやめさせる」は禁止されています。");
 											else
 												Villages.Vampire_Cancel (Village, Player, Target, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 												Refresh_Page;
 											end if;
 										else
@@ -926,8 +995,8 @@ begin
 										function Speech_Check return Boolean is
 										begin
 											if Village.State = Tabula.Villages.Playing
-												and then Village.People.Constant_Reference(Player).
-													Records.Constant_Reference(Village.Today).State = Villages.Died
+												and then Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
+												         Villages.Died
 											then
 												Message_Page ("あなたは死にました。");
 												return False;
@@ -952,16 +1021,18 @@ begin
 															Output,
 															Form,
 															Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
-															Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+															Image_Directory =>
+																Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
 															Village_Id => Village_Id,
 															Village => Village,
-															Message => Villages.Message'(
-																Day => Village.Today,
-																Time => Calendar.Null_Time,
-																Kind => Villages.Speech,
-																Subject => Player,
-																Target => -1,
-																Text => +Text),
+															Message =>
+																Villages.Message'(
+																	Day => Village.Today,
+																	Time => Calendar.Null_Time,
+																	Kind => Villages.Speech,
+																	Subject => Player,
+																	Target => -1,
+																	Text => +Text),
 															User_Id => User_Id,
 															User_Password => User_Password);
 													else
@@ -976,7 +1047,9 @@ begin
 												begin
 													if Text'Length > 0 then
 														Villages.Speech (Village, Player, Text, Now);
-														Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+														Villages.Save (
+															Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+															Village);
 													end if;
 												end;
 												Refresh_Page;
@@ -1002,13 +1075,18 @@ begin
 										R3.Village_Page (
 											Output,
 											Form,
-											R3.Read (Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
+											R3.Read (
+												Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all),
 											Current_Directory => ".",
 											HTML_Directory => Configurations.Villages_HTML_Directory,
-											Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
-											Style_Sheet => Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
-											Background => Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
-											Relative_Role_Images => Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+											Image_Directory =>
+												Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+											Style_Sheet =>
+												Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
+											Background =>
+												Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+											Relative_Role_Images =>
+												Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
 											Cast_File_Name => Configurations.Cast_File_Name,
 											Log => False,
 											Village_Id => Village_Id,
@@ -1035,22 +1113,26 @@ begin
 													Output,
 													Form,
 													Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
-													Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+													Image_Directory =>
+														Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
 													Village_Id => Village_Id,
 													Village => Village,
-													Message => Villages.Message'(
-														Day => Village.Today,
-														Time => Calendar.Null_Time,
-														Kind => Villages.Monologue,
-														Subject => Player,
-														Target => -1,
-														Text => +Text),
+													Message =>
+														Villages.Message'(
+															Day => Village.Today,
+															Time => Calendar.Null_Time,
+															Kind => Villages.Monologue,
+															Subject => Player,
+															Target => -1,
+															Text => +Text),
 													User_Id => User_Id,
 													User_Password => User_Password);
 											else
 												if Text'Length /= 0 then
 													Villages.Monologue (Village, Player, Text, Now);
-													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+													Villages.Save (
+														Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+														Village);
 												end if;
 												Refresh_Page;
 											end if;
@@ -1059,8 +1141,8 @@ begin
 								elsif Cmd = "ghost" then
 									if Village.State /= Tabula.Villages.Playing then
 										Message_Page ("プロローグ/エピローグでは呻けません。");
-									elsif Village.People.Constant_Reference(Player).
-										Records.Constant_Reference(Village.Today).State /= Villages.Died
+									elsif Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State /=
+									      Villages.Died
 									then
 										Message_Page ("生者は呻けません。");
 									else
@@ -1075,22 +1157,26 @@ begin
 													Output,
 													Form,
 													Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
-													Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+													Image_Directory =>
+														Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
 													Village_Id => Village_Id,
 													Village => Village,
-													Message => Villages.Message'(
-														Day => Village.Today,
-														Time => Calendar.Null_Time,
-														Kind => Villages.Ghost,
-														Subject => Player,
-														Target => -1,
-														Text => +Text),
+													Message =>
+														Villages.Message'(
+															Day => Village.Today,
+															Time => Calendar.Null_Time,
+															Kind => Villages.Ghost,
+															Subject => Player,
+															Target => -1,
+															Text => +Text),
 													User_Id => User_Id,
 													User_Password => User_Password);
 											else
 												if Text'Length /= 0 then
 													Villages.Ghost (Village, Player, Text, Now);
-													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+													Villages.Save (
+														Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+														Village);
 												end if;
 												Refresh_Page;
 											end if;
@@ -1108,29 +1194,38 @@ begin
 												Output,
 												Form,
 												Configurations.Template_Names (Form.Template_Set).Template_Preview_File_Name.all,
-												Image_Directory => Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
+												Image_Directory =>
+													Configurations.Template_Names (Form.Template_Set).Image_Directory.all,
 												Village_Id => Village_Id,
 												Village => Village,
-												Message => Villages.Message'(
-													Day => Village.Today,
-													Time => Calendar.Null_Time,
-													Kind => Villages.Howling,
-													Subject => Player,
-													Target => -1,
-													Text => +Text),
+												Message =>
+													Villages.Message'(
+														Day => Village.Today,
+														Time => Calendar.Null_Time,
+														Kind => Villages.Howling,
+														Subject => Player,
+														Target => -1,
+														Text => +Text),
 												User_Id => User_Id,
 												User_Password => User_Password);
 										else
-											if Text /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).Note then
+											if Text /=
+											   Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).Note
+											then
 												if Village.Time = Villages.Night
-													and then Village.People.Constant_Reference(Player).Role in Villages.Vampire_Role
-													and then Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State /= Villages.Died
+													and then Village.People.Constant_Reference (Player).Role in
+														Villages.Vampire_Role
+													and then Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State /=
+													         Villages.Died
 												then
 													Villages.Night_Talk (Village, Player, Text, Now);
 												else
-													Village.People.Reference(Player).Records.Reference(Village.Today).Note := +Text;
+													Village.People.Reference (Player).Records.Reference (Village.Today).Note :=
+														+Text;
 												end if;
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 											end if;
 											Refresh_Page;
 										end if;
@@ -1142,16 +1237,28 @@ begin
 										declare
 											Target : constant Integer := Form.Get_Target (Inputs);
 										begin
-											if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
+											if Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
+											   Villages.Died
+											then
 												Message_Page ("あなたは死んでいます。");
-											elsif Target >= 0 and then Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).State = Villages.Died then
+											elsif Target >= 0
+												and then Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).State =
+												         Villages.Died
+											then
 												Message_Page ("死者に投票はできません。");
-											elsif Target >= 0 and then not Village.People.Constant_Reference(Target).Records.Constant_Reference(Village.Today).Candidate then
-												Message_Page ("仮投票が行われました。 選ばれた候補以外に投票はできなくなります。");
+											elsif Target >= 0
+												and then not Village.People.Constant_Reference (Target).Records.Constant_Reference (Village.Today).Candidate
+											then
+												Message_Page (
+													"仮投票が行われました。 選ばれた候補以外に投票はできなくなります。");
 											else
-												if Target /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).Vote then
+												if Target /=
+												   Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).Vote
+												then
 													Villages.Vote (Village, Player, Target);
-													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+													Villages.Save (
+														Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+														Village);
 												end if;
 												Refresh_Page;
 											end if;
@@ -1163,12 +1270,17 @@ begin
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 									begin
-										if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
+										if Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
+										   Villages.Died
+										then
 											Message_Page ("あなたは死んでいます。");
-										elsif Special and then Village.Silver_Bullet_State (Player) /= Villages.Allowed then
+										elsif Special
+											and then Village.Silver_Bullet_State (Player) /= Villages.Allowed
+										then
 											Message_Page ("銀の弾丸は一発限りです。");
 										elsif Village.Daytime_Preview /= Villages.None
-											and then Village.People.Constant_Reference(Player).Role in Villages.Daytime_Role
+											and then Village.People.Constant_Reference (Player).Role in
+												Villages.Daytime_Role
 										then
 											case Village.Superman_State (Player) is
 												when Villages.Disallowed =>
@@ -1195,19 +1307,27 @@ begin
 													end if;
 											end case;
 										else
-											if Target /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Target_Day).Target
-												or else Special /= Village.People.Constant_Reference(Player).Records.Constant_Reference(Target_Day).Special
+											if Target /=
+											   Village.People.Constant_Reference (Player).Records.Constant_Reference (Target_Day).Target
+												or else Special /=
+												        Village.People.Constant_Reference (Player).Records.Constant_Reference (Target_Day).Special
 											then
 												Villages.Select_Target (Village, Player, Target, Special, Now);
-												Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+												Villages.Save (
+													Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+													Village);
 											end if;
 											Refresh_Page;
 										end if;
 									end;
 								elsif Cmd = "target2" then
-									if Village.People.Constant_Reference(Player).Records.Constant_Reference(Village.Today).State = Villages.Died then
+									if Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
+									   Villages.Died
+									then
 										Message_Page ("あなたは死んでいます。");
-									elsif Village.People.Constant_Reference (Player).Role in Villages.Daytime_Role then
+									elsif Village.People.Constant_Reference (Player).Role in
+										Villages.Daytime_Role
+									then
 										case Village.Superman_State (Player) is
 											when Villages.Disallowed =>
 												Message_Page ("医者と探偵は、夜に能力を使えません。");
@@ -1218,7 +1338,9 @@ begin
 													Target : constant Integer := Form.Get_Target (Inputs);
 												begin
 													Villages.Select_Target (Village, Player, Target, False, Now);
-													Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+													Villages.Save (
+														Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+														Village);
 													Refresh_Page;
 												end;
 										end case;
@@ -1230,7 +1352,9 @@ begin
 										Message_Page ("開始以降ルールは変更できません。");
 									else
 										Forms.Set_Rule (Form, Village, Inputs);
-										Villages.Save (Tabula.Villages.Lists.File_Name (Village_List, Village_Id), Village);
+										Villages.Save (
+											Tabula.Villages.Lists.File_Name (Village_List, Village_Id),
+											Village);
 										Refresh_Page;
 									end if;
 								else

@@ -12,8 +12,8 @@ is
 begin
 	Ada.Streams.Stream_IO.Open (File, Ada.Streams.Stream_IO.In_File, Name => Name);
 	declare
-		Parser : aliased YAML.Parser := YAML.Streams.Create (
-			Ada.Streams.Stream_IO.Stream (File));
+		Parser : aliased YAML.Parser :=
+			YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 	begin
 		YAML.Parse_Stream_Start (Parser);
 		User_Info_IO.IO (
@@ -25,7 +25,8 @@ begin
 exception
 	when E : others =>
 		declare
-			Message : constant String := Name & ": " & Ada.Exceptions.Exception_Message (E);
+			Message : constant String :=
+				Name & ": " & Ada.Exceptions.Exception_Message (E);
 		begin
 			Ada.Debug.Put (Message);
 			Ada.Exceptions.Raise_Exception (
