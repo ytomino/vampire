@@ -82,7 +82,7 @@ GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 else
 endif
 
-.PHONY: all clean test-vampire install-test xfind xfindall archive
+.PHONY: all clean test-vampire install-test xfind xfindall
 
 all: site/vampire$(CGISUFFIX)
 	$(foreach I,$(filter-out $(BUILDDIR)/.stamp,$(wildcard *.build/.stamp)),rm $(I))
@@ -133,6 +133,3 @@ xfind:
 
 xfindall: FARGS+=-r
 xfindall: xfind
-
-archive:
-	git archive --format=tar HEAD | bzip2 > site/vampire.tar.bz2

@@ -6,6 +6,8 @@ The Village of Vampire
 
 *by YT*
 
+http://panathenaia.halfmoon.jp/vampire/ で稼働中の人狼亜種です。
+
 設置
 ====
 
