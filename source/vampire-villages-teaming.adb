@@ -492,7 +492,12 @@ package body Vampire.Villages.Teaming is
 					Person : Person_Type renames People.Constant_Reference(I);
 				begin
 					if Person.Ignore_Request then
-						Result(I) := (Inhabitant => True, others => False); -- 強制村人
+						Result (I) :=
+							Rest_Roles
+							and Role_Set'(
+								Inhabitant | Loved_Inhabitant | Unfortunate_Inhabitant => True,
+								Vampire_Role | Servant => True,
+								others => False);
 					else
 						declare
 							R : constant Requested_Role := Person.Request;
