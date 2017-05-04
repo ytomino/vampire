@@ -110,7 +110,8 @@ package Tabula.Villages is
 	function Already_Joined_As_Another_Sex (
 		Village : Village_Type;
 		User_Id : String;
-		Sex : Casts.Person_Sex) return Boolean;
+		Sex : Casts.Person_Sex)
+		return Boolean;
 	function Male_And_Female (Village : Village_Type) return Boolean;
 	
 	-- 既に取られているものを除外

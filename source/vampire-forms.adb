@@ -25,7 +25,7 @@ package body Vampire.Forms is
 					User_Id => User_Id,
 					User_Password => User_Password);
 			when User_Page =>
-				return 	Form.Parameters_To_User_Page (
+				return Form.Parameters_To_User_Page (
 					User_Id => User_Id,
 					User_Password => User_Password);
 			when Forms.User_List_Page =>

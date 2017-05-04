@@ -1133,7 +1133,8 @@ begin
 						Said : Message_Counts renames Count_Messages(Village, Village.Today - 1);
 					begin
 						for Position in People_Index loop
-							if Village.People.Constant_Reference (Position).Records.Constant_Reference (Village.Today).State /=
+							if Village.People.Constant_Reference (Position).Records
+							      .Constant_Reference (Village.Today).State /=
 							   Died
 								and then Said (Position).Speech = 0
 							then

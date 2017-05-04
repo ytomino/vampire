@@ -40,7 +40,8 @@ package body Tabula.Villages is
 	function Already_Joined_As_Another_Sex (
 		Village : Village_Type;
 		User_Id : String;
-		Sex : Casts.Person_Sex) return Boolean
+		Sex : Casts.Person_Sex)
+		return Boolean
 	is
 		Result : Boolean := False;
 		procedure Process (Index : in Person_Index; Item : in Person_Type'Class) is

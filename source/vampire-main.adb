@@ -147,7 +147,8 @@ begin
 						R3.Message_Page (
 							Output,
 							Form,
-							Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
+							Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name
+								.all,
 							Base_Page => Base_Page,
 							Village_Id => Village_Id,
 							Message => "ユーザー名を入力してください。",
@@ -161,7 +162,8 @@ begin
 							R3.Register_Page(
 								Output,
 								Form,
-								Configurations.Template_Names (Form.Template_Set).Template_Register_File_Name.all,
+								Configurations.Template_Names (Form.Template_Set).Template_Register_File_Name
+									.all,
 								Base_Page => Base_Page,
 								Village_Id => Village_Id,
 								New_User_Id => New_User_Id,

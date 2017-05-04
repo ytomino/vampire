@@ -29,7 +29,8 @@ package body Vampire.Log is
 		Form : Forms.Full.Form_Type := Forms.Full.Create;
 		Template : Web.Producers.Template :=
 			R3.Read (
-				Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name.all);
+				Configurations.Template_Names (Form.Template_Set).Template_Village_File_Name
+					.all);
 		Village : aliased Vampire.Villages.Village_Type;
 	begin
 		Vampire.Villages.Load (Lists.File_Name (List, Id), Village,
@@ -52,9 +53,11 @@ package body Vampire.Log is
 					Style_Sheet =>
 						Configurations.Template_Names (Form.Template_Set).Style_Sheet_File_Name.all,
 					Background =>
-						Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+						Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name
+							.all,
 					Relative_Role_Images =>
-						Configurations.Template_Names (Form.Template_Set).Relative_Role_Image_File_Names.all,
+						Configurations.Template_Names (Form.Template_Set)
+							.Relative_Role_Image_File_Names.all,
 					Cast_File_Name => Configurations.Cast_File_Name,
 					Log => True,
 					Village_Id => Id,
@@ -80,11 +83,13 @@ package body Vampire.Log is
 			R3.Log_Index_Page (
 				Ada.Streams.Stream_IO.Stream (File),
 				Form,
-				Configurations.Template_Names (Form.Template_Set).Template_Log_Index_File_Name.all,
+				Configurations.Template_Names (Form.Template_Set).Template_Log_Index_File_Name
+					.all,
 				HTML_Directory => Configurations.Villages_HTML_Directory,
 				Style_Sheet => Configurations.Style_Sheet_File_Name,
 				Background =>
-					Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name.all,
+					Configurations.Template_Names (Form.Template_Set).Background_Image_File_Name
+						.all,
 				Summaries => Summaries);
 			Ada.Streams.Stream_IO.Close (File);
 		end Make_Log_Index;
@@ -127,7 +132,8 @@ package body Vampire.Log is
 			Make_Log_Index (Summaries);
 		end if;
 		if Update
-			or else not Ada.Directories.Exists (Configurations.Villages_Index_RSS_File_Name)
+			or else not Ada.Directories.Exists (
+				Configurations.Villages_Index_RSS_File_Name)
 		then
 			Make_RSS (Summaries);
 		end if;

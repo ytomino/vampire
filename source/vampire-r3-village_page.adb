@@ -549,8 +549,8 @@ is
 				Forms.Write_In_HTML (Output, Form, "|");
 			elsif F =
 			      Integer'Max (
-			      	Message_Range.First,
-			      	Message_Range.Last - (Form.Speeches_Per_Page - 1))
+			         Message_Range.First,
+			         Message_Range.Last - (Form.Speeches_Per_Page - 1))
 				and then L = Message_Range.Last
 			then
 				Forms.Write_In_HTML (Output, Form, "|新|");

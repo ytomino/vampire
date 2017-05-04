@@ -11,7 +11,8 @@ package Vampire.Villages.Teaming is
 		Execution : Execution_Mode;
 		Formation : Formation_Mode;
 		Unfortunate : Unfortunate_Mode;
-		Monster_Side : Monster_Side_Mode) return Role_Set_Array;
+		Monster_Side : Monster_Side_Mode)
+		return Role_Set_Array;
 	
 	function Select_Set (
 		Sets : Role_Set_Array;
