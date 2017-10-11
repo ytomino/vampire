@@ -825,7 +825,8 @@ begin
 						Village.Messages.First_Index .. Village.Messages.Last_Index
 					loop
 						declare
-							Message : Villages.Message renames Element(Village.Messages, I);
+							Message : Villages.Message
+								renames Village.Messages.Constant_Reference (I);
 						begin
 							if Message.Day = Village.Today and then Message.Kind = Execution then
 								Executed := Message.Target;
@@ -1147,8 +1148,11 @@ begin
 						Target : Person_Index'Base := No_Person;
 					begin
 						Find_Gaze : for I in reverse 0 .. Village.Messages.Last_Index loop
-							if Element(Village.Messages, I).Kind = Action_Vampire_Gaze then
-								Target := Element(Village.Messages, I).Target;
+							if Village.Messages.Constant_Reference (I).Kind =
+							   Action_Vampire_Gaze
+							then
+								Target :=
+									Village.Messages.Constant_Reference (I).Target;
 								exit Find_Gaze;
 							end if;
 						end loop Find_Gaze;
