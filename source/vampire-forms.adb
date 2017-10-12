@@ -248,7 +248,7 @@ package body Vampire.Forms is
 		Inputs : Web.Query_Strings)
 		return Villages.Person_Index'Base is
 	begin
-		return Integer'Value (Web.Element (Inputs, "target"));
+		return Villages.Person_Index'Base'Value (Web.Element (Inputs, "target"));
 	end Get_Target;
 	
 	function Get_Special (

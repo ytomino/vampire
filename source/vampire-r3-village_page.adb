@@ -205,7 +205,7 @@ is
 	
 	procedure Vote_Form (
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
-		Player : in Integer;
+		Player : in Person_Index'Base;
 		Kind : in Vampire.Villages.Person_Role;
 		Special : in Ability_State;
 		Current : in Person_Index'Base;
@@ -468,7 +468,8 @@ is
 		end if;
 	end Role_Text;
 	
-	Player_Index : constant Integer := Vampire.Villages.Joined (Village, User_Id);
+	Player_Index : constant Person_Index'Base :=
+		Vampire.Villages.Joined (Village, User_Id);
 	
 	Speech_Range : constant Tabula.Villages.Speech_Range_Type :=
 		Village.Speech_Range (Day);
@@ -1057,11 +1058,11 @@ is
 						X_Type,
 						Ada.Numerics.MT19937.Generator,
 						Ada.Numerics.MT19937.Random_32);
-				Executed : Integer := -1;
+				Executed : Person_Index'Base := -1;
 				Speech_Index : Tabula.Villages.Speech_Index :=
 					Tabula.Villages.Speech_Index'First;
 				X : X_Type := 2;
-				Last_Speech : Integer := -1;
+				Last_Speech : Person_Index'Base := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
 				X_Generator : aliased Ada.Numerics.MT19937.Generator :=
 					Ada.Numerics.MT19937.Initialize (12);

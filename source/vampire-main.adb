@@ -694,7 +694,8 @@ begin
 							Message_Page ("正常にログオンしてください。");
 						else
 							Commands : declare
-								Player : Integer := Villages.Joined(Village, User_Id);
+								Player : Tabula.Villages.Person_Index'Base :=
+									Villages.Joined(Village, User_Id);
 							begin
 								if Cmd = "join" then
 									Join : declare
@@ -827,7 +828,9 @@ begin
 										Message_Page ("administratorのみに許された操作です。");
 									else
 										declare
-											Target : constant Integer := Form.Get_Target (Inputs);
+											Target : constant
+													Tabula.Villages.Person_Index'Base :=
+												Form.Get_Target (Inputs);
 											Removed_Id : constant String :=
 												Village.People.Constant_Reference (Target).Id.Constant_Reference;
 										begin
@@ -910,11 +913,15 @@ begin
 								elsif Cmd = "action" then
 									declare
 										Action : constant String := Form.Get_Action (Inputs);
-										Target : constant Integer := Form.Get_Target (Inputs);
+										Target : constant
+												Tabula.Villages.Person_Index'Base :=
+											Form.Get_Target (Inputs);
 										Said : Villages.Message_Counts
 											renames Villages.Count_Messages(Village, Village.Today);
 									begin
-										if Target < 0 or else Action'Length = 0 then
+										if Target < Tabula.Villages.Person_Index'First
+											or else Action'Length = 0
+										then
 											Message_Page ("アクションの対象と行動を選んでください。");
 										elsif Action = "wake" then
 											if Said(Player).Wake > 0 then
@@ -1238,7 +1245,9 @@ begin
 										Message_Page ("今は投票できない時間帯です。");
 									else
 										declare
-											Target : constant Integer := Form.Get_Target (Inputs);
+											Target : constant
+													Tabula.Villages.Person_Index'Base :=
+												Form.Get_Target (Inputs);
 										begin
 											if Village.People.Constant_Reference (Player).Records.Constant_Reference (Village.Today).State =
 											   Villages.Died
@@ -1269,7 +1278,9 @@ begin
 									end if;
 								elsif Cmd = "target" then
 									declare
-										Target : constant Integer := Form.Get_Target (Inputs);
+										Target : constant
+												Tabula.Villages.Person_Index'Base :=
+											Form.Get_Target (Inputs);
 										Special : constant Boolean := Form.Get_Special (Inputs);
 										Target_Day : constant Natural := Village.Target_Day;
 									begin
@@ -1338,7 +1349,9 @@ begin
 												Message_Page ("医者と探偵の行動選択は一日に一度しかできません。");
 											when Villages.Allowed =>
 												declare
-													Target : constant Integer := Form.Get_Target (Inputs);
+													Target : constant Tabula.Villages
+															.Person_Index'Base :=
+														Form.Get_Target (Inputs);
 												begin
 													Villages.Select_Target (Village, Player, Target, False, Now);
 													Villages.Save (

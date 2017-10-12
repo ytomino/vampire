@@ -34,7 +34,7 @@ package body Vampire.Villages is
 	end Preliminary_Voted;
 	
 	function Unfortunate (Village : Village_Type) return Boolean is
-		The_Unfortunate_Inhabitant : constant Integer :=
+		The_Unfortunate_Inhabitant : constant Person_Index'Base :=
 			Find_Superman (Village, Unfortunate_Inhabitant);
 	begin
 		if The_Unfortunate_Inhabitant < 0 then
@@ -293,10 +293,10 @@ package body Vampire.Villages is
 	
 	procedure Escape (
 		Village : in out Village_Type;
-		Subject : Natural;
+		Subject : in Person_Index;
 		Time : Ada.Calendar.Time)
 	is
-		Escaped_Index : Natural;
+		Escaped_Index : Person_Index;
 	begin
 		Append (Village.Escaped_People, Village.People.Constant_Reference (Subject));
 		declare
@@ -328,7 +328,7 @@ package body Vampire.Villages is
 					Village.Messages.Reference (I).Subject := Escaped_Index;
 				elsif Village.Messages.Constant_Reference (I).Subject > Subject then
 					declare
-						Shifted_Subject : constant Integer :=
+						Shifted_Subject : constant Person_Index'Base :=
 							Village.Messages.Constant_Reference (I).Subject - 1;
 					begin
 						Village.Messages.Reference (I).Subject := Shifted_Subject;
@@ -407,7 +407,7 @@ package body Vampire.Villages is
 			for I in Result.Counts'Range loop
 				declare
 					P : Person_Type renames Village.People.Constant_Reference (I);
-					V : Integer;
+					V : Person_Index'Base;
 				begin
 					if Preliminary then
 						V := P.Records.Constant_Reference (Day).Provisional_Vote;
@@ -427,7 +427,7 @@ package body Vampire.Villages is
 	
 	procedure Vote (
 		Village : in out Village_Type;
-		Subject : in Natural;
+		Subject : in Person_Index;
 		Target : in Person_Index'Base)
 	is
 		Rec : Person_Record
@@ -786,7 +786,7 @@ package body Vampire.Villages is
 	
 	procedure Night_Talk (
 		Village : in out Village_Type;
-		Subject : in Natural;
+		Subject : in Person_Index;
 		Text : in String;
 		Time : in Ada.Calendar.Time) is
 	begin

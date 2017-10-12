@@ -100,10 +100,10 @@ package Vampire.Villages is
 	
 	type Person_Record is record
 		State : Person_State;
-		Vote : Integer;
-		Provisional_Vote : Integer; -- 仮投票
+		Vote : Person_Index'Base;
+		Provisional_Vote : Person_Index'Base; -- 仮投票
 		Candidate : Boolean; -- 投票の候補
-		Target : Integer;
+		Target : Person_Index'Base;
 		Special : Boolean;
 		Note : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
@@ -216,8 +216,8 @@ package Vampire.Villages is
 		Day : Integer;
 		Time : Ada.Calendar.Time;
 		Kind : Message_Kind;
-		Subject : Integer;
-		Target : Integer;
+		Subject : Person_Index'Base;
+		Target : Person_Index'Base;
 		Text : aliased Ada.Strings.Unbounded.Unbounded_String;
 	end record;
 	

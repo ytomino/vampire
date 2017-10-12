@@ -413,7 +413,8 @@ package body Vampire.Villages.Teaming is
 		Set : Role_Set;
 		Generator : aliased in out Ada.Numerics.MT19937.Generator)
 	is
-		subtype People_Index is Integer range People.First_Index .. People.Last_Index;
+		subtype People_Index is
+			Person_Index'Base range People.First_Index .. People.Last_Index;
 		function People_Random is
 			new Ada.Numerics.Distributions.Linear_Discrete_Random (
 				Ada.Numerics.MT19937.Cardinal,

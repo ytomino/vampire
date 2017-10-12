@@ -493,7 +493,7 @@ package body Vampire.Villages.Text is
 		for I in Village.People.First_Index .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
-				V : Integer;
+				V : Person_Index'Base;
 			begin
 				if Preliminary then
 					V := P.Records.Constant_Reference (Day).Provisional_Vote;
@@ -674,7 +674,9 @@ package body Vampire.Villages.Text is
 						begin
 							if P.Role = Role then
 								declare
-									V : constant Integer := P.Records.Constant_Reference (Message.Day - 1).Target;
+									V : constant Person_Index'Base :=
+										P.Records.Constant_Reference (Message.Day - 1)
+											.Target;
 								begin
 									if V >= 0 then
 										declare

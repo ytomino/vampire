@@ -52,9 +52,12 @@ is
 		Time : in Ada.Calendar.Time;
 		Changed : in out Boolean)
 	is
-		type Voted_Array is array (Natural range <>) of Natural;
+		type Voted_Array is array (Person_Index range <>) of Natural;
 		procedure Sort is
-			new Ada.Containers.Generic_Array_Sort (Natural, Natural, Voted_Array);
+			new Ada.Containers.Generic_Array_Sort (
+				Person_Index,
+				Natural,
+				Voted_Array);
 		Voted, Sort_Voted :
 				Voted_Array (Village.People.First_Index .. Village.People.Last_Index) :=
 			(others => 0);
