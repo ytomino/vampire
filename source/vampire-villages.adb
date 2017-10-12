@@ -211,7 +211,7 @@ package body Vampire.Villages is
 	
 	function No_Commit (Village : Village_Type) return Boolean is
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference (I).Records
 			      .Constant_Reference (Village.Today).State /=
 			   Died
@@ -228,7 +228,7 @@ package body Vampire.Villages is
 		Count : Integer := 0;
 		Commited_Count : Integer := 0;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference (I).Records
 			      .Constant_Reference (Village.Today).State /=
 			   Died
@@ -378,7 +378,7 @@ package body Vampire.Villages is
 	
 	function Vote_Finished(Village : Village_Type) return Boolean is
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference(I);
 			begin
@@ -402,7 +402,7 @@ package body Vampire.Villages is
 		return Result : Voted_Count_Info := (
 			Last => Village.People.Last_Index,
 			Max => 0,
-			Counts => (Village.People.First_Index .. Village.People.Last_Index => 0))
+			Counts => (Person_Index'First .. Village.People.Last_Index => 0))
 		do
 			for I in Result.Counts'Range loop
 				declare
@@ -532,7 +532,7 @@ package body Vampire.Villages is
 				Subject => Subject,
 				Target => Target,
 				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				Person : Person_Type renames Village.People.Reference (I);
 			begin
@@ -574,7 +574,7 @@ package body Vampire.Villages is
 	function Is_Anyone_Died (Village : Village_Type; Day : Natural)
 		return Boolean is
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference (I).Records.Constant_Reference (Day)
 			      .State =
 			   Died
@@ -588,7 +588,7 @@ package body Vampire.Villages is
 	function Find_Superman (Village : Village_Type; Role : Person_Role)
 		return Person_Index'Base is
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference(I).Role = Role then
 				return I;
 			end if;
@@ -947,7 +947,7 @@ package body Vampire.Villages is
 			Index : Person_Index;
 			Item : in Tabula.Villages.Person_Type'Class)) is
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			Process (I, Village.People.Constant_Reference (I));
 		end loop;
 	end Iterate_People;
@@ -958,9 +958,7 @@ package body Vampire.Villages is
 			Index : Person_Index;
 			Item : in Tabula.Villages.Person_Type'Class)) is
 	begin
-		for I in
-			Village.Escaped_People.First_Index .. Village.Escaped_People.Last_Index
-		loop
+		for I in Person_Index'First .. Village.Escaped_People.Last_Index loop
 			Process (I, Village.Escaped_People.Constant_Reference (I));
 		end loop;
 	end Iterate_Escaped_People;

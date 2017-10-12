@@ -16,7 +16,7 @@ is
 	use type Ada.Calendar.Time;
 	
 	subtype People_Index is
-		Person_Index range Village.People.First_Index .. Village.People.Last_Index;
+		Person_Index range Person_Index'First .. Village.People.Last_Index;
 	function People_Random is
 		new Ada.Numerics.Distributions.Linear_Discrete_Random (
 			Ada.Numerics.MT19937.Cardinal,
@@ -27,7 +27,7 @@ is
 	procedure Increment_Today is
 	begin
 		Village.Today := Village.Today + 1;
-		for Position in Village.People.First_Index .. Village.People.Last_Index loop
+		for Position in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Reference (Position);
 				New_Record : Person_Record := P.Records.Reference (P.Records.Last_Index);
@@ -59,14 +59,14 @@ is
 				Natural,
 				Voted_Array);
 		Voted, Sort_Voted :
-				Voted_Array (Village.People.First_Index .. Village.People.Last_Index) :=
+				Voted_Array (Person_Index'First .. Village.People.Last_Index) :=
 			(others => 0);
 		Candidates : Natural := 0;
 		Max : Natural := 0;
 		Limit : Natural := 0;
 	begin
 		-- 集計
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			if Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).State /=
 			   Died
 			then
@@ -74,7 +74,9 @@ is
 					Target : Person_Index'Base :=
 						Village.People.Constant_Reference (I).Records.Constant_Reference (Village.Today).Provisional_Vote;
 				begin
-					if Target in Village.People.First_Index .. Village.People.Last_Index then
+					if Target in
+						Person_Index'First .. Village.People.Last_Index
+					then
 						if Voted (Target) = 0 then
 							Candidates := Candidates + 1;
 						end if;
@@ -92,7 +94,7 @@ is
 			Sort_Voted := Voted;
 			Sort (Sort_Voted);
 			Limit := Sort_Voted (Sort_Voted'Last - 1);
-			for I in Village.People.First_Index .. Village.People.Last_Index loop
+			for I in Person_Index'First .. Village.People.Last_Index loop
 				declare
 					The_Person : Person_Type renames Village.People.Reference (I);
 					The_Record : Person_Record
@@ -104,7 +106,7 @@ is
 				end;
 			end loop;
 			-- 選ばれた候補以外に投票していた人は棄権に戻す
-			for I in Village.People.First_Index .. Village.People.Last_Index loop
+			for I in Person_Index'First .. Village.People.Last_Index loop
 				declare
 					V : Person_Index'Base
 						renames Village.People.Reference (I).Records.Reference (Village.Today).Vote;

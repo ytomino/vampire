@@ -235,7 +235,7 @@ package body Vampire.Villages.Text is
 			Result,
 			"その夜、草木も眠る頃、人知れず月を舞う影がありました……。 ");
 		for I in Vampire_Role loop
-			for Position in Village.People.First_Index .. Village.People.Last_Index loop
+			for Position in Person_Index'First .. Village.People.Last_Index loop
 				declare
 					P : Person_Type renames Village.People.Constant_Reference (Position);
 				begin
@@ -305,7 +305,7 @@ package body Vampire.Villages.Text is
 			Ada.Strings.Unbounded.Append (Result, Image (Village.People.Length));
 		end if;
 		Ada.Strings.Unbounded.Append (Result, "人の村人の中には");
-		for Position in Village.People.First_Index .. Village.People.Last_Index loop
+		for Position in Person_Index'First .. Village.People.Last_Index loop
 			Countup (Village.People.Constant_Reference (Position).Role);
 		end loop;
 		case Village.Formation is
@@ -378,7 +378,9 @@ package body Vampire.Villages.Text is
 		case Servant_Message_Kind (Message.Kind) is
 			when Servant_Knew_Vampire_K =>
 				Ada.Strings.Unbounded.Append (Result, "吸血鬼の王は");
-				for Position in Village.People.First_Index .. Village.People.Last_Index loop
+				for Position in
+					Person_Index'First .. Village.People.Last_Index
+				loop
 					declare
 						P : Person_Type renames Village.People.Constant_Reference (Position);
 					begin
@@ -394,7 +396,9 @@ package body Vampire.Villages.Text is
 					First : Boolean := True;
 				begin
 					for Role in Vampire_Role loop
-						for Position in Village.People.First_Index .. Village.People.Last_Index loop
+						for Position in
+							Person_Index'First .. Village.People.Last_Index
+						loop
 							declare
 								P : Person_Type renames Village.People.Constant_Reference (Position);
 							begin
@@ -490,7 +494,7 @@ package body Vampire.Villages.Text is
 	is
 		Result : aliased Ada.Strings.Unbounded.Unbounded_String;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 				V : Person_Index'Base;
@@ -500,7 +504,7 @@ package body Vampire.Villages.Text is
 				else
 					V := P.Records.Constant_Reference (Day).Vote;
 				end if;
-				if V in Village.People.First_Index .. Village.People.Last_Index
+				if V in Person_Index'First .. Village.People.Last_Index
 					and then (
 						Village.State >= Epilogue
 						or else Player_Index = I
@@ -550,7 +554,7 @@ package body Vampire.Villages.Text is
 			begin
 				Ada.Strings.Unbounded.Append (Result, "仮投票の結果、");
 				for Count in reverse 1 .. Voted.Max loop
-					for I in Village.People.First_Index .. Village.People.Last_Index loop
+					for I in Person_Index'First .. Village.People.Last_Index loop
 						if Voted.Counts (I) = Count then
 							declare
 								The_Person : Person_Type renames Village.People.Constant_Reference (I);
@@ -667,7 +671,7 @@ package body Vampire.Villages.Text is
 	begin
 		if Subject.Role in Vampire_Role then
 			for Role in Vampire_Role loop
-				for I in Village.People.First_Index .. Village.People.Last_Index loop
+				for I in Person_Index'First .. Village.People.Last_Index loop
 					if I /= Executed then
 						declare
 							P : Person_Type renames Village.People.Constant_Reference (I);
@@ -778,7 +782,7 @@ package body Vampire.Villages.Text is
 		pragma Assert (Day >= 2);
 		Result : aliased Ada.Strings.Unbounded.Unbounded_String;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 			begin
@@ -804,7 +808,7 @@ package body Vampire.Villages.Text is
 	function Survivors (Village : Village_Type; Day : Natural) return String is
 		Result : aliased Ada.Strings.Unbounded.Unbounded_String;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 			begin
@@ -823,7 +827,7 @@ package body Vampire.Villages.Text is
 	function Gremlin_Sense (Village : Village_Type; Day : Natural) return String is
 		Vampire_Count : Natural := 0;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 				R : Person_Record renames P.Records.Constant_Reference (Day);
@@ -947,7 +951,7 @@ package body Vampire.Villages.Text is
 			renames Count_Messages (Village, Village.Today - 1);
 		Second : Boolean := False;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 				Speech_Count : constant Natural := Last_Day_Messages (I).Speech;
@@ -982,7 +986,7 @@ package body Vampire.Villages.Text is
 		G_Win : Boolean := False;
 		V_Win : Boolean := False;
 	begin
-		for I in Village.People.First_Index .. Village.People.Last_Index loop
+		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				P : Person_Type renames Village.People.Constant_Reference (I);
 				Speech_Count : constant Natural := Last_Day_Messages (I).Speech;
