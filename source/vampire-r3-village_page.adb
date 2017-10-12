@@ -25,9 +25,9 @@ procedure Vampire.R3.Village_Page (
 	Village_Id : in Tabula.Villages.Village_Id;
 	Village : in Villages.Village_Type;
 	Day : in Natural;
-	Showing_Range : in Tabula.Villages.Message_Range_Type := (
-		First => Tabula.Villages.Message_Index'First,
-		Last => Tabula.Villages.Message_Index'Last - 2);
+	Showing_Range : in Tabula.Villages.Speech_Range_Type := (
+		First => Tabula.Villages.Speech_Index'First,
+		Last => Tabula.Villages.Speech_Index'Last - 2);
 	Editing : Villages.Message_Kind := Villages.Speech;
 	Editing_Text : String := "";
 	User_Id : in String;
@@ -470,8 +470,8 @@ is
 	
 	Player_Index : constant Integer := Vampire.Villages.Joined (Village, User_Id);
 	
-	Message_Range : constant Tabula.Villages.Message_Range_Type :=
-		Village.Message_Range (Day);
+	Speech_Range : constant Tabula.Villages.Speech_Range_Type :=
+		Village.Speech_Range (Day);
 	Message_Counts : Vampire.Villages.Message_Counts
 		renames Vampire.Villages.Count_Messages (Village, Day);
 	Tip_Showed : Boolean := False;
@@ -482,13 +482,13 @@ is
 		Output : not null access Ada.Streams.Root_Stream_Type'Class;
 		Pos : Paging_Pos)
 	is
-		F : Natural;
-		L : Integer;
+		F : Speech_Index;
+		L : Speech_Index'Base;
 	begin
 		if Pos /= Tip then
-			F := Integer'Max (Message_Range.First, Showing_Range.First);
-			L := Integer'Min (Message_Range.Last, Showing_Range.Last);
-			if F = Message_Range.First and then L = Message_Range.Last then
+			F := Speech_Index'Max (Speech_Range.First, Showing_Range.First);
+			L := Speech_Index'Base'Min (Speech_Range.Last, Showing_Range.Last);
+			if F = Speech_Range.First and then L = Speech_Range.Last then
 				String'Write (Output, "<hr><div>");
 				Forms.Write_In_HTML (Output, Form, "全");
 			else
@@ -503,8 +503,10 @@ is
 						Form.Parameters_To_Village_Page (
 							Village_Id => Village_Id,
 							Day => Day,
-							First => Message_Range.First,
-							Last => Integer'Max (Message_Range.First, Message_Range.Last),
+							First => Speech_Range.First,
+							Last => Speech_Index'Base'Max (
+								Speech_Range.First,
+								Speech_Range.Last),
 							User_Id => User_Id,
 							User_Password => User_Password));
 				Character'Write (Output, '>');
@@ -512,13 +514,16 @@ is
 				String'Write (Output, "</a>");
 			end if;
 			for I in
-				0 .. (Message_Range.Last - Message_Range.First) / Form.Speeches_Per_Page
+				0 ..
+				(Speech_Range.Last - Speech_Range.First) / Form.Speeches_Per_Page
 			loop
 				declare
 					I_S : constant String := Image (I + 1);
-					I_F : constant Natural := I * Form.Speeches_Per_Page;
-					I_L : Integer :=
-						Natural'Min (Message_Range.Last, I_F + (Form.Speeches_Per_Page - 1));
+					I_F : constant Speech_Index := I * Form.Speeches_Per_Page;
+					I_L : Speech_Index'Base :=
+						Speech_Index'Base'Min (
+							Speech_Range.Last,
+							I_F + (Form.Speeches_Per_Page - 1));
 				begin
 					if F = I_F and then L = I_L then
 						Forms.Write_In_HTML (Output, Form, "|" & I_S);
@@ -548,10 +553,10 @@ is
 			if Village.State = Closed or else Day /= Village.Today then
 				Forms.Write_In_HTML (Output, Form, "|");
 			elsif F =
-			      Integer'Max (
-			         Message_Range.First,
-			         Message_Range.Last - (Form.Speeches_Per_Page - 1))
-				and then L = Message_Range.Last
+			      Speech_Index'Base'Max (
+			         Speech_Range.First,
+			         Speech_Range.Last - (Form.Speeches_Per_Page - 1))
+				and then L = Speech_Range.Last
 			then
 				Forms.Write_In_HTML (Output, Form, "|新|");
 			else
@@ -896,7 +901,7 @@ is
 						User_Id => User_Id,
 						User_Password => User_Password));
 		elsif Tag = "all" then
-			if Showing_Range.First > Message_Index'First then
+			if Showing_Range.First > Speech_Index'First then
 				declare
 					procedure Handle (
 						Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -914,7 +919,7 @@ is
 									Form.Parameters_To_Village_Page (
 										Village_Id => Village_Id,
 										Day => Day,
-										First => Tabula.Villages.Message_Index'First,
+										First => Speech_Index'First,
 										User_Id => User_Id,
 										User_Password => User_Password));
 						else
@@ -1053,8 +1058,8 @@ is
 						Ada.Numerics.MT19937.Generator,
 						Ada.Numerics.MT19937.Random_32);
 				Executed : Integer := -1;
-				Speech_Index : Tabula.Villages.Message_Index :=
-					Tabula.Villages.Message_Index'First;
+				Speech_Index : Tabula.Villages.Speech_Index :=
+					Tabula.Villages.Speech_Index'First;
 				X : X_Type := 2;
 				Last_Speech : Integer := -1;
 				Last_Speech_Time : Ada.Calendar.Time := Calendar.Null_Time;
@@ -1417,7 +1422,7 @@ is
 						end if;
 					end;
 				end loop;
-				if Speech_Index = Message_Range.Last + 1 then
+				if Speech_Index = Speech_Range.Last + 1 then
 					Tip_Showed := True;
 					if Village.State >= Epilogue and then Day < Village.Today then
 						for I in Village.People.First_Index .. Village.People.Last_Index loop

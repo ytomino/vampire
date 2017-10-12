@@ -15,9 +15,9 @@ procedure Vampire.R3.Village_Page (
 	Village_Id : in Tabula.Villages.Village_Id;
 	Village : in Villages.Village_Type;
 	Day : in Natural;
-	Showing_Range : in Tabula.Villages.Message_Range_Type := (
-		First => Tabula.Villages.Message_Index'First,
-		Last => Tabula.Villages.Message_Index'Last - 2);
+	Showing_Range : in Tabula.Villages.Speech_Range_Type := (
+		First => Tabula.Villages.Speech_Index'First,
+		Last => Tabula.Villages.Speech_Index'Last - 2);
 	Editing : Villages.Message_Kind := Villages.Speech;
 	Editing_Text : String := "";
 	User_Id : in String;

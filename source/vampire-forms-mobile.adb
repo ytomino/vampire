@@ -8,7 +8,8 @@ package body Vampire.Forms.Mobile is
 	Encoding : constant Ada.Environment_Encoding.Encoding_Id :=
 		Ada.Environment_Encoding.Names.Windows_31J;
 	
-	function Create (Speeches_Per_Page : Positive) return Form_Type is
+	function Create (Speeches_Per_Page : Tabula.Villages.Speech_Positive_Count)
+		return Form_Type is
 	begin
 		return (
 			Encoder =>
@@ -65,9 +66,9 @@ package body Vampire.Forms.Mobile is
 		Form : Form_Type;
 		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : String;
 		User_Password : String)
 		return Web.Query_Strings is
@@ -131,7 +132,8 @@ package body Vampire.Forms.Mobile is
 		return True;
 	end Paging;
 	
-	overriding function Speeches_Per_Page (Form : Form_Type) return Natural is
+	overriding function Speeches_Per_Page (Form : Form_Type)
+		return Tabula.Villages.Speech_Positive_Count'Base is
 	begin
 		return Form.Speeches_Per_Page;
 	end Speeches_Per_Page;
@@ -222,35 +224,48 @@ package body Vampire.Forms.Mobile is
 		Day : Natural;
 		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
-		return Villages.Message_Range_Type
+		return Villages.Speech_Range_Type
 	is
-		function First_N (N : Natural) return Villages.Message_Range_Type is
-			Message_Range : Villages.Message_Range_Type :=
-				Village.Message_Range (Day);
+		function First_N (N : Tabula.Villages.Speech_Positive_Count'Base)
+			return Villages.Speech_Range_Type
+		is
+			Speech_Range : Villages.Speech_Range_Type :=
+				Village.Speech_Range (Day);
 		begin
 			return (
-				First => Message_Range.First,
-				Last => Integer'Max (Message_Range.First,
-					Integer'Min (Message_Range.Last, Message_Range.First + (N - 1))));
+				First => Speech_Range.First,
+				Last => Tabula.Villages.Speech_Index'Base'Max (
+					Speech_Range.First,
+					Tabula.Villages.Speech_Index'Base'Min (
+						Speech_Range.Last,
+						Speech_Range.First + (N - 1))));
 		end First_N;
-		function Last_N (N : Natural) return Villages.Message_Range_Type is
-			Message_Range : Villages.Message_Range_Type :=
-				Village.Message_Range (Day);
+		function Last_N (N : Tabula.Villages.Speech_Positive_Count'Base)
+			return Villages.Speech_Range_Type
+		is
+			Speech_Range : Villages.Speech_Range_Type :=
+				Village.Speech_Range (Day);
 		begin
 			return (
-				First => Integer'Max (Message_Range.First, Message_Range.Last - (N - 1)),
-				Last => Integer'Max (Message_Range.First, Message_Range.Last));
+				First => Tabula.Villages.Speech_Index'Base'Max (
+					Speech_Range.First,
+					Speech_Range.Last - (N - 1)),
+				Last => Tabula.Villages.Speech_Index'Base'Max (
+					Speech_Range.First,
+					Speech_Range.Last));
 		end Last_N;
 		Range_Arg : constant String := Web.Element (Query_Strings, "r");
 		P : constant Natural :=
 			Ada.Strings.Functions.Index_Element_Forward (Range_Arg, '-');
 	begin
 		if P < Range_Arg'First then
-			return Last_N (Natural'Value (Range_Arg));
+			return Last_N (Tabula.Villages.Speech_Index'Value (Range_Arg));
 		else
 			return (
-				First => Natural'Value (Range_Arg (Range_Arg'First .. P - 1)),
-				Last => Natural'Value (Range_Arg (P + 1 .. Range_Arg'Last)));
+				First => Tabula.Villages.Speech_Index'Value (
+					Range_Arg (Range_Arg'First .. P - 1)),
+				Last => Tabula.Villages.Speech_Index'Value (
+					Range_Arg (P + 1 .. Range_Arg'Last)));
 		end if;
 	exception
 		when Constraint_Error =>

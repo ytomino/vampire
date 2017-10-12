@@ -653,7 +653,7 @@ begin
 								-- 村レンダリング
 								declare
 									Day : Natural := Form.Get_Day (Village, Query_Strings);
-									Message_Range : Tabula.Villages.Message_Range_Type :=
+									Message_Range : Tabula.Villages.Speech_Range_Type :=
 										Form.Get_Range (
 											Village,
 											Day,
@@ -1064,7 +1064,8 @@ begin
 											Villages.Message_Kind'Value (Form.Get_Reedit_Kind (Inputs));
 										Text : constant String := Form.Get_Text (Inputs);
 										Day : Natural := Form.Get_Day (Village, Query_Strings);
-										Message_Range : Tabula.Villages.Message_Range_Type :=
+										Message_Range :
+												Tabula.Villages.Speech_Range_Type :=
 											Form.Get_Range (
 												Village,
 												Day,

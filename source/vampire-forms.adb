@@ -95,9 +95,9 @@ package body Vampire.Forms is
 		Log : in Boolean;
 		Village_Id : Tabula.Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : in String;
 		User_Password : in String) is
 	begin

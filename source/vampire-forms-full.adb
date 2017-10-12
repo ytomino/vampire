@@ -42,9 +42,9 @@ package body Vampire.Forms.Full is
 		Form : Form_Type;
 		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : String;
 		User_Password : String)
 		return Web.Query_Strings is
@@ -82,7 +82,8 @@ package body Vampire.Forms.Full is
 		return False;
 	end Paging;
 	
-	overriding function Speeches_Per_Page (Form : Form_Type) return Natural is
+	overriding function Speeches_Per_Page (Form : Form_Type)
+		return Tabula.Villages.Speech_Positive_Count'Base is
 	begin
 		return 0;
 	end Speeches_Per_Page;
@@ -174,18 +175,20 @@ package body Vampire.Forms.Full is
 		Day : Natural;
 		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
-		return Villages.Message_Range_Type
+		return Villages.Speech_Range_Type
 	is
-		Message_Range : Villages.Message_Range_Type;
+		Speech_Range : Villages.Speech_Range_Type;
 	begin
 		if String'(Web.Element (Query_Strings, "range"))'Length = 0 then
-			Message_Range := Village.Recent_Only_Message_Range (Day, Now => Now);
+			Speech_Range := Village.Recent_Only_Speech_Range (Day, Now => Now);
 		else
-			Message_Range := Village.Message_Range (Day);
+			Speech_Range := Village.Speech_Range (Day);
 		end if;
 		return (
-			First => Message_Range.First,
-			Last => Integer'Max (Message_Range.First, Message_Range.Last));
+			First => Speech_Range.First,
+			Last => Tabula.Villages.Speech_Index'Base'Max (
+				Speech_Range.First,
+				Speech_Range.Last));
 	end Get_Range;
 	
 	overriding function Get_New_Village_Name (

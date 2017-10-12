@@ -969,13 +969,13 @@ package body Vampire.Villages is
 		end loop;
 	end Iterate_Escaped_People;
 	
-	function Message_Range (
+	function Speech_Range (
 		Village : Village_Type;
 		Day : Natural)
-		return Message_Range_Type
+		return Speech_Range_Type
 	is
-		First : Natural := 0;
-		Last : Integer := -1;
+		First : Speech_Index := 0;
+		Last : Speech_Index'Base := -1;
 	begin
 		for Position in
 			Village.Messages.First_Index .. Village.Messages.Last_Index
@@ -991,13 +991,13 @@ package body Vampire.Villages is
 			end;
 		end loop;
 		return (First, Last);
-	end Message_Range;
+	end Speech_Range;
 	
-	overriding function Recent_Only_Message_Range (
+	overriding function Recent_Only_Speech_Range (
 		Village : Village_Type;
 		Day : Natural;
 		Now : Ada.Calendar.Time)
-		return Message_Range_Type
+		return Speech_Range_Type
 	is
 		function Escaped (Village : Village_Type; Message : Villages.Message)
 			return Boolean is
@@ -1021,7 +1021,7 @@ package body Vampire.Villages is
 					return False;
 			end case;
 		end Escaped;
-		Result : Message_Range_Type := Village.Message_Range (Day);
+		Result : Speech_Range_Type := Village.Speech_Range (Day);
 	begin
 		if Village.State = Prologue and then Day = 0 then
 			declare
@@ -1046,7 +1046,7 @@ package body Vampire.Villages is
 			end;
 		end if;
 		return Result;
-	end Recent_Only_Message_Range;
+	end Recent_Only_Speech_Range;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;

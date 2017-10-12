@@ -6,10 +6,11 @@ package Vampire.Forms.Mobile is
 		-- [gcc-4.7/4.8/4.9] has a bug in built-in-placing controlled objects
 		Encoder : not null access Ada.Environment_Encoding.Strings.Encoder;
 		Decoder : not null access Ada.Environment_Encoding.Strings.Decoder;
-		Speeches_Per_Page : Positive;
+		Speeches_Per_Page : Tabula.Villages.Speech_Positive_Count;
 	end record;
 	
-	function Create (Speeches_Per_Page : Positive) return Form_Type;
+	function Create (Speeches_Per_Page : Tabula.Villages.Speech_Positive_Count)
+		return Form_Type;
 	
 	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version;
 	
@@ -31,9 +32,9 @@ package Vampire.Forms.Mobile is
 		Form : Form_Type;
 		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : String;
 		User_Password : String)
 		return Web.Query_Strings;
@@ -51,7 +52,8 @@ package Vampire.Forms.Mobile is
 	
 	overriding function Paging (Form : Form_Type) return Boolean;
 	
-	overriding function Speeches_Per_Page (Form : Form_Type) return Natural;
+	overriding function Speeches_Per_Page (Form : Form_Type)
+		return Tabula.Villages.Speech_Positive_Count'Base;
 	
 	overriding function Get_User_Id (
 		Form : Form_Type;
@@ -94,7 +96,7 @@ package Vampire.Forms.Mobile is
 		Day : Natural;
 		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
-		return Villages.Message_Range_Type;
+		return Villages.Speech_Range_Type;
 	
 	overriding function Get_New_Village_Name (
 		Form : Form_Type;

@@ -40,9 +40,9 @@ package Vampire.Forms is
 		Form : Root_Form_Type;
 		Village_Id : Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : String;
 		User_Password : String)
 		return Web.Query_Strings is abstract;
@@ -89,14 +89,15 @@ package Vampire.Forms is
 		Log : in Boolean;
 		Village_Id : in Villages.Village_Id;
 		Day : Integer := -1;
-		First : Integer := -1;
-		Last : Integer := -1;
-		Latest : Integer := -1;
+		First : Tabula.Villages.Speech_Index'Base := -1;
+		Last : Tabula.Villages.Speech_Index'Base := -1;
+		Latest : Tabula.Villages.Speech_Positive_Count'Base := -1;
 		User_Id : in String;
 		User_Password : in String);
 	
 	function Paging (Form : Root_Form_Type) return Boolean is abstract;
-	function Speeches_Per_Page (Form : Root_Form_Type) return Natural is abstract;
+	function Speeches_Per_Page (Form : Root_Form_Type)
+		return Tabula.Villages.Speech_Positive_Count'Base is abstract;
 	
 	-- ユーザー情報
 	
@@ -173,7 +174,7 @@ package Vampire.Forms is
 		Day : Natural;
 		Now : Ada.Calendar.Time;
 		Query_Strings : Web.Query_Strings)
-		return Villages.Message_Range_Type is abstract;
+		return Villages.Speech_Range_Type is abstract;
 	
 	-- コマンド
 	

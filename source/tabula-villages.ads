@@ -30,10 +30,14 @@ package Tabula.Villages is
 	-- メッセージ
 	
 	subtype Message_Index is Natural;
-	type Message_Range_Type is record
-		First : Message_Index;
-		Last : Message_Index'Base;
+	
+	subtype Speech_Index is Natural; -- count only speeches
+	type Speech_Range_Type is record
+		First : Speech_Index;
+		Last : Speech_Index'Base;
 	end record;
+	
+	subtype Speech_Positive_Count is Speech_Index range 1 .. Speech_Index'Last;
 	
 	-- オプション
 	
@@ -85,16 +89,16 @@ package Tabula.Villages is
 			Index : Person_Index;
 			Item : in Person_Type'Class)) is abstract;
 	
-	function Message_Range (
+	function Speech_Range (
 		Village : Village_Type;
 		Day : Natural)
-		return Message_Range_Type is abstract;
+		return Speech_Range_Type is abstract;
 	
-	function Recent_Only_Message_Range (
+	function Recent_Only_Speech_Range (
 		Village : Village_Type;
 		Day : Natural;
 		Now : Ada.Calendar.Time)
-		return Message_Range_Type is abstract;
+		return Speech_Range_Type is abstract;
 	
 	procedure Iterate_Options (
 		Village : in Village_Type;

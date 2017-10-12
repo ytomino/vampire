@@ -431,16 +431,16 @@ package Vampire.Villages is
 			Index : Person_Index;
 			Item : in Tabula.Villages.Person_Type'Class));
 
-	overriding function Message_Range (
+	overriding function Speech_Range (
 		Village : Village_Type;
 		Day : Natural)
-		return Message_Range_Type;
+		return Speech_Range_Type;
 	
-	overriding function Recent_Only_Message_Range (
+	overriding function Recent_Only_Speech_Range (
 		Village : Village_Type;
 		Day : Natural;
 		Now : Ada.Calendar.Time)
-		return Message_Range_Type;
+		return Speech_Range_Type;
 	
 	overriding procedure Iterate_Options (
 		Village : in Village_Type;
