@@ -19,7 +19,7 @@ package body Vampire.Villages is
 	function Preliminary_Voted (Village : Village_Type) return Boolean is
 	begin
 		for I in reverse
-			Village.Messages.First_Index .. Village.Messages.Last_Index
+			Message_Index'First .. Village.Messages.Last_Index
 		loop
 			declare
 				It : Message renames Village.Messages.Constant_Reference (I);
@@ -118,9 +118,7 @@ package body Vampire.Villages is
 				Vampire_Cancel => 0,
 				Last_Action_Time => Calendar.Null_Time));
 	begin
-		for Position in
-			Village.Messages.First_Index .. Village.Messages.Last_Index
-		loop
+		for Position in Message_Index'First .. Village.Messages.Last_Index loop
 			declare
 				Current : Message renames Village.Messages.Constant_Reference(Position);
 			begin
@@ -307,7 +305,7 @@ package body Vampire.Villages is
 			Delete (Village.People, Position);
 		end;
 		Escaped_Index := Village.Escaped_People.Last_Index;
-		for I in Village.Messages.First_Index .. Village.Messages.Last_Index loop
+		for I in Message_Index'First .. Village.Messages.Last_Index loop
 			declare
 				Kind : constant Villages.Message_Kind :=
 					Village.Messages.Constant_Reference (I).Kind;
@@ -560,9 +558,7 @@ package body Vampire.Villages is
 	function Infected_In_First (Village : Village_Type) return Boolean is
 		pragma Assert (Village.Today = 1);
 	begin
-		for I in reverse
-			Village.Messages.First_Index .. Village.Messages.Last_Index
-		loop
+		for I in reverse Message_Index'First .. Village.Messages.Last_Index loop
 			declare
 				It : Message renames Village.Messages.Constant_Reference (I);
 			begin
@@ -796,7 +792,7 @@ package body Vampire.Villages is
 	begin
 		if Unfortunate (Village) then
 			for I in reverse
-				Village.Messages.First_Index .. Village.Messages.Last_Index
+				Message_Index'First .. Village.Messages.Last_Index
 			loop
 				declare
 					Message : Villages.Message renames Village.Messages.Constant_Reference (I);
@@ -977,9 +973,7 @@ package body Vampire.Villages is
 		First : Speech_Index := 0;
 		Last : Speech_Index'Base := -1;
 	begin
-		for Position in
-			Village.Messages.First_Index .. Village.Messages.Last_Index
-		loop
+		for Position in Message_Index'First .. Village.Messages.Last_Index loop
 			declare
 				Current : Message renames Village.Messages.Constant_Reference (Position);
 			begin
@@ -1024,26 +1018,21 @@ package body Vampire.Villages is
 		Result : Speech_Range_Type := Village.Speech_Range (Day);
 	begin
 		if Village.State = Prologue and then Day = 0 then
-			declare
-				Index : Natural := 0;
-			begin
-				while Index <= Village.Messages.Last_Index loop
-					declare
-						Item : Message
-							renames Village.Messages.Constant_Reference (Index);
-					begin
-						exit when not Escaped (Village, Item)
-							and then Now - Item.Time <= 180 * 24 * 60 * 60.0;
-						case Item.Kind is
-							when Speech | Escaped_Speech =>
-								Result.First := Result.First + 1;
-							when others =>
-								null;
-						end case;
-						Index := Index + 1;
-					end;
-				end loop;
-			end;
+			for Index in Message_Index'First .. Village.Messages.Last_Index loop
+				declare
+					Item : Message
+						renames Village.Messages.Constant_Reference (Index);
+				begin
+					exit when not Escaped (Village, Item)
+						and then Now - Item.Time <= 180 * 24 * 60 * 60.0;
+					case Item.Kind is
+						when Speech | Escaped_Speech =>
+							Result.First := Result.First + 1;
+						when others =>
+							null;
+					end case;
+				end;
+			end loop;
 		end if;
 		return Result;
 	end Recent_Only_Speech_Range;

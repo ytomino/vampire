@@ -1070,7 +1070,7 @@ is
 					Paging (Output, Top);
 				end if;
 				for Position in
-					Village.Messages.First_Index .. Village.Messages.Last_Index
+					Message_Index'First .. Village.Messages.Last_Index
 				loop
 					declare
 						Message : Vampire.Villages.Message

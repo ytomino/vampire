@@ -237,7 +237,7 @@ is
 						-- キャンセル対象または処刑対象を襲撃しようとした場合、他に振り替え
 						-- 感染時点で使われた視線の中から未感染者を優先
 						Find_Gaze : for I in reverse
-							Village.Messages.First_Index .. Village.Messages.Last_Index
+							Message_Index'First .. Village.Messages.Last_Index
 						loop
 							declare
 								Message : Villages.Message renames Village.Messages.Constant_Reference (I);
@@ -822,7 +822,7 @@ begin
 					-- 誰が処刑されたかを拾っておく
 					Executed := No_Person;
 					Find_Executed : for I in reverse
-						Village.Messages.First_Index .. Village.Messages.Last_Index
+						Message_Index'First .. Village.Messages.Last_Index
 					loop
 						declare
 							Message : Villages.Message
@@ -925,7 +925,7 @@ begin
 					begin
 						-- キャンセル先
 						Find_Cancel : for I in reverse
-							Village.Messages.First_Index .. Village.Messages.Last_Index
+							Message_Index'First .. Village.Messages.Last_Index
 						loop
 							declare
 								Message : Villages.Message renames Village.Messages.Constant_Reference (I);
@@ -1147,7 +1147,9 @@ begin
 					declare
 						Target : Person_Index'Base := No_Person;
 					begin
-						Find_Gaze : for I in reverse 0 .. Village.Messages.Last_Index loop
+						Find_Gaze : for I in reverse
+							Message_Index'First .. Village.Messages.Last_Index
+						loop
 							if Village.Messages.Constant_Reference (I).Kind =
 							   Action_Vampire_Gaze
 							then
