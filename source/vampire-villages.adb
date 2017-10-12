@@ -111,7 +111,7 @@ package body Vampire.Villages is
 		return Message_Counts
 	is
 		Result : Message_Counts (
-				Village.Messages.First_Index .. Village.Messages.Last_Index) := (
+				Person_Index'First .. Village.People.Last_Index) := (
 			others => (
 				Speech => 0, Monologue => 0, Ghost => 0,
 				Wake => 0, Encourage => 0, Encouraged => 0, Vampire_Gaze => 0,
