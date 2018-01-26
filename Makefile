@@ -1,7 +1,5 @@
-HOST=$(shell gcc -dumpmachine)
+HOST:=$(shell gcc -dumpmachine)
 TARGET=$(HOST)
-
-VERSION=$(shell gcc -dumpversion)
 
 ifneq (,$(findstring mingw,$(TARGET)))
 EXESUFFIX=.exe
@@ -75,6 +73,7 @@ LARGS:=$(LARGS) -ggdb1 -Os
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
+VERSION:=$(shell gcc -dumpversion)
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
