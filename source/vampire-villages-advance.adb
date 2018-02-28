@@ -19,7 +19,7 @@ is
 		Person_Index range Person_Index'First .. Village.People.Last_Index;
 	function People_Random is
 		new Ada.Numerics.Distributions.Linear_Discrete_Random (
-			Ada.Numerics.MT19937.Cardinal,
+			Ada.Numerics.MT19937.Unsigned_32,
 			People_Index,
 			Ada.Numerics.MT19937.Generator,
 			Ada.Numerics.MT19937.Random_32);

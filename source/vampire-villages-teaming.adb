@@ -387,7 +387,7 @@ package body Vampire.Villages.Teaming is
 		subtype T is Positive range Sets'Range;
 		function Random is
 			new Ada.Numerics.Distributions.Linear_Discrete_Random (
-				Ada.Numerics.MT19937.Cardinal,
+				Ada.Numerics.MT19937.Unsigned_32,
 				T,
 				Ada.Numerics.MT19937.Generator,
 				Ada.Numerics.MT19937.Random_32);
@@ -417,7 +417,7 @@ package body Vampire.Villages.Teaming is
 			Person_Index'Base range Person_Index'First .. People.Last_Index;
 		function People_Random is
 			new Ada.Numerics.Distributions.Linear_Discrete_Random (
-				Ada.Numerics.MT19937.Cardinal,
+				Ada.Numerics.MT19937.Unsigned_32,
 				People_Index,
 				Ada.Numerics.MT19937.Generator,
 				Ada.Numerics.MT19937.Random_32);

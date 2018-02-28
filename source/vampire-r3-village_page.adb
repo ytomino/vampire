@@ -1060,7 +1060,7 @@ is
 				subtype X_Type is Integer range 1 .. 3;
 				function Random_X is
 					new Ada.Numerics.Distributions.Linear_Discrete_Random (
-						Ada.Numerics.MT19937.Cardinal,
+						Ada.Numerics.MT19937.Unsigned_32,
 						X_Type,
 						Ada.Numerics.MT19937.Generator,
 						Ada.Numerics.MT19937.Random_32);
@@ -2033,7 +2033,7 @@ is
 										subtype Arg is Integer range 1000 .. 4999;
 										function Random_Arg is
 											new Ada.Numerics.Distributions.Linear_Discrete_Random (
-												Ada.Numerics.MT19937.Cardinal,
+												Ada.Numerics.MT19937.Unsigned_32,
 												Arg,
 												Ada.Numerics.MT19937.Generator,
 												Ada.Numerics.MT19937.Random_32);
