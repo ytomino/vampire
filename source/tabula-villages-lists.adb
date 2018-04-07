@@ -212,8 +212,7 @@ package body Tabula.Villages.Lists is
 				new Ada.Formatting.Integer_Image (
 					Natural,
 					Signs => Ada.Formatting.Triming_Sign_Marks,
-					Width => 4,
-					Padding => '0');
+					Digits_Width => 4);
 		begin
 			return Image_04d (Next);
 		end;
