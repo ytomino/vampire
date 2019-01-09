@@ -723,9 +723,13 @@ package body Vampire.Villages.Text is
 				null;
 		end case;
 		Ada.Strings.Unbounded.Append (Result, "吸血鬼は");
-		if Village.State >= Epilogue or else Subject.Role in Vampire_Role then
+		if Village.State >= Epilogue
+			or else Subject.Role in Vampire_Role
+			or else Village.Vampire_Action_Set /= Gaze_And_Cancel
+		then
 			Ada.Strings.Unbounded.Append (Result, Name (Target));
 		else
+			-- 「襲うのをやめさせる」が有効
 			Ada.Strings.Unbounded.Append (Result, "誰か");
 		end if;
 		Ada.Strings.Unbounded.Append (Result, "を");
