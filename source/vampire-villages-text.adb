@@ -877,7 +877,7 @@ package body Vampire.Villages.Text is
 		Target : Person_Type
 			renames Village.People.Constant_Reference (Message.Target);
 	begin
-		return Name (Subject) & "は" & Name (Target) & "を起こした。 ";
+		return Name (Subject) & "は" & Name (Target) & "を起こしました。 ";
 	end Action_Wake;
 	
 	function Action_Encourage (Village : Village_Type; Message : Villages.Message)
@@ -888,7 +888,8 @@ package body Vampire.Villages.Text is
 		Target : Person_Type
 			renames Village.People.Constant_Reference (Message.Target);
 	begin
-		return Name (Subject) & "は" & Name (Target) & "に話の続きを促した。 ";
+		return Name (Subject) & "は" & Name (Target)
+		          & "に話の続きを促しました。 ";
 	end Action_Encourage;
 	
 	function Action_Vampire_Gaze (
@@ -902,7 +903,7 @@ package body Vampire.Villages.Text is
 			renames Village.People.Constant_Reference (Message.Target);
 	begin
 		return Name (Subject) & "は" & Villages.Text.Name (Target)
-			& "をこっそりと見つめた。 ";
+		          & "をこっそりと見つめました。 ";
 	end Action_Vampire_Gaze;
 	
 	function Action_Vampire_Gaze_Blocked (
@@ -916,7 +917,8 @@ package body Vampire.Villages.Text is
 			Find_Superman (Village, Unfortunate_Inhabitant);
 	begin
 		return Name (Subject) & "の視線は"
-			& Name (Village.People.Constant_Reference (The_Unfortunate)) & "に遮られた。 ";
+		          & Name (Village.People.Constant_Reference (The_Unfortunate))
+		          & "に遮られてしまいました。 ";
 	end Action_Vampire_Gaze_Blocked;
 	
 	function Action_Vampire_Cancel (
@@ -930,7 +932,7 @@ package body Vampire.Villages.Text is
 			renames Village.People.Constant_Reference (Message.Target);
 	begin
 		return Name (Subject) & "は" & Villages.Text.Name (Target)
-			& "を襲わないよう念じた。 ";
+		          & "を襲わないよう念じました。 ";
 	end Action_Vampire_Cancel;
 	
 	function Action_Vampire_Canceled (
@@ -944,7 +946,7 @@ package body Vampire.Villages.Text is
 			renames Village.People.Constant_Reference (Message.Target);
 	begin
 		return Name (Subject) & "は" & Villages.Text.Name (Target)
-			& "を襲う予定を取りやめた。 ";
+		          & "から他へと目を向けました。 ";
 	end Action_Vampire_Canceled;
 	
 	-- 決着
