@@ -68,6 +68,9 @@ else
 CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn2
 BARGS:=$(BARGS) -E
 LARGS:=$(LARGS) -ggdb1 -Os
+ifneq ($(findstring freebsd,$(TARGET))$(findstring linux-gnu,$(TARGET)),)
+LARGS:=$(LARGS) -Wl,--compress-debug-sections=zlib
+endif
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
