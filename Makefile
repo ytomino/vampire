@@ -47,16 +47,16 @@ ifeq ($(LINK),gc)
 ifneq ($(findstring darwin,$(TARGET)),)
 LARGS:=$(LARGS) -dead_strip
 ifneq ($(WHYLIVE),)
-LARGS:=$(LARGS) -Xlinker -why_live -Xlinker $(WHYLIVE)
+LARGS:=$(LARGS) -Wl,-why_live,$(WHYLIVE)
 endif
 else
 CARGS:=$(CARGS) -ffunction-sections -fdata-sections
-LARGS:=$(LARGS) -Xlinker --gc-sections
+LARGS:=$(LARGS) -Wl,--gc-sections
 endif
 endif
 ifeq ($(LINK),lto)
 CARGS:=$(CARGS) -flto
-LARGS:=$(LARGS) -flto -Xlinker --gc-sections
+LARGS:=$(LARGS) -flto -Wl,--gc-sections
 ifneq ($(filter -lgcc_eh,$(LARGS)),)
 LARGS:=$(filter-out -lgcc_eh,$(LARGS)) -static-libgcc
 endif
