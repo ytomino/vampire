@@ -38,8 +38,7 @@ LARGS:=$(LARGS) $(shell pkg-config --libs-only-L yaml-0.1)
 endif
 ifneq ($(findstring darwin,$(TARGET)),)
 LARGS:=$(LARGS) -licucore
-endif
-ifneq ($(findstring freebsd,$(TARGET)),)
+else ifneq ($(findstring freebsd,$(TARGET)),)
 LARGS:=$(LARGS) -liconv -lm -lgcc_eh -lpthread
 endif
 
@@ -53,8 +52,7 @@ else
 CARGS:=$(CARGS) -ffunction-sections -fdata-sections
 LARGS:=$(LARGS) -Wl,--gc-sections
 endif
-endif
-ifeq ($(LINK),lto)
+else ifeq ($(LINK),lto)
 CARGS:=$(CARGS) -flto
 LARGS:=$(LARGS) -flto -Wl,--gc-sections
 ifneq ($(filter -lgcc_eh,$(LARGS)),)
@@ -78,7 +76,6 @@ DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
 endif
 ifneq ($(DRAKE_RTSDIR),)
 GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
-else
 endif
 
 .PHONY: all clean test-vampire install-test xfind xfindall
