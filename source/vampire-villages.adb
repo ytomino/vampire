@@ -532,6 +532,7 @@ package body Vampire.Villages is
 				Subject => Subject,
 				Target => Target,
 				Text => Ada.Strings.Unbounded.Null_Unbounded_String));
+		-- 吸血鬼同士は即座に通知、反映する
 		for I in Person_Index'First .. Village.People.Last_Index loop
 			declare
 				Person : Person_Type renames Village.People.Reference (I);

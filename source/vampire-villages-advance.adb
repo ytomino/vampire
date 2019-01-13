@@ -238,6 +238,19 @@ is
 				if Vampire_Person.Role not in Vampire_Role then
 					-- 吸血鬼以外(感染夜間職)の襲撃先
 					if Target = Executed or else Target = Canceled or else Target = No_Person then
+						if Target = Canceled then
+							-- 襲撃がキャンセルされたことの通知
+							Append (
+								Village.Messages,
+								Message'(
+									Kind => Action_Vampire_Canceled,
+									Day => Village.Today,
+									Time => Now,
+									Subject => The_Vampire,
+									Target => Target,
+									Text =>
+										Ada.Strings.Unbounded.Null_Unbounded_String));
+						end if;
 						Target := No_Person;
 						-- キャンセル対象または処刑対象を襲撃しようとした場合、他に振り替え
 						-- 感染時点で使われた視線の中から未感染者を優先

@@ -1214,7 +1214,13 @@ is
 												Vampire_K);
 										end if;
 									when Action_Vampire_Canceled =>
-										if Village.State >= Epilogue or else Player_Index = Message.Subject then
+										if Village.State >= Epilogue
+											or else (
+												Player_Index = Message.Subject
+												and then Village.People.Constant_Reference (
+													         Player_Index).Role in
+													Vampire_Role)
+										then
 											Narration (
 												Villages.Text.Action_Vampire_Canceled (Village, Message),
 												"narrationi",
