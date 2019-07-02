@@ -110,6 +110,18 @@ $(BUILDDIR):
 DEBUGGER=gdb
 export QUERY_STRING=
 
+$(TESTDIR)/image:
+	mkdir -p $@
+
+$(TESTDIR)/temp:
+	mkdir -p $@
+
+$(TESTDIR)/users:
+	mkdir -p $@
+
+$(TESTDIR)/villages/data:
+	mkdir -p $@
+
 $(TESTDIR)/%: site/%
 	install $< $(dir $@)
 
@@ -118,6 +130,10 @@ install-test: \
 	$(TESTDIR)/unlock$(CGISUFFIX) \
 	$(TESTDIR)/cast \
 	$(TESTDIR)/style.css \
+	$(TESTDIR)/image \
+	$(TESTDIR)/temp \
+	$(TESTDIR)/users \
+	$(TESTDIR)/villages/data \
 	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html))) \
 	$(addprefix $(TESTDIR)/image/,$(notdir $(wildcard site/image/*.png)))
 
