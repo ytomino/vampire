@@ -75,7 +75,11 @@ endif
 
 ifneq ($(DRAKE_RTSROOT),)
 VERSION:=$(shell gcc -dumpversion)
+ifneq ($(and $(filter debug,$(BUILD)),$(wildcard $(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug)),)
+DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug
+else
 DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
+endif
 endif
 ifneq ($(DRAKE_RTSDIR),)
 GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
