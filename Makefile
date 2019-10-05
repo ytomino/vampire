@@ -145,7 +145,7 @@ test-vampire: install-test
 	cd $(TESTDIR) && $(DEBUGGER) ./vampire$(CGISUFFIX)
 
 clean:
-	-rm -rf *.build
+	-rm -r *.build
 
 xfind:
 	gnatfind -f -aIsource -aO$(BUILDDIR) $(X) $(GARGS) $(FARGS) | sed 's|^$(PWD)/||'
