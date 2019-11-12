@@ -46,13 +46,13 @@ http://panathenaia.halfmoon.jp/vampire/ で稼働中の人狼亜種です。
 ==================
 
 gcc 6を使わせていただいています。
- http://gcc.gnu.org/
+ https://gcc.gnu.org/
 
 パスワードを保存するときのハッシュ関数にOpenSSLを使わせていただいています。
- http://www.openssl.org/
+ https://www.openssl.org/
 
 データの保存のためにlibyamlを使わせていただいています。
- http://pyyaml.org/wiki/LibYAML
+ https://pyyaml.org/wiki/LibYAML
 
 C言語のヘッダーをAdaに変換するために"headmaster"(拙作)を使用しています。
  https://github.com/ytomino/headmaster
