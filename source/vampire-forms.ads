@@ -241,4 +241,9 @@ package Vampire.Forms is
 		Village : in out Villages.Village_Type'Class;
 		Inputs : in Web.Query_Strings);
 	
+private
+	
+	function Trim_Name (S : String) return String;
+	function Trim_Text (S : String) return String;
+	
 end Vampire.Forms;

@@ -1,5 +1,4 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
-with Ada.Strings.Functions;
 package body Vampire.Forms.Full is
 	use type Villages.Village_State;
 	
@@ -196,9 +195,7 @@ package body Vampire.Forms.Full is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (
-			Web.Element (Inputs, "name"),
-			Ada.Strings.Both);
+		return Trim_Name (Web.Element (Inputs, "name"));
 	end Get_New_Village_Name;
 	
 	overriding function Get_Text (
@@ -206,9 +203,7 @@ package body Vampire.Forms.Full is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (
-			Web.Element (Inputs, "text"),
-			Ada.Strings.Both);
+		return Trim_Text (Web.Element (Inputs, "text"));
 	end Get_Text;
 	
 end Vampire.Forms.Full;

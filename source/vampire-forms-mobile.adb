@@ -287,11 +287,10 @@ package body Vampire.Forms.Mobile is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (
+		return Trim_Name (
 			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
-				Web.Element (Inputs, "name")),
-			Ada.Strings.Both);
+				Web.Element (Inputs, "name")));
 	end Get_New_Village_Name;
 	
 	overriding function Get_Text (
@@ -299,11 +298,10 @@ package body Vampire.Forms.Mobile is
 		Inputs : Web.Query_Strings)
 		return String is
 	begin
-		return Ada.Strings.Functions.Trim (
+		return Trim_Text (
 			Ada.Environment_Encoding.Strings.Decode (
 				Form.Decoder.all,
-				Web.Element (Inputs, "text")),
-			Ada.Strings.Both);
+				Web.Element (Inputs, "text")));
 	end Get_Text;
 	
 end Vampire.Forms.Mobile;

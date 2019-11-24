@@ -1,6 +1,12 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Ada.Characters.Conversions;
 with Ada.Hierarchical_File_Names;
+with Ada.Strings.Functions.Maps;
+with Ada.Strings.Maps.Constants;
+with Ada.Strings.Maps.Naked;
+with Ada.Strings.Naked_Maps.General_Category;
 package body Vampire.Forms is
+	use type Ada.Strings.Maps.Character_Set;
 	use type Ada.Strings.Unbounded.Unbounded_String;
 	
 	function Self return String is
@@ -271,5 +277,52 @@ package body Vampire.Forms is
 	begin
 		Tabula.Villages.Iterate_Options (Village, Process'Access);
 	end Set_Rule;
+	
+	--  implementation of private
+	
+	function Spacing_Set return Ada.Strings.Maps.Character_Set is
+		function Space_Separator_Set is
+			new Ada.Strings.Maps.Naked.To_Set (
+				Ada.Strings.Naked_Maps.General_Category.Space_Separator);
+	begin
+		return Space_Separator_Set or Ada.Strings.Maps.Constants.Control_Set;
+	end Spacing_Set;
+
+	function Trim_Name (S : String) return String is
+		Set : Ada.Strings.Maps.Character_Set renames Spacing_Set;
+	begin
+		return Ada.Strings.Functions.Maps.Trim (S, Left => Set, Right => Set);
+	end Trim_Name;
+	
+	function Trim_Text (S : String) return String is
+		First : Positive;
+		Last : Natural;
+	begin
+		declare
+			Set : Ada.Strings.Maps.Character_Set renames Spacing_Set;
+		begin
+			Ada.Strings.Functions.Maps.Trim (S,
+				Left => Set, Right => Set, First => First, Last => Last);
+		end;
+		while First > S'First loop
+			declare
+				I : Positive;
+				C : Wide_Wide_Character;
+				Is_Illegal_Sequence : Boolean;
+			begin
+				Ada.Characters.Conversions.Get_Reverse (
+					S (S'First .. First - 1),
+					First => I,
+					Value => C,
+					Is_Illegal_Sequence => Is_Illegal_Sequence);
+				exit when Is_Illegal_Sequence
+					or else Ada.Strings.Maps.Overloaded_Is_In (
+						C,
+						Ada.Strings.Maps.Constants.Control_Set);
+				First := I;
+			end;
+		end loop;
+		return S (First .. Last);
+	end Trim_Text;
 	
 end Vampire.Forms;
