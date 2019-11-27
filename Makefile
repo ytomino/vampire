@@ -25,8 +25,6 @@ else
 LINK=gc
 endif
 
-TESTDIR=~/Sites/cgi/vampire
-
 GARGS:=
 MARGS:=-C -D $(BUILDDIR) $(addprefix -I,$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET))) -gnatA
 CARGS:=-pipe -gnatef -gnatwaIFK $(addprefix -gnatec=,$(abspath $(wildcard *.adc)))
@@ -85,6 +83,8 @@ ifneq ($(DRAKE_RTSDIR),)
 GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 endif
 
+TESTDIR?=$(HOME)/Documents/Sites/local/vampire
+
 .PHONY: all clean test-vampire install-test xfind xfindall
 
 all: site/vampire$(CGISUFFIX)
@@ -117,13 +117,13 @@ export QUERY_STRING=
 $(TESTDIR)/image:
 	mkdir -p $@
 
-$(TESTDIR)/temp:
-	mkdir -p $@
-
 $(TESTDIR)/users:
 	mkdir -p $@
 
-$(TESTDIR)/villages/data:
+$(TESTDIR)/villages:
+	mkdir -p $@
+
+$(TESTDIR)/_data:
 	mkdir -p $@
 
 $(TESTDIR)/%: site/%
@@ -135,9 +135,8 @@ install-test: \
 	$(TESTDIR)/cast \
 	$(TESTDIR)/style.css \
 	$(TESTDIR)/image \
-	$(TESTDIR)/temp \
-	$(TESTDIR)/users \
-	$(TESTDIR)/villages/data \
+	$(TESTDIR)/villages \
+	$(TESTDIR)/_data \
 	$(addprefix $(TESTDIR)/,$(notdir $(wildcard site/*.html))) \
 	$(addprefix $(TESTDIR)/image/,$(notdir $(wildcard site/image/*.png)))
 

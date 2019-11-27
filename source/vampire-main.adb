@@ -1,9 +1,11 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar;
 with Ada.Characters.Latin_1;
+with Ada.Directories;
 with Ada.Environment_Variables;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
+with Ada.Hierarchical_File_Names;
 with Ada.Numerics.MT19937;
 with Ada.Streams.Stream_IO.Standard_Files;
 with Ada.Strings.Unbounded;
@@ -83,6 +85,7 @@ begin
 	if not Ada.Environment_Variables.Exists ("USE_STDERR") then
 		Debug.Hook (Configurations.Debug_Log_File_Name'Access, Now);
 	end if;
+	Ada.Directories.Create_Path (Configurations.Temporary_Directory);
 	Ada.Environment_Variables.Set ("TMPDIR", Configurations.Temporary_Directory);
 	Locked : declare
 		Lock : Web.Lock_Files.Lock_Type :=
@@ -422,9 +425,22 @@ begin
 												New_Village_Id : constant Tabula.Villages.Village_Id :=
 													Tabula.Villages.Lists.New_Village_Id (Village_List);
 											begin
-												Villages.Save (
-													Tabula.Villages.Lists.File_Name (Village_List, New_Village_Id),
-													New_Village);
+												declare
+													Full_Name : constant String :=
+														Tabula.Villages.Lists.File_Name (Village_List, New_Village_Id);
+												begin
+													-- create the directory
+													declare
+														Dir : constant String :=
+															Ada.Hierarchical_File_Names.Unchecked_Containing_Directory (Full_Name);
+													begin
+														if Dir'Length /= 0 then
+															Ada.Directories.Create_Path (Dir);
+														end if;
+													end;
+													-- write the file
+													Villages.Save (Full_Name, New_Village);
+												end;
 												Tabula.Villages.Lists.Update (
 													Village_List,
 													New_Village_Id,

@@ -1,6 +1,8 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
 with Ada.Calendar.Formatting;
 with Ada.Characters.Latin_1;
+with Ada.Directories;
+with Ada.Hierarchical_File_Names;
 with Ada.Streams.Stream_IO;
 with Tabula.Calendar;
 with System.Debug;
@@ -21,6 +23,16 @@ package body Tabula.Debug is
 		if Name = null then
 			raise Program_Error with "debug log handler is not installed.";
 		end if;
+		-- create the directory
+		declare
+			Dir : constant String :=
+				Ada.Hierarchical_File_Names.Unchecked_Containing_Directory (Name.all);
+		begin
+			if Dir'Length /= 0 then
+				Ada.Directories.Create_Path (Dir);
+			end if;
+		end;
+		-- open
 		Ada.Streams.Stream_IO.Create (
 			File,
 			Ada.Streams.Stream_IO.Append_File,

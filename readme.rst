@@ -23,20 +23,19 @@ http://panathenaia.halfmoon.jp/vampire/ で稼働中の人狼亜種です。
     
     - \*.png
     
-  - temp/
-    
-    - .htaccess (deny from all)
-    
-  - users/
-    
-    - .htaccess (deny from all)
-    - +A/
-    
   - villages/
+  - _data/
     
-    - data/
+    - .htaccess (deny from all)
+    - cache/
+    - config/
+    - log/
+    - tmp/
+    - users/
       
-      - .htaccess (deny from all)
+      - +A/
+      
+    - villages/
 
 設置したら真っ先に"administrator"というユーザーを作ってください。
 それでログオンすると新しい村を作ることができます。

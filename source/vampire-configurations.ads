@@ -3,25 +3,25 @@ with Vampire.Forms;
 with Vampire.Villages;
 package Vampire.Configurations is
 	
-	Temporary_Directory : constant String := "temp";
+	Temporary_Directory : constant String := "_data/tmp";
 	
 	-- locking
-	Lock_Name : aliased constant String := "temp/lock-vampire";
+	Lock_Name : aliased constant String := "_data/tmp/lock-vampire";
 	
 	-- for debug
-	Debug_Log_File_Name : aliased constant String := "temp/debug-log.txt";
+	Debug_Log_File_Name : aliased constant String := "_data/log/debug-log.txt";
 	
 	-- for uses
-	Users_Directory : aliased constant String := "users";
+	Users_Directory : aliased constant String := "_data/users";
 	
 	-- temporary file for users
-	Users_Log_File_Name : aliased constant String := "temp/users-log";
+	Users_Log_File_Name : aliased constant String := "_data/log/users-log";
 	
 	-- for casts
 	Cast_File_Name : constant String := "cast";
 	
 	-- for villages
-	Villages_Data_Directory : aliased constant String := "villages/data";
+	Villages_Data_Directory : aliased constant String := "_data/villages";
 	Villages_HTML_Directory : aliased constant String := "villages";
 	Villages_Index_HTML_File_Name : aliased constant String :=
 		"villages/index.html";
@@ -29,9 +29,10 @@ package Vampire.Configurations is
 		"villages/wanted.rdf";
 	
 	-- temporary file for villages
-	Villages_Cache_File_Name : aliased constant String := "temp/cache-villages";
+	Villages_Cache_File_Name : aliased constant String :=
+		"_data/cache/cache-villages";
 	Villages_Blocking_Short_Term_File_Name : aliased constant String :=
-		"temp/disabled-short";
+		"_data/config/disabled-short";
 	
 	-- for rendering
 	Style_Sheet_File_Name : aliased constant String := "style.css";

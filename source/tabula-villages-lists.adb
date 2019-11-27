@@ -51,11 +51,25 @@ package body Tabula.Villages.Lists is
 	end Get_Type_Index;
 	
 	procedure Cache_Summaries (List : in Village_List) is
-		File : Ada.Streams.Stream_IO.File_Type :=
-			Ada.Streams.Stream_IO.Create (Name => List.Cache_File_Name.all);
 	begin
-		Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
-		Ada.Streams.Stream_IO.Close (File);
+		-- create the directory
+		declare
+			Dir : constant String :=
+				Ada.Hierarchical_File_Names.Unchecked_Containing_Directory (
+					List.Cache_File_Name.all);
+		begin
+			if Dir'Length /= 0 then
+				Ada.Directories.Create_Path (Dir);
+			end if;
+		end;
+		-- write the file
+		declare
+			File : Ada.Streams.Stream_IO.File_Type :=
+				Ada.Streams.Stream_IO.Create (Name => List.Cache_File_Name.all);
+		begin
+			Summary_Maps.Map'Write (Ada.Streams.Stream_IO.Stream (File), List.Map);
+			Ada.Streams.Stream_IO.Close (File);
+		end;
 	end Cache_Summaries;
 	
 	procedure Read_Summaries (
@@ -74,35 +88,37 @@ package body Tabula.Villages.Lists is
 					Ada.Streams.Stream_IO.Close (Cache_File);
 				end;
 			else
-				declare
-					Search : aliased Ada.Directories.Search_Type;
-				begin
-					Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
-					while Ada.Directories.More_Entries (Search) loop
-						declare
-							File : Ada.Directories.Directory_Entry_Type
-								renames Ada.Directories.Look_Next_Entry (Search);
-							Id : String renames Ada.Directories.Simple_Name (File);
-						begin
-							if Id (Id'First) in '0' .. '9' then
-								declare
-									Type_Code : constant String :=
-										Get_YAML_Type (Ada.Directories.Full_Name (File));
-									Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
-									Summary : Village_Summary
-										renames List.Registered_Types (Type_Index).Load_Summary (List, Id);
-								begin
-									Insert (List.Map, Id, Summary);
-								end;
-							end if;
-						end;
-						Ada.Directories.Skip_Next_Entry (Search);
-					end loop;
-					Ada.Directories.End_Search (Search);
-					if Update_Cache then
-						Cache_Summaries (List);
-					end if;
-				end;
+				if Ada.Directories.Exists (List.Data_Directory.all) then
+					declare
+						Search : aliased Ada.Directories.Search_Type;
+					begin
+						Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
+						while Ada.Directories.More_Entries (Search) loop
+							declare
+								File : Ada.Directories.Directory_Entry_Type
+									renames Ada.Directories.Look_Next_Entry (Search);
+								Id : String renames Ada.Directories.Simple_Name (File);
+							begin
+								if Id (Id'First) in '0' .. '9' then
+									declare
+										Type_Code : constant String :=
+											Get_YAML_Type (Ada.Directories.Full_Name (File));
+										Type_Index : constant Positive := Get_Type_Index (List, Type_Code);
+										Summary : Village_Summary
+											renames List.Registered_Types (Type_Index).Load_Summary (List, Id);
+									begin
+										Insert (List.Map, Id, Summary);
+									end;
+								end if;
+							end;
+							Ada.Directories.Skip_Next_Entry (Search);
+						end loop;
+						Ada.Directories.End_Search (Search);
+					end;
+				end if;
+				if Update_Cache then
+					Cache_Summaries (List);
+				end if;
 			end if;
 			List.Map_Read := True;
 		end if;
@@ -182,31 +198,33 @@ package body Tabula.Villages.Lists is
 	function New_Village_Id (List : Village_List) return Village_Id is
 		Next : Integer := 0;
 	begin
-		declare
-			Search : aliased Ada.Directories.Search_Type;
-		begin
-			Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
-			while Ada.Directories.More_Entries (Search) loop
-				declare
-					File : Ada.Directories.Directory_Entry_Type
-						renames Ada.Directories.Look_Next_Entry (Search);
-					File_Name : constant String :=
-						Ada.Directories.Simple_Name (File);
-				begin
+		if Ada.Directories.Exists (List.Data_Directory.all) then
+			declare
+				Search : aliased Ada.Directories.Search_Type;
+			begin
+				Ada.Directories.Start_Search (Search, List.Data_Directory.all, "????");
+				while Ada.Directories.More_Entries (Search) loop
 					declare
-						Num : constant Integer := Integer'Value (File_Name);
+						File : Ada.Directories.Directory_Entry_Type
+							renames Ada.Directories.Look_Next_Entry (Search);
+						File_Name : constant String :=
+							Ada.Directories.Simple_Name (File);
 					begin
-						if Num >= Next then
-							Next := Num + 1;
-						end if;
+						declare
+							Num : constant Integer := Integer'Value (File_Name);
+						begin
+							if Num >= Next then
+								Next := Num + 1;
+							end if;
+						end;
+					exception
+						when Constraint_Error => null;
 					end;
-				exception
-					when Constraint_Error => null;
-				end;
-				Ada.Directories.Skip_Next_Entry (Search);
-			end loop;
-			Ada.Directories.End_Search (Search);
-		end;
+					Ada.Directories.Skip_Next_Entry (Search);
+				end loop;
+				Ada.Directories.End_Search (Search);
+			end;
+		end if;
 		declare
 			function Image_04d is
 				new Ada.Formatting.Integer_Image (

@@ -39,6 +39,17 @@ package body Tabula.Users.Lists is
 	begin
 		Load_Users_Log (List);
 		Users_Log.Include (List.Log, Item, Now);
+		-- create the directory
+		declare
+			Dir : constant String :=
+				Ada.Hierarchical_File_Names.Unchecked_Containing_Directory (
+					List.Log_File_Name.all);
+		begin
+			if Dir'Length /= 0 then
+				Ada.Directories.Create_Path (Dir);
+			end if;
+		end;
+		-- write the file
 		declare
 			File : Ada.Streams.Stream_IO.File_Type :=
 				Ada.Streams.Stream_IO.Create (Name => List.Log_File_Name.all);
@@ -81,9 +92,6 @@ package body Tabula.Users.Lists is
 						raise Ada.IO_Exceptions.Name_Error;
 					end if;
 					if Id (Id'First) in 'A' .. 'Z' then
-						if not Ada.Directories.Exists (Upper_Directory) then
-							Ada.Directories.Create_Directory (Upper_Directory);
-						end if;
 						return Upper_Name;
 					else
 						return Lower_Name;
@@ -185,8 +193,20 @@ package body Tabula.Users.Lists is
 					Disallow_New_Village => False,
 					No_Log => False,
 					Renamed => Ada.Strings.Unbounded.Null_Unbounded_String);
+				Full_Name : constant String :=
+					User_Full_Name (List.Directory.all, Id);
 			begin
-				Save (User_Full_Name (List.Directory.all, Id), Info);
+				-- create the directory
+				declare
+					Dir : constant String :=
+						Ada.Hierarchical_File_Names.Unchecked_Containing_Directory (Full_Name);
+				begin
+					if Dir'Length /= 0 then
+						Ada.Directories.Create_Path (Dir);
+					end if;
+				end;
+				-- save the file
+				Save (Full_Name, Info);
 				Result := True;
 			end;
 		end if;
