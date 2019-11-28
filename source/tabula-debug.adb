@@ -64,6 +64,7 @@ package body Tabula.Debug is
 				Stream,
 				Source_Location & ": (" & Enclosing_Entity & ") " & S & Line_Break);
 		end;
+		Ada.Streams.Stream_IO.Flush (File);
 		return True;
 	end Put;
 	
