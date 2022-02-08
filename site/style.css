@@ -1,5 +1,7 @@
-﻿
-@import url(https://fonts.googleapis.com/css?family=Lovers+Quarrel);
+﻿@font-face {
+	font-family:'Special Elite';
+	src:local('Special Elite'), url('/vampire/fonts/Special Elite/SpecialElite.ttf') format('truetype');
+}
 
 body {
 	/* background-image:url(./image/background.png); */
@@ -14,7 +16,7 @@ body {
 h1 {
 	color:red;
 	text-align:center;
-	font-family:'Lovers Quarrel', cursive;
+	font-family:'Special Elite', cursive;
 	font-size:3em;
 	line-height:1.2;
 	margin-top:0.25em;
