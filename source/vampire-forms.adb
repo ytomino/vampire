@@ -79,13 +79,13 @@ package body Vampire.Forms is
 			if Relative'Length = 0
 				or else Ada.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
 			then
-				Web.Write_In_Attribute (Stream, Form.HTML_Version, "./");
+				Web.HTML.Write_In_Attribute (Stream, Form.HTML_Version, "./");
 			else
-				Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
+				Web.HTML.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
 			end if;
 		else
-			Web.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
-			Web.Write_Query_In_Attribute (
+			Web.HTML.Write_In_Attribute (Stream, Form.HTML_Version, Relative);
+			Web.HTML.Write_Query_In_Attribute (
 				Stream,
 				Form.HTML_Version,
 				Parameters); -- Parameters should contain ASCII only
@@ -262,7 +262,7 @@ package body Vampire.Forms is
 		Inputs : Web.Query_Strings)
 		return Boolean is
 	begin
-		return Web.Checkbox_Value (Web.Element (Inputs, "special"));
+		return Web.HTML.Checkbox_Value (Web.Element (Inputs, "special"));
 	end Get_Special;
 	
 	procedure Set_Rule (

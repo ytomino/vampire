@@ -17,12 +17,11 @@ package body Tabula.Villages.Lists is
 		Parser : YAML.Parser :=
 			YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 	begin
-		YAML.Parse_Stream_Start (Parser);
-		YAML.Parse_Document_Start (Parser);
+		YAML.Get_Document_Start (Parser);
 		declare
-			Parsing_Entry : YAML.Parsing_Entry_Type;
+			Parsing_Entry : aliased YAML.Parsing_Entry_Type;
 		begin
-			YAML.Parse (Parser, Parsing_Entry);
+			YAML.Get (Parser, Parsing_Entry);
 			declare
 				Event : YAML.Event renames YAML.Value (Parsing_Entry);
 			begin

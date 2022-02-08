@@ -19,12 +19,10 @@ begin
 			YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 	begin
 		YAML.Set_Unicode (Emitter, True);
-		YAML.Emit (Emitter, (Event_Type => YAML.Stream_Start, Encoding => YAML.UTF_8));
 		Village_IO.IO (
 			Serialization.YAML.Writing (Emitter'Access, Village_IO.Yaml_Type).Serializer,
 			Village);
-		YAML.Emit (Emitter, (Event_Type => YAML.Stream_End));
-		YAML.Flush (Emitter);
+		YAML.Finish (Emitter);
 	end;
 	Ada.Streams.Stream_IO.Close (File);
 	Ada.Directories.Replace_File (

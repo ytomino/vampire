@@ -2,7 +2,7 @@
 with Ada.Calendar;
 with Ada.Streams;
 with Ada.Strings.Unbounded;
-with Web;
+with Web.HTML;
 with Tabula.Casts;
 with Tabula.Villages;
 package Vampire.Forms is
@@ -15,7 +15,7 @@ package Vampire.Forms is
 	
 	-- HTML / template set
 	
-	function HTML_Version (Form : Root_Form_Type) return Web.HTML_Version is
+	function HTML_Version (Form : Root_Form_Type) return Web.HTML.HTML_Version is
 		abstract;
 	function Template_Set (Form : Root_Form_Type) return Template_Set_Type is
 		abstract;

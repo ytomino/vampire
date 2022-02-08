@@ -14,11 +14,10 @@ begin
 				Parser : aliased YAML.Parser :=
 					YAML.Streams.Create (Ada.Streams.Stream_IO.Stream (File));
 			begin
-				YAML.Parse_Stream_Start (Parser);
 				Cast_IO.IO (
 					Serialization.YAML.Reading (Parser'Access, Cast_IO.Yaml_Type).Serializer,
 					Result);
-				YAML.Parse_Stream_End (Parser);
+				YAML.Finish (Parser);
 			end;
 			Ada.Streams.Stream_IO.Close (File);
 		end;

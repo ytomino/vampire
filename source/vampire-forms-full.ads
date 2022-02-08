@@ -5,7 +5,8 @@ package Vampire.Forms.Full is
 	
 	function Create return Form_Type;
 	
-	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version;
+	overriding function HTML_Version (Form : Form_Type)
+		return Web.HTML.HTML_Version;
 	
 	overriding function Template_Set (Form : Form_Type) return Template_Set_Type;
 	

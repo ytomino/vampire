@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Web.HTML;
 with Vampire.Villages.Text;
 procedure Vampire.R3.Target_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
@@ -28,7 +29,7 @@ is
 				Current_Directory => ".",
 				Resource => Forms.Self);
 		elsif Tag = "parameters" then
-			Web.Write_Query_In_HTML (
+			Web.HTML.Write_Query_In_HTML (
 				Output,
 				Form.HTML_Version,
 				Form.Parameters_To_Village_Page (

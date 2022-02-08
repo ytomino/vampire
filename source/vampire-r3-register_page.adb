@@ -1,4 +1,5 @@
 -- The Village of Vampire by YT, このソースコードはNYSLです
+with Web.HTML;
 procedure Vampire.R3.Register_Page (
 	Output : not null access Ada.Streams.Root_Stream_Type'Class;
 	Form : in Forms.Root_Form_Type'Class;
@@ -37,7 +38,7 @@ is
 		elsif Tag = "id" then
 			Forms.Write_In_HTML (Output, Form, New_User_Id);
 		elsif Tag = "parameters" then
-			Web.Write_Query_In_HTML (
+			Web.HTML.Write_Query_In_HTML (
 				Output,
 				Form.HTML_Version,
 				Form.Parameters_To_Base_Page (

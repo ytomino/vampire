@@ -7,9 +7,10 @@ package body Vampire.Forms.Full is
 		return (null record);
 	end Create;
 	
-	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version is
+	overriding function HTML_Version (Form : Form_Type)
+		return Web.HTML.HTML_Version is
 	begin
-		return Web.XHTML;
+		return Web.HTML.XHTML;
 	end HTML_Version;
 	
 	overriding function Template_Set (Form : Form_Type) return Template_Set_Type is
@@ -65,7 +66,7 @@ package body Vampire.Forms.Full is
 		Item : in String;
 		Pre : in Boolean := False) is
 	begin
-		Web.Write_In_HTML (Stream, Web.XHTML, Item, Pre);
+		Web.HTML.Write_In_HTML (Stream, Web.HTML.XHTML, Item, Pre);
 	end Write_In_HTML;
 	
 	overriding procedure Write_In_Attribute (
@@ -73,7 +74,7 @@ package body Vampire.Forms.Full is
 		Form : in Form_Type;
 		Item : in String) is
 	begin
-		Web.Write_In_Attribute (Stream, Web.XHTML, Item);
+		Web.HTML.Write_In_Attribute (Stream, Web.HTML.XHTML, Item);
 	end Write_In_Attribute;
 	
 	overriding function Paging (Form : Form_Type) return Boolean is

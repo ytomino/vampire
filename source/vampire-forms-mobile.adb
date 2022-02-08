@@ -21,9 +21,10 @@ package body Vampire.Forms.Mobile is
 			Speeches_Per_Page => Speeches_Per_Page);
 	end Create;
 	
-	overriding function HTML_Version (Form : Form_Type) return Web.HTML_Version is
+	overriding function HTML_Version (Form : Form_Type)
+		return Web.HTML.HTML_Version is
 	begin
-		return Web.HTML;
+		return Web.HTML.HTML;
 	end HTML_Version;
 	
 	overriding function Template_Set (Form : Form_Type) return Template_Set_Type is
@@ -102,9 +103,9 @@ package body Vampire.Forms.Mobile is
 				Ada.Environment_Encoding.Converter (Form.Encoder.all),
 				Stream);
 	begin
-		Web.Write_In_HTML (
+		Web.HTML.Write_In_HTML (
 			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
-			Web.HTML,
+			Web.HTML.HTML,
 			Item,
 			Pre);
 		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
@@ -120,9 +121,9 @@ package body Vampire.Forms.Mobile is
 				Ada.Environment_Encoding.Converter (Form.Encoder.all),
 				Stream);
 	begin
-		Web.Write_In_Attribute (
+		Web.HTML.Write_In_Attribute (
 			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
-			Web.HTML,
+			Web.HTML.HTML,
 			Item);
 		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_Attribute;
