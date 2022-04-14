@@ -9,19 +9,19 @@ else
  CGISUFFIX=.cgi
 endif
 
-BUILDDIR=$(TARGET).build
-
 ifneq ($(TARGET),$(HOST))
  GNATPREFIX=$(TARGET)-
- BUILD=release
 else
  GNATPREFIX=
- BUILD=debug
 endif
 
+BUILD=release
+
 ifeq ($(BUILD),debug)
+ BUILDDIR=$(TARGET).build/debug
  LINK=
 else
+ BUILDDIR=$(TARGET).build
  LINK=gc
 endif
 
@@ -88,31 +88,37 @@ TESTDIR?=$(HOME)/Documents/Sites/local/vampire
 .PHONY: all clean test-vampire install-test xfind xfindall
 
 all: site/vampire$(CGISUFFIX)
-	$(foreach I,$(filter-out $(BUILDDIR)/.stamp,$(wildcard *.build/.stamp)),rm $(I))
+	$(foreach I, \
+		$(filter-out $(BUILDDIR)/.stamp, \
+			$(wildcard *.build/.stamp) $(wildcard *.build/debug/.stamp)), \
+		rm $(I);)
 
 site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
-	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o "$(abspath $@)" \
+		$(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 site/unlock$(CGISUFFIX): source/vampire-unlock.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
-	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o "$(abspath $@)" \
+		$(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 site/dump-users-log$(EXESUFFIX): source/vampire-dump_users_log.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
 	$(GNATPREFIX)gnatmake -c $< $(MARGS) $(GARGS) -cargs $(CARGS)
 	cd $(BUILDDIR) && $(GNATPREFIX)gnatbind $(basename $(notdir $<)).ali $(GARGS) $(BARGS)
-	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o ../$@ $(basename $(notdir $<)).ali $(GARGS) $(LARGS)
+	cd $(BUILDDIR) && $(GNATPREFIX)gnatlink -o "$(abspath $@)" \
+		$(basename $(notdir $<)).ali $(GARGS) $(LARGS)
 
 $(BUILDDIR)/.stamp: | $(BUILDDIR)
 	touch $@
 
 $(BUILDDIR):
-	mkdir $@
+	mkdir -p $@
 
 clean:
-	-rm -r *.build
+	-rm -r $(BUILDDIR)
 
 DEBUGGER=gdb
 export QUERY_STRING=
