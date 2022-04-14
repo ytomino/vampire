@@ -2,27 +2,27 @@ HOST:=$(shell gcc -dumpmachine)
 TARGET=$(HOST)
 
 ifneq (,$(findstring mingw,$(TARGET)))
-EXESUFFIX=.exe
-CGISUFFIX=.exe
+ EXESUFFIX=.exe
+ CGISUFFIX=.exe
 else
-EXESUFFIX=
-CGISUFFIX=.cgi
+ EXESUFFIX=
+ CGISUFFIX=.cgi
 endif
 
 BUILDDIR=$(TARGET).build
 
 ifneq ($(TARGET),$(HOST))
-GNATPREFIX=$(TARGET)-
-BUILD=release
+ GNATPREFIX=$(TARGET)-
+ BUILD=release
 else
-GNATPREFIX=
-BUILD=debug
+ GNATPREFIX=
+ BUILD=debug
 endif
 
 ifeq ($(BUILD),debug)
-LINK=
+ LINK=
 else
-LINK=gc
+ LINK=gc
 endif
 
 GARGS:=
@@ -32,55 +32,55 @@ BARGS:=-x
 LARGS:=
 
 ifeq ($(TARGET),$(HOST))
-LARGS:=$(LARGS) $(shell pkg-config --libs-only-L yaml-0.1)
+ LARGS:=$(LARGS) $(shell pkg-config --libs-only-L yaml-0.1)
 endif
 ifneq ($(findstring darwin,$(TARGET)),)
-LARGS:=$(LARGS) -licucore
+ LARGS:=$(LARGS) -licucore
 else ifneq ($(findstring freebsd,$(TARGET)),)
-LARGS:=$(LARGS) -liconv -lm -lgcc_eh -lpthread
+ LARGS:=$(LARGS) -liconv -lm -lgcc_eh -lpthread
 endif
 
 ifeq ($(LINK),gc)
-ifneq ($(findstring darwin,$(TARGET)),)
-LARGS:=$(LARGS) -dead_strip
-ifneq ($(WHYLIVE),)
-LARGS:=$(LARGS) -Wl,-why_live,$(WHYLIVE)
-endif
-else
-CARGS:=$(CARGS) -ffunction-sections -fdata-sections
-LARGS:=$(LARGS) -Wl,--gc-sections
-endif
+ ifneq ($(findstring darwin,$(TARGET)),)
+  LARGS:=$(LARGS) -dead_strip
+  ifneq ($(WHYLIVE),)
+   LARGS:=$(LARGS) -Wl,-why_live,$(WHYLIVE)
+  endif
+ else
+  CARGS:=$(CARGS) -ffunction-sections -fdata-sections
+  LARGS:=$(LARGS) -Wl,--gc-sections
+ endif
 else ifeq ($(LINK),lto)
-CARGS:=$(CARGS) -flto
-LARGS:=$(LARGS) -flto -Wl,--gc-sections
-ifneq ($(filter -lgcc_eh,$(LARGS)),)
-LARGS:=$(filter-out -lgcc_eh,$(LARGS)) -static-libgcc
-endif
+ CARGS:=$(CARGS) -flto
+ LARGS:=$(LARGS) -flto -Wl,--gc-sections
+ ifneq ($(filter -lgcc_eh,$(LARGS)),)
+  LARGS:=$(filter-out -lgcc_eh,$(LARGS)) -static-libgcc
+ endif
 endif
 
 ifeq ($(BUILD),debug)
-CARGS:=$(CARGS) -ggdb -Og -fno-guess-branch-probability -gnata
-BARGS:=$(BARGS) -E
-LARGS:=$(LARGS) -ggdb -Og
+ CARGS:=$(CARGS) -ggdb -Og -fno-guess-branch-probability -gnata
+ BARGS:=$(BARGS) -E
+ LARGS:=$(LARGS) -ggdb -Og
 else
-CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn2
-BARGS:=$(BARGS) -E
-LARGS:=$(LARGS) -ggdb1 -Os
-ifneq ($(findstring freebsd,$(TARGET))$(findstring linux-gnu,$(TARGET)),)
-LARGS:=$(LARGS) -Wl,--compress-debug-sections=zlib
-endif
+ CARGS:=$(CARGS) -ggdb1 -Os -gnatB -gnatVn -gnatn2
+ BARGS:=$(BARGS) -E
+ LARGS:=$(LARGS) -ggdb1 -Os
+ ifneq ($(findstring freebsd,$(TARGET))$(findstring linux-gnu,$(TARGET)),)
+  LARGS:=$(LARGS) -Wl,--compress-debug-sections=zlib
+ endif
 endif
 
 ifneq ($(DRAKE_RTSROOT),)
-VERSION:=$(shell gcc -dumpversion)
-ifneq ($(and $(filter debug,$(BUILD)),$(wildcard $(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug)),)
-DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug
-else
-DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
-endif
+ VERSION:=$(shell gcc -dumpversion)
+ ifneq ($(and $(filter debug,$(BUILD)),$(wildcard $(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug)),)
+  DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)/debug
+ else
+  DRAKE_RTSDIR=$(DRAKE_RTSROOT)/$(TARGET)/$(VERSION)
+ endif
 endif
 ifneq ($(DRAKE_RTSDIR),)
-GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
+ GARGS:=$(GARGS) --RTS=$(DRAKE_RTSDIR)
 endif
 
 TESTDIR?=$(HOME)/Documents/Sites/local/vampire
