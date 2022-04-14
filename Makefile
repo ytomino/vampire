@@ -18,10 +18,10 @@ endif
 BUILD=release
 
 ifeq ($(BUILD),debug)
- BUILDDIR=$(TARGET).build/debug
+ BUILDDIR=$(TARGET).noindex/debug
  LINK=
 else
- BUILDDIR=$(TARGET).build
+ BUILDDIR=$(TARGET).noindex
  LINK=gc
 endif
 
@@ -90,7 +90,7 @@ TESTDIR?=$(HOME)/Documents/Sites/local/vampire
 all: site/vampire$(CGISUFFIX)
 	$(foreach I, \
 		$(filter-out $(BUILDDIR)/.stamp, \
-			$(wildcard *.build/.stamp) $(wildcard *.build/debug/.stamp)), \
+			$(wildcard *.noindex/.stamp) $(wildcard *.noindex/debug/.stamp)), \
 		rm $(I);)
 
 site/vampire$(CGISUFFIX): source/vampire-main.adb $(wildcard source/*.ad?) $(BUILDDIR)/.stamp
