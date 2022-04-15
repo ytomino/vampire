@@ -26,7 +26,7 @@ else
 endif
 
 CFLAGS=-pipe
-CFLAGS_ADA=-gnatef -gnatwaIFK $(addprefix -gnatec=,$(wildcard *.adc))
+CFLAGS_ADA=-gnatef -gnatwaIFK
 LDFLAGS=
 
 ifeq ($(TARGET),$(HOST))
@@ -80,7 +80,7 @@ ifneq ($(DRAKE_RTSROOT),)
 endif
 
 GARGS=$(addprefix --RTS=,$(DRAKE_RTSDIR))
-MARGS=-C -D $(BUILDDIR) -gnatA \
+MARGS=-C -D $(BUILDDIR) -gnatA $(addprefix -gnatec=,$(wildcard *.adc)) \
       $(addprefix -I, \
         $(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET)))
 CARGS=$(CFLAGS) $(CFLAGS_ADA)
