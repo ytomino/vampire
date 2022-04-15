@@ -27,7 +27,7 @@ endif
 
 GARGS:=
 MARGS:=-C -D $(BUILDDIR) $(addprefix -I,$(wildcard lib/*/source) $(wildcard lib/*/source/$(TARGET))) -gnatA
-CARGS:=-pipe -gnatef -gnatwaIFK $(addprefix -gnatec=,$(abspath $(wildcard *.adc)))
+CARGS:=-pipe -gnatef -gnatwaIFK $(addprefix -gnatec=,$(wildcard *.adc))
 BARGS:=-x
 LARGS:=
 
