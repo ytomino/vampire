@@ -1,9 +1,9 @@
 [submodule "lib/openssl-ada"]
 	path = lib/openssl-ada
-	url = git://github.com/ytomino/openssl-ada.git
+	url = git@github.com:ytomino/openssl-ada.git
 [submodule "lib/yaml-ada"]
 	path = lib/yaml-ada
-	url = git://github.com/ytomino/yaml-ada.git
+	url = git@github.com:ytomino/yaml-ada.git
 [submodule "lib/web-ada"]
 	path = lib/web-ada
-	url = git://github.com/ytomino/web-ada.git
+	url = git@github.com:ytomino/web-ada.git
