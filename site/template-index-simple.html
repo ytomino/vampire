@@ -5,17 +5,17 @@
 <title>The Village of Vampire</title></head>
 <body><h1>The Village of Vampire</h1><hr>
 <?userpanel>
-<?logoff><form method="POST" ?action_page>
+<?logout><form method="POST" ?action_page>
 ID<br><input name="id" type="text"><br>
 PASSWORD<br><input name="password" type="password"><br>
 <input type="submit" value="参加">
-<input type="hidden" name="cmd" value="logon">
-</form></?logoff>
-<?logon><form method="POST" ?action_page>
+<input type="hidden" name="cmd" value="login">
+</form></?logout>
+<?login><form method="POST" ?action_page>
 <?notadmin>【<a ?href_user><?id>ID</?id></a>】</?notadmin>
 <?administrator>【<?id>ID</?id>】</?administrator><br>
 <input type="submit" value="退出">
-<input type="hidden" name="cmd" value="logoff">
+<input type="hidden" name="cmd" value="logout">
 </form>
 <?administrator>
 <form method="POST" ?action_page>
@@ -34,7 +34,7 @@ PASSWORD<br><input name="password" type="password"><br>
 ログ再生成<br>
 <input type="submit" value="再生成">
 <input type="hidden" name="cmd" value="remakelog">
-</form></?administrator></?logon>
+</form></?administrator></?login>
 </?userpanel><hr>
 <?activelist><?item><?id>村番号</?id> <a ?href_village><?name>村名</?name></a><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?people>人数</?people> <?day>日</?day><br></?item></?activelist>

@@ -102,8 +102,8 @@ package body Vampire.R3 is
 		User_Password : in String)
 	is
 		Extract : constant array (Boolean) of access constant String := (
-			new String'("logoff"),
-			new String'("logon"));
+			new String'("logout"),
+			new String'("login"));
 		procedure Handle (
 			Output : not null access Ada.Streams.Root_Stream_Type'Class;
 			Tag : in String;

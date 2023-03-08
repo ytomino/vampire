@@ -35,7 +35,7 @@
 		<div class="bar">
 			<table>
 				<?userpanel>
-					<?logoff>
+					<?logout>
 						<tr><td>
 							<div class="userpanel">
 								<form method="post" class="inner">
@@ -44,12 +44,12 @@
 										<tr><td>PASSWORD</td><td><input name="password" type="password" /></td></tr>
 									</table>
 									<div class="right"><input class="button" type="submit" value="参加" /></div>
-									<input name="cmd" type="hidden" value="logon" />
+									<input name="cmd" type="hidden" value="login" />
 								</form>
 							</div>
 						</td></tr>
-					</?logoff>
-					<?logon>
+					</?logout>
+					<?login>
 						<tr><td>
 							<div class="userpanel">
 								<form method="post" class="inner">
@@ -57,11 +57,11 @@
 										<tr><td>【<?id>ID</?id>】</td></tr>
 									</table>
 									<div class="right"><input class="button" type="submit" value="退出" /></div>
-									<input name="cmd" type="hidden" value="logoff" />
+									<input name="cmd" type="hidden" value="logout" />
 								</form>
 							</div>
 						</td></tr>
-					</?logon>
+					</?login>
 				</?userpanel>
 				<tr><td>
 					<table class="daylist" cellspacing="0">

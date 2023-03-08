@@ -130,8 +130,8 @@ begin
 		then
 			Web.Header_503 (Output);
 			Web.Header_Break (Output);
-		elsif Cmd = "logon" then
-			Logon : declare
+		elsif Cmd = "login" then
+			Login : declare
 				New_User_Id : constant String := Form.Get_New_User_Id (Inputs);
 				New_User_Password : constant String := Form.Get_New_User_Password (Inputs);
 				User_State : Users.Lists.User_State;
@@ -143,7 +143,7 @@ begin
 					Now => Now,
 					Info => User_Info, State => User_State);
 				case User_State is
-					when Users.Lists.Log_Off =>
+					when Users.Lists.Logout =>
 						Web.Header_Content_Type (Output, Web.Text_HTML);
 						Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 						Web.Header_Break (Output);
@@ -213,7 +213,7 @@ begin
 							Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
 							Base_Page => Base_Page,
 							Village_Id => Village_Id,
-							Message => "ログオンしました。",
+							Message => "ログインしました。",
 							User_Id => New_User_Id,
 							User_Password => New_User_Password);
 						Users.Lists.Update (User_List,
@@ -223,9 +223,9 @@ begin
 							Now => Now,
 							Info => User_Info);
 				end case;
-			end Logon;
-		elsif Cmd = "logoff" then
-			Logoff : declare
+			end Login;
+		elsif Cmd = "logout" then
+			Logout : declare
 				User_State : Users.Lists.User_State;
 				User_Info : Users.User_Info;
 				Dest_Page : Forms.Base_Page;
@@ -247,7 +247,7 @@ begin
 						null;
 				end case;
 				Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => "");
-					-- logoff
+					-- logout
 				if Base_Page = Forms.User_Page then
 					Dest_Page := Forms.Index_Page;
 				else
@@ -262,10 +262,10 @@ begin
 					Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
 					Base_Page => Dest_Page,
 					Village_Id => Village_Id,
-					Message => "ログオフしました。",
+					Message => "ログアウトしました。",
 					User_Id => "",
 					User_Password => "");
-			end Logoff;
+			end Logout;
 		elsif Cmd = "register" then
 			Register : declare
 				New_User_Id : constant String := Form.Get_New_User_Id (Inputs);
@@ -339,7 +339,7 @@ begin
 					Info => User_Info, State => User_State);
 				if User_State = Users.Lists.Invalid then
 					Forms.Set_User (Form, Cookie, New_User_Id => "", New_User_Password => "");
-						-- logoff
+						-- logout
 					Web.Header_Content_Type (Output, Web.Text_HTML);
 					Web.Header_Cookie (Output, Cookie, Now + Configurations.Cookie_Duration);
 					Web.Header_Break (Output);
@@ -490,7 +490,7 @@ begin
 									Form,
 									Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
 									Base_Page => Base_Page,
-									Message => "ログオンしていないと村は作成できません。",
+									Message => "ログインしていないと村は作成できません。",
 									User_Id => "",
 									User_Password => "");
 						end case;
@@ -546,7 +546,7 @@ begin
 									Form,
 									Configurations.Template_Names (Form.Template_Set).Template_Message_File_Name.all,
 									Base_Page => Forms.Index_Page,
-									Message => "ログオンしないとユーザーページは表示できません。",
+									Message => "ログインしないとユーザーページは表示できません。",
 									User_Id => "",
 									User_Password => "");
 							end if;
@@ -707,7 +707,7 @@ begin
 						elsif Village.State = Tabula.Villages.Closed then
 							Message_Page ("終了した村にコマンドが送られました。");
 						elsif User_State /= Users.Lists.Valid then
-							Message_Page ("正常にログオンしてください。");
+							Message_Page ("正常にログインしてください。");
 						else
 							Commands : declare
 								Player : Tabula.Villages.Person_Index'Base :=

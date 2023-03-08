@@ -15,7 +15,7 @@ package Tabula.Users.Lists is
 	
 	function Exists (List : User_List; Id : String) return Boolean;
 	
-	type User_State is (Unknown, Invalid, Log_Off, Valid);
+	type User_State is (Unknown, Invalid, Logout, Valid);
 	
 	procedure Query (
 		List : in out User_List;
