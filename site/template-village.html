@@ -78,7 +78,7 @@
 								<tr>
 									<td class="name">
 										<label ?for_cn>
-											<input ?id_cn type="checkbox" checked="checked" ?onclick />
+											<input type="checkbox" checked="checked" ?id_cn ?onclick />
 											<?name>名前</?name>
 										</label>
 									</td>
@@ -236,7 +236,7 @@
 						<?speech>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="speech" rows="3"><?edit></?edit></textarea></td>
+									<td class="input"><textarea name="text" class="speech" rows="3" ?id_bottom><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>20</?count></div></?rest><input type="submit" value="発言" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="speech" />
@@ -245,7 +245,7 @@
 						<?ghost>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="ghost" rows="3"><?edit></?edit></textarea></td>
+									<td class="input"><textarea name="text" class="ghost" rows="3" ?id_bottom><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="呻く" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="ghost" />
@@ -254,7 +254,7 @@
 						<?monologue>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="monologue" rows="3"><?edit></?edit></textarea></td>
+									<td class="input"><textarea name="text" class="monologue" rows="3" ?id_bottom><?edit></?edit></textarea></td>
 									<td class="button"><?rest><div class="center"><?count>10</?count></div></?rest><input type="submit" value="独白" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="monologue" />
@@ -266,7 +266,7 @@
 						<?vampire>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="note" rows="3"><?note></?note></textarea></td>
+									<td class="input"><textarea name="text" class="note" rows="3" ?id_bottom><?note></?note></textarea></td>
 									<td class="button"><input type="submit" value="記す" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="note" />
@@ -275,7 +275,7 @@
 						<?dying>
 							<form method="POST" class="inner">
 								<table><tr>
-									<td class="input"><textarea ?id_bottom name="text" class="dying" rows="3"><?note></?note></textarea></td>
+									<td class="input"><textarea name="text" class="dying" rows="3" ?id_bottom><?note></?note></textarea></td>
 									<td class="button"><input type="submit" value="記す" class="say" /></td>
 								</tr></table>
 								<input type="hidden" name="cmd" value="note" />
