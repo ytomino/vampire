@@ -42,10 +42,10 @@ begin
 			Contents : in Web.Producers.Template) is
 		begin
 			if Tag = "action_page" then
-				Forms.Write_Attribute_Name (Output, "action");
 				Forms.Write_Link (
 					Output,
 					Form,
+					Name => "action",
 					Current_Directory => ".",
 					Resource => Forms.Self,
 					Parameters =>
@@ -106,10 +106,10 @@ begin
 					Web.Producers.Produce(Output, Contents, Handler => Handle'Access); -- rec
 				end if;
 			elsif Tag = "href_index" then
-				Forms.Write_Attribute_Name (Output, "href");
 				Forms.Write_Link (
 					Output,
 					Form,
+					Name => "href",
 					Current_Directory => ".",
 					Resource => Forms.Self,
 					Parameters =>

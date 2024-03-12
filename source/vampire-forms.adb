@@ -44,27 +44,23 @@ package body Vampire.Forms is
 		end case;
 	end Parameters_To_Base_Page;
 	
-	procedure Write_Attribute_Name (
+	procedure Write_Attribute_Open (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Name : in String) is
 	begin
-		String'Write (Stream, Name);
-		Character'Write (Stream, '=');
-	end Write_Attribute_Name;
-	
-	procedure Write_Attribute_Open (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class) is
-	begin
-		Character'Write (Stream, '"');
+		Web.HTML.Write_Begin_Attribute (Stream, Name);
 	end Write_Attribute_Open;
 	
 	procedure Write_Attribute_Close (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class)
-		renames Write_Attribute_Open;
+		Stream : not null access Ada.Streams.Root_Stream_Type'Class) is
+	begin
+		Web.HTML.Write_End_Attribute (Stream);
+	end Write_Attribute_Close;
 	
 	procedure Write_Link (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
+		Name : in String;
 		Current_Directory : in String;
 		Resource : in String;
 		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map)
@@ -74,7 +70,7 @@ package body Vampire.Forms is
 				Name => Resource,
 				From => Current_Directory);
 	begin
-		Write_Attribute_Open (Stream);
+		Write_Attribute_Open (Stream, Name);
 		if Parameters.Is_Empty then
 			if Relative'Length = 0
 				or else Ada.Hierarchical_File_Names.Is_Current_Directory_Name (Relative)
@@ -96,6 +92,7 @@ package body Vampire.Forms is
 	procedure Write_Link_To_Village_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
+		Name : in String;
 		Current_Directory : in String;
 		HTML_Directory : in String;
 		Log : in Boolean;
@@ -111,6 +108,7 @@ package body Vampire.Forms is
 			Write_Link (
 				Stream,
 				Form,
+				Name => Name,
 				Current_Directory => Current_Directory,
 				Resource =>
 					Ada.Hierarchical_File_Names.Compose (
@@ -121,6 +119,7 @@ package body Vampire.Forms is
 			Write_Link (
 				Stream,
 				Form,
+				Name => Name,
 				Current_Directory => Current_Directory,
 				Resource => Self,
 				Parameters =>

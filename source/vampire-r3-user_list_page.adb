@@ -17,10 +17,10 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "href_index" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => ".",
 				Resource => Forms.Self,
 				Parameters =>
@@ -28,10 +28,10 @@ is
 						User_Id => User_Id,
 						User_Password => User_Password));
 		elsif Tag = "href_logindex" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => ".",
 				Resource =>
 					Ada.Hierarchical_File_Names.Compose (

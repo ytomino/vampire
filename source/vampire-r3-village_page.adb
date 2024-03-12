@@ -103,8 +103,7 @@ is
 												end;
 											elsif Tag = "select" then
 												String'Write (Output, "<select ");
-												Forms.Write_Attribute_Name (Output, "name");
-												Forms.Write_Attribute_Open (Output);
+												Forms.Write_Attribute_Open (Output, "name");
 												Forms.Write_In_Attribute (Output, Form, Item.Name);
 												Forms.Write_Attribute_Close (Output);
 												Character'Write (Output, '>');
@@ -116,14 +115,12 @@ is
 														Unrecommended : in Boolean) is
 													begin
 														String'Write (Output, "<option ");
-														Forms.Write_Attribute_Name (Output, "value");
-														Forms.Write_Attribute_Open (Output);
+														Forms.Write_Attribute_Open (Output, "value");
 														Forms.Write_In_Attribute (Output, Form, Value);
 														Forms.Write_Attribute_Close (Output);
 														Character'Write (Output, ' ');
 														if Selected then
-															Forms.Write_Attribute_Name (Output, "selected");
-															Forms.Write_Attribute_Open (Output);
+															Forms.Write_Attribute_Open (Output, "selected");
 															Forms.Write_In_Attribute (Output, Form, "selected");
 															Forms.Write_Attribute_Close (Output);
 														end if;
@@ -182,10 +179,10 @@ is
 							Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 						end if;
 					elsif Tag = "action_page" then
-						Forms.Write_Attribute_Name (Output, "action");
 						Forms.Write_Link (
 							Output,
 							Form,
+							Name => "action",
 							Current_Directory => Current_Directory,
 							Resource => Forms.Self,
 							Parameters =>
@@ -228,10 +225,10 @@ is
 				String'Write (
 					Output,
 					"<form method=""POST"" ");
-				Forms.Write_Attribute_Name (Output, "action");
 				Forms.Write_Link (
 					Output,
 					Form,
+					Name => "action",
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
 					Parameters =>
@@ -267,14 +264,12 @@ is
 				end case;
 				if Including then
 					String'Write(Output, "<option ");
-					Forms.Write_Attribute_Name (Output, "value");
-					Forms.Write_Attribute_Open (Output);
+					Forms.Write_Attribute_Open (Output, "value");
 					Forms.Write_In_Attribute (Output, Form, Image (Position));
 					Forms.Write_Attribute_Close (Output);
 					Character'Write (Output, ' ');
 					if Current = Position then
-						Forms.Write_Attribute_Name (Output, "selected");
-						Forms.Write_Attribute_Open (Output);
+						Forms.Write_Attribute_Open (Output, "selected");
 						Forms.Write_In_Attribute (Output, Form, "selected");
 						Forms.Write_Attribute_Close (Output);
 					end if;
@@ -292,8 +287,7 @@ is
 		end loop;
 		String'Write (Output, "<option value=""-1"" ");
 		if Current < 0 then
-			Forms.Write_Attribute_Name (Output, "selected");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "selected");
 			Forms.Write_In_Attribute (Output, Form, "selected");
 			Forms.Write_Attribute_Close (Output);
 		end if;
@@ -315,8 +309,7 @@ is
 						end case;
 						String'Write(Output, "<input name=""special"" type=""checkbox"" ");
 						if Current_Special then
-							Forms.Write_Attribute_Name (Output, "checked");
-							Forms.Write_Attribute_Open (Output);
+							Forms.Write_Attribute_Open (Output, "checked");
 							Forms.Write_In_Attribute (Output, Form, "checked");
 							Forms.Write_Attribute_Close (Output);
 						end if;
@@ -339,8 +332,7 @@ is
 				null;
 		end case;
 		String'Write (Output, "<input type=""submit"" ");
-		Forms.Write_Attribute_Name (Output, "value");
-		Forms.Write_Attribute_Open (Output);
+		Forms.Write_Attribute_Open (Output, "value");
 		Forms.Write_In_Attribute (Output, Form, Button);
 		Forms.Write_Attribute_Close (Output);
 		String'Write (Output, "/>");
@@ -361,8 +353,7 @@ is
 				end if;
 		end case;
 		String'Write (Output, "<input type=""hidden"" name=""cmd"" ");
-		Forms.Write_Attribute_Name (Output, "value");
-		Forms.Write_Attribute_Open (Output);
+		Forms.Write_Attribute_Open (Output, "value");
 		case Kind is
 			when Vampire.Villages.Inhabitant =>
 				Forms.Write_In_Attribute (Output, Form, "vote");
@@ -498,10 +489,10 @@ is
 				Forms.Write_In_HTML (Output, Form, "全");
 			else
 				String'Write (Output, "<hr><div><a ");
-				Forms.Write_Attribute_Name (Output, "href");
 				Forms.Write_Link (
 					Output,
 					Form,
+					Name => "href",
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
 					Parameters =>
@@ -535,10 +526,10 @@ is
 					else
 						Forms.Write_In_HTML (Output, Form, "|");
 						String'Write (Output, "<a ");
-						Forms.Write_Attribute_Name (Output, "href");
 						Forms.Write_Link (
 							Output,
 							Form,
+							Name => "href",
 							Current_Directory => Current_Directory,
 							Resource => Forms.Self,
 							Parameters =>
@@ -567,10 +558,10 @@ is
 			else
 				Forms.Write_In_HTML (Output, Form, "|");
 				String'Write (Output, "<a ");
-				Forms.Write_Attribute_Name (Output, "href");
 				Forms.Write_Link (
 					Output,
 					Form,
+					Name => "href",
 					Current_Directory => Current_Directory,
 					Resource => Forms.Self,
 					Parameters =>
@@ -615,10 +606,10 @@ is
 					User_Password => User_Password);
 			end if;
 		elsif Tag = "href_stylesheet" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => Current_Directory,
 				Resource => Style_Sheet);
 		elsif Tag = "villagename" then
@@ -628,10 +619,10 @@ is
 				Village.Name.Constant_Reference & ' '
 					& Day_Name (Day, Village.Today, Village.State));
 		elsif Tag = "background" then
-			Forms.Write_Attribute_Name (Output, "background");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "background",
 				Current_Directory => Current_Directory,
 				Resource => Background);
 		elsif Tag = "styles" then
@@ -719,10 +710,10 @@ is
 						elsif Tag = "day" then
 							Forms.Write_In_HTML (Output, Form, Day_Name (I, Village.Today, Village.State));
 						elsif Tag = "href_day" then
-							Forms.Write_Attribute_Name (Output, "href");
 							Forms.Write_Link_To_Village_Page (
 								Output,
 								Form,
+								Name => "href",
 								Current_Directory => Current_Directory,
 								HTML_Directory => HTML_Directory,
 								Log => Log,
@@ -765,18 +756,15 @@ is
 												Contents : in Web.Producers.Template) is
 											begin
 												if Tag = "for_cn" then
-													Forms.Write_Attribute_Name (Output, "for");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "for");
 													Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
 													Forms.Write_Attribute_Close (Output);
 												elsif Tag = "id_cn" then
-													Forms.Write_Attribute_Name (Output, "id");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "id");
 													Forms.Write_In_Attribute (Output, Form, 'c' & Image (I));
 													Forms.Write_Attribute_Close (Output);
 												elsif Tag = "onclick" then
-													Forms.Write_Attribute_Name (Output, "onclick");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "onclick");
 													Forms.Write_In_Attribute (Output, Form, "javascript:sync(" & Image (I) & ")");
 													Forms.Write_Attribute_Close (Output);
 												elsif Tag = "name" then
@@ -802,8 +790,7 @@ is
 														Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 													end if;
 												elsif Tag = "value_target" then
-													Forms.Write_Attribute_Name (Output, "value");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "value");
 													Forms.Write_In_Attribute (Output, Form, Image (I));
 													Forms.Write_Attribute_Close (Output);
 												else
@@ -897,10 +884,10 @@ is
 				end;
 			end if;
 		elsif Tag = "href_index" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => Current_Directory,
 				Resource => Forms.Self,
 				Parameters =>
@@ -916,10 +903,10 @@ is
 						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "href_all" then
-							Forms.Write_Attribute_Name (Output, "href");
 							Forms.Write_Link (
 								Output,
 								Form,
+								Name => "href",
 								Current_Directory => Current_Directory,
 								Resource => Forms.Self,
 								Parameters =>
@@ -963,10 +950,10 @@ is
 												Contents : in Web.Producers.Template) is
 											begin
 												if Tag = "src_roleimg" then
-													Forms.Write_Attribute_Name (Output, "src");
 													Forms.Write_Link (
 														Output,
 														Form,
+														Name => "src",
 														Current_Directory => Current_Directory,
 														Resource =>
 															Ada.Hierarchical_File_Names.Compose (
@@ -1602,8 +1589,7 @@ is
 						begin
 							if Tag = "id_bottom" then
 								if Bottom then
-									Forms.Write_Attribute_Name (Output, "id");
-									Forms.Write_Attribute_Open (Output);
+									Forms.Write_Attribute_Open (Output, "id");
 									Forms.Write_In_Attribute (Output, Form, "bottom");
 									Forms.Write_Attribute_Close (Output);
 									Bottom := False;
@@ -1779,10 +1765,10 @@ is
 								pragma Assert (
 									Village.People.Constant_Reference (Player_Index).Records.Constant_Reference (Village.Today).State /=
 									Died);
-								Forms.Write_Attribute_Name (Output, "src");
 								Forms.Write_Link (
 									Output,
 									Form,
+									Name => "src",
 									Current_Directory => Current_Directory,
 									Resource =>
 										Ada.Hierarchical_File_Names.Compose (
@@ -1937,10 +1923,11 @@ is
 									if Form.Template_Set = Forms.For_Full then
 										String'Write (Output, "<form method=""POST"" class=""inner"">" & Line_Break);
 									else
-										String'Write (Output, "<form method=""POST"" action=");
+										String'Write (Output, "<form method=""POST"" ");
 										Forms.Write_Link (
 											Output,
 											Form,
+											Name => "action",
 											Current_Directory => Current_Directory,
 											Resource => Forms.Self,
 											Parameters =>
@@ -2006,8 +1993,7 @@ is
 									end if;
 									String'Write(Output, "</select>" & Line_Break);
 									String'Write(Output, "<input type=""submit"" ");
-									Forms.Write_Attribute_Name (Output, "value");
-									Forms.Write_Attribute_Open (Output);
+									Forms.Write_Attribute_Open (Output, "value");
 									Forms.Write_In_Attribute (Output, Form, "行動");
 									Forms.Write_Attribute_Close (Output);
 									String'Write (Output, "/>");
@@ -2059,22 +2045,20 @@ is
 												if Tag = "x" then
 													Forms.Write_In_HTML (Output, Form, Image (X));
 												elsif Tag = "value_x" then
-													Forms.Write_Attribute_Name (Output, "value");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "value");
 													Forms.Write_In_Attribute (Output, Form, Image (X));
 													Forms.Write_Attribute_Close (Output);
 												elsif Tag = "y" then
 													Forms.Write_In_HTML (Output, Form, Image (Y));
 												elsif Tag = "value_y" then
-													Forms.Write_Attribute_Name (Output, "value");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "value");
 													Forms.Write_In_Attribute (Output, Form, Image (Y));
 													Forms.Write_Attribute_Close (Output);
 												elsif Tag = "action_page" then
-													Forms.Write_Attribute_Name (Output, "action");
 													Forms.Write_Link (
 														Output,
 														Form,
+														Name => "action",
 														Current_Directory => Current_Directory,
 														Resource => Forms.Self,
 														Parameters =>
@@ -2097,10 +2081,10 @@ is
 										Handler => Handle_Player'Access); -- rec
 								end if;
 							elsif Tag = "action_page" then
-								Forms.Write_Attribute_Name (Output, "action");
 								Forms.Write_Link (
 									Output,
 									Form,
+									Name => "action",
 									Current_Directory => Current_Directory,
 									Resource => Forms.Self,
 									Parameters =>
@@ -2144,8 +2128,7 @@ is
 										begin
 											if not Casts.Is_Empty (Item) then
 												String'Write (Output, "<option ");
-												Forms.Write_Attribute_Name (Output, "value");
-												Forms.Write_Attribute_Open (Output);
+												Forms.Write_Attribute_Open (Output, "value");
 												Forms.Write_In_Attribute (Output, Form, Image (Position));
 												Forms.Write_Attribute_Close (Output);
 												Character'Write (Output, '>');
@@ -2176,8 +2159,7 @@ is
 											begin
 												if not Casts.Is_Empty (Item) and then Item.Group = Village.Face_Group then
 													String'Write (Output, "<option ");
-													Forms.Write_Attribute_Name (Output, "value");
-													Forms.Write_Attribute_Open (Output);
+													Forms.Write_Attribute_Open (Output, "value");
 													Forms.Write_In_Attribute (Output, Form, Image (Position));
 													Forms.Write_Attribute_Close (Output);
 													Character'Write (Output, '>');
@@ -2193,8 +2175,7 @@ is
 								elsif Tag = "request" then
 									for I in Vampire.Villages.Requested_Role loop
 										String'Write (Output, "<option ");
-										Forms.Write_Attribute_Name (Output, "value");
-										Forms.Write_Attribute_Open (Output);
+										Forms.Write_Attribute_Open (Output, "value");
 										Forms.Write_In_Attribute (
 											Output,
 											Form,
@@ -2210,13 +2191,11 @@ is
 											Item : Casts.Group renames Cast.Groups.Constant_Reference (I);
 										begin
 											String'Write (Output, "<option ");
-											Forms.Write_Attribute_Name (Output, "value");
-											Forms.Write_Attribute_Open (Output);
+											Forms.Write_Attribute_Open (Output, "value");
 											Forms.Write_In_Attribute (Output, Form, Image (Item.Group));
 											Forms.Write_Attribute_Close (Output);
 											if Item.Group = Village.Face_Group then
-												Forms.Write_Attribute_Name (Output, "selected");
-												Forms.Write_Attribute_Open (Output);
+												Forms.Write_Attribute_Open (Output, "selected");
 												Forms.Write_In_Attribute (Output, Form, "selected");
 												Forms.Write_Attribute_Close (Output);
 											end if;
@@ -2233,10 +2212,10 @@ is
 										Web.Producers.Produce (Output, Contents, Handler => Handle'Access); -- rec
 									end if;
 								elsif Tag = "action_page" then
-									Forms.Write_Attribute_Name (Output, "action");
 									Forms.Write_Link (
 										Output,
 										Form,
+										Name => "action",
 										Current_Directory => Current_Directory,
 										Resource => Forms.Self,
 										Parameters =>
@@ -2263,10 +2242,10 @@ is
 						Contents : in Web.Producers.Template) is
 					begin
 						if Tag = "href_next" then
-							Forms.Write_Attribute_Name (Output, "href");
 							Forms.Write_Link_To_Village_Page (
 								Output,
 								Form,
+								Name => "href",
 								Current_Directory => Current_Directory,
 								HTML_Directory => HTML_Directory,
 								Log => Log,

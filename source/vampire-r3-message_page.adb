@@ -18,10 +18,10 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self);
 		elsif Tag = "message" then

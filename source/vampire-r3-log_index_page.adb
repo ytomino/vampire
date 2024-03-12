@@ -14,17 +14,17 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "background" then
-			Forms.Write_Attribute_Name (Output, "background");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "background",
 				Current_Directory => HTML_Directory,
 				Resource => Background);
 		elsif Tag = "href_index" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => HTML_Directory,
 				Resource => Forms.Self,
 				Parameters =>
@@ -44,10 +44,10 @@ is
 				User_Id => "",
 				User_Password => "");
 		elsif Tag = "href_stylesheet" then
-			Forms.Write_Attribute_Name (Output, "href");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "href",
 				Current_Directory => HTML_Directory,
 				Resource => Style_Sheet);
 		else

@@ -55,11 +55,9 @@ package Vampire.Forms is
 		User_Password : String)
 		return Web.Query_Strings;
 	
-	procedure Write_Attribute_Name (
+	procedure Write_Attribute_Open (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Name : in String);
-	procedure Write_Attribute_Open (
-		Stream : not null access Ada.Streams.Root_Stream_Type'Class);
 	procedure Write_Attribute_Close (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class);
 	
@@ -77,6 +75,7 @@ package Vampire.Forms is
 	procedure Write_Link (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
+		Name : in String;
 		Current_Directory : in String;
 		Resource : in String;
 		Parameters : in Web.Query_Strings := Web.String_Maps.Empty_Map);
@@ -84,6 +83,7 @@ package Vampire.Forms is
 	procedure Write_Link_To_Village_Page (
 		Stream : not null access Ada.Streams.Root_Stream_Type'Class;
 		Form : in Root_Form_Type'Class;
+		Name : in String;
 		Current_Directory : in String;
 		HTML_Directory : in String;
 		Log : in Boolean;

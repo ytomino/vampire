@@ -16,17 +16,17 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self);
 		elsif Tag = "action_page" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self,
 				Parameters =>
@@ -47,13 +47,11 @@ is
 					User_Id => "",
 					User_Password => ""));
 		elsif Tag = "value_newid" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			Forms.Write_In_Attribute (Output, Form, New_User_Id);
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_newpassword" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			Forms.Write_In_Attribute (Output, Form, New_User_Password);
 			Forms.Write_Attribute_Close (Output);
 		else

@@ -16,10 +16,10 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_page" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self,
 				Parameters =>
@@ -46,16 +46,14 @@ is
 				Time => Message.Time,
 				Filter => "");
 		elsif Tag = "value_kind" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			Forms.Write_In_Attribute (
 				Output,
 				Form,
 				Villages.Message_Kind'Image (Message.Kind));
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_text" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			Forms.Write_In_Attribute (Output, Form, Message.Text.Constant_Reference);
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "longer" then

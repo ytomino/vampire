@@ -22,10 +22,10 @@ is
 		Contents : in Web.Producers.Template) is
 	begin
 		if Tag = "action_cgi" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self);
 		elsif Tag = "parameters" then
@@ -37,10 +37,10 @@ is
 					User_Id => User_Id,
 					User_Password => User_Password));
 		elsif Tag = "action_page" then
-			Forms.Write_Attribute_Name (Output, "action");
 			Forms.Write_Link (
 				Output,
 				Form,
+				Name => "action",
 				Current_Directory => ".",
 				Resource => Forms.Self,
 				Parameters =>
@@ -72,8 +72,7 @@ is
 					raise Program_Error;
 			end case;
 		elsif Tag = "value_submit" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			case Person.Role is
 				when Villages.Doctor =>
 					Forms.Write_In_Attribute (Output, Form, "診察");
@@ -84,8 +83,7 @@ is
 			end case;
 			Forms.Write_Attribute_Close (Output);
 		elsif Tag = "value_target" then
-			Forms.Write_Attribute_Name (Output, "value");
-			Forms.Write_Attribute_Open (Output);
+			Forms.Write_Attribute_Open (Output, "value");
 			Forms.Write_In_Attribute (Output, Form, Image (Target));
 			Forms.Write_Attribute_Close (Output);
 		else
