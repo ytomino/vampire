@@ -140,8 +140,11 @@ $(TESTDIR)/villages:
 $(TESTDIR)/_data:
 	mkdir -p $@
 
-$(TESTDIR)/%: site/%
+$(TESTDIR)/%$(CGISUFFIX): site/%$(CGISUFFIX)
 	install $< $(dir $@)
+
+$(TESTDIR)/%: site/%
+	install -m 644 $< $(dir $@)
 
 install-test: \
 	$(TESTDIR)/vampire$(CGISUFFIX) \
