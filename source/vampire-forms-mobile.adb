@@ -24,7 +24,7 @@ package body Vampire.Forms.Mobile is
 	overriding function HTML_Version (Form : Form_Type)
 		return Web.HTML.HTML_Version is
 	begin
-		return Web.HTML.HTML;
+		return Web.HTML.HTML4;
 	end HTML_Version;
 	
 	overriding function Template_Set (Form : Form_Type) return Template_Set_Type is
@@ -105,7 +105,7 @@ package body Vampire.Forms.Mobile is
 	begin
 		Web.HTML.Write_In_HTML (
 			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
-			Web.HTML.HTML,
+			Web.HTML.HTML4,
 			Item,
 			Pre);
 		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
@@ -123,7 +123,7 @@ package body Vampire.Forms.Mobile is
 	begin
 		Web.HTML.Write_In_Attribute (
 			Ada.Environment_Encoding.Encoding_Streams.Stream (Out_Wrapper),
-			Web.HTML.HTML,
+			Web.HTML.HTML4,
 			Item);
 		Ada.Environment_Encoding.Encoding_Streams.Finish (Out_Wrapper);
 	end Write_In_Attribute;
